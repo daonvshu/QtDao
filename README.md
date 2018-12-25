@@ -43,7 +43,7 @@
   <dbport></dbport>
 </dao>
 ```
-#### 2.使用DbEntityGenerator生成对应的3个头文件`User.h`,`Position.h`,`Address.h`
+#### 2.使用[DbEntityGenerator](https://github.com/daonvshu/DbEntityGenerator)生成对应的3个头文件`User.h`,`Position.h`,`Address.h`
 
 #### 3.使用DBCreator在main中进行初始化
 ```c++
@@ -147,4 +147,7 @@ for (auto& r : result) {
    Address address;
    r.bind(user, position, address);//将值绑定
 }
+```
+```sql
+select a.name,a.age,a.duty,b.star,c.city from User a inner join Position b on b.uid = a.id inner join Address c on c.uid = a.id where a.age > 10
 ```
