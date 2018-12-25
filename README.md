@@ -1,8 +1,8 @@
-# Ê¹ÓÃ
-#### ÀıÈçÔÚsqliteÖĞÓĞÈçÏÂ3¸ö±í£º
-#### `User`±í¡¢`Position`±í¡¢`Address`±í£º
+# ä½¿ç”¨
+#### ä¾‹å¦‚åœ¨sqliteä¸­æœ‰å¦‚ä¸‹3ä¸ªè¡¨ï¼š
+#### `User`è¡¨ã€`Position`è¡¨ã€`Address`è¡¨ï¼š
 
-#### 1.ÅäÖÃdao_entity.xml:
+#### 1.é…ç½®dao_entity.xml:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -30,7 +30,7 @@
   </tb>
 </dao>
 ```
-ÅäÖÃdao_cfg.xml
+é…ç½®dao_cfg.xml
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <dao>
@@ -43,9 +43,9 @@
   <dbport></dbport>
 </dao>
 ```
-#### 2.Ê¹ÓÃ[DbEntityGenerator](https://github.com/daonvshu/DbEntityGenerator)Éú³É¶ÔÓ¦µÄ3¸öÍ·ÎÄ¼ş`User.h`,`Position.h`,`Address.h`
+#### 2.ä½¿ç”¨[DbEntityGenerator](https://github.com/daonvshu/DbEntityGenerator)ç”Ÿæˆå¯¹åº”çš„3ä¸ªå¤´æ–‡ä»¶`User.h`,`Position.h`,`Address.h`
 
-#### 3.Ê¹ÓÃDBCreatorÔÚmainÖĞ½øĞĞ³õÊ¼»¯
+#### 3.ä½¿ç”¨DBCreatoråœ¨mainä¸­è¿›è¡Œåˆå§‹åŒ–
 ```c++
 ConnectionPool::loadConfigure(":/xxx/sql/dao_cfg.xml");
 bool dbInitSucc = DbCreatorHelper::testConnect();
@@ -54,14 +54,17 @@ if (dbInitSucc) {
 }
 
 if (!dbInitSucc) {
-   QMessageBox::warning(nullptr, u8"ÌáÊ¾", u8"Êı¾İ¿âÁ¬½ÓÊ§°Ü£¡", 0, 0);
+   QMessageBox::warning(nullptr, u8"æç¤º", u8"æ•°æ®åº“è¿æ¥å¤±è´¥ï¼", 0, 0);
    return 0;
 }
 ```
 
 #### 4.CURD
-Êı¾İ¿âÓï¾äµÄÆ´½Ó¿¿DaoEntityFieldÍê³É£¬Í¨¹ıÖØÔØºóµÄÔËËã·û²Ù×÷£¬Ä¿Ç°ÖØÔØ¹ıµÄÔËËã·ûÓĞ£º==¡¢!=¡¢>¡¢>=¡¢<¡¢<=¡¢%¡¢+¡¢-¡¢*¡¢/¡¢++¡¢--¡¢()µÈ
-- ##### ²éÑ¯
+æ•°æ®åº“è¯­å¥çš„æ‹¼æ¥é DaoEntityFieldå®Œæˆï¼Œé€šè¿‡é‡è½½åçš„è¿ç®—ç¬¦æ“ä½œï¼Œç›®å‰é‡è½½è¿‡çš„è¿ç®—ç¬¦æœ‰ï¼š==ã€!=ã€>ã€>=ã€<ã€<=ã€%ã€+ã€-ã€*ã€/ã€++ã€--ã€()ç­‰
+- ##### æŸ¥è¯¢
+```c++
+User::Fields fu;
+```
 ```c++
 bool exist;
 auto r = dao::_query<User>().wh(fu.name == "Alice" and fu.age >= 10).build().unique(exist);
@@ -81,7 +84,7 @@ int count = dao::_count<User>().wh(fu.name.like("Bob%")).build().count();
 ```sql
 select count(*) from ts_user where name like 'Bob%'
 ```
-- ##### ²åÈë
+- ##### æ’å…¥
 ```c++
 //1.
 dao::_insert<User>().build().insert(User(0, u8"Alice", 12, 1, "student"));
@@ -95,10 +98,10 @@ dao::_insert<User>().build().insertBatch(users);
 ```sql
 insert into ts_user values(0, 'Alice', 12, 1, 'student')
 ```
-- ##### ¸üĞÂ
+- ##### æ›´æ–°
 ```c++
 //1.
-dao::_update<User>().set((fu.age + 10, fu.duty == "teacher")).wh(fu.name == "Alice").build().update();//×¢ÒâsetÌõ¼şÓĞ2¸öÀ¨ºÅ
+dao::_update<User>().set((fu.age + 10, fu.duty == "teacher")).wh(fu.name == "Alice").build().update();//æ³¨æ„setæ¡ä»¶æœ‰2ä¸ªæ‹¬å·
 //2.
 User user(0, "Alice", 22, 1, "teacher");
 dao::_update<User>().wh(fu.name == user.getName()).build().update(user);
@@ -115,7 +118,7 @@ for (int i = 0; i < 20; i++) {
 }
 dao::_update<User>().bind(fu.name).build().updateBy(users);
 ```
-- ##### É¾³ı
+- ##### åˆ é™¤
 ```c++
 dao::_delete<User>().wh(fu.name == "Bob_a").build().deleteBy();
 ```
@@ -145,7 +148,7 @@ for (auto& r : result) {
    User user;
    Position position;
    Address address;
-   r.bind(user, position, address);//½«Öµ°ó¶¨
+   r.bind(user, position, address);//å°†å€¼ç»‘å®š
 }
 ```
 ```sql
