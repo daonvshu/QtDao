@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dao>
+  <version>1</version>
+  <sqltype>sqlite</sqltype>
+  <dbname>daotest</dbname>
+  <dbhost>localhost</dbhost>
+  <dbuname>root</dbuname>
+  <dbpcc>root</dbpcc>
+  <dbport>3306</dbport>
+</dao>

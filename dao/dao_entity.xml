@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dao prefix="ts_">
+  <tb name="User">
+    <item name="id" qtype="qint64">integer primary key auto_increment</item>
+    <item name="name" qtype="QString" index="true">varchar(10) not null</item>
+    <item name="age" qtype="int">int default 0</item>
+    <item name="sex" qtype="bool">int(1)</item>
+    <item name="duty" qtype="QString">varchar(30)</item>
+  </tb>
+  <tb name="Position">
+    <item name="id" qtype="qint64">integer primary key auto_increment</item>
+    <item name="uid" qtype="int">varchar(233)</item>
+    <item name="star" qtype="QString">varchar(233)</item>
+    <item name="x" qtype="int">int default 0</item>
+    <item name="y" qtype="int">int default 0</item>
+  </tb>
+  <tb name="Address">
+    <item name="id" qtype="qint64">integer primary key auto_increment</item>
+    <item name="uid" qtype="int">int not null</item>
+    <item name="province" qtype="QString">varchar(233)</item>
+    <item name="city" qtype="QString">varchar(223)</item>
+    <item name="street" qtype="QString">varchar(233)</item>
+  </tb>
+</dao>
