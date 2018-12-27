@@ -46,6 +46,7 @@ private:
 
 	QQueue<QString> usedConnectionNames;   // 已使用的数据库连接名
 	QQueue<QString> unusedConnectionNames; // 未使用的数据库连接名
+	QMap<QString, Qt::HANDLE> connectionThreadId;//连接名上次连接对应的线程id
 
 										   // 数据库信息
 	bool    testOnBorrow;    // 取得连接的时候验证连接是否有效

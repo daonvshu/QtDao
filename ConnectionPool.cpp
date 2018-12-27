@@ -1,6 +1,7 @@
 #include "ConnectionPool.h"
 #include <qdom.h>
 #include <qstandardpaths.h>
+#include <qthread.h>
 #include <qdebug.h>
 //http://blog.csdn.net/qq_28796345/article/details/51586330
 QMutex ConnectionPool::mutex;
@@ -31,6 +32,8 @@ ConnectionPool::~ConnectionPool() {
 
 	QString name = QSqlDatabase::database().connectionName();
 	QSqlDatabase::removeDatabase(name);
+
+	connectionThreadId.clear();
 }
 
 void ConnectionPool::loadConfigure(const QString & fileName) {
@@ -126,6 +129,7 @@ QSqlDatabase ConnectionPool::openConnection() {
 	// 有效的连接才放入 usedConnectionNames
 	if (db.isOpen()) {
 		pool.usedConnectionNames.enqueue(connectionName);
+		pool.connectionThreadId.insert(connectionName, QThread::currentThreadId());
 	}
 
 	return db;
@@ -146,6 +150,14 @@ void ConnectionPool::closeConnection(QSqlDatabase connection) {
 }
 
 QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
+	// 检查连接名上次对应的线程是否是当前线程
+	if (connectionThreadId.contains(connectionName)) {
+		if (connectionThreadId.value(connectionName) != QThread::currentThreadId()) {
+			QSqlDatabase::removeDatabase(connectionName);
+			connectionThreadId.remove(connectionName);
+		}
+	}
+
 	// 连接已经创建过了，复用它，而不是重新创建
 	if (QSqlDatabase::contains(connectionName)) {
 		QSqlDatabase db1 = QSqlDatabase::database(connectionName);
