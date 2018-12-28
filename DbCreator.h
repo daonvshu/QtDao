@@ -3,7 +3,7 @@ Descript:	数据库创建类，根据不同的版本号对数据库进行升级
 Author:		daonvshu
 Version:	2.0
 Date:		2018/12/14
-Last-Md:	2018/12/24
+Last-Md:	2018/12/28
 */
 #pragma once
 
@@ -42,17 +42,11 @@ namespace DbCreatorHelper {
 	}
 
 	bool checkDbVersion() {
-		QString iniFilePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/db.ini";
-		QSettings settings(iniFilePath, QSettings::IniFormat);
-		QString key = "Db/version";
-		return settings.value(key, -1).toInt() == ConnectionPool::getDbVersion();
+		return ConnectionPool::readDbSetting("version", "-1").toInt() == ConnectionPool::getDbVersion();
 	}
 
 	void resetDbVersion() {
-		QString iniFilePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/db.ini";
-		QSettings settings(iniFilePath, QSettings::IniFormat);
-		QString key = "Db/version";
-		settings.setValue(key, ConnectionPool::getDbVersion());
+		ConnectionPool::writeDbSetting("version", ConnectionPool::getDbVersion());
 	}
 
 	bool checkTableExist(const QString& tbName) {

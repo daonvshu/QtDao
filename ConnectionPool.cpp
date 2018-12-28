@@ -70,6 +70,9 @@ void ConnectionPool::loadConfigure(const QString & fileName) {
 			sqlCfg.dbPort = c.text().toInt();
 		}
 	}
+	if (sqlCfg.dbHost.isEmpty()) {
+		sqlCfg.dbHost = readDbSetting("host", "localhost").toString();
+	}
 }
 
 ConnectionPool& ConnectionPool::getInstance() {
@@ -202,4 +205,16 @@ QSqlDatabase ConnectionPool::prepareConnect(const QString& connectName, const QS
 		db.setConnectOptions("MYSQL_OPT_CONNECT_TIMEOUT=3;MYSQL_OPT_READ_TIMEOUT=3;MYSQL_OPT_WRITE_TIMEOUT=3");
 	}
 	return db;
+}
+
+QVariant ConnectionPool::readDbSetting(const QString & key, const QString & default) {
+	QString iniFilePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/db.ini";
+	QSettings settings(iniFilePath, QSettings::IniFormat);
+	return settings.value("Db/" + key, default);
+}
+
+void ConnectionPool::writeDbSetting(const QString & key, const QVariant & value) {
+	QString iniFilePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/db.ini";
+	QSettings settings(iniFilePath, QSettings::IniFormat);
+	settings.setValue("Db/" + key, value);
 }

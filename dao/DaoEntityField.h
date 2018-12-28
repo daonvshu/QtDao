@@ -3,7 +3,7 @@ Descript:	字段Key-Value、字段Key-Value之间的拼接类，用于组合sql的条件语句
 Author:		daonvshu
 Version:	2.1
 Date:		2018/12/21
-Last-Md:	2018/12/24
+Last-Md:	2018/12/28
 */
 #pragma once
 
@@ -83,11 +83,6 @@ public:
 	/*equal "="*/
 	DaoEntityField operator==(const QVariant& v) {
 		return sv("=", v);
-	}
-	/*equal "="*/
-	DaoEntityField operator==(const char* v) {
-		sv("=", v);
-		return *this;
 	}
 	/*like "field1=field2"*/
 	DaoEntityField operator==(DaoEntityField& f) {

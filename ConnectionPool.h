@@ -23,6 +23,9 @@ public:
 	static QString getDbName() { return sqlCfg.dbName; }
 	static int getDbVersion() { return sqlCfg.version; }
 
+	static QVariant readDbSetting(const QString& key, const QString& default);
+	static void writeDbSetting(const QString& key, const QVariant& value);
+
 private:
 	struct SqlCfg {
 		int version;
