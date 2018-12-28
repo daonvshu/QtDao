@@ -13,6 +13,7 @@
                       <xs:attribute name="name" type="xs:string" use="required" />
                       <xs:attribute name="qtype" type="xs:string" use="required" />
                       <xs:attribute name="note" type="xs:string" use="optional" />
+                      <xs:attribute name="index" type="xs:string" use="optional" />
                     </xs:extension>
                   </xs:simpleContent>
                 </xs:complexType>
