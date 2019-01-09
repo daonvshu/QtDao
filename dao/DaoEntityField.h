@@ -3,7 +3,7 @@ Descript:	字段Key-Value、字段Key-Value之间的拼接类，用于组合sql的条件语句
 Author:		daonvshu
 Version:	2.1
 Date:		2018/12/21
-Last-Md:	2018/12/28
+Last-Md:	2019/01/09
 */
 #pragma once
 
@@ -52,6 +52,7 @@ private:
 	const char* n;
 	QString kvPairStr;//键值对字符串
 	QVariantList vlist;//值列表
+	bool suffix;
 
 private:
 	DaoEntityField sv(const char* op, const QVariant& v) {
@@ -77,6 +78,7 @@ private:
 	void clear() {
 		kvPairStr = "";
 		vlist.clear();
+		suffix = false;
 	}
 
 public:
@@ -175,6 +177,9 @@ public:
 
 	/*used by set condition*/
 	DaoEntityField operator,(const DaoEntityField& f) {
+		if (f.kvPairStr.isEmpty()) {
+			return *this;
+		}
 		kvPairStr.append(',').append(f.kvPairStr);
 		vlist.append(f.vlist);
 		return *this;
@@ -182,20 +187,35 @@ public:
 
 	/*condition and, consider using macro 'and'*/
 	DaoEntityField operator&&(const DaoEntityField& f) {
-		kvPairStr.append(" and ").append(f.kvPairStr);
+		if (f.kvPairStr.isEmpty()) {
+			return *this;
+		}
+		if (!f.suffix) {
+			kvPairStr.append(" and");
+		}
+		kvPairStr.append(' ').append(f.kvPairStr);
 		vlist.append(f.vlist);
 		return *this;
 	}
 
 	/*condition or, consider using macro 'or'*/
 	DaoEntityField operator||(const DaoEntityField& f) {
-		kvPairStr.append(" or ").append(f.kvPairStr);
+		if (f.kvPairStr.isEmpty()) {
+			return *this;
+		}
+		if (!f.suffix) {
+			kvPairStr.append(" or");
+		}
+		kvPairStr.append(' ').append(f.kvPairStr);
 		vlist.append(f.vlist);
 		return *this;
 	}
 
 	/*for bracket expressions, consider using macro '_B'*/
 	DaoEntityField operator*() {
+		if (kvPairStr.isEmpty()) {
+			return *this;
+		}
 		kvPairStr = '(' + kvPairStr + ')';
 		return *this;
 	}
@@ -225,24 +245,33 @@ public:
 			kvPairStr.append(' ');
 		}
 		kvPairStr.append("limit ").append(QString::number(a)).append(',').append(QString::number(b));
+		suffix = true;
 		return *this;
 	}
 
 	/*condition order by*/
-	DaoEntityField orderBy(bool sequence) {
+	DaoEntityField orderBy(bool sequence = true) {
 		if (!kvPairStr.isEmpty()) {
 			kvPairStr.append(' ');
 		}
 		kvPairStr.append("order by ").append(name()).append(sequence ? "asc" : "desc");
+		suffix = true;
 		return *this;
 	}
 
 	/*condition group by*/
-	DaoEntityField groupBy(bool sequence) {
+	DaoEntityField groupBy(bool sequence = true) {
 		if (!kvPairStr.isEmpty()) {
 			kvPairStr.append(' ');
 		}
 		kvPairStr.append("group by ").append(name()).append(sequence ? "asc" : "desc");
+		suffix = true;
+		return *this;
+	}
+
+	/*return a empty data*/
+	DaoEntityField empty() {
+		clear();
 		return *this;
 	}
 };

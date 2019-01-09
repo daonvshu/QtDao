@@ -150,7 +150,8 @@ private:
 	public:
 		using DaoExecutor::DaoExecutor;
 
-		void insert(T& entity) {
+		bool insert(T& entity) {
+			bool ok = true;
 			Q_ASSERT(getReadEntity().getKvPair().isEmpty() && getWriteEntity().getKvPair().isEmpty());
 			sql_head.append(" values(%1)");
 			QVariantList entityData = entity.readEntity();
@@ -168,13 +169,17 @@ private:
 				entity.bindId(query.lastInsertId().toInt());
 			} else {
 				dao::printLog(query.lastError().text(), sql_head);
+				ok = false;
 			}
 			ConnectionPool::closeConnection(db);
+			return ok;
 		}
 
-		void insertBatch(const QList<T>& entities) {
-			if (entities.isEmpty())
-				return;
+		bool insertBatch(const QList<T>& entities) {
+			bool ok = true;
+			if (entities.isEmpty()) {
+				return ok;
+			}
 			Q_ASSERT(getReadEntity().getKvPair().isEmpty() && getWriteEntity().getKvPair().isEmpty());
 			sql_head.append(" values(%1)");
 			int fieldSize = static_cast<T*>(0)->fieldSize();
@@ -205,9 +210,11 @@ private:
 			}
 			if (!query.execBatch()) {
 				dao::printLog(query.lastError().text(), sql_head);
+				ok = false;
 			}
 			ConnectionPool::closeConnection(db);
 			delete bDataList;
+			return ok;
 		}
 	};
 
@@ -217,18 +224,36 @@ private:
 		using DaoExecutor::DaoExecutor;
 
 		/*used by 'set' and 'where' conditions to update table */
-		void update() {
+		bool update() {
+			bool ok = true;
 			Q_ASSERT(!getWriteEntity().getKvPair().isEmpty() && !getReadEntity().getKvPair().isEmpty());
 			auto db = ConnectionPool::openConnection();
 			QSqlQuery query(db);
 			bindValue(query);
 			if (!query.exec()) {
 				dao::printLog(query.lastError().text(), sql_head);
+				ok = false;
 			}
 			ConnectionPool::closeConnection(db);
+			return ok;
+		}
+		/*used by 'set' and 'where' conditions to update table, value list must be QVariantList */
+		bool updateBatch() {
+			bool ok = true;
+			Q_ASSERT(!getWriteEntity().getKvPair().isEmpty() && !getReadEntity().getKvPair().isEmpty());
+			auto db = ConnectionPool::openConnection();
+			QSqlQuery query(db);
+			bindValue(query);
+			if (!query.execBatch()) {
+				dao::printLog(query.lastError().text(), sql_head);
+				ok = false;
+			}
+			ConnectionPool::closeConnection(db);
+			return ok;
 		}
 		/*used by 'where' conditions to update entity to table*/
-		void update(T& entity) {
+		bool update(T& entity) {
+			bool ok = true;
 			Q_ASSERT(getWriteEntity().getKvPair().isEmpty() && !getReadEntity().getKvPair().isEmpty());
 
 			QVariantList entityData = entity.readEntity();
@@ -251,11 +276,14 @@ private:
 			bindValue(query);
 			if (!query.exec()) {
 				dao::printLog(query.lastError().text(), sql_head);
+				ok = false;
 			}
 			ConnectionPool::closeConnection(db);
+			return ok;
 		}
 		/*used by binded fields(condition from entity by fields) to update entity to table*/
-		void updateBy(T& entity) {
+		bool updateBy(T& entity) {
+			bool ok = true;
 			Q_ASSERT(!getBindEntities().isEmpty());
 			Q_ASSERT(getWriteEntity().getKvPair().isEmpty() && getReadEntity().getKvPair().isEmpty());
 
@@ -292,16 +320,18 @@ private:
 			bindValue(query);
 			if (!query.exec()) {
 				dao::printLog(query.lastError().text(), sql_head);
+				ok = false;
 			}
 			ConnectionPool::closeConnection(db);
+			return ok;
 		}
 		/*used by binded fields(condition from entities by fields) to update entities to table*/
-		void updateBy(QList<T>& entities) {
+		bool updateBatch(QList<T>& entities) {
 			Q_ASSERT(!getBindEntities().isEmpty());
 			Q_ASSERT(getWriteEntity().getKvPair().isEmpty() && getReadEntity().getKvPair().isEmpty());
-
+			bool ok = true;
 			if (entities.isEmpty())
-				return;
+				return ok;
 
 			QStringList fields = static_cast<T*>(0)->getFields();
 			int fieldSize = fields.size();
@@ -374,9 +404,11 @@ private:
 			}
 			if (!query.execBatch()) {
 				dao::printLog(query.lastError().text(), sql_head);
+				ok = false;
 			}
 			ConnectionPool::closeConnection(db);
 			delete bDataList;
+			return ok;
 		}
 	};
 
@@ -385,14 +417,17 @@ private:
 	public:
 		using DaoExecutor::DaoExecutor;
 
-		void deleteBy() {
+		bool deleteBy() {
+			bool ok = true;
 			auto db = ConnectionPool::openConnection();
 			QSqlQuery query(db);
 			bindValue(query);
 			if (!query.exec()) {
 				dao::printLog(query.lastError().text(), sql_head);
+				ok = false;
 			}
 			ConnectionPool::closeConnection(db);
+			return ok;
 		}
 	};
 

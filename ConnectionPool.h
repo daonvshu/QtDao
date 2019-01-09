@@ -15,6 +15,9 @@ public:
 	~ConnectionPool();
 
 	static void loadConfigure(const QString& fileName);
+	static void loadHost(const QString& host) {
+		sqlCfg.dbHost = host;
+	}
 	static QSqlDatabase prepareConnect(const QString & connectName, const QString & dbName);
 
 	static bool isSqlite() { return sqlCfg.dbType == "QSQLITE"; }
@@ -22,6 +25,7 @@ public:
 	static bool isSqlServer() { return sqlCfg.dbType == "QODBC"; }
 	static QString getDbName() { return sqlCfg.dbName; }
 	static int getDbVersion() { return sqlCfg.version; }
+	static QString getDbHost() { return sqlCfg.dbHost; }
 
 	static QVariant readDbSetting(const QString& key, const QString& default);
 	static void writeDbSetting(const QString& key, const QVariant& value);
