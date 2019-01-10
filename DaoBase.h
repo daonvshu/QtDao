@@ -258,10 +258,11 @@ private:
 
 			QVariantList entityData = entity.readEntity();
 			QStringList fields = static_cast<T*>(0)->getFields();
+			QString field_id = static_cast<T*>(0)->getIdField();
 			QString setPa = " set ";
 			bool findId = false;
 			for (int i = 0; i < fields.size(); i++) {
-				if (fields.at(i) == "id") {
+				if (fields.at(i) == field_id) {
 					findId = true;
 					continue;
 				}
@@ -298,8 +299,9 @@ private:
 
 			QVariantList cndVList;
 			bool findId = false;
+			QString field_id = static_cast<T*>(0)->getIdField();
 			for (int i = 0; i < fields.size(); i++) {
-				if (fields.at(i) == "id") {
+				if (fields.at(i) == field_id) {
 					findId = true;
 					continue;
 				}
@@ -347,11 +349,12 @@ private:
 			memset(bDataList, 0, fieldSize);
 
 			bool findId = false;
+			QString field_id = static_cast<T*>(0)->getIdField();
 			for (const auto& entity : entities) {
 				QVariantList entityData = entity.readEntity();
 				int k = 0;
 				for (const auto& d : entityData) {
-					if (fields.at(k) == "id") {
+					if (fields.at(k) == field_id) {
 						findId = true;
 						k++;
 						continue;
@@ -375,7 +378,7 @@ private:
 			QString setCond = " set ";
 			QString whCond = " where ";
 			for (int i = 0; i < fields.size(); i++) {
-				if (fields.at(i) == "id") {
+				if (fields.at(i) == field_id) {
 					continue;
 				}
 				if (!bindFieldList.contains(fields.at(i))) {
