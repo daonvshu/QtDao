@@ -3,7 +3,7 @@ Descript:	sql执行类
 Author:		daonvshu
 Version:	2.2
 Date:		2018/12/14
-Last-Md:	2018/12/24
+Last-Md:	2019/01/15
 */
 #pragma once
 
@@ -187,6 +187,25 @@ private:
 			});;
 		}
 
+		bool insertMutil(const QList<T>& entities) {
+			if (entities.isEmpty()) {
+				return true;
+			}
+			Q_ASSERT(getReadEntity().getKvPair().isEmpty() && getWriteEntity().getKvPair().isEmpty());
+			sql_head.append(" values");
+			int fieldSize = static_cast<T*>(0)->fieldSize();
+			QString prepareStr = QString("?,").repeated(fieldSize);
+			prepareStr = prepareStr.left(prepareStr.length() - 1);
+			for (int i = 0; i < entities.size(); i++) {
+				sql_head.append(QString("(").append(prepareStr).append("),"));
+			}
+			sql_head = sql_head.left(sql_head.length() - 1);
+			for (const auto& entity : entities) {
+				valueList.append(entity.readEntity());
+			}
+			return exec();
+		}
+
 		bool insertBatch(const QList<T>& entities) {
 			if (entities.isEmpty()) {
 				return true;
@@ -198,18 +217,20 @@ private:
 			prepareStr = prepareStr.left(prepareStr.length() - 1);
 			sql_head = sql_head.arg(prepareStr);
 
-			QMap<int, QVariantList> dataList;
+			QList<QVariantList> dataList;
+			for (int i = 0; i < fieldSize; i++) {
+				dataList << QVariantList();
+			}
 			for (const auto& entity : entities) {
 				QVariantList entityData = entity.readEntity();
 				int k = 0;
 				for (const auto& d : entityData) {
-					auto data = dataList.value(k);
-					data << d;
-					dataList.insert(k++, data);
+					auto dlist = (QVariantList*)&dataList.at(k++);
+					*dlist << d;
 				}
 			}
 			for (int i = 0; i < fieldSize; i++) {
-				valueList.append(dataList.value(i));
+				valueList.append(QVariant(dataList.at(i)));
 			}
 
 			return execBatch();
@@ -252,7 +273,7 @@ private:
 			Q_ASSERT(findId);//查询表没有id字段
 			sql_head.append(setPa.left(setPa.length() - 2));
 
-			return execBatch();
+			return exec();
 		}
 		/*used by binded fields(condition from entity by fields) to update entity to table*/
 		bool updateBy(T& entity) {
@@ -351,12 +372,12 @@ private:
 
 			for (int i = 0; i < fieldSize; i++) {
 				if (updataList.contains(i)) {
-					valueList.append(updataList.value(i));
+					valueList.append(QVariant(updataList.value(i)));
 				}
 			}
 			for (int i = 0; i < fieldSize; i++) {
 				if (cddataList.contains(i)) {
-					valueList.append(cddataList.value(i));
+					valueList.append(QVariant(cddataList.value(i)));
 				}
 			}
 

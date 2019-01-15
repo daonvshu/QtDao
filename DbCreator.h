@@ -3,7 +3,7 @@ Descript:	数据库创建类，根据不同的版本号对数据库进行升级
 Author:		daonvshu
 Version:	2.0
 Date:		2018/12/14
-Last-Md:	2018/12/28
+Last-Md:	2019/01/15
 */
 #pragma once
 
@@ -49,16 +49,17 @@ namespace DbCreatorHelper {
 		ConnectionPool::writeDbSetting("version", ConnectionPool::getDbVersion());
 	}
 
-	bool checkTableExist(const QString& tbName) {
+	bool checkTableExist(const QString& tbName, const QString& schema) {
 		QString sql;
 		if (ConnectionPool::isSqlite()) {
 			sql = "select *from sqlite_master where type='table' and name = '%1'";
+			sql = sql.arg(tbName);
 		} else if (ConnectionPool::isMysql()) {
-			sql = "select table_name from information_schema.TABLES where table_name ='%1'";
+			sql = "select table_name from information_schema.TABLES where table_name ='%1' and table_schema = '%2'";
+			sql = sql.arg(tbName, schema);
 		} else {
 			return false;
 		}
-		sql = sql.arg(tbName);
 		
 		bool exist = false;
 		auto db = ConnectionPool::openConnection();
@@ -190,7 +191,7 @@ public:
 			return;
 		auto entity = static_cast<H*>(0);
 
-		bool tbExist = DbCreatorHelper::checkTableExist(entity->getTableName());
+		bool tbExist = DbCreatorHelper::checkTableExist(entity->getTableName(), ConnectionPool::getDbName());
 		QString tmpTbName = entity->getTableName().prepend("tmp_");
 		if (!DbCreatorHelper::checkDbVersion() && tbExist) {//表存在且版本不同进行数据库升级
 			if (!DbCreatorHelper::renameTable(entity->getTableName(), tmpTbName)) {
@@ -199,7 +200,7 @@ public:
 			}
 		}
 		success = success && DbCreatorHelper::createTableIfNotExist(entity);
-		if (DbCreatorHelper::checkTableExist(tmpTbName)) {//转移数据到新表中
+		if (DbCreatorHelper::checkTableExist(tmpTbName, ConnectionPool::getDbName())) {//转移数据到新表中
 			if (!DbCreatorHelper::restoreData2NewTable(tmpTbName, entity)) {
 				success = false;
 				return;
