@@ -1,13 +1,12 @@
 #include "ConnectionPool.h"
-#include <qdom.h>
 #include <qstandardpaths.h>
 #include <qthread.h>
+#include "DbLoader.h"
 #include <qdebug.h>
 //http://blog.csdn.net/qq_28796345/article/details/51586330
 QMutex ConnectionPool::mutex;
 QWaitCondition ConnectionPool::waitConnection;
 ConnectionPool* ConnectionPool::instance = nullptr;
-ConnectionPool::SqlCfg ConnectionPool::sqlCfg;
 
 ConnectionPool::ConnectionPool() {
 	testOnBorrow = true;
@@ -34,45 +33,6 @@ ConnectionPool::~ConnectionPool() {
 	QSqlDatabase::removeDatabase(name);
 
 	connectionThreadId.clear();
-}
-
-void ConnectionPool::loadConfigure(const QString & fileName) {
-	QDomDocument doc;
-	QFile file(fileName);
-	Q_ASSERT(file.open(QIODevice::ReadOnly));
-	Q_ASSERT(doc.setContent(&file));
-	file.close();
-	auto root = doc.documentElement();
-	Q_ASSERT(root.tagName() == "dao");
-	auto dao = root.childNodes();
-	for (int i = 0; i < dao.count(); i++) {
-		auto c = dao.at(i).toElement();
-		if (c.tagName() == "version") {
-			sqlCfg.version = c.text().toInt();
-		} else if (c.tagName() == "sqltype") {
-			auto t = c.text();
-			if (t == "mysql") {
-				sqlCfg.dbType = "QMYSQL";
-			} else if (t == "sqlite") {
-				sqlCfg.dbType = "QSQLITE";
-			} else if (t == "sqlserver") {
-				sqlCfg.dbType = "QODBC";
-			}
-		} else if (c.tagName() == "dbname") {
-			sqlCfg.dbName = c.text();
-		} else if (c.tagName() == "dbhost") {
-			sqlCfg.dbHost = c.text();
-		} else if (c.tagName() == "dbuname") {
-			sqlCfg.dbUName = c.text();
-		} else if (c.tagName() == "dbpcc") {
-			sqlCfg.dbPcc = c.text();
-		} else if (c.tagName() == "dbport") {
-			sqlCfg.dbPort = c.text().toInt();
-		}
-	}
-	if (sqlCfg.dbHost.isEmpty()) {
-		sqlCfg.dbHost = readDbSetting("host", "localhost").toString();
-	}
 }
 
 ConnectionPool& ConnectionPool::getInstance() {
@@ -164,7 +124,7 @@ QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
 	// 连接已经创建过了，复用它，而不是重新创建
 	if (QSqlDatabase::contains(connectionName)) {
 		QSqlDatabase db1 = QSqlDatabase::database(connectionName);
-		db1.setHostName(sqlCfg.dbHost);
+		db1.setHostName(DbLoader::getConfigure().dbHost);
 
 		if (testOnBorrow) {
 			// 返回连接前访问数据库，如果连接断开，重新建立连接
@@ -181,7 +141,7 @@ QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
 	}
 
 	// 创建一个新的连接
-	QSqlDatabase db = prepareConnect(connectionName, sqlCfg.dbName);
+	QSqlDatabase db = prepareConnect(connectionName, DbLoader::getConfigure().dbName);
 	if (!db.open()) {
 		qDebug() << "Open datatabase error:" << db.lastError().text();
 		return QSqlDatabase();
@@ -191,30 +151,21 @@ QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
 }
 
 QSqlDatabase ConnectionPool::prepareConnect(const QString& connectName, const QString& dbName) {
-	QSqlDatabase db = QSqlDatabase::addDatabase(sqlCfg.dbType, connectName);
-	if (isSqlite()) {
+	QSqlDatabase db = QSqlDatabase::addDatabase(DbLoader::getConfigure().dbType, connectName);
+	if (DbLoader::isSqlite()) {
 		db.setDatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "\\" + dbName + ".db");
 	} else {
 		db.setDatabaseName(dbName);
+		db.setUserName(DbLoader::getConfigure().dbUName);
+		db.setPassword(DbLoader::getConfigure().dbPcc);
 	}
-	db.setUserName(sqlCfg.dbUName);
-	db.setPassword(sqlCfg.dbPcc);
-	if (isMysql()) {
-		db.setHostName(sqlCfg.dbHost);
-		db.setPort(sqlCfg.dbPort);
-		db.setConnectOptions("MYSQL_OPT_CONNECT_TIMEOUT=3;MYSQL_OPT_READ_TIMEOUT=3;MYSQL_OPT_WRITE_TIMEOUT=3");
+	if (!DbLoader::isSqlite()) {
+		db.setHostName(DbLoader::getConfigure().dbHost);
+		db.setPort(DbLoader::getConfigure().dbPort);
+	}
+	if (!DbLoader::getConfigure().dbOption.isEmpty()) {
+		db.setConnectOptions(DbLoader::getConfigure().dbOption);
 	}
 	return db;
 }
 
-QVariant ConnectionPool::readDbSetting(const QString & key, const QString & default) {
-	QString iniFilePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/db.ini";
-	QSettings settings(iniFilePath, QSettings::IniFormat);
-	return settings.value("Db/" + key, default);
-}
-
-void ConnectionPool::writeDbSetting(const QString & key, const QVariant & value) {
-	QString iniFilePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/db.ini";
-	QSettings settings(iniFilePath, QSettings::IniFormat);
-	settings.setValue("Db/" + key, value);
-}

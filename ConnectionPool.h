@@ -14,34 +14,7 @@ public:
 
 	~ConnectionPool();
 
-	static void loadConfigure(const QString& fileName);
-	static void loadHost(const QString& host) {
-		sqlCfg.dbHost = host;
-	}
 	static QSqlDatabase prepareConnect(const QString & connectName, const QString & dbName);
-
-	static bool isSqlite() { return sqlCfg.dbType == "QSQLITE"; }
-	static bool isMysql() { return sqlCfg.dbType == "QMYSQL"; }
-	static bool isSqlServer() { return sqlCfg.dbType == "QODBC"; }
-	static QString getDbName() { return sqlCfg.dbName; }
-	static int getDbVersion() { return sqlCfg.version; }
-	static QString getDbHost() { return sqlCfg.dbHost; }
-
-	static QVariant readDbSetting(const QString& key, const QString& default);
-	static void writeDbSetting(const QString& key, const QVariant& value);
-
-private:
-	struct SqlCfg {
-		int version;
-		QString dbType;
-		QString dbName;
-		QString dbHost;
-		QString dbUName;
-		QString dbPcc;
-		int dbPort;
-	};
-
-	static SqlCfg sqlCfg;
 
 private:
 	static ConnectionPool& getInstance();

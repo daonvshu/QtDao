@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dao prefix="ts_">
-  <tb name="User">
+  <tb name="User" engine="MyISAM">
     <item name="id" qtype="qint64" key="id">integer primary key auto_increment</item>
     <item name="name" qtype="QString" key="index">varchar(10) not null</item>
     <item name="age" qtype="int">int default 0</item>
