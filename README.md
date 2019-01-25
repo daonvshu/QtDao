@@ -33,14 +33,12 @@
 配置dao_cfg.xml
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<dao>
-  <version>1</version>
-  <sqltype>sqlite</sqltype>
-  <dbname>daotest</dbname>
-  <dbhost></dbhost>
+<dao version="3" type="mysql" dbname="daotest">
+  <dbhost>localhost</dbhost>
   <dbuname>root</dbuname>
   <dbpcc>root</dbpcc>
-  <dbport></dbport>
+  <dbport>3306</dbport>
+  <dboption>MYSQL_OPT_CONNECT_TIMEOUT=3;MYSQL_OPT_READ_TIMEOUT=3;MYSQL_OPT_WRITE_TIMEOUT=3</dboption>
 </dao>
 ```
 #### 2.使用[DbEntityGenerator](https://github.com/daonvshu/DbEntityGenerator)生成对应的3个头文件`User.h`,`Position.h`,`Address.h`
@@ -152,5 +150,24 @@ for (auto& r : result) {
 }
 ```
 ```sql
-select a.name,a.age,a.duty,b.star,c.city from User a inner join Position b on b.uid = a.id inner join Address c on c.uid = a.id where a.age > 10
+select a.name,a.age,a.duty,b.star,c.city from ts_user a inner join ts_position b on b.uid = a.id inner join ts_address c on c.uid = a.id where a.age > 10
+```
+- ##### 嵌套查询
+```c++
+auto r = dao::_query<User>().wh(fu.sex == 1).build().mergeQuery(
+  dao::_query<User>().wh(fu.age.between(1525492810, 1525622428)).build()).list();
+```
+```sql
+select *from (select *from sh_user where age between 1525492810 and 1525622428) as res_sh_user where sex=1
+```
+- ##### 函数表达式
+```c++
+bool exist;
+auto r = dao::_query<User>().bind(fu.function("avg(%1)", fu.age).as("age_sum")).build().unique(exist);
+if (exist) {
+  auto rs = r.getExtraData().value("age_sum").toFloat();
+}
+```
+```sql
+select avg(age) as age_sum from sh_user
 ```

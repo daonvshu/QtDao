@@ -3,7 +3,7 @@ Descript:	sql÷¥––¿‡
 Author:		daonvshu
 Version:	2.2
 Date:		2018/12/14
-Last-Md:	2019/01/15
+Last-Md:	2019/01/25
 */
 #pragma once
 
@@ -13,6 +13,8 @@ Last-Md:	2019/01/15
 #include <qfile.h>
 #include <qerrormessage.h>
 #include "dao\DaoEntityField.h"
+
+#define PRINT_SQL_STATEMENT
 
 class dao {
 private:
@@ -37,27 +39,50 @@ private:
 		DaoExecutor() = delete;
 		DaoExecutor &operator=(const DaoExecutor&) = delete;
 
-		DaoExecutor(const QString& sql_head, SqlBuilder<T, DaoExecutor<T>>* builder = nullptr) {
+		DaoExecutor(const QString& sql_head, const QString& tableName, SqlBuilder<T, DaoExecutor<T>>* builder = nullptr) {
 			this->sql_head = sql_head;
+			this->tableName = tableName;
 			this->builder = builder;
 		}
 
 	protected:
-		void bindValue(QSqlQuery& query) {
+		void mergeQueryInfoCopy(DaoExecutor& other) {
+			other.bindTableName();
+			other.concatSqlStatement();
+			other.mergeValueList();
+			tableName = QString("(%1) as res_%2").arg(other.sql_head, other.tableName);
+			valueList.append(other.valueList);
+		}
+
+		/*executor prepare*/
+		void concatSqlStatement() {
 			if (!getWriteEntity().getKvPair().isEmpty()) {
 				sql_head.append(" set ").append(getWriteEntity().getKvPair());
 			}
 			if (!getReadEntity().getKvPair().isEmpty()) {
 				sql_head.append(" where ").append(getReadEntity().getKvPair());
 			}
-			query.prepare(sql_head);
+		}
+
+		void mergeValueList() {
 			valueList.append(getWriteEntity().getVList());
 			valueList.append(getReadEntity().getVList());
+		}
+
+		void bindTableName() {
+			sql_head.append(tableName);
+		}
+
+		void bindValue(QSqlQuery& query) {
+			concatSqlStatement();
+			query.prepare(sql_head);
+			mergeValueList();
 			for (const auto& d : valueList) {
 				query.addBindValue(d, d.type() == QMetaType::QByteArray ? QSql::Binary : QSql::In);
 			}
 		}
 
+		/*sql executor*/
 		template<class F>
 		bool exec(F success) {
 			return exec(false, success);
@@ -76,6 +101,7 @@ private:
 			return exec(true, [] (auto& query) {});
 		}
 
+		/*build information*/
 		DaoEntityField& getWriteEntity() {
 			return builder->writeEntity;
 		}
@@ -88,8 +114,12 @@ private:
 			return builder->bindEntities;
 		}
 
+		QStringList& getExtraDataFields() {
+			return builder->bindExtraName;
+		}
+
 	protected:
-		QString sql_head;
+		QString sql_head, tableName;
 		SqlBuilder<T, DaoExecutor<T>>* builder;
 		QVariantList valueList;
 
@@ -99,6 +129,9 @@ private:
 			auto db = ConnectionPool::openConnection();
 			QSqlQuery query(db);
 			bindValue(query);
+#ifdef PRINT_SQL_STATEMENT
+			qDebug() << sql_head;
+#endif // PRINT_SQL_STATEMENT
 			bool ok = batch ? query.execBatch() : query.exec();
 			if (!ok) {
 				dao::printLog(query.lastError().text(), sql_head);
@@ -117,11 +150,17 @@ private:
 
 		int count() {
 			int count = 0;
+			bindTableName();
 			exec([&] (auto& query) {
 				query.next();
 				count = query.value(0).toInt();
 			});
 			return count;
+		}
+
+		DaoCountExecutor& mergeQuery(DaoExecutor& other) {
+			mergeQueryInfoCopy(other);
+			return *this;
 		}
 	};
 
@@ -135,12 +174,24 @@ private:
 			T entity;
 			exist = false;
 
+			bindTableName();
 			exec([&](auto& query) {
 				if (query.next()) {
 					exist = true;
 					auto record = query.record();
-					for (const auto& p : entity.getFields()) {
-						entity.bindValue(p, record.value(p));
+					if (getBindEntities().isEmpty()) {
+						for (const auto& p : entity.getFields()) {
+							entity.bindValue(p, record.value(p));
+						}
+					} else {
+						for (auto& p : getBindEntities()) {
+							entity.bindValue(p.name(), record.value(p.name()));
+						}
+						if (!getExtraDataFields().isEmpty()) {
+							for (const auto& e : getExtraDataFields()) {
+								entity.putExtraData(e, record.value(e));
+							}
+						}
 					}
 				}
 			});
@@ -152,16 +203,33 @@ private:
 			QList<T> entities;
 			T entity;
 
+			bindTableName();
 			exec([&](auto& query) {
 				while (query.next()) {
 					auto record = query.record();
-					for (const auto& p : entity.getFields()) {
-						entity.bindValue(p, record.value(p));
+					if (getBindEntities().isEmpty()) {
+						for (const auto& p : entity.getFields()) {
+							entity.bindValue(p, record.value(p));
+						}
+					} else {
+						for (auto& p : getBindEntities()) {
+							entity.bindValue(p.name(), record.value(p.name()));
+						}
+						if (!getExtraDataFields().isEmpty()) {
+							for (const auto& e : getExtraDataFields()) {
+								entity.putExtraData(e, record.value(e));
+							}
+						}
 					}
 					entities.append(entity);
 				}
 			});
 			return entities;
+		}
+
+		DaoQueryExecutor& mergeQuery(DaoExecutor& other) {
+			mergeQueryInfoCopy(other);
+			return *this;
 		}
 	};
 
@@ -172,6 +240,7 @@ private:
 
 		bool insert(T& entity) {
 			Q_ASSERT(getReadEntity().getKvPair().isEmpty() && getWriteEntity().getKvPair().isEmpty());
+			bindTableName();
 			sql_head.append(" values(%1)");
 			QVariantList entityData = entity.readEntity();
 			QString prepareStr = QString("?,").repeated(entityData.size());
@@ -192,6 +261,7 @@ private:
 				return true;
 			}
 			Q_ASSERT(getReadEntity().getKvPair().isEmpty() && getWriteEntity().getKvPair().isEmpty());
+			bindTableName();
 			sql_head.append(" values");
 			int fieldSize = static_cast<T*>(0)->fieldSize();
 			QString prepareStr = QString("?,").repeated(fieldSize);
@@ -211,6 +281,7 @@ private:
 				return true;
 			}
 			Q_ASSERT(getReadEntity().getKvPair().isEmpty() && getWriteEntity().getKvPair().isEmpty());
+			bindTableName();
 			sql_head.append(" values(%1)");
 			int fieldSize = static_cast<T*>(0)->fieldSize();
 			QString prepareStr = QString("?,").repeated(fieldSize);
@@ -235,6 +306,11 @@ private:
 
 			return execBatch();
 		}
+
+		DaoInsertExecutor& mergeQuery(DaoExecutor& other) {
+			mergeQueryInfoCopy(other);
+			return *this;
+		}
 	};
 
 	template<class T>
@@ -245,17 +321,20 @@ private:
 		/*used by 'set' and 'where' conditions to update table */
 		bool update() {
 			Q_ASSERT(!getWriteEntity().getKvPair().isEmpty() && !getReadEntity().getKvPair().isEmpty());
+			bindTableName();
 			return exec();
 		}
 		/*used by 'set' and 'where' conditions to update table, value list must be QVariantList */
 		bool updateBatch() {
 			Q_ASSERT(!getWriteEntity().getKvPair().isEmpty() && !getReadEntity().getKvPair().isEmpty());
+			bindTableName();
 			return execBatch();
 		}
 		/*used by 'where' conditions to update entity to table*/
 		bool update(T& entity) {
 			Q_ASSERT(getWriteEntity().getKvPair().isEmpty() && !getReadEntity().getKvPair().isEmpty());
 
+			bindTableName();
 			QVariantList entityData = entity.readEntity();
 			QStringList fields = static_cast<T*>(0)->getFields();
 			QString field_id = static_cast<T*>(0)->getIdField();
@@ -280,6 +359,7 @@ private:
 			Q_ASSERT(!getBindEntities().isEmpty());
 			Q_ASSERT(getWriteEntity().getKvPair().isEmpty() && getReadEntity().getKvPair().isEmpty());
 
+			bindTableName();
 			QVariantList entityData = entity.readEntity();
 			QStringList fields = static_cast<T*>(0)->getFields();
 			QString setPa = " set ", whPa = " where ";
@@ -318,6 +398,7 @@ private:
 			if (entities.isEmpty())
 				return true;
 
+			bindTableName();
 			QStringList fields = static_cast<T*>(0)->getFields();
 			int fieldSize = fields.size();
 
@@ -383,6 +464,11 @@ private:
 
 			return execBatch();
 		}
+
+		DaoUpdateExecutor& mergeQuery(DaoExecutor& other) {
+			mergeQueryInfoCopy(other);
+			return *this;
+		}
 	};
 
 	template<class T>
@@ -391,11 +477,18 @@ private:
 		using DaoExecutor::DaoExecutor;
 
 		bool deleteBy() {
+			bindTableName();
 			return exec();
 		}
 
 		bool deleteBatch() {
+			bindTableName();
 			return execBatch();
+		}
+
+		DaoDeleteExecutor& mergeQuery(DaoExecutor& other) {
+			mergeQueryInfoCopy(other);
+			return *this;
 		}
 	};
 
@@ -405,6 +498,7 @@ private:
 		OperateType operateType;
 		DaoEntityField writeEntity, readEntity;
 		QList<DaoEntityField> bindEntities;
+		QStringList bindExtraName;
 
 		template<typename T>
 		friend DaoEntityField& DaoExecutor<T>::getWriteEntity();
@@ -415,10 +509,12 @@ private:
 		template<typename T>
 		friend QList<DaoEntityField>& DaoExecutor<T>::getBindEntities();
 
+		template<typename T>
+		friend QStringList& DaoExecutor<T>::getExtraDataFields();
+
 	public:
 		SqlBuilder(OperateType type) : operateType(type) {}
 
-		/*bind fields used by update entity*/
 		SqlBuilder& bind() {
 			return *this;
 		}
@@ -432,7 +528,19 @@ private:
 		K build() {
 			QString sql;
 			if (operateType == OPERATE_QUERY) {
-				sql = "select *from ";
+				if (bindEntities.isEmpty()) {
+					sql = "select *from ";
+				} else {
+					QString bindEntitiesStr;
+					for (auto& bindEntity : bindEntities) {
+						bindEntitiesStr.append(bindEntity.nameExtra()).append(',');
+						if (!bindEntity.asIsName()) {
+							bindExtraName.append(bindEntity.asString());
+						}
+					}
+					bindEntitiesStr = bindEntitiesStr.left(bindEntitiesStr.length() - 1);
+					sql = "select " + bindEntitiesStr + " from ";
+				}
 			} else if (operateType == OPERATE_INSERT) {
 				sql = "insert into ";
 			} else if (operateType == OPERATE_INSERT_OR_REPLACE) {
@@ -444,8 +552,7 @@ private:
 			} else if (operateType == OPERATE_COUNT) {
 				sql = "select count(*) from ";
 			}
-			sql.append(static_cast<E*>(0)->getTableName());
-			return K(sql, (SqlBuilder<E, DaoExecutor<E>>*)(this));
+			return K(sql, static_cast<E*>(0)->getTableName(), (SqlBuilder<E, DaoExecutor<E>>*)(this));
 		}
 
 		SqlBuilder& wh(DaoEntityField& field) {

@@ -2,7 +2,7 @@
 Descript:	数据库创建类，根据不同的版本号对数据库进行升级
 Author:		daonvshu
 Date:		2018/12/14
-Last-Md:	2019/01/22
+Last-Md:	2019/01/23
 */
 #pragma once
 
@@ -155,7 +155,7 @@ private:
 	static void execSql(const QString& sql, F1 succ, F2 fail) {
 		auto db = ConnectionPool::openConnection();
 		QSqlQuery query(db);
-		if (!query.exec(sql)) {
+		if (query.exec(sql)) {
 			succ(query);
 		} else {
 			fail(query.lastError());
@@ -174,14 +174,16 @@ public:
 		auto entity = static_cast<H*>(0);
 
 		bool tbExist = DbCreatorHelper::checkTableExist(entity->getTableName());
+		bool tbRenamed = false;
 		QString tmpTbName = entity->getTableName().prepend("tmp_");
 		if (!DbCreatorHelper::checkDbVersion() && tbExist) {//表存在且版本不同进行数据库升级
 			if (!DbCreatorHelper::renameTable(entity->getTableName(), tmpTbName)) {
 				success = false;
 				return;
 			}
+			tbRenamed = true;
 		}
-		if (!tbExist) {
+		if (!tbExist || tbRenamed) {
 			success = success && DbCreatorHelper::createTable(entity);
 		}
 		if (DbCreatorHelper::checkTableExist(tmpTbName)) {//转移数据到新表中

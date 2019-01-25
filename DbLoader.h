@@ -175,7 +175,7 @@ public:
 			} else if (c.tagName() == "dbport") {
 				sqlCfg.dbPort = c.text().toInt();
 			} else if (c.tagName() == "dboption") {
-				sqlCfg.dbOption = c.text().toInt();
+				sqlCfg.dbOption = c.text();
 			}
 		}
 		if (sqlCfg.dbHost.isEmpty()) {
