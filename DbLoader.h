@@ -141,8 +141,10 @@ public:
 	static void loadConfigure(const QString& fileName) {
 		QDomDocument doc;
 		QFile file(fileName);
-		Q_ASSERT(file.open(QIODevice::ReadOnly));
-		Q_ASSERT(doc.setContent(&file));
+		auto s = file.open(QIODevice::ReadOnly);
+		Q_ASSERT(s);
+		s = doc.setContent(&file);
+		Q_ASSERT(s);
 		file.close();
 		auto root = doc.documentElement();
 		
