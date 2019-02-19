@@ -587,7 +587,7 @@ private:
 				this->executor = executor;
 			}
 
-			void bind() {}
+			void bind() { delete executor; }
 
 			template<typename K, typename ...T>
 			void bind(K& entity, T&... entities) {
@@ -610,6 +610,13 @@ private:
 			this->valueList = valueList;
 		}
 
+		DaoJoinExecutor(const DaoJoinExecutor& executor) {
+			this->joinParameters = executor.joinParameters;
+			this->sql = executor.sql;
+			this->tbOrderList = executor.tbOrderList;
+			this->valueList = executor.valueList;
+		}
+
 		QList<DaoJoinExecutorItem> list() {
 			QList<DaoJoinExecutorItem> dataItems;
 			auto db = ConnectionPool::openConnection();
@@ -627,7 +634,7 @@ private:
 					for (int i = 0; i < record.count(); i++) {
 						data.append(record.value(i));
 					}
-					dataItems.append(DaoJoinExecutorItem(data, this));
+					dataItems.append(DaoJoinExecutorItem(data, new DaoJoinExecutor(*this)));
 				}
 			}
 			ConnectionPool::closeConnection(db);
