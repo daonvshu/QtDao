@@ -15,8 +15,14 @@ Last-Md:	2019/01/23
 class DbCreatorHelper {
 public:
 	static bool testConnect() {
-		if (DbLoader::isSqlite())
+		if (DbLoader::isSqlite()) {
+			auto appLocal = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+			QDir dir;
+			if (!dir.exists(appLocal)) {
+				dir.mkdir(appLocal);
+			}
 			return true;
+		}
 		if (DbLoader::isMysql()) {
 			auto db = ConnectionPool::prepareConnect("testMysql", "mysql");
 			if (!db.open()) {
