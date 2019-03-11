@@ -60,7 +60,10 @@ private:
 				sql_head.append(" set ").append(getWriteEntity().getKvPair());
 			}
 			if (!getReadEntity().getKvPair().isEmpty()) {
-				sql_head.append(" where ").append(getReadEntity().getKvPair());
+				if (!getReadEntity().isOnlyFunction()) {
+					sql_head.append(" where ");
+				}
+				sql_head.append(getReadEntity().getKvPair());
 			}
 		}
 

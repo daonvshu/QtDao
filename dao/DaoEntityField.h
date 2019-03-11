@@ -75,6 +75,10 @@ public:
 		return asStr;
 	}
 
+	bool isOnlyFunction() {
+		return onlyFunction;
+	}
+
 	//friend DaoEntityField DaoEntityFunction::as(DaoEntityField& entityField);
 	friend class DaoEntityFunction;
 
@@ -83,6 +87,7 @@ private:
 	QString kvPairStr;//键值对字符串
 	QVariantList vlist;//值列表
 	QString functionStr, asStr;//带有函数表达式的字段
+	bool onlyFunction = false;
 
 private:
 	DaoEntityField sv(const char* op, const QVariant& v) {
@@ -293,6 +298,7 @@ public:
 		field.asStr = name.isEmpty() ? entityField.n : name;
 		field.n = entityField.n;
 		field.joinPrefix = entityField.joinPrefix;
+		field.onlyFunction = true;
 		return field;
 	}
 
