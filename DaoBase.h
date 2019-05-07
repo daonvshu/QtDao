@@ -7,12 +7,20 @@ Last-Md:	2019/01/25
 */
 #pragma once
 
-#include <QObject>
 #include "ConnectionPool.h"
 #include <qdebug.h>
 #include <qfile.h>
 #include <qerrormessage.h>
 #include "dao\DaoEntityField.h"
+#include <qobject.h>
+#include <qdom.h>
+#include <qsettings.h>
+#include <qstandardpaths.h>
+#include <qfile.h>
+#include <qapplication.h>
+
+#define DB_SETTING_HOST		"host"
+#define DB_SETTING_VERSION	"version"
 
 #define PRINT_SQL_STATEMENT
 
@@ -60,10 +68,10 @@ private:
 				sql_head.append(" set ").append(getWriteEntity().getKvPair());
 			}
 			if (!getReadEntity().getKvPair().isEmpty()) {
-				if (!getReadEntity().isOnlyFunction()) {
-					sql_head.append(" where ");
-				}
-				sql_head.append(getReadEntity().getKvPair());
+				sql_head.append(" where ").append(getReadEntity().getKvPair());
+			}
+			if (!getExtraEntity().getKvPair().isEmpty()) {
+				sql_head.append(getExtraEntity().getKvPair());
 			}
 		}
 
@@ -92,7 +100,7 @@ private:
 		}
 
 		bool exec() {
-			return exec(false, [] (auto& query) {});
+			return exec(false, [](auto& query) {});
 		}
 
 		template<class F>
@@ -101,7 +109,7 @@ private:
 		}
 
 		bool execBatch() {
-			return exec(true, [] (auto& query) {});
+			return exec(true, [](auto& query) {});
 		}
 
 		/*build information*/
@@ -111,6 +119,10 @@ private:
 
 		DaoEntityField& getReadEntity() {
 			return builder->readEntity;
+		}
+
+		DaoEntityField& getExtraEntity() {
+			return builder->extraEntity;
 		}
 
 		QList<DaoEntityField>& getBindEntities() {
@@ -498,8 +510,9 @@ private:
 	template<typename E, typename K>
 	class SqlBuilder {
 	private:
+		//operate (bindExtraName|*) (into|from) table (set writeEntity) (where readEntity extraEntity)
 		OperateType operateType;
-		DaoEntityField writeEntity, readEntity;
+		DaoEntityField writeEntity, readEntity, extraEntity;
 		QList<DaoEntityField> bindEntities;
 		QStringList bindExtraName;
 
@@ -508,6 +521,9 @@ private:
 
 		template<typename T>
 		friend DaoEntityField& DaoExecutor<T>::getReadEntity();
+
+		template<typename T>
+		friend DaoEntityField& DaoExecutor<T>::getExtraEntity();
 
 		template<typename T>
 		friend QList<DaoEntityField>& DaoExecutor<T>::getBindEntities();
@@ -565,6 +581,11 @@ private:
 
 		SqlBuilder& set(DaoEntityField& field) {
 			this->writeEntity = field;
+			return *this;
+		}
+
+		SqlBuilder& extra(DaoEntityField& field) {
+			this->extraEntity = field;
 			return *this;
 		}
 	};
@@ -868,6 +889,394 @@ public:
 		break;
 		default:
 			break;
+		}
+	}
+};
+
+class DbLoader {
+private:
+	class SqlClient {
+	public:
+		virtual QString findTableStatement(const QString& tbName) = 0;
+
+		template<typename T>
+		QString createTableStatement(T& entity) {
+			QString sql = "create table %1(%2)";
+			QString fieldsStr;
+			auto fields = entity->getFieldsType();
+			for (const auto& f : fields) {
+				fieldsStr.append(f);
+				fieldsStr.append(",");
+			}
+			fieldsStr = fieldsStr.left(fieldsStr.length() - 1);
+			sql = sql.arg(entity->getTableName(), fieldsStr);
+			if (DbLoader::isMysql()) {
+				if (!entity->engine().isEmpty()) {
+					sql.append(" engine=").append(entity->engine());
+				}
+				sql.append(" default charset=utf8");
+			}
+			return sql;
+		}
+
+		template<typename T>
+		QString createIndexStatement(T& entity) {
+			QStringList indexes = entity->getIndexFields();
+			QString indexStr, indexName = "idx_";
+			for (const auto& f : indexes) {
+				indexStr.append(f).append(",");
+				indexName.append(f).append("_");
+			}
+			indexStr = indexStr.left(indexStr.length() - 1);
+			indexName = indexName.left(indexName.length() - 1);
+			return createIndexStatement(entity->getTableName(), indexName, indexStr);
+		}
+
+		virtual QString renameTableStatement(const QString& oldTb, const QString& newTb) = 0;
+
+	protected:
+		virtual QString createIndexStatement(const QString& tbName, const QString& indexName, const QString& indexList) = 0;
+	};
+
+	class SqliteClient : public SqlClient {
+	public:
+		QString findTableStatement(const QString& tbName) override {
+			return QString("select *from sqlite_master where type='table' and name = '%1'").arg(tbName);
+		}
+
+		QString renameTableStatement(const QString& oldTb, const QString& newTb) {
+			return QString("alter table %1 rename to %2").arg(oldTb, newTb);
+		}
+
+	protected:
+		QString createIndexStatement(const QString& tbName, const QString& indexName, const QString& indexList) {
+			return QString("create unique index if not exists %1 on %2 (%3)").arg(indexName, tbName, indexList);
+		}
+	};
+
+	class MysqlClient : public SqlClient {
+	public:
+		QString findTableStatement(const QString& tbName) override {
+			return QString("select table_name from information_schema.TABLES where table_name ='%1' and table_schema = '%2'").arg(tbName, DbLoader::getConfigure().dbName);
+		}
+
+		QString renameTableStatement(const QString& oldTb, const QString& newTb) {
+			return QString("alter table %1 rename to %2").arg(oldTb, newTb);
+		}
+
+	protected:
+		QString createIndexStatement(const QString& tbName, const QString& indexName, const QString& indexList) {
+			return QString("create unique index %1 on %2 (%3)").arg(indexName, tbName, indexList);
+		}
+	};
+
+	class SqlServerClient : public SqlClient {
+	public:
+		QString findTableStatement(const QString& tbName) override {
+			return QString("select * from sys.tables where name = '%1' and type = 'U'").arg(tbName);
+		}
+
+		QString renameTableStatement(const QString& oldTb, const QString& newTb) {
+			return QString("exec sp_rename '%1','%2'").arg(oldTb, newTb);
+		}
+
+	protected:
+		QString createIndexStatement(const QString& tbName, const QString& indexName, const QString& indexList) {
+			return QString("create nonclustered index %1 on %2 (%3) with (ignore_dup_key=on,drop_existing=on)").arg(indexName, tbName, indexList);
+		}
+	};
+
+private:
+	struct SqlCfg {
+		int version;
+		QString dbType;
+		QString dbName;
+		QString dbHost;
+		QString dbUName;
+		QString dbPcc;
+		int dbPort;
+		QString dbOption;
+	};
+
+	static SqlCfg sqlCfg;
+	static SqlClient* sqlClient;
+
+public:
+	static bool isSqlite() { return sqlCfg.dbType == "QSQLITE"; }
+	static bool isMysql() { return sqlCfg.dbType == "QMYSQL"; }
+	static bool isSqlServer() { return sqlCfg.dbType == "QODBC"; }
+
+	static const SqlCfg& getConfigure() { return sqlCfg; }
+	static SqlClient* getClient() { return sqlClient; }
+
+	static QVariant readDbSetting(const QString& key, const QString& default) {
+		QString iniFilePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/db.ini";
+		QSettings settings(iniFilePath, QSettings::IniFormat);
+		return settings.value("Db/" + key, default);
+	}
+
+	static void writeDbSetting(const QString& key, const QVariant& value) {
+		QString iniFilePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/db.ini";
+		QSettings settings(iniFilePath, QSettings::IniFormat);
+		settings.setValue("Db/" + key, value);
+	}
+
+public:
+	static void loadConfigure(const QString& fileName) {
+		QDomDocument doc;
+		QFile file(fileName);
+		auto s = file.open(QIODevice::ReadOnly);
+		Q_ASSERT(s);
+		s = doc.setContent(&file);
+		Q_ASSERT(s);
+		file.close();
+		auto root = doc.documentElement();
+
+		auto client = root.attribute("type");
+		if (client == "mysql") {
+			sqlCfg.dbType = "QMYSQL";
+			sqlClient = new MysqlClient;
+		}
+		else if (client == "sqlite") {
+			sqlCfg.dbType = "QSQLITE";
+			sqlClient = new SqliteClient;
+		}
+		else if (client == "sqlserver") {
+			sqlCfg.dbType = "QODBC";
+			sqlClient = new SqlServerClient;
+		}
+
+		sqlCfg.version = root.attribute("version").toInt();
+		sqlCfg.dbName = root.attribute("dbname");
+
+		auto options = root.childNodes();
+		for (int i = 0; i < options.count(); i++) {
+			auto c = options.at(i).toElement();
+			if (c.tagName() == "dbname") {
+				sqlCfg.dbName = c.text();
+			}
+			else if (c.tagName() == "dbhost") {
+				sqlCfg.dbHost = c.text();
+			}
+			else if (c.tagName() == "dbuname") {
+				sqlCfg.dbUName = c.text();
+			}
+			else if (c.tagName() == "dbpcc") {
+				sqlCfg.dbPcc = c.text();
+			}
+			else if (c.tagName() == "dbport") {
+				sqlCfg.dbPort = c.text().toInt();
+			}
+			else if (c.tagName() == "dboption") {
+				sqlCfg.dbOption = c.text();
+			}
+		}
+		if (sqlCfg.dbHost.isEmpty()) {
+			sqlCfg.dbHost = readDbSetting(DB_SETTING_HOST, "localhost").toString();
+		}
+	}
+	static void loadHost(const QString& host) {
+		sqlCfg.dbHost = host;
+	}
+};
+
+class DbCreatorHelper {
+public:
+	static bool testConnect() {
+		if (DbLoader::isSqlite()) {
+			auto appLocal = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+			QDir dir;
+			if (!dir.exists(appLocal)) {
+				dir.mkdir(appLocal);
+			}
+			return true;
+		}
+		if (DbLoader::isMysql()) {
+			auto db = ConnectionPool::prepareConnect("testMysql", "mysql");
+			if (!db.open()) {
+				qDebug() << "connect mysql fail! err = " << db.lastError();
+				return false;
+			}
+			auto db2 = ConnectionPool::prepareConnect("testDb", DbLoader::getConfigure().dbName);
+			if (!db2.open()) {
+				//create target database
+				QSqlQuery query(db);
+				QString sql = "create database if not exists %1 default character set utf8 COLLATE utf8_general_ci";
+				sql = sql.arg(DbLoader::getConfigure().dbName);
+				if (!query.exec(sql)) {
+					qDebug() << "create target database fail! err = " << db.lastError();
+					db.close();
+					return false;
+				}
+			}
+			db.close();
+			db2.close();
+			return true;
+		}
+		else if (DbLoader::isSqlServer()) {
+			auto db = ConnectionPool::prepareConnect("testSqlServer", DbLoader::getConfigure().dbName);
+			if (!db.open()) {
+				qDebug() << "connect sqlserver fail! err = " << db.lastError();
+				return false;
+			}
+			db.close();
+			return true;
+		}
+		return false;
+	}
+
+	static bool checkDbVersion() {
+		return DbLoader::readDbSetting(DB_SETTING_VERSION, "-1").toInt() == DbLoader::getConfigure().version;
+	}
+
+	static void resetDbVersion() {
+		DbLoader::writeDbSetting(DB_SETTING_VERSION, DbLoader::getConfigure().version);
+	}
+
+	static bool checkTableExist(const QString& tbName) {
+		bool exist = false;
+		execSql(DbLoader::getClient()->findTableStatement(tbName), [&](auto& query) {
+			if (query.next()) {
+				exist = true;
+			}
+			}, [](auto& lastErr) {
+				qDebug() << "check table exist fail, err = " << lastErr;
+			});
+		return exist;
+	}
+
+	template<typename T>
+	static bool createTable(T entity) {
+		bool success = true;
+		execSql(DbLoader::getClient()->createTableStatement(entity), [&](auto& lastErr) {
+			qDebug() << "create table fail, err = " << lastErr;
+			success = false;
+			});
+
+		if (success) {
+			if (!entity->getIndexFields().isEmpty()) {
+				execSql(DbLoader::getClient()->createIndexStatement(entity), [&](auto& lastErr) {
+					qDebug() << "create index fail, err = " << lastErr;
+					if (lastErr.nativeErrorCode() != "1061") {
+						success = false;
+					}
+					});
+			}
+		}
+		return success;
+	}
+
+	static bool renameTable(const QString& oldTb, const QString& newTb) {
+		bool success = true;
+		execSql(DbLoader::getClient()->renameTableStatement(oldTb, newTb), [&](auto& lastErr) {
+			qDebug() << "rename table fail, err = " << lastErr;
+			success = false;
+			});
+		return success;
+	}
+
+	template<typename T>
+	static bool restoreData2NewTable(const QString& tmpTb, T entity) {
+		bool success = true;
+		execSql("select *from " + tmpTb, [&](auto& query) {
+			auto record = query.record();
+			QStringList newFields = entity->getFields();
+			QString oldFields;
+			for (int i = 0; i < record.count(); i++) {
+				if (newFields.contains(record.fieldName(i))) {
+					oldFields.append(record.fieldName(i)).append(",");
+				}
+			}
+			oldFields = oldFields.left(oldFields.length() - 1);
+
+			QString sql = "insert into %1(%2) select %2 from %3";
+			sql = sql.arg(entity->getTableName(), oldFields, tmpTb);
+			if (!query.exec(sql)) {
+				success = false;
+				qDebug() << "restore tmp data fail!";
+			}
+			}, [](auto& lastErr) {});
+
+		return success;
+	}
+
+	static bool dropTable(const QString& tb) {
+		QString sql = "drop table " + tb;
+		bool success = true;
+		execSql(sql, [&](auto& lastErr) {
+			qDebug() << "drop table fail, err = " << lastErr;
+			success = false;
+			});
+		return success;
+	}
+
+	static bool truncateTable(const QString& tb) {
+		QString sql = "truncate table " + tb;
+		bool success = true;
+		execSql(sql, [&](auto& lastErr) {
+			qDebug() << "truncate table fail, err = " << lastErr;
+			success = false;
+			});
+		return success;
+	}
+
+private:
+	template<typename F>
+	static void execSql(const QString& sql, F fail) {
+		execSql(sql, [](auto& query) {}, fail);
+	}
+
+	template<typename F1, typename F2>
+	static void execSql(const QString& sql, F1 succ, F2 fail) {
+		auto db = ConnectionPool::openConnection();
+		QSqlQuery query(db);
+		if (query.exec(sql)) {
+			succ(query);
+		}
+		else {
+			fail(query.lastError());
+		}
+		ConnectionPool::closeConnection(db);
+	}
+};
+
+template <typename... T> struct DbCreator;
+template <typename H, typename... T>
+struct DbCreator<H, T...> {
+public:
+	static void init(bool& success) {
+		if (!success)
+			return;
+		auto entity = static_cast<H*>(0);
+
+		bool tbExist = DbCreatorHelper::checkTableExist(entity->getTableName());
+		bool tbRenamed = false;
+		QString tmpTbName = entity->getTableName().prepend("tmp_");
+		if (!DbCreatorHelper::checkDbVersion() && tbExist) {//表存在且版本不同进行数据库升级
+			if (!DbCreatorHelper::renameTable(entity->getTableName(), tmpTbName)) {
+				success = false;
+				return;
+			}
+			tbRenamed = true;
+		}
+		if (!tbExist || tbRenamed) {
+			success = success && DbCreatorHelper::createTable(entity);
+		}
+		if (DbCreatorHelper::checkTableExist(tmpTbName)) {//转移数据到新表中
+			if (!DbCreatorHelper::restoreData2NewTable(tmpTbName, entity)) {
+				success = false;
+				return;
+			}
+			DbCreatorHelper::dropTable(tmpTbName);//删除临时表
+		}
+
+		DbCreator<T...>::init(success);
+	}
+};
+template<> struct DbCreator<> {
+	static void init(bool& success) {
+		if (success) {
+			DbCreatorHelper::resetDbVersion();
 		}
 	}
 };

@@ -14,9 +14,7 @@ DaoEntityField DaoEntityField::operator&&(const DaoEntityField& f) {
 	if (f.kvPairStr.isEmpty()) {
 		return *this;
 	}
-	if (kvPairStr.isEmpty()) {
-		onlyFunction = f.onlyFunction;
-	} else {
+	if (!kvPairStr.isEmpty()) {
 		kvPairStr.append(" and").append(' ');
 	}
 	kvPairStr.append(f.kvPairStr);
@@ -25,10 +23,10 @@ DaoEntityField DaoEntityField::operator&&(const DaoEntityField& f) {
 }
 
 DaoEntityField DaoEntityField::operator&&(const DaoEntityFunction& f) {
-	if (kvPairStr.isEmpty()) {
-		this->onlyFunction = true;
+	if (!kvPairStr.isEmpty()) {
+		kvPairStr.append(' ');
 	}
-	kvPairStr.append(' ').append(f.functionStr);
+	kvPairStr.append(f.functionStr);
 	return *this;
 }
 
@@ -36,9 +34,7 @@ DaoEntityField DaoEntityField::operator||(const DaoEntityField& f) {
 	if (f.kvPairStr.isEmpty()) {
 		return *this;
 	}
-	if (kvPairStr.isEmpty()) {
-		onlyFunction = f.onlyFunction;
-	} else {
+	if (!kvPairStr.isEmpty()) {
 		kvPairStr.append(" or").append(' ');
 	}
 	kvPairStr.append(f.kvPairStr);
@@ -47,10 +43,10 @@ DaoEntityField DaoEntityField::operator||(const DaoEntityField& f) {
 }
 
 DaoEntityField DaoEntityField::operator||(const DaoEntityFunction& f) {
-	if (kvPairStr.isEmpty()) {
-		this->onlyFunction = true;
+	if (!kvPairStr.isEmpty()) {
+		kvPairStr.append(' ');
 	}
-	kvPairStr.append(' ').append(f.functionStr);
+	kvPairStr.append(f.functionStr);
 	return *this;
 }
 

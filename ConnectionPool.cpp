@@ -1,8 +1,8 @@
 #include "ConnectionPool.h"
 #include <qstandardpaths.h>
 #include <qthread.h>
-#include "DbLoader.h"
 #include <qdebug.h>
+#include "DaoBase.h"
 //http://blog.csdn.net/qq_28796345/article/details/51586330
 QMutex ConnectionPool::mutex;
 QWaitCondition ConnectionPool::waitConnection;

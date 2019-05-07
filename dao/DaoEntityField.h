@@ -75,10 +75,6 @@ public:
 		return asStr;
 	}
 
-	bool isOnlyFunction() {
-		return onlyFunction;
-	}
-
 	//friend DaoEntityField DaoEntityFunction::as(DaoEntityField& entityField);
 	friend class DaoEntityFunction;
 
@@ -87,24 +83,23 @@ private:
 	QString kvPairStr;//键值对字符串
 	QVariantList vlist;//值列表
 	QString functionStr, asStr;//带有函数表达式的字段
-	bool onlyFunction = false;
 
 private:
-	DaoEntityField sv(const char* op, const QVariant& v) {
+	DaoEntityField eq_op(const char* op, const QVariant& v) {
 		clear();
 		kvPairStr.append(nameExtraWithoutAs()).append(op).append('?');
 		vlist.append(v);
 		return *this;
 	}
 
-	DaoEntityField sv2(const char* op, const QVariant& v) {
+	DaoEntityField eq(const char* op, const QVariant& v) {
 		clear();
 		kvPairStr.append(nameExtraWithoutAs()).append('=').append(name()).append(op).append('?');
 		vlist.append(v);
 		return *this;
 	}
 
-	DaoEntityField sv(const char* op, DaoEntityField& f) {
+	DaoEntityField eq(const char* op, DaoEntityField& f) {
 		clear();
 		kvPairStr.append(nameExtraWithoutAs()).append(op).append(f.nameExtra());
 		return *this;
@@ -115,93 +110,41 @@ private:
 		vlist.clear();
 	}
 
+#define OVERRIDE_FUN_VARIANT(operatorName, target)	DaoEntityField operator##operatorName(const QVariant& v) {return eq_op(target, v);}
+#define OVERRIDE_FUN_FIELD(operatorName, target)	DaoEntityField operator##operatorName(DaoEntityField& f) {return eq(target, f);}
+
+#define OVERRIDE_FUN_VARIANT_N(operatorName)		OVERRIDE_FUN_VARIANT(operatorName, #operatorName)
+#define OVERRIDE_FUN_FIELD_N(operatorName)			OVERRIDE_FUN_FIELD(operatorName, #operatorName)
+
+#define OVERRIDE_OPERATOR(operatorName, target)		OVERRIDE_FUN_VARIANT(operatorName, target) OVERRIDE_FUN_FIELD(operatorName, target)
+#define OVERRIDE_OPERATOR_N(operatorName)			OVERRIDE_FUN_VARIANT_N(operatorName) OVERRIDE_FUN_FIELD_N(operatorName)
+
 public:
-	/*equal "="*/
-	DaoEntityField operator==(const QVariant& v) {
-		return sv("=", v);
-	}
-	/*like "field1=field2"*/
-	DaoEntityField operator==(DaoEntityField& f) {
-		return sv("=", f);
-	}
+	OVERRIDE_OPERATOR(== , "=");		/*equal "=" or "field1=field2"*/
+	OVERRIDE_OPERATOR_N(!= );			/*no equal "!=" or "field1!=field2"*/
+	OVERRIDE_OPERATOR_N(> );			/*greater than ">" or  "field1>field2"*/
+	OVERRIDE_OPERATOR_N(>= );			/*greater than ">=" or  "field1>=field2"*/
+	OVERRIDE_OPERATOR_N(< );			/*greater than "<" or  "field1<field2"*/
+	OVERRIDE_OPERATOR_N(<= );			/*greater than "<=" or  "field1<=field2"*/
 
-	/*no equal "!="*/
-	DaoEntityField operator!=(const QVariant& v) {
-		return sv("!=", v);
-	}
-	/*like "field1!=field2"*/
-	DaoEntityField operator!=(DaoEntityField& f) {
-		return sv("!=", f);
-	}
-
-	/*greater than ">"*/
-	DaoEntityField operator>(const QVariant& v) {
-		return sv(">", v);
-	}
-	/*like "field1>field2"*/
-	DaoEntityField operator>(DaoEntityField& f) {
-		return sv(">", f);
-	}
-
-	/*greater than and equal ">=" */
-	DaoEntityField operator>=(const QVariant& v) {
-		return sv(">=", v);
-	}
-	/*like "field1>=field2"*/
-	DaoEntityField operator>=(DaoEntityField& f) {
-		return sv(">=", f);
-	}
-
-	/*less than "<"*/
-	DaoEntityField operator<(const QVariant& v) {
-		return sv("<", v);
-	}
-	/*like "field1<field2"*/
-	DaoEntityField operator<(DaoEntityField& f) {
-		return sv("<", f);
-	}
-
-	/*less than and equal "<="*/
-	DaoEntityField operator<=(const QVariant& v) {
-		return sv("<=", v);
-	}
-	/*like "field1<=field2"*/
-	DaoEntityField operator<=(DaoEntityField& f) {
-		return sv("<=", f);
-	}
+	OVERRIDE_FUN_VARIANT_N(%);			/*mod "a=a%value*/
+	OVERRIDE_FUN_VARIANT_N(+);			/*plus value "a=a+value"*/
+	OVERRIDE_FUN_VARIANT_N(-);			/*minus value "a=a-value"*/
+	OVERRIDE_FUN_VARIANT_N(*);			/*repeat count "a=a*count"*/
+	OVERRIDE_FUN_VARIANT_N(/ );			/*divide count "a=a/count"*/
 
 	/*like "like"*/
 	DaoEntityField like(const QVariant& v) {
-		return sv("like", v);
+		return eq_op("like", v);
 	}
 
-	/*mod "a=a%value*/
-	DaoEntityField operator%(const QVariant& v) {
-		return sv2("%", v);
-	}
-	/*plus value "a=a+value"*/
-	DaoEntityField operator+(const QVariant& v) {
-		return sv2("+", v);
-	}
-	/*minus value "a=a-value"*/
-	DaoEntityField operator-(const QVariant& v) {
-		return sv2("-", v);
-	}
-	/*repeat count "a=a*count"*/
-	DaoEntityField operator*(const QVariant& v) {
-		return sv2("*", v);
-	}
-	/*divide count "a=a/count"*/
-	DaoEntityField operator/(const QVariant& v) {
-		return sv2("/", v);
-	}
 	/*plus one "a=a+1"*/
 	DaoEntityField operator++(int) {
-		return sv2("+", 1);
+		return eq("+", 1);
 	}
 	/*minus one "a=a-1"*/
 	DaoEntityField operator--(int) {
-		return sv2("-", 1);
+		return eq("-", 1);
 	}
 
 	/*get field name*/
@@ -298,7 +241,6 @@ public:
 		field.asStr = name.isEmpty() ? entityField.n : name;
 		field.n = entityField.n;
 		field.joinPrefix = entityField.joinPrefix;
-		field.onlyFunction = true;
 		return field;
 	}
 
