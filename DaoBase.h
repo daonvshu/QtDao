@@ -402,7 +402,7 @@ private:
 				}
 			}
 			Q_ASSERT(findId);//查询表没有id字段
-			sql_head.append(setPa.left(setPa.length() - 2) + whPa.left(whPa.length() - 5));
+			sql_head.append(setPa.left(setPa.length() - 2) + whPa.left(whPa.length() - 6));
 			valueList.append(cndVList);
 			return exec();
 		}
