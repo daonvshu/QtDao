@@ -43,12 +43,12 @@
 ```
 #### 2.使用[DbEntityGenerator](https://github.com/daonvshu/DbEntityGenerator)生成对应的3个头文件`User.h`,`Position.h`,`Address.h`
 
-#### 3.使用DBCreator在main中进行初始化
+#### 3.在main中进行初始化
 ```c++
 ConnectionPool::loadConfigure(":/xxx/sql/dao_cfg.xml");
 bool dbInitSucc = DbCreatorHelper::testConnect();
 if (dbInitSucc) {
-   DbCreator<User, Position, Address>::init(dbInitSucc);
+   DbTablesInit(dbInitSucc);
 }
 
 if (!dbInitSucc) {
@@ -71,10 +71,10 @@ auto r = dao::_query<User>().wh(fu.name == "Alice" and fu.age >= 10).build().uni
 select *from ts_user where name = 'Alice' and age >= 10
 ```
 ```c++
-auto b = dao::_query<User>().wh(_B(fu.name.like("Alice%") and fu.age >= 10) or fu.sex == 1).build().list();
+auto b = dao::_query<User>().wh(_B(fu.name.like("Alice%") and fu.age >= 10) or fu.sex == 1).extra(fu.age).build().list();
 ```
 ```sql
-select *from ts_user where (name like 'Alice%' and age >= 10) or sex = 1
+select *from ts_user where (name like 'Alice%' and age >= 10) or sex = 1 order by age
 ```
 ```c++
 int count = dao::_count<User>().wh(fu.name.like("Bob%")).build().count();
@@ -92,6 +92,7 @@ for (int i = 0; i < 20; i++) {
    users << User(0, QString("Bob_") + ('a' + i), i, i % 2, "");
 }
 dao::_insert<User>().build().insertBatch(users);
+dao::_insert<User>().build().insertMutil(users);
 ```
 ```sql
 insert into ts_user values(0, 'Alice', 12, 1, 'student')
@@ -163,7 +164,7 @@ select *from (select *from sh_user where age between 1525492810 and 1525622428) 
 - ##### 函数表达式
 ```c++
 bool exist;
-auto r = dao::_query<User>().bind(fu.function("avg(%1)", fu.age).as("age_sum")).build().unique(exist);
+auto r = dao::_query<User>().wh(fu.function("avg(%1)", fu.age).as("age_sum")).build().unique(exist);
 if (exist) {
   auto rs = r.getExtraData().value("age_sum").toFloat();
 }
