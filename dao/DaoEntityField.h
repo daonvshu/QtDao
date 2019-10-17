@@ -187,7 +187,7 @@ public:
 
 	/*like "like"*/
 	DaoEntityField like(const QVariant& v) {
-		return eq_op("like", v);
+		return eq_op(" like ", v);
 	}
 
 	/*plus one "a=a+1"*/
