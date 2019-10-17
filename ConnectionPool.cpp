@@ -2,7 +2,7 @@
 #include <qstandardpaths.h>
 #include <qthread.h>
 #include <qdebug.h>
-#include "DaoBase.h"
+#include "DaoUtil.h"
 //http://blog.csdn.net/qq_28796345/article/details/51586330
 QMutex ConnectionPool::mutex;
 QWaitCondition ConnectionPool::waitConnection;
