@@ -20,7 +20,7 @@ void dao::DaoExecutor::concatSqlStatement() {
         sql_head.append(" where ").append(getReadEntity().getKvPair());
     }
     if (!getExtraEntity().getKvPair().isEmpty()) {
-        sql_head.append(getExtraEntity().getKvPair());
+        sql_head.append(' ').append(getExtraEntity().getKvPair());
     }
 }
 

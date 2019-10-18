@@ -26,7 +26,7 @@ public:
 
 	/*获取条件语句拼接结果*/
 	QString getKvPair() {
-		return kvPairStr;
+        return kvPairStr.isEmpty() ? nameFunc() : kvPairStr;
 	}
 
 	/*获取条件语句对应值*/
@@ -51,7 +51,7 @@ public:
 
 	/*获取函数表达式*/
 	QString nameFunc() {
-		return functionStr + " as " + asStr;
+        return asStr.isEmpty() ? nameFuncWithoutAs() : (functionStr + " as " + asStr);
 	}
 
 	QString nameFuncWithoutAs() {
@@ -277,6 +277,7 @@ class DaoEntityFunction {
 public:
 	DaoEntityFunction& function(QString functionStr) {
 		this->functionStr = functionStr;
+        useAs = true;
 		return *this;
 	}
 
@@ -284,6 +285,7 @@ public:
 	DaoEntityFunction& function(QString functionStr, DaoEntityField& entityField,  T&... t) {
 		lastEntityField = entityField;
 		functionStr = functionStr.arg(entityField.name());
+        useAs = true;
 		return function(functionStr, t...);
 	}
 
@@ -291,6 +293,9 @@ public:
 		DaoEntityField field;
 		field.functionStr = functionStr;
 		field.asStr = name.isEmpty() ? entityField.n : name;
+        if (!useAs) {
+            field.asStr = "";
+        }
 		field.n = entityField.n;
 		field.joinPrefix = entityField.joinPrefix;
 		return field;
@@ -304,24 +309,29 @@ public:
 		return as(lastEntityField);
 	}
 
+    DaoEntityFunction& clearAs() {
+        useAs = false;
+        return *this;
+    }
+
 	DaoEntityFunction& limit(int a, int b) {
-		return function(QString("limit ").append(QString::number(a)).append(',').append(QString::number(b)));
+		return function(QString("limit ").append(QString::number(a)).append(',').append(QString::number(b))).clearAs();
 	}
 
 	DaoEntityFunction& orderBy(DaoEntityField& entityField, bool sequence = true) {
-		return function(QString("order by %1 ").append(sequence ? "asc" : "desc"), entityField);
+		return function(QString("order by %1 ").append(sequence ? "asc" : "desc"), entityField).clearAs();
 	}
 
 	DaoEntityFunction& orderBy(DaoEntityFunction& entityFunc, bool sequence = true) {
-		return function(QString("order by %1 ").append(sequence ? "asc" : "desc").arg(entityFunc.functionStr));
+		return function(QString("order by %1 ").append(sequence ? "asc" : "desc").arg(entityFunc.functionStr)).clearAs();
 	}
 
 	DaoEntityFunction& groupBy(DaoEntityField& entityField) {
-		return function(QString("group by %1"), entityField);
+		return function(QString("group by %1"), entityField).clearAs();
 	}
 
 	DaoEntityFunction& groupBy(DaoEntityFunction& entityFunc) {
-		return function(QString("group by ").append(entityFunc.functionStr));
+		return function(QString("group by ").append(entityFunc.functionStr)).clearAs();
 	}
 
 	friend class DaoEntityField;
@@ -329,4 +339,5 @@ public:
 private:
 	QString functionStr;
 	DaoEntityField lastEntityField;
+    bool useAs;
 };
