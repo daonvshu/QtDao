@@ -6,69 +6,91 @@ int dao::bindCount = 0;
 DbLoader::SqlCfg DbLoader::sqlCfg;
 DbLoader::SqlClient* DbLoader::sqlClient = nullptr;
 
-dao::DaoExecutor::DaoExecutor(const QString & sql_head, const QString & tableName, ExecutorData* executorData) {
-    this->sql_head = sql_head;
-    this->tableName = tableName;
+dao::DaoExecutor::DaoExecutor(ExecutorData* executorData) {
     this->executorData = executorData;
 }
 
+void dao::DaoExecutor::createSqlHead() {
+    auto bindSqlExp = executorData->bindCondition.getExpressionStr();
+    switch (executorData->operateType) {
+        case dao::OPERATE_QUERY:
+            sqlExpression = "select ";
+            sqlExpression += bindSqlExp.isEmpty() ? "*" : bindSqlExp;
+            sqlExpression += " from ";
+            break;
+        case dao::OPERATE_INSERT:
+            sqlExpression = "insert into ";
+            break;
+        case dao::OPERATE_INSERT_OR_REPLACE:
+            sqlExpression = "replace into ";
+            break;
+        case dao::OPERATE_UPDATE:
+            sqlExpression = "update ";
+            break;
+        case dao::OPERATE_DELETE:
+            sqlExpression = "delete from ";
+            break;
+        case dao::OPERATE_COUNT:
+            sqlExpression = "select count(*) from ";
+            break;
+        default:
+            break;
+    }
+    sqlExpression += getTableName();
+}
+
 void dao::DaoExecutor::concatSqlStatement() {
-    if (!getWriteEntity().getKvPair().isEmpty()) {
-        sql_head.append(" set ").append(getWriteEntity().getKvPair());
+    auto setSqlExp = executorData->setCondition.getExpressionStr();
+    auto whereSqlExp = executorData->whereCondition.getExpressionStr();
+    auto subWhereSqlExp = executorData->subWhereCondition.getExpressionStr(true);
+    
+    if (!setSqlExp.isEmpty()) {
+        sqlExpression += " set ";
+        sqlExpression += setSqlExp;
     }
-    if (!getReadEntity().getKvPair().isEmpty()) {
-        sql_head.append(" where ").append(getReadEntity().getKvPair());
+    if (!whereSqlExp.isEmpty()) {
+        sqlExpression += " where ";
+        sqlExpression += whereSqlExp;
     }
-    if (!getExtraEntity().getKvPair().isEmpty()) {
-        sql_head.append(' ').append(getExtraEntity().getKvPair());
+    if (!subWhereSqlExp.isEmpty()) {
+        sqlExpression += ' ';
+        sqlExpression += subWhereSqlExp;
     }
 }
 
 void dao::DaoExecutor::mergeValueList() {
-    valueList.append(getWriteEntity().getVList());
-    valueList.append(getReadEntity().getVList());
-}
-
-void dao::DaoExecutor::bindTableName() {
-    sql_head.append(tableName);
+    valueList.append(executorData->bindCondition.getValueList());
+    valueList.append(executorData->setCondition.getValueList());
+    valueList.append(executorData->whereCondition.getValueList());
+    valueList.append(executorData->subWhereCondition.getValueList());
 }
 
 void dao::DaoExecutor::bindValue(QSqlQuery & query) {
-    concatSqlStatement();
-    query.prepare(sql_head);
     mergeValueList();
     for (const auto& d : valueList) {
         query.addBindValue(d, d.type() == QMetaType::QByteArray ? QSql::Binary : QSql::In);
     }
 }
 
-dao::DaoJoinExecutor::DaoJoinExecutor(const QList<QStringList>& jps, const QString sql, const QStringList tbOrder, const QVariantList & valueList) {
-    this->joinParameters = jps;
-    this->sql = sql;
-    this->tbOrderList = tbOrder;
+dao::DaoJoinExecutor::DaoJoinExecutor(const QList<SqlJoinBuilder::JoinInfo>* joinInfo, const QString sql, const QVariantList& valueList) {
+    this->joinInfo = joinInfo;
+    this->sqlExpression = sql;
     this->valueList = valueList;
-}
-
-dao::DaoJoinExecutor::DaoJoinExecutor(const DaoJoinExecutor & executor) {
-    this->joinParameters = executor.joinParameters;
-    this->sql = executor.sql;
-    this->tbOrderList = executor.tbOrderList;
-    this->valueList = executor.valueList;
 }
 
 QList<dao::DaoJoinExecutor::DaoJoinExecutorItem> dao::DaoJoinExecutor::list() {
     QList<DaoJoinExecutorItem> dataItems;
     auto db = ConnectionPool::openConnection();
     QSqlQuery query(db);
-    query.prepare(sql);
+    query.prepare(sqlExpression);
     for (const auto& a : valueList) {
-        query.addBindValue(a);
+        query.addBindValue(a, a.type() == QMetaType::QByteArray ? QSql::Binary : QSql::In);
     }
 #ifdef PRINT_SQL_STATEMENT
-    qDebug() << sql;
+    qDebug() << sqlExpression;
 #endif // PRINT_SQL_STATEMENT
     if (!query.exec()) {
-        dao::printLog(query.lastError().text(), sql);
+        dao::printLog(query.lastError().text(), sqlExpression);
     } else {
         while (query.next()) {
             QVariantList data;
@@ -76,7 +98,7 @@ QList<dao::DaoJoinExecutor::DaoJoinExecutorItem> dao::DaoJoinExecutor::list() {
             for (int i = 0; i < record.count(); i++) {
                 data.append(record.value(i));
             }
-            dataItems.append(DaoJoinExecutorItem(data, new DaoJoinExecutor(*this)));
+            dataItems.append(DaoJoinExecutorItem(data, joinInfo));
         }
     }
     ConnectionPool::closeConnection(db);
@@ -84,63 +106,68 @@ QList<dao::DaoJoinExecutor::DaoJoinExecutorItem> dao::DaoJoinExecutor::list() {
 }
 
 dao::DaoJoinExecutor dao::SqlJoinBuilder::build() {
-    QList<QStringList> joinParameters;
     QString sql = "select ";
     QVariantList valueList;
-    QStringList tbList;
+    //select (bindExpression) from (master) a (joinExpress) (subExpression)
+    const JoinInfo* joinMasterTableInfo;
+    QString bindExpression, joinExpression, subExpression;
+    QVariantList valuesInBindExpression, valuesInJoinConditions, valuesInMasterSubConditions;
+    int i = 0;
+    for (const auto& info : joinInfos) {
+        bindExpression += info.bindCondition.getExpressionStr();
+        bindExpression += ",";
+        valuesInBindExpression.append(info.bindCondition.getValueList());
 
-    int count = 0;
-    for (auto& entities : joinEntities) {
-        QStringList fields;
-        QString no = ('a' + count++);
-        for (auto& entity : entities) {
-            sql.append(no).append('.').append(entity()).append(',');
-            fields.append(entity());
+        if (info.joinType == JOIN_NULL) {
+            joinMasterTableInfo = &info;
+            subExpression += info.whereCondition.getExpressionStr();
+            QString subWhExpression = info.subWhCondition.getExpressionStr(true);
+            if (!subWhExpression.isEmpty()) {
+                subExpression += ' ' + subWhExpression;
+            }
+            valuesInMasterSubConditions.append(info.whereCondition.getValueList());
+            valuesInMasterSubConditions.append(info.subWhCondition.getValueList());
+        } else {
+            QString joinStr;
+            switch (info.joinType) {
+                default:
+                case JOIN_LEFT:
+                    joinStr = " left join ";
+                    break;
+                case JOIN_RIGHT:
+                    joinStr = " right join ";
+                    break;
+                case JOIN_INNER:
+                    joinStr = " inner join ";
+                    break;
+                case JOIN_FULL_OUTER:
+                    joinStr = " full outer join ";
+                    break;
+            }
+            QString no = ('a' + (i + 1));
+            joinExpression += joinStr + info.tbName + ' ' + no;
+            QString whExpression = info.whereCondition.getExpressionStr();
+            if (!whExpression.isEmpty()) {
+                joinExpression += " on " + info.whereCondition.getExpressionStr();
+                QString subWhExpression = info.subWhCondition.getExpressionStr(true);
+                if (!subWhExpression.isEmpty()) {
+                    joinExpression += ' ' + subWhExpression;
+                }
+            }
+            valuesInJoinConditions.append(info.whereCondition.getValueList());
+            valuesInJoinConditions.append(info.subWhCondition.getValueList());
         }
-        joinParameters.append(fields);
     }
-    sql = sql.left(sql.length() - 1);
+    sql += bindExpression.left(bindExpression.length() - 1);
+    sql += " from " + joinMasterTableInfo->tbName + " a";
+    sql += joinExpression;
+    sql += subExpression;
 
-    auto firstInfo = joinInfos.takeFirst();
-    auto firstEntity = joinReadEntities.takeFirst();
-    Q_ASSERT_X(firstEntity.name().indexOf(QRegExp("[a-z].")) == 0, "dao::join::build()", "forget to call dao::bindJoinOrder?");
-    tbList.append(firstInfo.tbName);
+    valueList.append(valuesInBindExpression);
+    valueList.append(valuesInJoinConditions);
+    valueList.append(valuesInMasterSubConditions);
 
-    sql.append(" from ").append(firstInfo.tbName).append(" a");
-    for (int i = 0; i < joinInfos.size(); i++) {
-        auto info = joinInfos.at(i);
-        auto readEntity = joinReadEntities.at(i);
-
-        QString joinStr;
-        switch (info.joinType) {
-            default:
-            case JOIN_LEFT:
-                joinStr = " left join ";
-                break;
-            case JOIN_RIGHT:
-                joinStr = " right join ";
-                break;
-            case JOIN_INNER:
-                joinStr = " inner join ";
-                break;
-            case JOIN_FULL_OUTER:
-                joinStr = " full outer join ";
-                break;
-        }
-        QString no = ('a' + (i + 1));
-        sql.append(joinStr).append(info.tbName).append(' ').append(no);
-        if (!readEntity.getKvPair().isEmpty()) {
-            sql.append(" on ").append(readEntity.getKvPair());
-        }
-        valueList.append(readEntity.getVList());
-        tbList.append(info.tbName);
-    }
-    if (!firstEntity.getKvPair().isEmpty()) {
-        sql.append(" where ").append(firstEntity.getKvPair());
-        valueList.append(firstEntity.getVList());
-    }
-
-    return DaoJoinExecutor(joinParameters, sql, tbList, valueList);
+    return DaoJoinExecutor(&joinInfos, sql, valueList);
 }
 
 void dao::printLog(const QString & lastErr, const QString & sql) {
