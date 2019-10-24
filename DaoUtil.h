@@ -83,17 +83,48 @@ private:
         }
     };
 
-    template<typename T>
-    class DaoCountExecutor : public DaoExecutor {
+    template<typename E, typename ExecutorNext>
+    class MutilTableNameCreator : public ExecutorNext {
     public:
-        using DaoExecutor::DaoExecutor;
+        using ExecutorNext::ExecutorNext;
+        
+    public:
+        QString getTableName() override {
+            auto index = tableOrder++;
+            auto subTbName = ExecutorNext::getTableName();
+            if (subTbName.isEmpty()) {
+                return getTableNameFromTemplate<E>() + ' ' + ('a' + index);
+            }
+            return getTableNameFromTemplate<E>() + ' ' + ('a' + index) + ',' + subTbName;
+        }
+    };
+
+    class MutilTableNameCreatorEnd : public DaoExecutor {
+    public:
+        MutilTableNameCreatorEnd(ExecutorData* executorData) : DaoExecutor(executorData) {
+            tableOrder = 0;
+        };
+
+    protected:
+        QString getTableName() {
+            return QString();
+        }
+
+        int tableOrder;
+    };
+
+    template<typename...T> class DaoCountExecutor;
+    template<typename E, typename...T>
+    class DaoCountExecutor<E, T...> : public MutilTableNameCreator<E, DaoCountExecutor<T...>> {
+    public:
+        using MutilTableNameCreator<E, DaoCountExecutor<T...>>::MutilTableNameCreator;
 
         int count();
+    };
 
-    private:
-        QString getTableName() override {
-            return getTableNameFromTemplate<T>();
-        }
+    template<> class DaoCountExecutor<> : public MutilTableNameCreatorEnd {
+    public:
+        using MutilTableNameCreatorEnd::MutilTableNameCreatorEnd;
     };
 
     template<typename T>
@@ -108,6 +139,35 @@ private:
     private:
         QString getTableName() override {
             return getTableNameFromTemplate<T>();
+        }
+    };
+
+    template<typename...T> class DaoQueryMutilExecutor;
+    template<typename E, typename...T>
+    class DaoQueryMutilExecutor<E, T...> : public MutilTableNameCreator<E, DaoQueryMutilExecutor<T...>> {
+    public:
+        using MutilTableNameCreator<E, DaoQueryMutilExecutor<T...>>::MutilTableNameCreator;
+
+        void unique(bool& exist, E& entity, T&... t);
+        void list(QList<E>& entityList, QList<T>&... t);
+
+    protected:
+        void getFieldsIndex(int index, QVector<QList<int>>& fieldsIndex);
+        void valueInsert(QSqlRecord & record, QVector<QList<int>>& fieldsIndex, E& entity, T&... t);
+        void valueInsert(QSqlRecord & record, QVector<QList<int>>& fieldsIndex, QList<E>& entityList, QList<T>&... t);
+
+    private:
+        QVector<QList<int>> getBindEntityIndex();
+    };
+
+    template<> class DaoQueryMutilExecutor<> : public MutilTableNameCreatorEnd {
+    public:
+        using MutilTableNameCreatorEnd::MutilTableNameCreatorEnd;
+
+    protected:
+        void getFieldsIndex(int index, QVector<QList<int>>& fields) {
+        }
+        void valueInsert(QSqlRecord & record, QVector<QList<int>>& fieldsIndex) {
         }
     };
 
@@ -350,6 +410,11 @@ public:
         return SqlBuilder<DaoQueryExecutor<E>>(OPERATE_QUERY);
     }
 
+    template<typename...E>
+    static SqlBuilder<DaoQueryMutilExecutor<E...>> _query_mutil() {
+        return SqlBuilder<DaoQueryMutilExecutor<E...>>(OPERATE_QUERY);
+    }
+
     template<typename E>
     static SqlBuilder<DaoInsertExecutor<E>> _insert() {
         return SqlBuilder<DaoInsertExecutor<E>>(OPERATE_INSERT);
@@ -370,23 +435,23 @@ public:
         return SqlBuilder<DaoDeleteExecutor<E>>(OPERATE_DELETE);
     }
 
-    template<typename E>
-    static SqlBuilder<DaoCountExecutor<E>> _count() {
-        return SqlBuilder<DaoCountExecutor<E>>(OPERATE_COUNT);
+    template<typename...E>
+    static SqlBuilder<DaoCountExecutor<E...>> _count() {
+        return SqlBuilder<DaoCountExecutor<E...>>(OPERATE_COUNT);
     }
 
     static SqlJoinBuilder _join() {
         return SqlJoinBuilder();
     }
 
-    static void bindJoinOrder() {
+    static void bindTableOrder() {
         bindCount = 0;
     }
 
     template<typename K, typename... T>
-    static void bindJoinOrder(K& k, T&... t) {
+    static void bindTableOrder(K& k, T&... t) {
         k.bindJoin(bindCount++);
-        bindJoinOrder(t...);
+        bindTableOrder(t...);
     }
 
 private:
@@ -608,8 +673,8 @@ inline bool dao::DaoExecutor::exec(bool batch, F success) {
 
 //********************** DaoCountExecutor **********************
 
-template<typename T>
-inline int dao::DaoCountExecutor<T>::count() {
+template<typename E, typename ...T>
+inline int dao::DaoCountExecutor<E, T...>::count() {
     int count = 0;
     createSqlHead();
     concatSqlStatement();
@@ -671,6 +736,84 @@ inline QList<T> dao::DaoQueryExecutor<T>::list() {
     });
     return entities;
 }
+
+template<typename E, typename ...T>
+inline void dao::DaoQueryMutilExecutor<E, T...>::unique(bool & exist, E & entity, T & ...t) {
+    exist = false;
+    createSqlHead();
+    concatSqlStatement();
+    exec([&](auto& query) {
+        if (query.next()) {
+            exist = true;
+            valueInsert(query.record(), getBindEntityIndex(), entity, t...);
+        }
+    });
+}
+
+template<typename E, typename ...T>
+inline void dao::DaoQueryMutilExecutor<E, T...>::list(QList<E>& entityList, QList<T>& ...t) {
+    createSqlHead();
+    concatSqlStatement();
+    exec([&](auto& query) {
+        QVector<QList<int>> bindEntitiesIndex = getBindEntityIndex();
+        while (query.next()) {
+            valueInsert(query.record(), bindEntitiesIndex, entityList, t...);
+        }
+    });
+}
+
+template<typename E, typename ...T>
+inline void dao::DaoQueryMutilExecutor<E, T...>::getFieldsIndex(int index, QVector<QList<int>>& fieldsIndex) {
+    int tableIndex = fieldsIndex.size() - (sizeof...(T) + 1);
+    int fieldSize = static_cast<E*>(0)->fieldSize();
+    for (int i = 0; i < fieldSize; i++) {
+        fieldsIndex[tableIndex] << index++;
+    }
+    dao::DaoQueryMutilExecutor<T...>::getFieldsIndex(index, fieldsIndex);
+}
+
+template<typename E, typename ...T>
+inline void dao::DaoQueryMutilExecutor<E, T...>::valueInsert(QSqlRecord & record, QVector<QList<int>>& fieldsIndex, E& entity, T&... t) {
+    int tableIndex = fieldsIndex.size() - (sizeof...(T) + 1);
+    const auto& indexes = fieldsIndex[tableIndex];
+    for (int i = 0; i < indexes.size(); i++) {
+        int valueIndex = indexes.at(i);
+        entity.bindValue(record.fieldName(valueIndex), record.value(valueIndex));
+    }
+    dao::DaoQueryMutilExecutor<T...>::valueInsert(record, fieldsIndex, t...);
+}
+
+template<typename E, typename ...T>
+inline void dao::DaoQueryMutilExecutor<E, T...>::valueInsert(QSqlRecord & record, QVector<QList<int>>& fieldsIndex, QList<E>& entityList, QList<T>& ...t) {
+    int tableIndex = fieldsIndex.size() - (sizeof...(T) + 1);
+    const auto& indexes = fieldsIndex[tableIndex];
+    E entity;
+    for (int i = 0; i < indexes.size(); i++) {
+        int valueIndex = indexes.at(i);
+        entity.bindValue(record.fieldName(valueIndex), record.value(valueIndex));
+    }
+    entityList << entity;
+    dao::DaoQueryMutilExecutor<T...>::valueInsert(record, fieldsIndex, t...);
+}
+
+template<typename E, typename ...T>
+inline QVector<QList<int>> dao::DaoQueryMutilExecutor<E, T...>::getBindEntityIndex() {
+    QVector<QList<int>> bindEntitiesIndex;
+    bindEntitiesIndex.resize(sizeof...(T) + 1);
+    if (executorData->bindCondition.getExpressionStr().isEmpty()) {
+        getFieldsIndex(0, bindEntitiesIndex);
+    } else {
+        const QList<EntityField>& entityFields = executorData->bindCondition.getBindEntities();
+        int valueIndex = 0;
+        for (const auto& field : entityFields) {
+            if (!field.fieldWithoutJoinPredix().isEmpty() || field.isFuntion()) {
+                bindEntitiesIndex[field.getBindOrderIndex()] << valueIndex++;
+            }
+        }
+    }
+    return bindEntitiesIndex;
+}
+
 
 //********************** DaoInsertExecutor **********************
 
@@ -930,7 +1073,7 @@ inline bool DbCreatorHelper::restoreData2NewTable(const QString & tmpTb, T entit
         sql = sql.arg(entity->getTableName(), oldFields, tmpTb);
         if (!query.exec(sql)) {
             success = false;
-            qDebug() << "restore tmp data fail!";
+            qDebug() << "restore tmp data fail!" << sql << "  err ->" << query.lastError();
         }
     }, [](auto& lastErr) {});
 
@@ -948,3 +1091,5 @@ inline void DbCreatorHelper::execSql(const QString & sql, F1 succ, F2 fail) {
     }
     ConnectionPool::closeConnection(db);
 }
+
+

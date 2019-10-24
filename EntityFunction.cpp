@@ -130,6 +130,8 @@ EntityFunction EntityFunction::desc() {
 EntityConditions EntityFunction::createCondition() const {
     EntityField field = "";
     field.kvPairStr = expressionStr;
+    field.is_funtion = true;
+    field.asField = asField;
     field.valueList.clear();
     field.valueList << valueList;
     return EntityConditions().addField(field);

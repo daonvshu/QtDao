@@ -1,6 +1,7 @@
 #include "EntityConditions.h"
 #include "EntityField.h"
 #include "EntityFunction.h"
+#include <qvector.h>
 
 EntityConditions & EntityConditions::operator&&(const EntityConditions & oth) {
     this->entityFields.append(EntityField::createCombineOp(" and "));
@@ -46,7 +47,9 @@ QString EntityConditions::getExpressionStr(bool withoutCombineOp) const {
     for (const auto& field : entityFields) {
         if (field.isCombineOpType()) {
             if (!withoutCombineOp) {
-                expressStr += field.conditionCombineOp;
+                if (!expressStr.isEmpty()) {
+                    expressStr += field.conditionCombineOp;
+                }
             } else {
                 expressStr += ' ';
             }
@@ -76,15 +79,18 @@ QStringList EntityConditions::getBindFields(bool withoutJoinPrefix) const {
         if (!fieldStr.isEmpty()) {
             fields.append(fieldStr);
         } else {
-            auto funPtr = dynamic_cast<const EntityFunction*>(&field);
-            if (funPtr != nullptr) {
-                if (!funPtr->asField.isEmpty()) {
-                    fields.append(funPtr->asField);
+            if (field.is_funtion) {
+                if (!field.asField.isEmpty()) {
+                    fields << field.asField;
                 }
             }
         }
     }
     return fields;
+}
+
+const QList<EntityField>& EntityConditions::getBindEntities() {
+    return entityFields;
 }
 
 void EntityConditions::clearAll() {

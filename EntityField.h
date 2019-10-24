@@ -9,23 +9,24 @@
 class EntityField : public EntityConditionInterface {
 
 public:
-    EntityField(const char* field) : asc_value(true) {
+    EntityField(const char* field) : asc_value(true), bindOrderIndex(0), is_funtion(false) {
         this->field = field;
     }
 
-    EntityField(const QString& fieldStr) : asc_value(true) {
+    EntityField(const QString& fieldStr) : asc_value(true), bindOrderIndex(0), is_funtion(false) {
         this->field = field;
     }
 
-    static void bindJoinOrder(int o) {
+    static void bindTableOrder(int o) {
     }
 
     /*绑定join前缀*/
     template<typename... T>
-    static void bindJoinOrder(int o, EntityField& f, T&... t) {
+    static void bindTableOrder(int o, EntityField& f, T&... t) {
         f.joinPrefix = ('a' + o);
         f.joinPrefix.append('.');
-        bindJoinOrder(o, t...);
+        f.bindOrderIndex = o;
+        bindTableOrder(o, t...);
     }
 
     QString getExpressionStr(bool withoutCombineOp = false) const override;
@@ -38,16 +39,31 @@ public:
         return fieldWithJoinPrefix();
     }
 
+    inline int getBindOrderIndex() const {
+        return bindOrderIndex;
+    }
+
+    QString fieldWithJoinPrefix() const;//没有使用join时不会有前缀
+    QString fieldWithoutJoinPredix() const;//返回单纯的字段名称，join bind字段时使用
+
+    inline bool isFuntion() const {
+        return is_funtion;
+    }
+
 private:
     QString kvPairStr;//键值对字符串
     QVariantList valueList;//值
 
     QString field;//字段名称
     QString joinPrefix;//join前缀
+    int bindOrderIndex;
 
     QString conditionCombineOp;//条件连接符，单独使用，用于占位
 
     bool asc_value;//配合order by使用
+
+    bool is_funtion;//区分字段和funtion类型
+    QString asField;//as别名
 
 private:
     EntityField bindValue(const QString& kvPairStr, const QVariantList& value);
@@ -57,9 +73,6 @@ private:
 
     EntityConditions setValueSelf(const char* op, const QVariant& v);
     EntityConditions setValueSelf(const char* op, const EntityConditionInterface& v);
-
-    QString fieldWithJoinPrefix() const;//没有使用join时不会有前缀
-    QString fieldWithoutJoinPredix() const;//返回单纯的字段名称，join bind字段时使用
 
     static EntityField createCombineOp(const char* op);
     bool isCombineOpType() const;
