@@ -60,6 +60,7 @@ void dao::DaoExecutor::concatSqlStatement() {
 
 void dao::DaoExecutor::mergeValueList() {
     valueList.append(executorData->bindCondition.getValueList());
+    valueList.append(executorData->bindTableNameContainValues);
     valueList.append(executorData->setCondition.getValueList());
     valueList.append(executorData->whereCondition.getValueList());
     valueList.append(executorData->subWhereCondition.getValueList());
@@ -161,7 +162,10 @@ dao::DaoJoinExecutor dao::SqlJoinBuilder::build() {
     sql += bindExpression.left(bindExpression.length() - 1);
     sql += " from " + joinMasterTableInfo->tbName + " a";
     sql += joinExpression;
-    sql += subExpression;
+    if (!subExpression.isEmpty()) {
+        sql += " where ";
+        sql += subExpression;
+    }
 
     valueList.append(valuesInBindExpression);
     valueList.append(valuesInJoinConditions);

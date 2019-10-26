@@ -29,12 +29,14 @@ private:
     };
 
     struct ExecutorData {
-        //operate (bindCondition|*) (into|from) table (set setCondition) (where whereCondition subWhereCondition)
+        //operate (bindCondition|*) (into|from) (bindTableName) (set setCondition) (where whereCondition subWhereCondition)
         OperateType operateType;
         EntityConditions bindCondition, setCondition, whereCondition, subWhereCondition;
-        QStringList bindExtraName;
+        QString bindTableName;
+        QVariantList bindTableNameContainValues;
     };
 
+    template<typename K> class SqlBuilder;
     class DaoExecutor {
     public:
         DaoExecutor(ExecutorData* executorData);
@@ -79,8 +81,15 @@ private:
     protected:
         template<typename T>
         QString getTableNameFromTemplate() {
-            return static_cast<T*>(0)->getTableName();
+            if (executorData->bindTableName.isEmpty()) {
+                return static_cast<T*>(0)->getTableName();
+            } else {
+                return '(' + executorData->bindTableName + ") as res_" + static_cast<T*>(0)->getTableName();
+            }
         }
+
+        template<typename K>
+        friend class SqlBuilder;
     };
 
     template<typename E, typename ExecutorNext>
@@ -90,12 +99,16 @@ private:
         
     public:
         QString getTableName() override {
-            auto index = tableOrder++;
-            auto subTbName = ExecutorNext::getTableName();
-            if (subTbName.isEmpty()) {
-                return getTableNameFromTemplate<E>() + ' ' + ('a' + index);
+            if (executorData->bindTableName.isEmpty()) {
+                auto index = tableOrder++;
+                auto subTbName = ExecutorNext::getTableName();
+                if (subTbName.isEmpty()) {
+                    return getTableNameFromTemplate<E>() + ' ' + ('a' + index);
+                }
+                return getTableNameFromTemplate<E>() + ' ' + ('a' + index) + ',' + subTbName;
+            } else {
+                return '(' + executorData->bindTableName + ") as res_" + static_cast<E*>(0)->getTableName();
             }
-            return getTableNameFromTemplate<E>() + ' ' + ('a' + index) + ',' + subTbName;
         }
     };
 
@@ -220,6 +233,8 @@ private:
         }
     };
 
+    class DaoJoinExecutor;
+
     template<typename K>
     class SqlBuilder {
     private:
@@ -266,9 +281,25 @@ private:
             (executorData.subWhereCondition, f);
             return subWh(t...);
         }
+
+        /*used by nested query*/
+        SqlBuilder& from(DaoExecutor& executor) {
+            executor.createSqlHead();
+            executor.concatSqlStatement();
+            executorData.bindTableName = executor.sqlExpression;
+            executor.mergeValueList();
+            executorData.bindTableNameContainValues = executor.valueList;
+            return *this;
+        }
+
+        /*used by nested query*/
+        SqlBuilder& from(DaoJoinExecutor& executor) {
+            executorData.bindTableName = executor.sqlExpression;
+            executorData.bindTableNameContainValues = executor.valueList;
+            return *this;
+        }
     };
 
-    class DaoJoinExecutor;
     class SqlJoinBuilder {
     private:
         enum JoinType {
@@ -397,6 +428,8 @@ private:
 
         friend class DaoJoinExecutorItem;
         friend class SqlJoinBuilder;
+        template<typename K>
+        friend class SqlBuilder;
 
         DaoJoinExecutor(const QList<SqlJoinBuilder::JoinInfo>* joinInfo, const QString sql, const QVariantList& valueList);
         
@@ -452,6 +485,15 @@ public:
     static void bindTableOrder(K& k, T&... t) {
         k.bindJoin(bindCount++);
         bindTableOrder(t...);
+    }
+
+    static void clearTableOrder() {
+    }
+
+    template<typename K, typename... T>
+    static void clearTableOrder(K& k, T&... t) {
+        k.clearJoin();
+        clearTableOrder(t...);
     }
 
 private:
@@ -797,7 +839,7 @@ inline void dao::DaoQueryMutilExecutor<E, T...>::valueInsert(QSqlRecord & record
 }
 
 template<typename E, typename ...T>
-inline QVector<QList<int>> dao::DaoQueryMutilExecutor<E, T...>::getBindEntityIndex() {
+inline QVector<QList<int>> dao::DaoQueryMutilExecutor<E, T...>::getBindEntityIndex() {//TODO:queryÖÐÇ¶Ì×join»ábindË³Ðò´íÎó
     QVector<QList<int>> bindEntitiesIndex;
     bindEntitiesIndex.resize(sizeof...(T) + 1);
     if (executorData->bindCondition.getExpressionStr().isEmpty()) {

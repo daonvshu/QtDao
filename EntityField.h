@@ -29,6 +29,17 @@ public:
         bindTableOrder(o, t...);
     }
 
+    static void clearTableOrder() {
+    }
+
+    /*Çå³ýjoinÇ°×º*/
+    template<typename... T>
+    static void clearTableOrder(EntityField& f, T&... t) {
+        f.joinPrefix = "";
+        f.bindOrderIndex = 0;
+        clearTableOrder(t...);
+    }
+
     QString getExpressionStr(bool withoutCombineOp = false) const override;
     QVariantList getValueList() const override;
     bool isAsc() const override;
