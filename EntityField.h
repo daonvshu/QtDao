@@ -14,7 +14,7 @@ public:
     }
 
     EntityField(const QString& fieldStr) : asc_value(true), bindOrderIndex(0), is_funtion(false) {
-        this->field = field;
+        this->field = fieldStr;
     }
 
     static void bindTableOrder(int o) {

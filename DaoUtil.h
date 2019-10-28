@@ -1004,21 +1004,23 @@ inline bool dao::DaoUpdateExecutor<T>::updateBatch() {
 
 template<typename T>
 inline bool dao::DaoUpdateExecutor<T>::update(T & entity) {
-    Q_ASSERT_X(!executorData->whereCondition.getExpressionStr().isEmpty(), 
-               "dao::_update().update(T)", u8"需要where条件");
-
+    Q_ASSERT_X(executorData->whereCondition.getExpressionStr().isEmpty(),
+               "dao::_update().update(T&)", u8"不允许使用where条件");
     createSqlHead();
-    QStringList whFields = executorData->whereCondition.getBindFields();
-    whFields.append(static_cast<T*>(0)->getIdField());
+
+    auto idField = static_cast<T*>(0)->getIdField();
 
     QVariantList entityData = entity.readEntity();
     QStringList fields = static_cast<T*>(0)->getFields();
-    for (const auto& whField : whFields) {
-        int index;
-        if ((index = fields.indexOf(whField)) != -1) {
-            fields.removeAt(index);
-            entityData.removeAt(index);
+    int col = 0;
+    while (col != fields.size()) {
+        if (idField == fields.at(col)) {
+            fields.takeAt(col); 
+            executorData->whereCondition = EntityField(idField) == entity.getId();
+            entityData.takeAt(col);
+            break;
         }
+        col++;
     }
     EntityConditions conditions;
     for (int i = 0; i < fields.size(); i++) {
@@ -1038,14 +1040,14 @@ inline bool dao::DaoUpdateExecutor<T>::updateBatch(QList<T>& entities) {
     if (entities.isEmpty())
         return true;
 
-    Q_ASSERT_X(!executorData->whereCondition.getExpressionStr().isEmpty(),
-               "dao::_update().update(T)", u8"需要where条件");
+    Q_ASSERT_X(executorData->whereCondition.getExpressionStr().isEmpty(),
+               "dao::_update().updateBatch(QList<T>&)", u8"不允许使用where条件");
 
     createSqlHead();
     QVector<QVariantList> entityDataList;
-    entityDataList.resize(entities.size());
 
     QStringList fields = static_cast<T*>(0)->getFields();
+    entityDataList.resize(fields.size());
     for (const auto& entity : entities) {
         QVariantList entityData = entity.readEntity();
         for (int i = 0; i < fields.size(); i++) {
@@ -1053,22 +1055,30 @@ inline bool dao::DaoUpdateExecutor<T>::updateBatch(QList<T>& entities) {
         }
     }
 
-    QStringList whFields = executorData->whereCondition.getBindFields();
-    whFields.append(static_cast<T*>(0)->getIdField());
-    for (const auto& whField : whFields) {
-        int index;
-        if ((index = fields.indexOf(whField)) != -1) {
-            fields.removeAt(index);
-            entityDataList.removeAt(index);
+    auto idField = static_cast<T*>(0)->getIdField();
+
+    int col = 0;
+    QVariantList idList;
+    while (col != fields.size()) {
+        if (idField == fields.at(col)) {
+            fields.takeAt(col);
+            for (const auto& entity : entities) {
+                idList << entity.getId();
+            }
+            entityDataList.takeAt(col);
+            break;
         }
+        col++;
     }
+    executorData->whereCondition = EntityField(idField) == idList;
     EntityConditions conditions;
     for (int i = 0; i < fields.size(); i++) {
         auto field = fields.at(i);
         if (field.isEmpty())
             continue;
-        (conditions, EntityField(field) == QVariant(entityDataList.at(i)));
+        (conditions, EntityField(field) == entityDataList.at(i));
     }
+
     executorData->setCondition = conditions;
     concatSqlStatement();
 
