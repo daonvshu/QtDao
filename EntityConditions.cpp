@@ -80,8 +80,8 @@ QStringList EntityConditions::getBindFields(bool withoutJoinPrefix) const {
             fields.append(fieldStr);
         } else {
             if (field.is_funtion) {
-                if (!field.asField.isEmpty()) {
-                    fields << field.asField;
+                if (!field.funtionAsField().isEmpty()) {
+                    fields << field.funtionAsField();
                 }
             }
         }
@@ -89,12 +89,27 @@ QStringList EntityConditions::getBindFields(bool withoutJoinPrefix) const {
     return fields;
 }
 
-const QList<EntityField>& EntityConditions::getBindEntities() {
+const QList<EntityField>& EntityConditions::getBindEntities() const {
+    return entityFields;
+}
+
+QList<EntityField>& EntityConditions::getBindEntities() {
     return entityFields;
 }
 
 void EntityConditions::clearAll() {
     entityFields.clear();
+}
+
+void EntityConditions::clearCombineOp() {
+    int col = 0;
+    while (col != entityFields.size()) {
+        if (entityFields.at(col).isCombineOpType()) {
+            entityFields.removeAt(col);
+        } else {
+            col++;
+        }
+    }
 }
 
 EntityConditions & EntityConditions::operator()() {

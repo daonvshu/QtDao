@@ -61,6 +61,10 @@ public:
         return is_funtion;
     }
 
+    inline QString funtionAsField() const {
+        return as_field;
+    }
+
 private:
     QString kvPairStr;//键值对字符串
     QVariantList valueList;//值
@@ -74,7 +78,7 @@ private:
     bool asc_value;//配合order by使用
 
     bool is_funtion;//区分字段和funtion类型
-    QString asField;//as别名
+    QString as_field;//as别名
 
 private:
     EntityField bindValue(const QString& kvPairStr, const QVariantList& value);
@@ -181,6 +185,8 @@ public:
     EntityField asc();
     /*配合order by使用*/
     EntityField desc();
+    /*嵌套查询可能需要as别名*/
+    EntityField asField(const char* field);
 
     /*用在bind函数中*/
     EntityConditions operator,(const EntityField& oth);

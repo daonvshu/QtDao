@@ -70,7 +70,7 @@ bool EntityField::isCombineOpType() const {
 
 EntityConditions EntityField::createCondtionWithoutKv() const {
     EntityField field = *this;
-    field.kvPairStr = fieldWithJoinPrefix();
+    field.kvPairStr = fieldWithJoinPrefix() + (as_field.isEmpty() ? "" : (" as " + as_field));
     return EntityConditions().addField(field);
 }
 
@@ -109,6 +109,12 @@ EntityField EntityField::desc() {
     EntityField field = *this;
     field.asc_value = false;
     return field;
+}
+
+EntityField EntityField::asField(const char * field) {
+    EntityField fieldOth = *this;
+    fieldOth.as_field = field;
+    return fieldOth;
 }
 
 EntityConditions EntityField::operator,(const EntityField & oth) {

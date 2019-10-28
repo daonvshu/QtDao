@@ -73,7 +73,7 @@ void dao::DaoExecutor::bindValue(QSqlQuery & query) {
     }
 }
 
-dao::DaoJoinExecutor::DaoJoinExecutor(const QList<SqlJoinBuilder::JoinInfo>* joinInfo, const QString sql, const QVariantList& valueList) {
+dao::DaoJoinExecutor::DaoJoinExecutor(QList<SqlJoinBuilder::JoinInfo> joinInfo, const QString sql, const QVariantList& valueList) {
     this->joinInfo = joinInfo;
     this->sqlExpression = sql;
     this->valueList = valueList;
@@ -99,7 +99,7 @@ QList<dao::DaoJoinExecutor::DaoJoinExecutorItem> dao::DaoJoinExecutor::list() {
             for (int i = 0; i < record.count(); i++) {
                 data.append(record.value(i));
             }
-            dataItems.append(DaoJoinExecutorItem(data, joinInfo));
+            dataItems.append(DaoJoinExecutorItem(data, &joinInfo));
         }
     }
     ConnectionPool::closeConnection(db);
@@ -171,7 +171,7 @@ dao::DaoJoinExecutor dao::SqlJoinBuilder::build() {
     valueList.append(valuesInJoinConditions);
     valueList.append(valuesInMasterSubConditions);
 
-    return DaoJoinExecutor(&joinInfos, sql, valueList);
+    return DaoJoinExecutor(joinInfos, sql, valueList);
 }
 
 void dao::printLog(const QString & lastErr, const QString & sql) {

@@ -25,9 +25,11 @@ public:
     QVariantList getValueList() const override;
     bool isAsc() const override;
     QStringList getBindFields(bool withoutJoinPrefix = false) const;
-    const QList<EntityField>& getBindEntities();
+    const QList<EntityField>& getBindEntities() const;
+    QList<EntityField>& getBindEntities();
 
     void clearAll();
+    void clearCombineOp();
 
 private:
     QList<EntityField> entityFields;

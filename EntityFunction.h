@@ -82,7 +82,7 @@ private:
     QVariantList valueList;//值
     int detach_num;
     bool asc_value;
-    QString asField;//as别名
+    QString as_field;//as别名
 
     friend class EntityField;
     friend class EntityConditions;
@@ -95,4 +95,6 @@ public:
     EntityFunction asc();
     /*配合order by使用*/
     EntityFunction desc();
+    /*当对象中没有as的字段时，使用asField构造as字段*/
+    EntityField asField(const char* field);
 };

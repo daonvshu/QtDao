@@ -32,8 +32,10 @@ private:
         //operate (bindCondition|*) (into|from) (bindTableName) (set setCondition) (where whereCondition subWhereCondition)
         OperateType operateType;
         EntityConditions bindCondition, setCondition, whereCondition, subWhereCondition;
+        bool fromExtra;//from嵌套
         QString bindTableName;
-        QVariantList bindTableNameContainValues;
+        QVariantList bindTableNameContainValues;//from嵌套查询中的值列表
+        QList<EntityConditions> bindTableNameJoinEntityGroup;//from-join嵌套查询中的join-bind字段列表
     };
 
     template<typename K> class SqlBuilder;
@@ -243,6 +245,7 @@ private:
     public:
         SqlBuilder(OperateType type) {
             executorData.operateType = type;
+            executorData.fromExtra = false;
         }
 
         SqlBuilder& bind() {
@@ -289,6 +292,7 @@ private:
             executorData.bindTableName = executor.sqlExpression;
             executor.mergeValueList();
             executorData.bindTableNameContainValues = executor.valueList;
+            executorData.fromExtra = true;
             return *this;
         }
 
@@ -296,6 +300,10 @@ private:
         SqlBuilder& from(DaoJoinExecutor& executor) {
             executorData.bindTableName = executor.sqlExpression;
             executorData.bindTableNameContainValues = executor.valueList;
+            for (int i = 0; i < executor.joinInfo.size(); i++) {
+                executorData.bindTableNameJoinEntityGroup.append(executor.joinInfo.at(i).bindCondition);
+            }
+            executorData.fromExtra = true;
             return *this;
         }
     };
@@ -393,7 +401,7 @@ private:
 
     class DaoJoinExecutor {
     private:
-        const QList<SqlJoinBuilder::JoinInfo>* joinInfo;
+        QList<SqlJoinBuilder::JoinInfo> joinInfo;
 
         QString sqlExpression;
         QVariantList valueList;
@@ -431,7 +439,7 @@ private:
         template<typename K>
         friend class SqlBuilder;
 
-        DaoJoinExecutor(const QList<SqlJoinBuilder::JoinInfo>* joinInfo, const QString sql, const QVariantList& valueList);
+        DaoJoinExecutor(QList<SqlJoinBuilder::JoinInfo> joinInfo, const QString sql, const QVariantList& valueList);
         
     public:
         QList<DaoJoinExecutorItem> list();
@@ -839,17 +847,66 @@ inline void dao::DaoQueryMutilExecutor<E, T...>::valueInsert(QSqlRecord & record
 }
 
 template<typename E, typename ...T>
-inline QVector<QList<int>> dao::DaoQueryMutilExecutor<E, T...>::getBindEntityIndex() {//TODO:query中嵌套join会bind顺序错误
+inline QVector<QList<int>> dao::DaoQueryMutilExecutor<E, T...>::getBindEntityIndex() {
     QVector<QList<int>> bindEntitiesIndex;
     bindEntitiesIndex.resize(sizeof...(T) + 1);
-    if (executorData->bindCondition.getExpressionStr().isEmpty()) {
-        getFieldsIndex(0, bindEntitiesIndex);
+    if (!executorData->fromExtra) {
+        if (executorData->bindCondition.getExpressionStr().isEmpty()) {
+            getFieldsIndex(0, bindEntitiesIndex);
+        } else {
+            const QList<EntityField>& entityFields = executorData->bindCondition.getBindEntities();
+            int valueIndex = 0;
+            for (const auto& field : entityFields) {
+                if (!field.fieldWithoutJoinPredix().isEmpty() || field.isFuntion()) {
+                    bindEntitiesIndex[field.getBindOrderIndex()] << valueIndex++;
+                }
+            }
+        }
     } else {
-        const QList<EntityField>& entityFields = executorData->bindCondition.getBindEntities();
         int valueIndex = 0;
-        for (const auto& field : entityFields) {
-            if (!field.fieldWithoutJoinPredix().isEmpty() || field.isFuntion()) {
-                bindEntitiesIndex[field.getBindOrderIndex()] << valueIndex++;
+        QList<EntityConditions> bindTableNameJoinEntityGroup = executorData->bindTableNameJoinEntityGroup;
+        if (executorData->bindCondition.getExpressionStr().isEmpty()) {
+            for (int i = 0; i < bindTableNameJoinEntityGroup.size(); i++) {
+                auto condition = bindTableNameJoinEntityGroup.at(i);
+                condition.clearCombineOp();
+                const QList<EntityField>& entityFields = condition.getBindEntities();
+                for (const auto& field : entityFields) {
+                    if (!field.fieldWithoutJoinPredix().isEmpty() || field.isFuntion()) {
+                        bindEntitiesIndex[field.getBindOrderIndex()] << valueIndex++;
+                    }
+                }
+            }
+        } else {
+            QStringList entityFieldsStr = executorData->bindCondition.getBindFields(true);
+            for (const auto& fieldName : entityFieldsStr) {
+                bool getIndex = false;
+                for (int i = 0; i < bindTableNameJoinEntityGroup.size(); i++) {
+                    int col = 0;
+                    bindTableNameJoinEntityGroup[i].clearCombineOp();
+                    QList<EntityField>& conditionFields = bindTableNameJoinEntityGroup[i].getBindEntities();
+                    while (col != conditionFields.size()) {
+                        EntityField& subField = conditionFields[col];
+                        bool findSub = false;
+                        if (subField.isFuntion()) {
+                            findSub = subField.funtionAsField() == fieldName;
+                        } else {
+                            findSub = subField.fieldWithoutJoinPredix() == fieldName;
+                        }
+                        if (findSub) {
+                            bindEntitiesIndex[subField.getBindOrderIndex()] << valueIndex++;
+                            getIndex = true;
+                            conditionFields.removeAt(col);
+                            break;
+                        }
+                        col++;
+                    }
+                    if (col != conditionFields.size()) {
+                        break;
+                    }
+                }
+                if (!getIndex) {
+                    bindEntitiesIndex[0] << valueIndex++;
+                }
             }
         }
     }

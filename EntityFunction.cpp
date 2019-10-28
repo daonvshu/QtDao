@@ -88,7 +88,7 @@ EntityFunction & EntityFunction::expStr(const char* str) {
     expressionStr = str;
     int asIndex = expressionStr.lastIndexOf(" as ");
     if (asIndex != -1) {
-        asField = expressionStr.mid(asIndex + 4).trimmed();
+        as_field = expressionStr.mid(asIndex + 4).trimmed();
     }
     return *this;
 }
@@ -127,11 +127,15 @@ EntityFunction EntityFunction::desc() {
     return f;
 }
 
+EntityField EntityFunction::asField(const char * field) {
+    return field;
+}
+
 EntityConditions EntityFunction::createCondition() const {
     EntityField field = "";
     field.kvPairStr = expressionStr;
     field.is_funtion = true;
-    field.asField = asField;
+    field.as_field = as_field;
     field.valueList.clear();
     field.valueList << valueList;
     return EntityConditions().addField(field);
