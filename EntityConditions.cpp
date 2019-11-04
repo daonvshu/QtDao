@@ -24,7 +24,9 @@ EntityConditions & EntityConditions::operator||(const EntityFunction & oth) {
 }
 
 EntityConditions & EntityConditions::operator,(const EntityConditions & oth) {
-    this->entityFields.append(EntityField::createCombineOp(","));
+    if (!this->entityFields.isEmpty()) {
+        this->entityFields.append(EntityField::createCombineOp(","));
+    }
     this->entityFields.append(oth.entityFields);
     return *this;
 }
@@ -47,9 +49,9 @@ QString EntityConditions::getExpressionStr(bool withoutCombineOp) const {
     for (const auto& field : entityFields) {
         if (field.isCombineOpType()) {
             if (!withoutCombineOp) {
-                if (!expressStr.isEmpty()) {
+                //if (!expressStr.isEmpty()) {
                     expressStr += field.conditionCombineOp;
-                }
+                //}
             } else {
                 expressStr += ' ';
             }

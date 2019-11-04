@@ -79,8 +79,7 @@ dao::DaoJoinExecutor::DaoJoinExecutor(QList<SqlJoinBuilder::JoinInfo> joinInfo, 
     this->valueList = valueList;
 }
 
-QList<dao::DaoJoinExecutor::DaoJoinExecutorItem> dao::DaoJoinExecutor::list() {
-    QList<DaoJoinExecutorItem> dataItems;
+dao::DaoJoinExecutor::DaoJoinExecutorItemWarpper dao::DaoJoinExecutor::list() {
     auto db = ConnectionPool::openConnection();
     QSqlQuery query(db);
     query.prepare(sqlExpression);
@@ -90,6 +89,7 @@ QList<dao::DaoJoinExecutor::DaoJoinExecutorItem> dao::DaoJoinExecutor::list() {
 #ifdef PRINT_SQL_STATEMENT
     qDebug() << sqlExpression;
 #endif // PRINT_SQL_STATEMENT
+    DaoJoinExecutorItemWarpper warpperData(joinInfo);
     if (!query.exec()) {
         dao::printLog(query.lastError().text(), sqlExpression);
     } else {
@@ -99,11 +99,11 @@ QList<dao::DaoJoinExecutor::DaoJoinExecutorItem> dao::DaoJoinExecutor::list() {
             for (int i = 0; i < record.count(); i++) {
                 data.append(record.value(i));
             }
-            dataItems.append(DaoJoinExecutorItem(data, &joinInfo));
+            warpperData.append(DaoJoinExecutorItem(data, warpperData.joinInfo));
         }
     }
     ConnectionPool::closeConnection(db);
-    return dataItems;
+    return warpperData;
 }
 
 dao::DaoJoinExecutor dao::SqlJoinBuilder::build() {

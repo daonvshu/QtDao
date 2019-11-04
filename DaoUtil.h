@@ -406,12 +406,15 @@ private:
         QString sqlExpression;
         QVariantList valueList;
 
+        class DaoJoinExecutorItemWarpper;
         class DaoJoinExecutorItem {
         private:
             const QList<SqlJoinBuilder::JoinInfo>* joinInfo;
             QVariantList data;
             int bindCount = 0;
             int setCount = 0;
+
+            friend class DaoJoinExecutorItemWarpper;
 
         public:
             DaoJoinExecutorItem(const QVariantList& data, const QList<SqlJoinBuilder::JoinInfo>* joinInfo) {
@@ -434,6 +437,47 @@ private:
             }
         };
 
+        class DaoJoinExecutorItemWarpper {
+        private:
+            QList<DaoJoinExecutorItem> items;
+            QList<SqlJoinBuilder::JoinInfo> *joinInfo;
+            bool infoAttach = false;
+            friend class DaoJoinExecutor;
+
+        public:
+            DaoJoinExecutorItemWarpper(const QList<SqlJoinBuilder::JoinInfo>& joinInfo) {
+                this->joinInfo = new QList<SqlJoinBuilder::JoinInfo>(joinInfo);
+                infoAttach = true;
+            }
+
+            DaoJoinExecutorItemWarpper(const DaoJoinExecutorItemWarpper& wrapper) {
+                *this = wrapper;
+                infoAttach = false;
+            }
+
+            QList<DaoJoinExecutorItem>& list() {
+                return items;
+            }
+
+            void append(DaoJoinExecutorItem& item) {
+                items << item;
+            }
+
+            inline QList<DaoJoinExecutorItem>::iterator begin() {
+                return items.begin();
+            }
+
+            inline QList<DaoJoinExecutorItem>::iterator end() {
+                return items.end();
+            }
+
+            ~DaoJoinExecutorItemWarpper() {
+                if (!infoAttach) {
+                    delete joinInfo;
+                }
+            }
+        };
+
         friend class DaoJoinExecutorItem;
         friend class SqlJoinBuilder;
         template<typename K>
@@ -442,7 +486,7 @@ private:
         DaoJoinExecutor(QList<SqlJoinBuilder::JoinInfo> joinInfo, const QString sql, const QVariantList& valueList);
         
     public:
-        QList<DaoJoinExecutorItem> list();
+        DaoJoinExecutorItemWarpper list();
     };
 
 public:
