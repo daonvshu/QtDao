@@ -356,9 +356,14 @@ private:
             return *this;
         }
 
-        SqlJoinBuilder& subWh(const EntityConditions& condition) {
-            tmpjoinInfo.subWhCondition = condition;
+        SqlJoinBuilder& subWh() {
             return *this;
+        }
+
+        template<typename F, typename ...T>
+        SqlJoinBuilder& subWh(const F& f, const T&... t) {
+            (tmpjoinInfo.subWhCondition, f);
+            return subWh(t...);
         }
 
         template<typename T>
