@@ -351,24 +351,14 @@ private:
             return bind(t...);
         }
 
-        SqlJoinBuilder& wh() {
+        SqlJoinBuilder& wh(const EntityConditions& condition) {
+            tmpjoinInfo.whereCondition = condition;
             return *this;
         }
 
-        template<typename F, typename ...T>
-        SqlJoinBuilder& wh(const F& f, const T&... t) {
-            (tmpjoinInfo.whereCondition, f);
-            return wh(t...);
-        }
-
-        SqlJoinBuilder& subWh() {
+        SqlJoinBuilder& subWh(const EntityConditions& condition) {
+            tmpjoinInfo.subWhCondition = condition;
             return *this;
-        }
-
-        template<typename F, typename ...T>
-        SqlJoinBuilder& subWh(const F& f, const T&... t) {
-            (tmpjoinInfo.subWhCondition, f);
-            return subWh(t...);
         }
 
         template<typename T>

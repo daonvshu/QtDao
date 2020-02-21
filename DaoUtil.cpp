@@ -145,7 +145,7 @@ dao::DaoJoinExecutor dao::SqlJoinBuilder::build() {
                     joinStr = " full outer join ";
                     break;
             }
-            QString no = ('a' + (i + 1));
+            QString no = ('a' + (i++ + 1));
             joinExpression += joinStr + info.tbName + ' ' + no;
             QString whExpression = info.whereCondition.getExpressionStr();
             if (!whExpression.isEmpty()) {
