@@ -353,6 +353,7 @@ private:
         };
         QList<JoinInfo> joinInfos;
         JoinInfo tmpjoinInfo;
+        RecursiveQueryData recursiveQueryData;
 
         friend class DaoJoinExecutor;
 
@@ -417,6 +418,13 @@ private:
         template<typename T>
         SqlJoinBuilder& jnull() {
             return join<T>(JOIN_NULL);
+        }
+
+        /*used by recursive query*/
+        SqlJoinBuilder& from(RecursiveQueryData& queryData) {
+            queryData.isEmpty = false;
+            recursiveQueryData = queryData;
+            return *this;
         }
 
         DaoJoinExecutor build();

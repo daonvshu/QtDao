@@ -101,7 +101,14 @@ void QueryDemo::mutilSelect() {
         .recursiveQuery(recursive)
         .build();
     dao::clearTableOrder(uf, utf);
-    auto data = dao::_query<UserTmp>().from(recursiveQuery).wh(utf.name != QVariant()).build().list();
+    dao::_query<UserTmp>().from(recursiveQuery).wh(utf.name != QVariant()).build().list();
+
+    dao::bindTableOrder(utf, af);
+    dao::_join()
+        .from(recursiveQuery)
+        .bind(utf.age, utf.duty).jnull<UserTmp>()
+        .bind(af.province, af.city, af.street).wh(af.uid == utf.id).jinner<Address>()
+        .build().list();
 }
 
 void QueryDemo::extra() {

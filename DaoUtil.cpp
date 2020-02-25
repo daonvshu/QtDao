@@ -176,6 +176,11 @@ dao::DaoJoinExecutor dao::SqlJoinBuilder::build() {
         sql += subExpression;
     }
 
+    if (!recursiveQueryData.isEmpty) {
+        sql = recursiveQueryData.recursiveStatement + sql;
+        valueList.append(recursiveQueryData.recursiveContainValues);
+    }
+
     valueList.append(valuesInBindExpression);
     valueList.append(valuesInJoinConditions);
     valueList.append(valuesInMasterSubConditions);
