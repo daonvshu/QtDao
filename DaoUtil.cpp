@@ -117,7 +117,7 @@ dao::DaoJoinExecutor dao::SqlJoinBuilder::build() {
     QVariantList valueList;
     //select (bindExpression) from (master) a (joinExpress) (subExpression)
     const JoinInfo* joinMasterTableInfo;
-    QString bindExpression, joinExpression, subExpression;
+    QString bindExpression, joinExpression, subExpression, subWhExpression;
     QVariantList valuesInBindExpression, valuesInJoinConditions, valuesInMasterSubConditions;
     int i = 0;
     for (const auto& info : joinInfos) {
@@ -131,10 +131,7 @@ dao::DaoJoinExecutor dao::SqlJoinBuilder::build() {
         if (info.joinType == JOIN_NULL) {
             joinMasterTableInfo = &info;
             subExpression += info.whereCondition.getExpressionStr();
-            QString subWhExpression = info.subWhCondition.getExpressionStr(true);
-            if (!subWhExpression.isEmpty()) {
-                subExpression += ' ' + subWhExpression;
-            }
+            subWhExpression = info.subWhCondition.getExpressionStr(true);
             valuesInMasterSubConditions.append(info.whereCondition.getValueList());
             valuesInMasterSubConditions.append(info.subWhCondition.getValueList());
         } else {
@@ -159,9 +156,9 @@ dao::DaoJoinExecutor dao::SqlJoinBuilder::build() {
             QString whExpression = info.whereCondition.getExpressionStr();
             if (!whExpression.isEmpty()) {
                 joinExpression += " on " + info.whereCondition.getExpressionStr();
-                QString subWhExpression = info.subWhCondition.getExpressionStr(true);
-                if (!subWhExpression.isEmpty()) {
-                    joinExpression += ' ' + subWhExpression;
+                QString subWhExp = info.subWhCondition.getExpressionStr(true);
+                if (!subWhExp.isEmpty()) {
+                    joinExpression += ' ' + subWhExp;
                 }
             }
             valuesInJoinConditions.append(info.whereCondition.getValueList());
@@ -174,6 +171,9 @@ dao::DaoJoinExecutor dao::SqlJoinBuilder::build() {
     if (!subExpression.isEmpty()) {
         sql += " where ";
         sql += subExpression;
+    }
+    if (!subWhExpression.isEmpty()) {
+        sql += ' ' + subWhExpression;
     }
 
     if (!recursiveQueryData.isEmpty) {
