@@ -18,6 +18,12 @@
 #define PRINT_SQL_STATEMENT
 
 class dao {
+public:
+    enum RecursiveQueryUnionMode {
+        Union,
+        Union_ALL,
+    };
+
 private:
     enum OperateType {
         OPERATE_QUERY,
@@ -28,20 +34,32 @@ private:
         OPERATE_COUNT,
     };
 
+    struct RecursiveQueryData {
+        QString recursiveStatement;//递归查询语句
+        QVariantList recursiveContainValues;//递归查询语句中使用的值列表
+        bool isEmpty;//是否用了递归查询
+
+        RecursiveQueryData() {
+            isEmpty = true;
+        }
+    };
+
     struct ExecutorData {
-        //operate (bindCondition|*) (into|from) (bindTableName) (set setCondition) (where whereCondition subWhereCondition)
+        //(recursive statement) operate (bindCondition|*) (into|from) (bindTableName) (set setCondition) (where whereCondition subWhereCondition)
         OperateType operateType;
         EntityConditions bindCondition, setCondition, whereCondition, subWhereCondition;
         bool fromExtra;//from嵌套
         QString bindTableName;
         QVariantList bindTableNameContainValues;//from嵌套查询中的值列表
         QList<EntityConditions> bindTableNameJoinEntityGroup;//from-join嵌套查询中的join-bind字段列表
+        RecursiveQueryData recursiveQueryData;//递归查询数据
     };
 
     template<typename K> class SqlBuilder;
+    template<typename E> class SqlRecursiveQueryBuilder;
     class DaoExecutor {
     public:
-        DaoExecutor(ExecutorData* executorData);
+        DaoExecutor(const ExecutorData& executorData);
 
     protected:
         /*executor prepare*/
@@ -70,7 +88,7 @@ private:
         }
 
     protected:
-        ExecutorData* executorData;
+        ExecutorData executorData;
         QString sqlExpression;
         QVariantList valueList;
 
@@ -83,15 +101,18 @@ private:
     protected:
         template<typename T>
         QString getTableNameFromTemplate() {
-            if (executorData->bindTableName.isEmpty()) {
+            if (executorData.bindTableName.isEmpty()) {
                 return static_cast<T*>(0)->getTableName();
             } else {
-                return '(' + executorData->bindTableName + ") as res_" + static_cast<T*>(0)->getTableName();
+                return '(' + executorData.bindTableName + ") as res_" + static_cast<T*>(0)->getTableName();
             }
         }
 
         template<typename K>
         friend class SqlBuilder;
+
+        template<typename E>
+        friend class SqlRecursiveQueryBuilder;
     };
 
     template<typename E, typename ExecutorNext>
@@ -101,7 +122,7 @@ private:
         
     public:
         QString getTableName() override {
-            if (executorData->bindTableName.isEmpty()) {
+            if (executorData.bindTableName.isEmpty()) {
                 auto index = tableOrder++;
                 auto subTbName = ExecutorNext::getTableName();
                 if (subTbName.isEmpty()) {
@@ -109,14 +130,14 @@ private:
                 }
                 return getTableNameFromTemplate<E>() + ' ' + ('a' + index) + ',' + subTbName;
             } else {
-                return '(' + executorData->bindTableName + ") as res_" + static_cast<E*>(0)->getTableName();
+                return '(' + executorData.bindTableName + ") as res_" + static_cast<E*>(0)->getTableName();
             }
         }
     };
 
     class MutilTableNameCreatorEnd : public DaoExecutor {
     public:
-        MutilTableNameCreatorEnd(ExecutorData* executorData) : DaoExecutor(executorData) {
+        MutilTableNameCreatorEnd(const ExecutorData& executorData) : DaoExecutor(executorData) {
             tableOrder = 0;
         };
 
@@ -306,6 +327,13 @@ private:
             executorData.fromExtra = true;
             return *this;
         }
+
+        /*used by recursive query*/
+        SqlBuilder& from(RecursiveQueryData& queryData) {
+            queryData.isEmpty = false;
+            executorData.recursiveQueryData = queryData;
+            return *this;
+        }
     };
 
     class SqlJoinBuilder {
@@ -477,6 +505,8 @@ private:
         friend class SqlJoinBuilder;
         template<typename K>
         friend class SqlBuilder;
+        template<typename E>
+        friend class SqlRecursiveQueryBuilder;
 
         DaoJoinExecutor(QList<SqlJoinBuilder::JoinInfo> joinInfo, const QString sql, const QVariantList& valueList);
         
@@ -484,10 +514,51 @@ private:
         DaoJoinExecutorItemWarpper list();
     };
 
+    template<typename E>
+    class SqlRecursiveQueryBuilder {
+    private:
+        QString initialSelect;
+        QVariantList initialContainValues;
+        QString recursiveSelect;
+        QVariantList recursiveContainValues;
+
+    public:
+        SqlRecursiveQueryBuilder& initialQuery(DaoExecutor& executor) {
+            executor.createSqlHead();
+            executor.concatSqlStatement();
+            initialSelect = executor.sqlExpression;
+            executor.mergeValueList();
+            initialContainValues << executor.valueList;
+            return *this;
+        }
+
+        SqlRecursiveQueryBuilder& recursiveQuery(DaoJoinExecutor& executor) {
+            recursiveSelect = executor.sqlExpression;
+            recursiveContainValues << executor.valueList;
+            return *this;
+        }
+
+        //需要子类继承entity且覆盖getTableName函数
+        RecursiveQueryData build(RecursiveQueryUnionMode unionMode = Union_ALL) {
+            RecursiveQueryData queryData;
+            queryData.recursiveContainValues << initialContainValues;
+            queryData.recursiveContainValues << recursiveContainValues;
+            queryData.recursiveStatement = QString("with recursive %1 as(%2 %3 %4)")
+                .arg(static_cast<E*>(0)->getTableName(), initialSelect, unionMode == Union ? "union" : "union all", recursiveSelect);
+            return queryData;
+        }
+    };
+
 public:
     template<typename E>
     static SqlBuilder<DaoQueryExecutor<E>> _query() {
         return SqlBuilder<DaoQueryExecutor<E>>(OPERATE_QUERY);
+    }
+
+    /*only sqlite support!*/
+    template<typename E>
+    static SqlRecursiveQueryBuilder<E> _recursive_query() {
+        return SqlRecursiveQueryBuilder<E>();
     }
 
     template<typename...E>
@@ -786,12 +857,12 @@ inline T dao::DaoQueryExecutor<T>::unique(bool & exist) {
         if (query.next()) {
             exist = true;
             QSqlRecord record = query.record();
-            if (executorData->bindCondition.getExpressionStr().isEmpty()) {
+            if (executorData.bindCondition.getExpressionStr().isEmpty()) {
                 for (int i = 0; i < record.count(); i++) {
                     entity.bindValue(record.fieldName(i), record.value(i));
                 }
             } else {
-                auto bindFields = executorData->bindCondition.getBindFields();
+                auto bindFields = executorData.bindCondition.getBindFields();
                 for (const auto& f : bindFields) {
                     entity.bindValue(f, record.value(f));
                 }
@@ -810,12 +881,12 @@ inline QList<T> dao::DaoQueryExecutor<T>::list() {
     exec([&](auto& query) {
         while (query.next()) {
             QSqlRecord record = query.record();
-            if (executorData->bindCondition.getExpressionStr().isEmpty()) {
+            if (executorData.bindCondition.getExpressionStr().isEmpty()) {
                 for (int i = 0; i < record.count(); i++) {
                     entity.bindValue(record.fieldName(i), record.value(i));
                 }
             } else {
-                auto bindFields = executorData->bindCondition.getBindFields();
+                auto bindFields = executorData.bindCondition.getBindFields();
                 for (const auto& f : bindFields) {
                     entity.bindValue(f, record.value(f));
                 }
@@ -889,11 +960,11 @@ template<typename E, typename ...T>
 inline QVector<QList<int>> dao::DaoQueryMutilExecutor<E, T...>::getBindEntityIndex() {
     QVector<QList<int>> bindEntitiesIndex;
     bindEntitiesIndex.resize(sizeof...(T) + 1);
-    if (!executorData->fromExtra) {
-        if (executorData->bindCondition.getExpressionStr().isEmpty()) {
+    if (!executorData.fromExtra) {
+        if (executorData.bindCondition.getExpressionStr().isEmpty()) {
             getFieldsIndex(0, bindEntitiesIndex);
         } else {
-            const QList<EntityField>& entityFields = executorData->bindCondition.getBindEntities();
+            const QList<EntityField>& entityFields = executorData.bindCondition.getBindEntities();
             int valueIndex = 0;
             for (const auto& field : entityFields) {
                 if (!field.fieldWithoutJoinPredix().isEmpty() || field.isFuntion()) {
@@ -903,8 +974,8 @@ inline QVector<QList<int>> dao::DaoQueryMutilExecutor<E, T...>::getBindEntityInd
         }
     } else {
         int valueIndex = 0;
-        QList<EntityConditions> bindTableNameJoinEntityGroup = executorData->bindTableNameJoinEntityGroup;
-        if (executorData->bindCondition.getExpressionStr().isEmpty()) {
+        QList<EntityConditions> bindTableNameJoinEntityGroup = executorData.bindTableNameJoinEntityGroup;
+        if (executorData.bindCondition.getExpressionStr().isEmpty()) {
             for (int i = 0; i < bindTableNameJoinEntityGroup.size(); i++) {
                 auto condition = bindTableNameJoinEntityGroup.at(i);
                 condition.clearCombineOp();
@@ -916,7 +987,7 @@ inline QVector<QList<int>> dao::DaoQueryMutilExecutor<E, T...>::getBindEntityInd
                 }
             }
         } else {
-            QStringList entityFieldsStr = executorData->bindCondition.getBindFields(true);
+            QStringList entityFieldsStr = executorData.bindCondition.getBindFields(true);
             for (const auto& fieldName : entityFieldsStr) {
                 bool getIndex = false;
                 for (int i = 0; i < bindTableNameJoinEntityGroup.size(); i++) {
@@ -1043,7 +1114,7 @@ inline bool dao::DaoUpdateExecutor<T>::updateBatch() {
 
 template<typename T>
 inline bool dao::DaoUpdateExecutor<T>::update(T & entity) {
-    Q_ASSERT_X(executorData->whereCondition.getExpressionStr().isEmpty(),
+    Q_ASSERT_X(executorData.whereCondition.getExpressionStr().isEmpty(),
                "dao::_update().update(T&)", u8"不允许使用where条件");
     createSqlHead();
 
@@ -1055,7 +1126,7 @@ inline bool dao::DaoUpdateExecutor<T>::update(T & entity) {
     while (col != fields.size()) {
         if (idField == fields.at(col)) {
             fields.takeAt(col); 
-            executorData->whereCondition = EntityField(idField) == entity.getId();
+            executorData.whereCondition = EntityField(idField) == entity.getId();
             entityData.takeAt(col);
             break;
         }
@@ -1068,7 +1139,7 @@ inline bool dao::DaoUpdateExecutor<T>::update(T & entity) {
             continue;
         (conditions, EntityField(field) == entityData.at(i));
     }
-    executorData->setCondition = conditions;
+    executorData.setCondition = conditions;
     concatSqlStatement();
 
     return exec();
@@ -1079,7 +1150,7 @@ inline bool dao::DaoUpdateExecutor<T>::updateBatch(QList<T>& entities) {
     if (entities.isEmpty())
         return true;
 
-    Q_ASSERT_X(executorData->whereCondition.getExpressionStr().isEmpty(),
+    Q_ASSERT_X(executorData.whereCondition.getExpressionStr().isEmpty(),
                "dao::_update().updateBatch(QList<T>&)", u8"不允许使用where条件");
 
     createSqlHead();
@@ -1109,7 +1180,7 @@ inline bool dao::DaoUpdateExecutor<T>::updateBatch(QList<T>& entities) {
         }
         col++;
     }
-    executorData->whereCondition = EntityField(idField) == idList;
+    executorData.whereCondition = EntityField(idField) == idList;
     EntityConditions conditions;
     for (int i = 0; i < fields.size(); i++) {
         auto field = fields.at(i);
@@ -1118,7 +1189,7 @@ inline bool dao::DaoUpdateExecutor<T>::updateBatch(QList<T>& entities) {
         (conditions, EntityField(field) == entityDataList.at(i));
     }
 
-    executorData->setCondition = conditions;
+    executorData.setCondition = conditions;
     concatSqlStatement();
 
     return execBatch();
@@ -1142,7 +1213,7 @@ inline bool dao::DaoDeleteExecutor<T>::deleteBatch() {
 //********************** SqlBuilder **********************
 template<typename K>
 inline K dao::SqlBuilder<K>::build() {
-    return K(&executorData); 
+    return K(executorData); 
 }
 
 //********************** SqlClient **********************

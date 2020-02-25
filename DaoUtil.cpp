@@ -6,13 +6,13 @@ int dao::bindCount = 0;
 DbLoader::SqlCfg DbLoader::sqlCfg;
 DbLoader::SqlClient* DbLoader::sqlClient = nullptr;
 
-dao::DaoExecutor::DaoExecutor(ExecutorData* executorData) {
+dao::DaoExecutor::DaoExecutor(const ExecutorData& executorData) {
     this->executorData = executorData;
 }
 
 void dao::DaoExecutor::createSqlHead() {
-    auto bindSqlExp = executorData->bindCondition.getExpressionStr();
-    switch (executorData->operateType) {
+    auto bindSqlExp = executorData.bindCondition.getExpressionStr();
+    switch (executorData.operateType) {
         case dao::OPERATE_QUERY:
             sqlExpression = "select ";
             sqlExpression += bindSqlExp.isEmpty() ? "*" : bindSqlExp;
@@ -37,12 +37,15 @@ void dao::DaoExecutor::createSqlHead() {
             break;
     }
     sqlExpression += getTableName();
+    if (!executorData.recursiveQueryData.isEmpty) {
+        sqlExpression = executorData.recursiveQueryData.recursiveStatement + sqlExpression;
+    }
 }
 
 void dao::DaoExecutor::concatSqlStatement() {
-    auto setSqlExp = executorData->setCondition.getExpressionStr();
-    auto whereSqlExp = executorData->whereCondition.getExpressionStr();
-    auto subWhereSqlExp = executorData->subWhereCondition.getExpressionStr(true);
+    auto setSqlExp = executorData.setCondition.getExpressionStr();
+    auto whereSqlExp = executorData.whereCondition.getExpressionStr();
+    auto subWhereSqlExp = executorData.subWhereCondition.getExpressionStr(true);
     
     if (!setSqlExp.isEmpty()) {
         sqlExpression += " set ";
@@ -59,11 +62,14 @@ void dao::DaoExecutor::concatSqlStatement() {
 }
 
 void dao::DaoExecutor::mergeValueList() {
-    valueList.append(executorData->bindCondition.getValueList());
-    valueList.append(executorData->bindTableNameContainValues);
-    valueList.append(executorData->setCondition.getValueList());
-    valueList.append(executorData->whereCondition.getValueList());
-    valueList.append(executorData->subWhereCondition.getValueList());
+    if (!executorData.recursiveQueryData.isEmpty) {
+        valueList.append(executorData.recursiveQueryData.recursiveContainValues);
+    }
+    valueList.append(executorData.bindCondition.getValueList());
+    valueList.append(executorData.bindTableNameContainValues);
+    valueList.append(executorData.setCondition.getValueList());
+    valueList.append(executorData.whereCondition.getValueList());
+    valueList.append(executorData.subWhereCondition.getValueList());
 }
 
 void dao::DaoExecutor::bindValue(QSqlQuery & query) {
@@ -115,8 +121,11 @@ dao::DaoJoinExecutor dao::SqlJoinBuilder::build() {
     QVariantList valuesInBindExpression, valuesInJoinConditions, valuesInMasterSubConditions;
     int i = 0;
     for (const auto& info : joinInfos) {
-        bindExpression += info.bindCondition.getExpressionStr();
-        bindExpression += ",";
+        auto bindExpStr = info.bindCondition.getExpressionStr();
+        bindExpression += bindExpStr;
+        if (!bindExpStr.isEmpty()) {
+            bindExpression += ",";
+        }
         valuesInBindExpression.append(info.bindCondition.getValueList());
 
         if (info.joinType == JOIN_NULL) {

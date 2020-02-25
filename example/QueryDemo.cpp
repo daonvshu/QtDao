@@ -81,8 +81,27 @@ void QueryDemo::mutilSelect() {
     dao::_query_mutil<User, Address>().from(subQuery2)
         .bind(uf.name, uf.age, af.asField("addr_city"), af.fun().expStr("length(%1) as len").field(af.province))
         .wh(af.asField("addr_city") != QVariant())
-        .subWh(uf.having(uf.age < 100))
+        //.subWh(uf.having(uf.age < 100))
         .build().list(userList, addressList);
+
+    //recursive query
+    class UserTmp : public User {
+    public:
+        static QString getTableName() {
+            return QStringLiteral("recursive_user");
+        }
+    };
+
+    UserTmp::Fields utf;
+    auto init = dao::_query<User>().wh(uf.name == "teacher").build();
+    dao::bindTableOrder(uf, utf);
+    auto recursive = dao::_join().bind(uf.all()).jnull<User>().bind().wh(utf.duty == uf.name).jinner<UserTmp>().build();
+    auto recursiveQuery = dao::_recursive_query<UserTmp>()
+        .initialQuery(init)
+        .recursiveQuery(recursive)
+        .build();
+    dao::clearTableOrder(uf, utf);
+    auto data = dao::_query<UserTmp>().from(recursiveQuery).wh(utf.name != QVariant()).build().list();
 }
 
 void QueryDemo::extra() {
