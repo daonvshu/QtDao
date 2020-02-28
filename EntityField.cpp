@@ -75,7 +75,7 @@ EntityConditions EntityField::createCondtionWithoutKv() const {
 }
 
 EntityConditions EntityField::in(const QVariantList & v) {
-    QString kvStr = QString("%1 in (&2").arg(fieldWithJoinPrefix(), QString("?,").repeated(v.size()));
+    QString kvStr = QString("%1 in (%2").arg(fieldWithJoinPrefix(), QString("?,").repeated(v.size()));
     kvStr = kvStr.left(kvStr.length() - 1);
     kvStr.append(')');
     return EntityConditions().addField(bindValue(kvStr, v));
