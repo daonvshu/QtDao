@@ -365,11 +365,26 @@ bool DbCreatorHelper::dropTable(const QString & tb) {
 }
 
 bool DbCreatorHelper::truncateTable(const QString & tb) {
-    QString sql = "truncate table " + tb;
     bool success = true;
-    execSql(sql, [&](auto& lastErr) {
-        qDebug() << "truncate table fail, err = " << lastErr;
-        success = false;
-    });
+    if (DbLoader::isSqlite()) {
+        QString sql = "delete from " + tb;
+        execSql(sql, [&](auto& lastErr) {
+            qDebug() << "delete table fail, err = " << lastErr;
+            success = false;
+        });
+        if (success) {
+            sql = QString("update sqlite_sequence set seq=0 where name='%1'").arg(tb);
+            execSql(sql, [&](auto& lastErr) {
+                qDebug() << "update sequence fail, err = " << lastErr;
+                success = false;
+            });
+        }
+    } else {
+        QString sql = "truncate table " + tb;
+        execSql(sql, [&](auto& lastErr) {
+            qDebug() << "truncate table fail, err = " << lastErr;
+            success = false;
+        });
+    }
     return success;
 }
