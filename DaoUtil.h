@@ -19,7 +19,7 @@
 
 class dao {
 public:
-    enum RecursiveQueryUnionMode {
+    enum UnionMode {
         Union,
         Union_ALL,
     };
@@ -169,6 +169,7 @@ private:
         using DaoExecutor::DaoExecutor;
 
         T unique(bool& exist);
+        T unique();
 
         QList<T> list();
 
@@ -547,7 +548,7 @@ private:
         }
 
         //需要子类继承entity且覆盖getTableName函数
-        RecursiveQueryData build(RecursiveQueryUnionMode unionMode = Union_ALL) {
+        RecursiveQueryData build(UnionMode unionMode = Union_ALL) {
             RecursiveQueryData queryData;
             queryData.recursiveContainValues << initialContainValues;
             queryData.recursiveContainValues << recursiveContainValues;
@@ -878,6 +879,12 @@ inline T dao::DaoQueryExecutor<T>::unique(bool & exist) {
         }
     });
     return entity;
+}
+
+template<typename T>
+inline T dao::DaoQueryExecutor<T>::unique() {
+    bool exist;
+    return unique(exist);
 }
 
 template<typename T>
