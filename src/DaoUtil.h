@@ -3,14 +3,12 @@
 #include "ConnectionPool.h"
 #include <qdebug.h>
 #include <qfile.h>
-#include <qerrormessage.h>
 #include "EntityField.h"
 #include <qobject.h>
 #include <qdom.h>
 #include <qsettings.h>
 #include <qstandardpaths.h>
 #include <qfile.h>
-#include <qapplication.h>
 
 #define DB_SETTING_HOST		"host"
 #define DB_SETTING_VERSION	"version"

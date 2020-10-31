@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="dao">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="tb">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="item">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="type" use="required" >
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="tinyint"/>
+                        <xs:enumeration value="smallint" />
+                        <xs:enumeration value="mediumint" />
+                        <xs:enumeration value="int" />
+                        <xs:enumeration value="bigint" />
+                        <xs:enumeration value="float" />
+                        <xs:enumeration value="double" />
+                        <xs:enumeration value="decimal" />
+                        <xs:enumeration value="date" />
+                        <xs:enumeration value="time" />
+                        <xs:enumeration value="datetime" />
+                        <xs:enumeration value="timestamp" />
+                        <xs:enumeration value="char" />
+                        <xs:enumeration value="varchar" />
+                        <xs:enumeration value="tinyblob" />
+                        <xs:enumeration value="tinytext" />
+                        <xs:enumeration value="blob" />
+                        <xs:enumeration value="text" />
+                        <xs:enumeration value="mediumblob" />
+                        <xs:enumeration value="mediumtext" />
+                        <xs:enumeration value="longblob" />
+                        <xs:enumeration value="longtext" />
+                        <xs:enumeration value="variant" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="bitsize" type="xs:int" use="optional" />
+                  <xs:attribute name="note" type="xs:string" use="optional" />
+                  <xs:attribute name="key" use="optional">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="id"/>
+                        <xs:enumeration value="index"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="autoincrement" type="xs:boolean" use="optional"/>
+                  <xs:attribute name="transient" type="xs:boolean" use="optional"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" name="index">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="field" type="xs:string" maxOccurs="unbounded"/>
+                  </xs:sequence>
+                  <xs:attribute name="type" default="index" use="optional" >
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="index" />
+                        <xs:enumeration value="unique index" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="prefix" type="xs:string" use="required" />
+      <xs:attribute name="db" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="mysql"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="engine" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="MyISAM"/>
+            <xs:enumeration value="InnoDB"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

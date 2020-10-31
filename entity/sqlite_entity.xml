@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dao prefix="ts_" db="sqlite">
+  <tb name="sqlitetb">
+    <item name="id" type="integer" key="id" note="主键" />
+    <item name="number" type="text" note="number"/>
+    <index type="unique index" >
+      <field>id</field>
+      <field>src</field>
+    </index>
+  </tb>
+</dao>
