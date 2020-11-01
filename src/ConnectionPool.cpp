@@ -2,8 +2,9 @@
 #include <qstandardpaths.h>
 #include <qthread.h>
 #include <qdebug.h>
-#include "DaoUtil.h"
-//http://blog.csdn.net/qq_28796345/article/details/51586330
+
+#include "DbLoader.h"
+
 QMutex ConnectionPool::mutex;
 QWaitCondition ConnectionPool::waitConnection;
 ConnectionPool* ConnectionPool::instance = nullptr;
@@ -32,7 +33,7 @@ ConnectionPool::~ConnectionPool() {
 	QString name = QSqlDatabase::database().connectionName();
 	QSqlDatabase::removeDatabase(name);
 
-	connectionThreadId.clear();
+	//connectionThreadId.clear();
 }
 
 ConnectionPool& ConnectionPool::getInstance() {
@@ -54,7 +55,7 @@ void ConnectionPool::release() {
 QSqlDatabase ConnectionPool::openConnection() {
 	ConnectionPool& pool = ConnectionPool::getInstance();
 	QString connectionName;
-
+	
 	QMutexLocker locker(&mutex);
 	// 已创建连接数
 	int connectionCount = pool.unusedConnectionNames.size() + pool.usedConnectionNames.size();
@@ -92,17 +93,31 @@ QSqlDatabase ConnectionPool::openConnection() {
 	// 有效的连接才放入 usedConnectionNames
 	if (db.isOpen()) {
 		pool.usedConnectionNames.enqueue(connectionName);
-		pool.connectionThreadId.insert(connectionName, QThread::currentThreadId());
+		//pool.connectionThreadId.insert(connectionName, QThread::currentThreadId());
 	}
 
 	return db;
 }
 
-void ConnectionPool::closeConnection(QSqlDatabase connection) {
+void ConnectionPool::closeConnection(const QSqlDatabase& connection) {
 	ConnectionPool& pool = ConnectionPool::getInstance();
 	QString connectionName = connection.connectionName();
-	//qDebug() << "close connection:" << connectionName;
 	// 如果是我们创建的连接，从 used 里删除，放入 unused 里
+	if (pool.usedConnectionNames.contains(connectionName)) {
+		mutex.lock();
+		pool.usedConnectionNames.removeOne(connectionName);
+		pool.unusedConnectionNames.enqueue(connectionName);
+		mutex.unlock();
+		waitConnection.wakeOne();
+	}
+}
+
+void ConnectionPool::closeConnection(const QString& connectionName) {
+	ConnectionPool& pool = ConnectionPool::getInstance();
+	if (QThread::currentThread() != qApp->thread()) {
+		//释放工作线程连接
+		QSqlDatabase::removeDatabase(connectionName);
+	}
 	if (pool.usedConnectionNames.contains(connectionName)) {
 		mutex.lock();
 		pool.usedConnectionNames.removeOne(connectionName);
@@ -114,17 +129,17 @@ void ConnectionPool::closeConnection(QSqlDatabase connection) {
 
 QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
 	// 检查连接名上次对应的线程是否是当前线程
-	if (connectionThreadId.contains(connectionName)) {
+	/*if (connectionThreadId.contains(connectionName)) {
 		if (connectionThreadId.value(connectionName) != QThread::currentThreadId()) {
 			QSqlDatabase::removeDatabase(connectionName);
 			connectionThreadId.remove(connectionName);
 		}
-	}
+	}*/
 
 	// 连接已经创建过了，复用它，而不是重新创建
 	if (QSqlDatabase::contains(connectionName)) {
 		QSqlDatabase db1 = QSqlDatabase::database(connectionName);
-		db1.setHostName(DbLoader::getConfigure().dbHost);
+		db1.setHostName(DbLoader::getConfig().dbHost);
 
 		if (testOnBorrow) {
 			// 返回连接前访问数据库，如果连接断开，重新建立连接
@@ -141,7 +156,7 @@ QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
 	}
 
 	// 创建一个新的连接
-	QSqlDatabase db = prepareConnect(connectionName, DbLoader::getConfigure().dbName);
+	QSqlDatabase db = prepareConnect(connectionName, DbLoader::getConfig().dbName);
 	if (!db.open()) {
 		qDebug() << "Open datatabase error:" << db.lastError().text();
 		return QSqlDatabase();
@@ -151,20 +166,25 @@ QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
 }
 
 QSqlDatabase ConnectionPool::prepareConnect(const QString& connectName, const QString& dbName) {
-	QSqlDatabase db = QSqlDatabase::addDatabase(DbLoader::getConfigure().dbType, connectName);
-	if (DbLoader::isSqlite()) {
+	QSqlDatabase db = QSqlDatabase::addDatabase(DbLoader::getConfig().dbType, connectName);
+	if (DbLoader::getConfig().isSqlite()) {
 		db.setDatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "\\" + dbName + ".db");
 	} else {
-		db.setDatabaseName(dbName);
-		db.setUserName(DbLoader::getConfigure().dbUName);
-		db.setPassword(DbLoader::getConfigure().dbPcc);
+		if (DbLoader::getConfig().isSqlServer()) {
+			db.setDatabaseName(QString("DRIVER={SQL SERVER};SERVER=%1;DATABASE=%2")
+				.arg(DbLoader::getConfig().dbHost).arg(dbName));
+		} else {
+			db.setDatabaseName(dbName);
+		}
+		db.setUserName(DbLoader::getConfig().dbUName);
+		db.setPassword(DbLoader::getConfig().dbPcc);
 	}
-	if (!DbLoader::isSqlite()) {
-		db.setHostName(DbLoader::getConfigure().dbHost);
-		db.setPort(DbLoader::getConfigure().dbPort);
+	if (DbLoader::getConfig().isMysql()) {
+		db.setHostName(DbLoader::getConfig().dbHost);
+		db.setPort(DbLoader::getConfig().dbPort);
 	}
-	if (!DbLoader::getConfigure().dbOption.isEmpty()) {
-		db.setConnectOptions(DbLoader::getConfigure().dbOption);
+	if (!DbLoader::getConfig().dbOption.isEmpty()) {
+		db.setConnectOptions(DbLoader::getConfig().dbOption);
 	}
 	return db;
 }

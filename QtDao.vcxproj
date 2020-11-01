@@ -48,7 +48,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
     <QtInstall>msvc2017</QtInstall>
-    <QtModules>core;sql;xml</QtModules>
+    <QtModules>core;sql;testlib;xml</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
@@ -88,11 +88,15 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\ConnectionPool.cpp" />
-    <ClCompile Include="src\DaoUtil.cpp" />
+    <ClCompile Include="src\DaoUtil.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\DbLoader.cpp" />
     <ClCompile Include="src\EntityConditions.cpp" />
     <ClCompile Include="src\EntityField.cpp" />
     <ClCompile Include="src\EntityFunction.cpp" />
+    <ClCompile Include="src\qtdao.cpp" />
+    <ClCompile Include="test\ConnectionPoolTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dao_cfg.h">
@@ -105,7 +109,9 @@
       <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
     </ClInclude>
     <ClInclude Include="src\ConnectionPool.h" />
-    <ClInclude Include="src\DaoUtil.h" />
+    <ClInclude Include="src\DaoUtil.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="src\DbConfig.h" />
     <ClInclude Include="src\DbExceptionHandler.h" />
     <ClInclude Include="src\DbLoader.h" />
@@ -113,9 +119,11 @@
     <ClInclude Include="src\EntityConditions.h" />
     <ClInclude Include="src\EntityField.h" />
     <ClInclude Include="src\EntityFunction.h" />
+    <ClInclude Include="test\RunnableHandler.h" />
+    <QtMoc Include="test\ConnectionPoolTest.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="entity\dao_cfg.xml" />
+    <Xml Include="entity\sqlite_cfg.xml" />
     <Xml Include="entity\dao_entity.xml" />
     <Xml Include="entity\mysql_entity.xml" />
     <Xml Include="entity\sqlite_entity.xml" />
@@ -133,6 +141,9 @@
     <Xsd Include="entity\sqlite_entity.xsd">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </Xsd>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="resource.qrc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

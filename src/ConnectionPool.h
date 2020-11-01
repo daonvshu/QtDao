@@ -10,7 +10,8 @@ class ConnectionPool {
 public:
 	static void release(); // 关闭所有的数据库连接
 	static QSqlDatabase openConnection();                 // 获取数据库连接
-	static void closeConnection(QSqlDatabase connection); // 释放数据库连接回连接池
+	static void closeConnection(const QSqlDatabase& connection); // 释放数据库连接回连接池
+	static void closeConnection(const QString& connectionName);
 
 	~ConnectionPool();
 
@@ -20,15 +21,12 @@ private:
 	static ConnectionPool& getInstance();
 
 	ConnectionPool();
-	ConnectionPool(const ConnectionPool &other);
-	ConnectionPool& operator=(const ConnectionPool &other);
 	QSqlDatabase createConnection(const QString &connectionName); // 创建数据库连接
 
 	QQueue<QString> usedConnectionNames;   // 已使用的数据库连接名
 	QQueue<QString> unusedConnectionNames; // 未使用的数据库连接名
-	QMap<QString, Qt::HANDLE> connectionThreadId;//连接名上次连接对应的线程id
+	QMap<Qt::HANDLE, QString> keepConnections;//保存不同线程中的连接
 
-										   // 数据库信息
 	bool    testOnBorrow;    // 取得连接的时候验证连接是否有效
 	QString testOnBorrowSql; // 测试访问数据库的 SQL
 

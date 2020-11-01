@@ -1,18 +1,5 @@
 #include "DaoUtil.h"
 
-#include "DbLoader.h"
-#include "DbExceptionHandler.h"
-
-class DefaultExceptionHandler : public DbExceptionHandler {
-public:
-    void initDbFail(const char* reason) {}
-};
-
-DbConfig DbLoader::config;
-DbInitClient* DbLoader::initClient = nullptr;
-
-DbExceptionHandler* DbExceptionHandler::exceptionHandler = new DefaultExceptionHandler;
-
 dao::ErrPrintType dao::pType = dao::ETYPE_CONSOLE;
 int dao::bindCount = 0;
 

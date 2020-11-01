@@ -56,6 +56,12 @@
     <ClCompile Include="src\DbLoader.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
+    <ClCompile Include="test\ConnectionPoolTest.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="src\qtdao.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ConnectionPool.h">
@@ -85,6 +91,9 @@
     <ClInclude Include="src\DbExceptionHandler.h">
       <Filter>Header Files\src</Filter>
     </ClInclude>
+    <ClInclude Include="test\RunnableHandler.h">
+      <Filter>Header Files\test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\dao_entity.xml">
@@ -96,7 +105,7 @@
     <Xml Include="entity\mysql_entity.xml">
       <Filter>Header Files\entity</Filter>
     </Xml>
-    <Xml Include="entity\dao_cfg.xml">
+    <Xml Include="entity\sqlite_cfg.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>
@@ -113,5 +122,15 @@
     <Xsd Include="entity\dao_cfg.xsd">
       <Filter>Resource Files</Filter>
     </Xsd>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="test\ConnectionPoolTest.h">
+      <Filter>Header Files\test</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="resource.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
   </ItemGroup>
 </Project>
