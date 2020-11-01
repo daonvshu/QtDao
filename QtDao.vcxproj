@@ -89,31 +89,49 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\ConnectionPool.cpp" />
     <ClCompile Include="src\DaoUtil.cpp" />
+    <ClCompile Include="src\DbLoader.cpp" />
     <ClCompile Include="src\EntityConditions.cpp" />
     <ClCompile Include="src\EntityField.cpp" />
     <ClCompile Include="src\EntityFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dao_cfg.h">
+      <DependentUpon>entity\dao_cfg.xsd</DependentUpon>
+    </ClInclude>
     <ClInclude Include="dao_entity.h">
       <DependentUpon>entity\dao_entity.xsd</DependentUpon>
     </ClInclude>
+    <ClInclude Include="sqlite_entity.h">
+      <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
+    </ClInclude>
     <ClInclude Include="src\ConnectionPool.h" />
     <ClInclude Include="src\DaoUtil.h" />
+    <ClInclude Include="src\DbConfig.h" />
+    <ClInclude Include="src\DbExceptionHandler.h" />
+    <ClInclude Include="src\DbLoader.h" />
     <ClInclude Include="src\EntityConditionInterface.h" />
     <ClInclude Include="src\EntityConditions.h" />
     <ClInclude Include="src\EntityField.h" />
     <ClInclude Include="src\EntityFunction.h" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="entity\dao_cfg.xml" />
     <Xml Include="entity\dao_entity.xml" />
+    <Xml Include="entity\mysql_entity.xml" />
     <Xml Include="entity\sqlite_entity.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="entity\dao_entity.xsd" />
-    <Xsd Include="entity\mysql_entity.xsd" />
+    <Xsd Include="entity\dao_cfg.xsd">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </Xsd>
+    <Xsd Include="entity\dao_entity.xsd">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </Xsd>
+    <Xsd Include="entity\mysql_entity.xsd">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </Xsd>
     <Xsd Include="entity\sqlite_entity.xsd">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </Xsd>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

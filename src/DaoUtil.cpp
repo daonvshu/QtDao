@@ -1,5 +1,18 @@
 #include "DaoUtil.h"
 
+#include "DbLoader.h"
+#include "DbExceptionHandler.h"
+
+class DefaultExceptionHandler : public DbExceptionHandler {
+public:
+    void initDbFail(const char* reason) {}
+};
+
+DbConfig DbLoader::config;
+DbInitClient* DbLoader::initClient = nullptr;
+
+DbExceptionHandler* DbExceptionHandler::exceptionHandler = new DefaultExceptionHandler;
+
 dao::ErrPrintType dao::pType = dao::ETYPE_CONSOLE;
 int dao::bindCount = 0;
 
@@ -210,13 +223,6 @@ void dao::printLog(const QString & lastErr, const QString & sql) {
                 for (const auto& s : splitStr) {
                     qDebug() << s;
                 }
-            }
-            break;
-        case dao::ETYPE_ERRBOX:
-            {
-                auto e = new QErrorMessage;
-                e->setWindowTitle(QStringLiteral("sql´íÎó"));
-                e->showMessage(errStr);
             }
             break;
         default:

@@ -821,18 +821,22 @@ template<> struct DbCreator<> {
 //execute sql expression
 template<typename F>
 inline bool dao::DaoExecutor::exec(bool batch, F success) {
-    auto db = ConnectionPool::openConnection();
-    QSqlQuery query(db);
-    query.prepare(sqlExpression);
-    bindValue(query);
+    QSqlDatabase db;
+    bool ok;
+    {
+        db = ConnectionPool::openConnection();
+        QSqlQuery query(db);
+        query.prepare(sqlExpression);
+        bindValue(query);
 #ifdef PRINT_SQL_STATEMENT
-    qDebug() << sqlExpression;
+        qDebug() << sqlExpression;
 #endif // PRINT_SQL_STATEMENT
-    bool ok = batch ? query.execBatch() : query.exec();
-    if (!ok) {
-        dao::printLog(query.lastError().text(), sqlExpression);
-    } else {
-        success(query);
+        ok = batch ? query.execBatch() : query.exec();
+        if (!ok) {
+            dao::printLog(query.lastError().text(), sqlExpression);
+        } else {
+            success(query);
+        }
     }
     ConnectionPool::closeConnection(db);
     return ok;

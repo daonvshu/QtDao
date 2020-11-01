@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dao prefix="ts_" db="mysql">
+  <tb name="mysqltb" engine="MyISAM">
+    <item name="id" key="id" autoincrement="true" type="bigint"/>
+    <index type="unique index" >
+      <field>id</field>
+      <field>src</field>
+    </index>
+  </tb>
+</dao>

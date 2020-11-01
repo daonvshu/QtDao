@@ -21,14 +21,16 @@
                     </xs:simpleType>
                   </xs:attribute>
                   <xs:attribute name="note" type="xs:string" use="optional" />
-                  <xs:attribute name="key" use="optional">
+                  <xs:attribute name="constraints" use="optional">
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
-                        <xs:enumeration value="id"/>
-                        <xs:enumeration value="index"/>
+                        <xs:enumeration value="not null"/>
+                        <xs:enumeration value="unique"/>
+                        <xs:enumeration value="primary key"/>
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:attribute>
+                  <xs:attribute name="default" type="xs:string" use="optional" />
                   <xs:attribute name="autoincrement" type="xs:boolean" use="optional"/>
                   <xs:attribute name="transient" type="xs:boolean" use="optional"/>
                 </xs:complexType>

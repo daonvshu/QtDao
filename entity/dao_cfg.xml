@@ -1,9 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<dao version="1" type="sqlite" dbname="daotest" />-->
-<dao version="1" type="mysql" dbname="daotest">
-  <dbhost>localhost</dbhost>
-  <dbuname>root</dbuname>
-  <dbpcc>root</dbpcc>
-  <dbport>3306</dbport>
-  <dboption>MYSQL_OPT_CONNECT_TIMEOUT=3;MYSQL_OPT_READ_TIMEOUT=3;MYSQL_OPT_WRITE_TIMEOUT=3</dboption>
-</dao>
+<dao version="1" type="sqlite" dbname="daotest" />

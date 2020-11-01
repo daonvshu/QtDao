@@ -27,6 +27,12 @@
     <Filter Include="Header Files\entity">
       <UniqueIdentifier>{917d98e0-d0a9-4bcf-9418-b927678f4b83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\test">
+      <UniqueIdentifier>{061c9037-8f76-492b-8291-fc9aedc4feb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\test">
+      <UniqueIdentifier>{a29209db-bebc-413a-b062-ad5c1afbe151}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -45,6 +51,9 @@
       <Filter>Source Files\src</Filter>
     </ClCompile>
     <ClCompile Include="src\EntityFunction.cpp">
+      <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DbLoader.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -67,6 +76,15 @@
     <ClInclude Include="src\EntityFunction.h">
       <Filter>Header Files\src</Filter>
     </ClInclude>
+    <ClInclude Include="src\DbConfig.h">
+      <Filter>Header Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DbLoader.h">
+      <Filter>Header Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DbExceptionHandler.h">
+      <Filter>Header Files\src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\dao_entity.xml">
@@ -75,16 +93,25 @@
     <Xml Include="entity\sqlite_entity.xml">
       <Filter>Header Files\entity</Filter>
     </Xml>
+    <Xml Include="entity\mysql_entity.xml">
+      <Filter>Header Files\entity</Filter>
+    </Xml>
+    <Xml Include="entity\dao_cfg.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="entity\dao_entity.xsd">
       <Filter>Header Files\entity</Filter>
     </Xsd>
+    <Xsd Include="entity\mysql_entity.xsd">
+      <Filter>Header Files\entity</Filter>
+    </Xsd>
     <Xsd Include="entity\sqlite_entity.xsd">
       <Filter>Header Files\entity</Filter>
     </Xsd>
-    <Xsd Include="entity\mysql_entity.xsd">
-      <Filter>Header Files\entity</Filter>
+    <Xsd Include="entity\dao_cfg.xsd">
+      <Filter>Resource Files</Filter>
     </Xsd>
   </ItemGroup>
 </Project>

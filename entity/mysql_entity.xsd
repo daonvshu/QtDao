@@ -69,6 +69,14 @@
               </xs:element>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="required" />
+            <xs:attribute name="engine" use="optional">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="MyISAM"/>
+                  <xs:enumeration value="InnoDB"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
@@ -77,14 +85,6 @@
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:enumeration value="mysql"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:attribute>
-      <xs:attribute name="engine" use="optional">
-        <xs:simpleType>
-          <xs:restriction base="xs:string">
-            <xs:enumeration value="MyISAM"/>
-            <xs:enumeration value="InnoDB"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
