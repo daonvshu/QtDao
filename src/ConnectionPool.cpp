@@ -6,22 +6,15 @@
 #include "DbLoader.h"
 
 QMutex ConnectionPool::mutex;
-QWaitCondition ConnectionPool::waitConnection;
 ConnectionPool* ConnectionPool::instance = nullptr;
 
 ConnectionPool::ConnectionPool() {
-	testOnBorrow = true;
-	testOnBorrowSql = "SELECT 1";
-
-	maxWaitTime = 1000;
-	waitInterval = 200;
-	maxConnectionCount = 100;
 }
 
 ConnectionPool::~ConnectionPool() {
 	// 销毁连接池的时候删除所有的连接
 	mutex.lock();
-	foreach(QString connectionName, usedConnectionNames) {
+	foreach(QString connectionName, keepConnections) {
 		QSqlDatabase::removeDatabase(connectionName);
 	}
 
@@ -30,10 +23,9 @@ ConnectionPool::~ConnectionPool() {
 	}
 	mutex.unlock();
 
+	//销毁默认连接
 	QString name = QSqlDatabase::database().connectionName();
 	QSqlDatabase::removeDatabase(name);
-
-	//connectionThreadId.clear();
 }
 
 ConnectionPool& ConnectionPool::getInstance() {
@@ -55,8 +47,14 @@ void ConnectionPool::release() {
 QSqlDatabase ConnectionPool::openConnection() {
 	ConnectionPool& pool = ConnectionPool::getInstance();
 	QString connectionName;
-	
+
 	QMutexLocker locker(&mutex);
+	//查询当前线程是否保持有连接
+	auto currentThreadId = QThread::currentThreadId();
+	if (pool.keepConnections.contains(currentThreadId)) {
+
+	}
+	
 	// 已创建连接数
 	int connectionCount = pool.unusedConnectionNames.size() + pool.usedConnectionNames.size();
 
