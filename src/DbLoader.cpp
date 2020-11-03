@@ -45,10 +45,7 @@ public:
 };
 
 void DbLoader::loadConfig(const QString& configPath, DbExceptionHandler* exceptionHandler) {
-    if (exceptionHandler != nullptr) {
-        delete DbExceptionHandler::exceptionHandler; //delete default hander
-        DbExceptionHandler::exceptionHandler = exceptionHandler;
-    }
+    DbExceptionHandler::setExceptionHandler(exceptionHandler);
 
     QDomDocument xmlDoc;
     QFile file(configPath);

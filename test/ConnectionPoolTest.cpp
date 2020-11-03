@@ -23,26 +23,29 @@ void ConnectionPoolTest::initTestCase() {
 
 void ConnectionPoolTest::testSqliteConnect() {
     DbLoader::loadConfig(":/QtDao/entity/sqlite_cfg.xml");
-    auto db = ConnectionPool::openConnection();
-    QVERIFY(db.isOpen());
-    QSqlQuery query(db);
-    query.exec("select 1");
-    ConnectionPool::closeConnection(db);
+    {
+        auto db = ConnectionPool::getConnection();
+        QVERIFY(db.isOpen());
+        QSqlQuery query(db);
+        query.exec("select 1");
+    }
+    ConnectionPool::closeConnection();
 }
 
 void ConnectionPoolTest::testReuseConnection() {
     DbLoader::loadConfig(":/QtDao/entity/sqlite_cfg.xml");
+    {
+        QString savedConnection;
+        auto db = ConnectionPool::getConnection();
+        QVERIFY(db.isOpen());
+        savedConnection = db.connectionName();
 
-    QString savedConnection;
-    auto db = ConnectionPool::openConnection();
-    QVERIFY(db.isOpen());
-    savedConnection = db.connectionName();
-    ConnectionPool::closeConnection(db);
-
-    db = ConnectionPool::openConnection();
-    QVERIFY(db.isOpen());
-    QVERIFY(db.connectionName() == savedConnection);
-    ConnectionPool::closeConnection(db);
+        db = ConnectionPool::getConnection();
+        QVERIFY(db.isOpen());
+        QVERIFY(db.connectionName() == savedConnection);
+    }
+    ConnectionPool::closeConnection();
+    QCOMPARE(ConnectionPool::getUsedConnectionSize(), 1);
 }
 
 void ConnectionPoolTest::testMultiThreadOpenConnection() {
@@ -52,12 +55,12 @@ void ConnectionPoolTest::testMultiThreadOpenConnection() {
     QString connection1, connection2;
     RunnableHandler<void>::exec([&] {
         {
-            auto db = ConnectionPool::openConnection();
+            auto db = ConnectionPool::getConnection();
             QVERIFY(db.isOpen());
             connection1 = db.connectionName();
             QThread::msleep(100);
         }
-        ConnectionPool::closeConnection(connection1);
+        ConnectionPool::closeConnection(); //close connection when current work thread over
         loop.quit();
     });
 
@@ -65,15 +68,16 @@ void ConnectionPoolTest::testMultiThreadOpenConnection() {
 
     RunnableHandler<void>::exec([&] {
         {
-            auto db = ConnectionPool::openConnection();
+            auto db = ConnectionPool::getConnection();
             QVERIFY(db.isOpen());
             connection2 = db.connectionName();
         }
-        ConnectionPool::closeConnection(connection2);
+        ConnectionPool::closeConnection();
     });
     loop.exec();
 
     QVERIFY(connection1 != connection2);
+    QCOMPARE(ConnectionPool::getUsedConnectionSize(), 2);
 }
 
 void ConnectionPoolTest::testReuseConnectionInOtherThread() {
@@ -84,13 +88,13 @@ void ConnectionPoolTest::testReuseConnectionInOtherThread() {
 
     RunnableHandler<void>::exec([&] {
         {
-            auto db = ConnectionPool::openConnection();
+            auto db = ConnectionPool::getConnection();
             QVERIFY(db.isOpen());
             connection1 = db.connectionName();
             QSqlQuery query(db);
             query.exec("select 1");
         }
-        ConnectionPool::closeConnection(connection1);
+        ConnectionPool::closeConnection();
         loop.quit();
         //thread hold
         QThread::msleep(200);
@@ -101,18 +105,19 @@ void ConnectionPoolTest::testReuseConnectionInOtherThread() {
     //new thread
     RunnableHandler<void>::exec([&] {
         {
-            auto db = ConnectionPool::openConnection();
+            auto db = ConnectionPool::getConnection();
             QSqlQuery query(db);
             query.exec("select 1");
             QVERIFY(db.isOpen());
             connection2 = db.connectionName();
         }
-        ConnectionPool::closeConnection(connection2);
+        ConnectionPool::closeConnection();
         QThread::msleep(20);
     });
     loop.exec();
 
     QVERIFY(connection1 == connection2);
+    QCOMPARE(ConnectionPool::getUsedConnectionSize(), 1);
 }
 
 void ConnectionPoolTest::cleanup() {
@@ -120,4 +125,14 @@ void ConnectionPoolTest::cleanup() {
 }
 
 void ConnectionPoolTest::cleanupTestCase() {
+    auto appLocal = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    auto dbPath = appLocal + "/" + DbLoader::getConfig().dbName + ".db";
+    QFile file(dbPath);
+    if (file.exists()) {
+        file.remove();
+    }
+    QDir dir(appLocal);
+    if (dir.exists()) {
+        dir.rmdir(appLocal);
+    }
 }
