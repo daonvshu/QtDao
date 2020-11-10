@@ -1,0 +1,73 @@
+## QtDao2.0
+---
+#### TODO List:
+- **support**
+  - [ ] sqlite
+  - [ ] mysql
+  - [ ] sqlserver
+
+- **loader**
+  - [x] configure loader
+  - [ ] driver loader
+  - [ ] connect test
+  - [ ] auto create database/table (use config)
+  - [ ] truncate/drop table
+  - [ ] drop database
+  - [ ] database switch
+- **upgrader**
+  - [ ] version check
+  - [ ] table upgrade
+- **log**
+  - [ ] sql statement print 
+  - [ ] value list print
+- **entity generator**
+  - [ ] field getter/setter
+  - [ ] table field
+  - [ ] transient field
+  - [ ] default value
+  - [ ] function query result getter
+- **query condition**
+  - [ ] operator field <-> value
+  - [ ] operator field <-> field
+  - [ ] operator field <-> function
+  - [ ] operator function <-> function
+  - [ ] operator field <-> query results
+- **query executor**
+  - insert operator
+    - [ ] object(s) insert
+    - [ ] part field value insert
+    - [ ] insert in query results
+  - query operator
+    - [ ] unique/list query
+    - [ ] multi-table query
+    - [ ] union query
+    - [ ] inner/left/right/full join
+    - [ ] recursive query
+    - [ ] query in query/join results
+    - [ ] original query
+    - [ ] custom function query
+    - [ ] custom statement query
+  - count operator
+    - [ ] condition count
+    - [ ] multi-table count
+    - [ ] count in query result
+  - update operator
+    - [ ] set by where update
+    - [ ] object(s) update
+    - [ ] update with query results
+  - delete operator
+    - [ ] condition delete
+    - [ ] object(s) delete
+    - [ ] delete by query results
+  - [ ] transaction
+- **connection pool**
+  - [x] connection reuse
+  - [x] work thread connection separate
+  - [x] work thread connection reuse
+- **auto close connection**
+  - [ ] auto close connection when work thread end
+- **exception**
+  - [ ] load configure exception
+  - [ ] upgrade exception
+  - [ ] query exception
+  - [x] connection pool exception
