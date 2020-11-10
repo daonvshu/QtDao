@@ -1,5 +1,4 @@
 ## QtDao2.0
----
 #### TODO List:
 - **support**
   - [ ] sqlite
