@@ -5,6 +5,9 @@
 
 #include <functional>
 
+typedef std::function<void(QSqlQuery& query)> QueryCallback;
+typedef std::function<void(QString)> QueryFailCallback;
+
 class BaseQuery {
 public:
     BaseQuery(const QString& statement, const QVariantList& values);
@@ -12,7 +15,18 @@ public:
     void exec();
     void execBatch();
 
-    static void queryPrimitive(const QString& statement, std::function<void(QSqlQuery& query)> callback);
+    static void queryPrimitive(
+        const QString& statement, 
+        QueryCallback callback,
+        QueryFailCallback failCallback = nullptr
+    );
+
+    static void queryPrimitive(
+        const QString& statement,
+        const QVariantList& values,
+        QueryCallback callback,
+        QueryFailCallback failCallback = nullptr
+    );
 
 protected:
     virtual void solveQueryResult(const QSqlQuery& query) {};

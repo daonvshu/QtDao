@@ -30,13 +30,21 @@ void BaseQuery::execBatch() {
     }
 }
 
-void BaseQuery::queryPrimitive(const QString& statement, std::function<void(QSqlQuery& query)> callback) {
-    BaseQuery executor(statement, QVariantList());
+void BaseQuery::queryPrimitive(const QString& statement, QueryCallback callback, QueryFailCallback failCallback) {
+    queryPrimitive(statement, QVariantList(), callback, failCallback);
+}
+
+void BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, QueryCallback callback, QueryFailCallback failCallback) {
+    BaseQuery executor(statement, values);
     auto query = executor.getQuery();
     if (query.exec()) {
         callback(query);
     } else {
-        DbExceptionHandler::exceptionHandler->execFail(query.lastError().text());
+        if (failCallback) {
+            failCallback(query.lastError().text());
+        } else {
+            DbExceptionHandler::exceptionHandler->execFail(query.lastError().text());
+        }
     }
 }
 

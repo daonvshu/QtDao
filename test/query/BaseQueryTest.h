@@ -9,6 +9,8 @@ private slots:
     void initTestCase();
 
     void testPrimitiveQuery(); 
+    void testPrimitiveQueryWithValue();
+    void testPrimitiveQueryFail();
 
     void cleanup();
 
