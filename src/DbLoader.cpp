@@ -5,44 +5,9 @@
 #include <qdir.h>
 #include <qstandardpaths.h>
 
-class SqliteInitClient : public DbInitClient {
-public:
-    void testConnect() {
-        auto appLocal = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-        QDir dir;
-        if (!dir.exists(appLocal)) {
-            if (!dir.mkdir(appLocal)) {
-                throw "cannot create sqlite store path!";
-            }
-        }
-    }
-
-    void createDatabase() {
-
-    }
-};
-
-class MysqlInitClient : public DbInitClient {
-public:
-    void testConnect() {
-
-    }
-
-    void createDatabase() {
-
-    }
-};
-
-class SqlServerClient : public DbInitClient {
-public:
-    void testConnect() {
-
-    }
-
-    void createDatabase() {
-
-    }
-};
+#include "dbclients/SqliteClient.h"
+#include "dbclients/MysqlClient.h"
+#include "dbclients/SqlServerClient.h"
 
 void DbLoader::loadConfig(const QString& configPath, DbExceptionHandler* exceptionHandler) {
     DbExceptionHandler::setExceptionHandler(exceptionHandler);
@@ -61,15 +26,15 @@ void DbLoader::loadConfig(const QString& configPath, DbExceptionHandler* excepti
     auto sqltype = root.attribute("type");
     if (sqltype == "sqlite") {
         config.dbType = "QSQLITE";
-        initClient = new SqliteInitClient;
+        sqlClient = new SqliteClient;
     }
     else if (sqltype == "mysql") {
         config.dbType = "QMYSQL";
-        initClient = new MysqlInitClient;
+        sqlClient = new MysqlClient;
     } 
     else if (sqltype == "sqlserver") {
         config.dbType = "QODBC";
-        initClient = new SqlServerClient;
+        sqlClient = new SqlServerClient;
     }
     Q_ASSERT(!config.dbType.isEmpty());
 
@@ -109,6 +74,6 @@ void DbLoader::init(const QString& configPath, DbExceptionHandler* exceptionHand
 }
 
 void DbLoader::init_priv() {
-    initClient->testConnect();
-    initClient->createDatabase();
+    sqlClient->testConnect();
+    sqlClient->createDatabase();
 }

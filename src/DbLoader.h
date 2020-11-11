@@ -5,7 +5,7 @@
 #include "DbConfig.h"
 #include "DbExceptionHandler.h"
 
-class DbInitClient;
+class AbstractClient;
 class DbLoader {
 public:
     DbLoader() = delete;
@@ -37,16 +37,18 @@ public:
         return config;
     }
 
+    /// <summary>
+    /// 获取数据库初始化器
+    /// </summary>
+    /// <returns></returns>
+    static AbstractClient& getClient() {
+        return *sqlClient;
+    }
+
 private:
     static DbConfig config;
-    static DbInitClient* initClient;
+    static AbstractClient* sqlClient;
 
 private:
     static void init_priv();
-};
-
-class DbInitClient {
-public:
-    virtual void testConnect() = 0;
-    virtual void createDatabase() = 0;
 };

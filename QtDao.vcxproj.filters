@@ -33,6 +33,24 @@
     <Filter Include="Source Files\test">
       <UniqueIdentifier>{a29209db-bebc-413a-b062-ad5c1afbe151}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\src\query">
+      <UniqueIdentifier>{4a699cbb-7fe8-4457-9194-3673dc28003e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\query">
+      <UniqueIdentifier>{2c6b792a-64b5-4a88-ba1f-042100865420}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\test\query">
+      <UniqueIdentifier>{50d53be7-4737-4ab7-ae96-7c9a851a7e51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\test\query">
+      <UniqueIdentifier>{c2b9c9b1-c62d-4cc0-afe0-e9b160aa5141}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\src\dbclients">
+      <UniqueIdentifier>{6a046438-015d-430a-94aa-736289efa56c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\dbclients">
+      <UniqueIdentifier>{6f0ecb0b-33e0-410c-94b0-f38361b07d4b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -61,6 +79,21 @@
     </ClCompile>
     <ClCompile Include="src\qtdao.cpp">
       <Filter>Source Files\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\query\BaseQuery.cpp">
+      <Filter>Source Files\src\query</Filter>
+    </ClCompile>
+    <ClCompile Include="test\query\BaseQueryTest.cpp">
+      <Filter>Source Files\test\query</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbclients\SqliteClient.cpp">
+      <Filter>Source Files\src\dbclients</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbclients\MysqlClient.cpp">
+      <Filter>Source Files\src\dbclients</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbclients\SqlServerClient.cpp">
+      <Filter>Source Files\src\dbclients</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +127,21 @@
     <ClInclude Include="test\RunnableHandler.h">
       <Filter>Header Files\test</Filter>
     </ClInclude>
+    <ClInclude Include="src\query\BaseQuery.h">
+      <Filter>Header Files\src\query</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dbclients\AbstractClient.h">
+      <Filter>Header Files\src\dbclients</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dbclients\SqliteClient.h">
+      <Filter>Header Files\src\dbclients</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dbclients\MysqlClient.h">
+      <Filter>Header Files\src\dbclients</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dbclients\SqlServerClient.h">
+      <Filter>Header Files\src\dbclients</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\dao_entity.xml">
@@ -126,6 +174,9 @@
   <ItemGroup>
     <QtMoc Include="test\ConnectionPoolTest.h">
       <Filter>Header Files\test</Filter>
+    </QtMoc>
+    <QtMoc Include="test\query\BaseQueryTest.h">
+      <Filter>Header Files\test\query</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

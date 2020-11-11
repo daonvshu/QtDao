@@ -46,13 +46,18 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
-    <QtInstall>msvc2017_x86</QtInstall>
+    <QtInstall>msvc2017</QtInstall>
     <QtModules>core;sql;testlib;xml</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
-    <QtInstall>msvc2017_x86</QtInstall>
+    <QtInstall>msvc2017</QtInstall>
     <QtModules>core</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
@@ -91,12 +96,17 @@
     <ClCompile Include="src\DaoUtil.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="src\dbclients\MysqlClient.cpp" />
+    <ClCompile Include="src\dbclients\SqliteClient.cpp" />
+    <ClCompile Include="src\dbclients\SqlServerClient.cpp" />
     <ClCompile Include="src\DbLoader.cpp" />
     <ClCompile Include="src\EntityConditions.cpp" />
     <ClCompile Include="src\EntityField.cpp" />
     <ClCompile Include="src\EntityFunction.cpp" />
     <ClCompile Include="src\qtdao.cpp" />
+    <ClCompile Include="src\query\BaseQuery.cpp" />
     <ClCompile Include="test\ConnectionPoolTest.cpp" />
+    <ClCompile Include="test\query\BaseQueryTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dao_cfg.h">
@@ -112,6 +122,10 @@
     <ClInclude Include="src\DaoUtil.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="src\dbclients\AbstractClient.h" />
+    <ClInclude Include="src\dbclients\MysqlClient.h" />
+    <ClInclude Include="src\dbclients\SqliteClient.h" />
+    <ClInclude Include="src\dbclients\SqlServerClient.h" />
     <ClInclude Include="src\DbConfig.h" />
     <ClInclude Include="src\DbExceptionHandler.h" />
     <ClInclude Include="src\DbLoader.h" />
@@ -119,6 +133,8 @@
     <ClInclude Include="src\EntityConditions.h" />
     <ClInclude Include="src\EntityField.h" />
     <ClInclude Include="src\EntityFunction.h" />
+    <ClInclude Include="src\query\BaseQuery.h" />
+    <QtMoc Include="test\query\BaseQueryTest.h" />
     <ClInclude Include="test\RunnableHandler.h" />
     <QtMoc Include="test\ConnectionPoolTest.h" />
   </ItemGroup>

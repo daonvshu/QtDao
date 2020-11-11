@@ -1,7 +1,9 @@
 #include "ConnectionPoolTest.h"
 
-#include "../src/DbLoader.h"
-#include "../src/ConnectionPool.h"
+#include "DbLoader.h"
+#include "ConnectionPool.h"
+
+#include "dbclients/SqliteClient.h"
 
 #include "RunnableHandler.h"
 
@@ -10,14 +12,7 @@
 #include <QtTest/qtest.h>
 
 void ConnectionPoolTest::initTestCase() {
-    auto appLocal = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    QDir dir;
-    if (!dir.exists(appLocal)) {
-        if (!dir.mkdir(appLocal)) {
-            throw "cannot create sqlite store path!";
-        }
-    }
-
+    SqliteClient().testConnect();
     QThreadPool::globalInstance()->setMaxThreadCount(10);
 }
 
@@ -125,14 +120,5 @@ void ConnectionPoolTest::cleanup() {
 }
 
 void ConnectionPoolTest::cleanupTestCase() {
-    auto appLocal = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    auto dbPath = appLocal + "/" + DbLoader::getConfig().dbName + ".db";
-    QFile file(dbPath);
-    if (file.exists()) {
-        file.remove();
-    }
-    QDir dir(appLocal);
-    if (dir.exists()) {
-        dir.rmdir(appLocal);
-    }
+    SqliteClient().dropDatabase();
 }

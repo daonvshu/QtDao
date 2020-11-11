@@ -5,16 +5,28 @@
 
 class DefaultExceptionHandler : public DbExceptionHandler {
 public:
-    void initDbFail(const char* reason) {}
     void databaseOpenFail(const QString& failReason) {
         qWarning() << failReason;
     };
+
+    void execFail(const QString& lastErr) {
+        qWarning() << lastErr;
+    }
 };
 
 DbConfig DbLoader::config;
-DbInitClient* DbLoader::initClient = nullptr;
+AbstractClient* DbLoader::sqlClient = nullptr;
 
 DbExceptionHandler* DbExceptionHandler::exceptionHandler = new DefaultExceptionHandler;
+
+static QueryLogPrinter queryLogPrinter = nullptr;
+void daoSetQueryLogPrinter(QueryLogPrinter printer) {
+    queryLogPrinter = printer;
+}
+
+QueryLogPrinter getQueryLogPrinter() {
+    return queryLogPrinter;
+}
 
 void DbExceptionHandler::setExceptionHandler(DbExceptionHandler* exceptionHandler) {
     if (exceptionHandler != nullptr) {
