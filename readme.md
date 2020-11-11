@@ -4,6 +4,7 @@
   - [ ] sqlite
   - [ ] mysql
   - [ ] sqlserver
+  - [ ] Confusion
 
 - **loader**
   - [x] configure loader
