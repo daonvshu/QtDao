@@ -69,6 +69,7 @@
               </xs:element>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="required" />
+            <xs:attribute name="declaremetatype" type="xs:boolean" use="optional" />
             <xs:attribute name="engine" use="optional">
               <xs:simpleType>
                 <xs:restriction base="xs:string">

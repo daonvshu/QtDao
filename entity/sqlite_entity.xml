@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <dao prefix="ts_" db="sqlite">
-  <tb name="test1">
+  <tb name="test1" declaremetatype="true">
     <item name="id" type="integer" constraints="primary key" note="主键" />
     <item name="name" type="text" constraints="primary key" default="text" note="复合主键"/>
     <item name="number" type="real" note="浮点数字" default="10.0"/>
