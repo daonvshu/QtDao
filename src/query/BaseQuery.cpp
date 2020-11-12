@@ -38,7 +38,9 @@ void BaseQuery::queryPrimitive(const QString& statement, const QVariantList& val
     BaseQuery executor(statement, values);
     auto query = executor.getQuery();
     if (query.exec()) {
-        callback(query);
+        if (callback) {
+            callback(query);
+        }
     } else {
         if (failCallback) {
             failCallback(query.lastError().text());

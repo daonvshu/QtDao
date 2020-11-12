@@ -8,3 +8,10 @@ void SqlServerClient::createDatabase() {
 
 void SqlServerClient::dropDatabase() {
 }
+
+bool SqlServerClient::checkTableExist(const QString& tbName) {
+    return false;
+}
+
+void SqlServerClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType) {
+}

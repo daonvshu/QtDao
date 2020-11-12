@@ -4,8 +4,8 @@
 
 #include "DbConfig.h"
 #include "DbExceptionHandler.h"
+#include "dbclients/AbstractClient.h"
 
-class AbstractClient;
 class DbLoader {
 public:
     DbLoader() = delete;
@@ -51,4 +51,6 @@ private:
 
 private:
     static void init_priv();
+
+    static void checkLocalVersion();
 };

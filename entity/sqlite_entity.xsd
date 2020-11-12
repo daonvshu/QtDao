@@ -12,7 +12,8 @@
                   <xs:attribute name="type" use="required" >
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
-                        <xs:enumeration value="integer"/>
+                        <xs:enumeration value="int"/>
+                        <xs:enumeration value="long"/>
                         <xs:enumeration value="real" />
                         <xs:enumeration value="text" />
                         <xs:enumeration value="blob" />
@@ -35,7 +36,7 @@
                   <xs:attribute name="transient" type="xs:boolean" use="optional"/>
                 </xs:complexType>
               </xs:element>
-              <xs:element minOccurs="0" name="index">
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="index">
                 <xs:complexType>
                   <xs:sequence>
                     <xs:element name="field" type="xs:string" maxOccurs="unbounded"/>

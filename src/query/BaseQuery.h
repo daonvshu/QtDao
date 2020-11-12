@@ -17,14 +17,14 @@ public:
 
     static void queryPrimitive(
         const QString& statement, 
-        QueryCallback callback,
+        QueryCallback callback = nullptr,
         QueryFailCallback failCallback = nullptr
     );
 
     static void queryPrimitive(
         const QString& statement,
         const QVariantList& values,
-        QueryCallback callback,
+        QueryCallback callback = nullptr,
         QueryFailCallback failCallback = nullptr
     );
 

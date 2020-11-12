@@ -8,3 +8,10 @@ void MysqlClient::createDatabase() {
 
 void MysqlClient::dropDatabase() {
 }
+
+bool MysqlClient::checkTableExist(const QString& tbName) {
+    return false;
+}
+
+void MysqlClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType) {
+}

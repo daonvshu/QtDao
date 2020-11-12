@@ -48,7 +48,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
@@ -91,6 +91,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="entity\EntityInclude.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\ConnectionPool.cpp" />
     <ClCompile Include="src\DaoUtil.cpp">
@@ -106,6 +112,7 @@
     <ClCompile Include="src\qtdao.cpp" />
     <ClCompile Include="src\query\BaseQuery.cpp" />
     <ClCompile Include="test\ConnectionPoolTest.cpp" />
+    <ClCompile Include="test\loader\DbLoaderTest.cpp" />
     <ClCompile Include="test\query\BaseQueryTest.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -115,6 +122,9 @@
     <ClInclude Include="dao_entity.h">
       <DependentUpon>entity\dao_entity.xsd</DependentUpon>
     </ClInclude>
+    <QtMoc Include="entity\EntityInclude.h" />
+    <ClInclude Include="entity\Test1.h" />
+    <ClInclude Include="entity\Test2.h" />
     <ClInclude Include="sqlite_entity.h">
       <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
     </ClInclude>
@@ -135,6 +145,7 @@
     <ClInclude Include="src\EntityFunction.h" />
     <ClInclude Include="src\query\BaseQuery.h" />
     <QtMoc Include="test\query\BaseQueryTest.h" />
+    <QtMoc Include="test\loader\DbLoaderTest.h" />
     <ClInclude Include="test\RunnableHandler.h" />
     <QtMoc Include="test\ConnectionPoolTest.h" />
   </ItemGroup>

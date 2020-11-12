@@ -51,6 +51,12 @@
     <Filter Include="Source Files\src\dbclients">
       <UniqueIdentifier>{6f0ecb0b-33e0-410c-94b0-f38361b07d4b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\test\loader">
+      <UniqueIdentifier>{6312f5f9-1787-4547-80c5-facbf609b60b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\test\loader">
+      <UniqueIdentifier>{91a1b60b-752a-40f3-a0dc-269f7a398b1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -94,6 +100,12 @@
     </ClCompile>
     <ClCompile Include="src\dbclients\SqlServerClient.cpp">
       <Filter>Source Files\src\dbclients</Filter>
+    </ClCompile>
+    <ClCompile Include="test\loader\DbLoaderTest.cpp">
+      <Filter>Source Files\test\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="entity\EntityInclude.cpp">
+      <Filter>Header Files\entity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +154,12 @@
     <ClInclude Include="src\dbclients\SqlServerClient.h">
       <Filter>Header Files\src\dbclients</Filter>
     </ClInclude>
+    <ClInclude Include="entity\Test1.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\Test2.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\dao_entity.xml">
@@ -177,6 +195,12 @@
     </QtMoc>
     <QtMoc Include="test\query\BaseQueryTest.h">
       <Filter>Header Files\test\query</Filter>
+    </QtMoc>
+    <QtMoc Include="test\loader\DbLoaderTest.h">
+      <Filter>Header Files\test\loader</Filter>
+    </QtMoc>
+    <QtMoc Include="entity\EntityInclude.h">
+      <Filter>Header Files\entity</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

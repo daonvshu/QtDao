@@ -2,6 +2,7 @@
 
 #include <qvariant.h>
 #include <qstring.h>
+#include <qexception.h>
 
 class DbExceptionHandler {
 public:
@@ -12,7 +13,7 @@ public:
     /// 初始化数据库失败
     /// </summary>
     /// <param name="reason"></param>
-    virtual void initDbFail(const char* reason) {};
+    virtual void initDbFail(const QString& reason) {};
 
     /// <summary>
     /// 连接到数据库失败
@@ -34,3 +35,14 @@ typedef void (*QueryLogPrinter)(const QString&, const QVariantList&);
 void daoSetQueryLogPrinter(QueryLogPrinter);
 
 QueryLogPrinter getQueryLogPrinter();
+
+
+class DaoException : public QException {
+public:
+    DaoException(const QString& reason) : reason(reason) {}
+
+    void raise() const override { throw* this; }
+    DaoException* clone() const override { return new DaoException(*this); }
+
+    QString reason;
+};

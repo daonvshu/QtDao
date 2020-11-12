@@ -9,6 +9,8 @@
 #include "dbclients/MysqlClient.h"
 #include "dbclients/SqlServerClient.h"
 
+#include "query/BaseQuery.h"
+
 void DbLoader::loadConfig(const QString& configPath, DbExceptionHandler* exceptionHandler) {
     DbExceptionHandler::setExceptionHandler(exceptionHandler);
 
@@ -39,6 +41,8 @@ void DbLoader::loadConfig(const QString& configPath, DbExceptionHandler* excepti
     Q_ASSERT(!config.dbType.isEmpty());
 
     config.version = root.attribute("version").toInt();
+    config.versionValid = true;
+
     config.dbName = root.attribute("dbname");
 
     auto options = root.childNodes();
@@ -58,13 +62,14 @@ void DbLoader::loadConfig(const QString& configPath, DbExceptionHandler* excepti
             config.dbOption = c.text();
         }
     }
+
 }
 
 void DbLoader::init() {
     try {
         init_priv();
-    } catch (const char* reason) {
-        DbExceptionHandler::exceptionHandler->initDbFail(reason);
+    } catch (DaoException& e) {
+        DbExceptionHandler::exceptionHandler->initDbFail(e.reason);
     }
 }
 
@@ -76,4 +81,23 @@ void DbLoader::init(const QString& configPath, DbExceptionHandler* exceptionHand
 void DbLoader::init_priv() {
     sqlClient->testConnect();
     sqlClient->createDatabase();
+
+    checkLocalVersion();
+
+    const auto metaObj = QMetaType::metaObjectForType(QMetaType::type("EntityDelegate*"));
+    Q_ASSERT_X(metaObj != nullptr, "DbLoader::init", "use DbEntityGenerator to create Entity");
+    QObject* obj = metaObj->newInstance();
+    metaObj->invokeMethod(obj, "createEntityTables");
+    delete obj;
+}
+
+void DbLoader::checkLocalVersion() {
+    BaseQuery::queryPrimitive("select *from dao_version", [&](QSqlQuery& query) {
+        if (query.next()) {
+            int localversion = query.value(0).toInt();
+            config.versionValid = localversion >= config.version;
+        }
+    }, [&](QString failMsg) {
+        //table not found
+    });
 }

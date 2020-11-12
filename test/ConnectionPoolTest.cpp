@@ -1,9 +1,9 @@
 #include "ConnectionPoolTest.h"
 
-#include "DbLoader.h"
-#include "ConnectionPool.h"
+#include "../../src/DbLoader.h"
+#include "../../src/ConnectionPool.h"
 
-#include "dbclients/SqliteClient.h"
+#include "../../src/dbclients/SqliteClient.h"
 
 #include "RunnableHandler.h"
 

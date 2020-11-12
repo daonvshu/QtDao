@@ -1,11 +1,11 @@
 #include "BaseQueryTest.h"
 
-#include "DbLoader.h"
-#include "ConnectionPool.h"
+#include "../../src/DbLoader.h"
+#include "../../src/ConnectionPool.h"
 
-#include "dbclients/SqliteClient.h"
+#include "../../src/dbclients/SqliteClient.h"
 
-#include "query/BaseQuery.h"
+#include "../../src/query/BaseQuery.h"
 
 #include <qtest.h>
 
