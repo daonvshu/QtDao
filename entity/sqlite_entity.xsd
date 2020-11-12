@@ -39,7 +39,22 @@
               <xs:element minOccurs="0" maxOccurs="unbounded" name="index">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="field" type="xs:string" maxOccurs="unbounded"/>
+                    <xs:element name="field" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="seq" use="optional">
+                              <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                  <xs:enumeration value="asc" />
+                                  <xs:enumeration value="desc" />
+                                </xs:restriction>
+                              </xs:simpleType>
+                            </xs:attribute>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
                   </xs:sequence>
                   <xs:attribute name="type" default="index" use="optional" >
                     <xs:simpleType>

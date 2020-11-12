@@ -50,12 +50,11 @@ public:
 
         static QStringList getFieldsType() {
             return QStringList() 
-                << QStringLiteral("id integer auto_increment")
-                << QStringLiteral("name text not null")
+                << QStringLiteral("id integer primary key autoincrement")
+                << QStringLiteral("name text")
                 << QStringLiteral("number integer default 0")
                 << QStringLiteral("number2 integer")
-                << QStringLiteral("varianttype blob")
-                << QStringLiteral("nametmp text");
+                << QStringLiteral("varianttype blob");
         }
 
         static QStringList getPrimaryKeys() {
@@ -70,7 +69,7 @@ public:
 
         static QList<QStringList> getUniqueIndexFields() {
             return QList<QStringList>()
-                << (QStringList() << "name" << "number");
+                << (QStringList() << "name asc" << "number desc");
         }
     };
 

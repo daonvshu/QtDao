@@ -46,14 +46,49 @@ bool SqliteClient::checkTableExist(const QString& tbName) {
     return exist;
 }
 
-void SqliteClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType) {
+void SqliteClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType, QStringList primaryKeys) {
     QString str = "create table %1(";
     str = str.arg(tbName);
     for (const auto& ft : fieldsType) {
         str.append(ft).append(",");
     }
-    str = str.left(str.length() - 1);
+    if (primaryKeys.size() <= 1) {
+        str = str.left(str.length() - 1);
+    } else {
+        str.append("primary key(");
+        for (const auto& key : primaryKeys) {
+            str.append(key).append(",");
+        }
+        str = str.left(str.length() - 1);
+        str.append(")");
+    }
     str.append(")");
     
+    BaseQuery::queryPrimitive(str);
+}
+
+/*
+CREATE INDEX "main"."asdasd"
+ON "ts_test5" (
+  "name" ASC,
+  "nametmp" DESC
+);
+*/
+void SqliteClient::createIndex(const QString& tbName, QStringList fields, IndexType type) {
+    QString str = "create %1 index %2 on %3 (";
+    QString indexName = "index";
+    for (const auto& field : fields) {
+        indexName.append("_").append(field.split(" ").at(0));
+        str.append(field).append(",");
+    }
+    QString typeStr = "";
+    switch (type) {
+    case AbstractClient::INDEX_UNIQUE:
+        typeStr = "unique";
+        break;
+    }
+    str = str.left(str.length() - 1).arg(typeStr).arg(indexName).arg(tbName);
+    str.append(")");
+
     BaseQuery::queryPrimitive(str);
 }

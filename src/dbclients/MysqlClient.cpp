@@ -13,5 +13,8 @@ bool MysqlClient::checkTableExist(const QString& tbName) {
     return false;
 }
 
-void MysqlClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType) {
+void MysqlClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType, QStringList primaryKeys) {
+}
+
+void MysqlClient::createIndex(const QString& tbName, QStringList fields, IndexType type) {
 }

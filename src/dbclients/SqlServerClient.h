@@ -11,6 +11,13 @@ public:
     bool checkTableExist(const QString& tbName);
     void createTableIfNotExist(
         const QString& tbName,
-        QStringList fieldsType
+        QStringList fieldsType,
+        QStringList primaryKeys
+    );
+
+    void createIndex(
+        const QString& tbName,
+        QStringList fields,
+        IndexType type = INDEX_NORMAL
     );
 };

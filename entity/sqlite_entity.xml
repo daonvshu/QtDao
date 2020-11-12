@@ -14,8 +14,8 @@
     <item name="varianttype" type="variant" note="自定义类型"/>
     <item name="nametmp" type="text" transient="true" note="临时类型" />
     <index type="unique index">
-      <field>name</field>
-      <field>number</field>
+      <field seq="asc">name</field>
+      <field seq="desc">number</field>
     </index>
     <index>
       <field>number2</field>
