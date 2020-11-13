@@ -92,6 +92,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\condition\ConditionField.cpp" />
     <ClCompile Include="src\ConnectionPool.cpp" />
     <ClCompile Include="src\DaoUtil.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -101,9 +102,15 @@
     <ClCompile Include="src\dbclients\SqliteClient.cpp" />
     <ClCompile Include="src\dbclients\SqlServerClient.cpp" />
     <ClCompile Include="src\DbLoader.cpp" />
-    <ClCompile Include="src\EntityConditions.cpp" />
-    <ClCompile Include="src\EntityField.cpp" />
-    <ClCompile Include="src\EntityFunction.cpp" />
+    <ClCompile Include="src\EntityConditions.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\EntityField.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\EntityFunction.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\qtdao.cpp" />
     <ClCompile Include="src\query\BaseQuery.cpp" />
     <ClCompile Include="test\ConnectionPoolTest.cpp" />
@@ -121,6 +128,7 @@
     <ClInclude Include="sqlite_entity.h">
       <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
     </ClInclude>
+    <ClInclude Include="src\condition\ConditionField.h" />
     <ClInclude Include="src\ConnectionPool.h" />
     <ClInclude Include="src\DaoUtil.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -132,10 +140,18 @@
     <ClInclude Include="src\DbConfig.h" />
     <ClInclude Include="src\DbExceptionHandler.h" />
     <ClInclude Include="src\DbLoader.h" />
-    <ClInclude Include="src\EntityConditionInterface.h" />
-    <ClInclude Include="src\EntityConditions.h" />
-    <ClInclude Include="src\EntityField.h" />
-    <ClInclude Include="src\EntityFunction.h" />
+    <ClInclude Include="src\EntityConditionInterface.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="src\EntityConditions.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="src\EntityField.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="src\EntityFunction.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="src\query\BaseQuery.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest1.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest2.h" />

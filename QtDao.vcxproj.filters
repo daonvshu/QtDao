@@ -60,6 +60,12 @@
     <Filter Include="Header Files\test\sqliteentity">
       <UniqueIdentifier>{11b59312-025f-4563-860b-638de94940aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\src\condition">
+      <UniqueIdentifier>{1d24ac95-fe0d-4eb1-a852-0cf74b8354be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\condition">
+      <UniqueIdentifier>{2baf88fa-76aa-4bfa-a5ea-19fdb3aeef08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -113,6 +119,9 @@
     <ClCompile Include="src\dbclients\AbstractClient.cpp">
       <Filter>Source Files\src\dbclients</Filter>
     </ClCompile>
+    <ClCompile Include="src\condition\ConditionField.cpp">
+      <Filter>Source Files\src\condition</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ConnectionPool.h">
@@ -165,6 +174,9 @@
     </ClInclude>
     <ClInclude Include="test\sqliteentity\SqliteTest2.h">
       <Filter>Header Files\test\sqliteentity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\condition\ConditionField.h">
+      <Filter>Header Files\src\condition</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
