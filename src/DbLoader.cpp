@@ -82,22 +82,76 @@ void DbLoader::init_priv() {
     sqlClient->testConnect();
     sqlClient->createDatabase();
 
-    checkLocalVersion();
+    invokeCreateTables();
 
-    const auto metaObj = QMetaType::metaObjectForType(QMetaType::type("EntityDelegate*"));
+    int localversion = getLocalVersion();
+    if (localversion != -1) {
+        config.versionValid = localversion >= config.version;
+    } else {
+        updateLocalVersion();
+    }
+
+    if (!config.versionValid) {
+        try {
+            invokeTableUpgrade();
+            updateLocalVersion();
+        } catch (DaoException& e) {
+            DbExceptionHandler::exceptionHandler->upgradeFail(e.reason);
+        }
+    }
+}
+
+void DbLoader::updateLocalVersion() {
+    getClient().createTableIfNotExist("dao_version", QStringList() << "ver int", QStringList());
+    bool dataRowExist = false;
+    auto query = BaseQuery::queryPrimitiveThrowable("select count(*) from dao_version");
+    int count = 0;
+    if (query.next()) {
+        count = query.value(0).toInt();
+    }
+    if (count == 0) {
+        BaseQuery::queryPrimitiveThrowable(QString("insert into dao_version(ver) values(%1)").arg(config.version));
+    } else {
+        BaseQuery::queryPrimitiveThrowable(QString("update dao_version set ver = %1").arg(config.version));
+    }
+}
+
+int DbLoader::getLocalVersion() {
+    if (!getClient().checkTableExist("dao_version")) {
+        return -1;
+    }
+    int version = -1;
+    auto query = BaseQuery::queryPrimitiveThrowable("select *from dao_version");
+    if (query.next()) {
+        version = query.value(0).toInt();
+    }
+    return version;
+}
+
+void DbLoader::invokeCreateTables() {
+    const auto metaObj = QMetaType::metaObjectForType(QMetaType::type(getDelegateStr()));
     Q_ASSERT_X(metaObj != nullptr, "DbLoader::init", "use DbEntityGenerator to create Entity");
     QObject* obj = metaObj->newInstance();
     metaObj->invokeMethod(obj, "createEntityTables");
     delete obj;
 }
 
-void DbLoader::checkLocalVersion() {
-    BaseQuery::queryPrimitive("select *from dao_version", [&](QSqlQuery& query) {
-        if (query.next()) {
-            int localversion = query.value(0).toInt();
-            config.versionValid = localversion >= config.version;
-        }
-    }, [&](QString failMsg) {
-        //table not found
-    });
+void DbLoader::invokeTableUpgrade() {
+    const auto metaObj = QMetaType::metaObjectForType(QMetaType::type(getDelegateStr()));
+    Q_ASSERT_X(metaObj != nullptr, "DbLoader::init", "use DbEntityGenerator to create Entity");
+    QObject* obj = metaObj->newInstance();
+    metaObj->invokeMethod(obj, "entityTablesUpgrade");
+    delete obj;
+}
+
+QByteArray DbLoader::getDelegateStr() {
+    QByteArray entityDelegate;
+    if (config.isSqlite()) {
+        entityDelegate = "DaoSqlite::EntityDelegate*";
+    } else if (config.isMysql()) {
+        entityDelegate = "DaoMysql::EntityDelegate*";
+    } else if (config.isSqlServer()) {
+        entityDelegate = "DaoSqlServer::EntityDelegate*";
+    }
+    return entityDelegate;
 }

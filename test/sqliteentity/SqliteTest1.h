@@ -4,7 +4,7 @@
 #include <qobject.h>
 #include <qvariant.h>
 
-class Test1 {
+class SqliteTest1 {
 private:
     //主键
     qint64 id;
@@ -16,12 +16,12 @@ private:
     QByteArray hex;
 
 public:
-    Test1() {
+    SqliteTest1() {
         name = "text";
         number = 10.0;
     }
 
-    Test1(
+    SqliteTest1(
         qint64 id,
         const QString& name,
         qreal number,
@@ -39,7 +39,15 @@ public:
         }
 
         static QString getTableName() {
-            return QStringLiteral("ts_test1");
+            return QStringLiteral("ts_sqlitetest1");
+        }
+
+        static QStringList getFields() {
+            return QStringList()
+                << "id"
+                << "name"
+                << "number"
+                << "hex";
         }
 
         static QStringList getFieldsType() {
@@ -81,5 +89,5 @@ public:
     //get 二进制
     inline QByteArray getHex() const {return hex;}
 };
-typedef QList<Test1> Test1List;
-Q_DECLARE_METATYPE(Test1);
+typedef QList<SqliteTest1> SqliteTest1List;
+Q_DECLARE_METATYPE(SqliteTest1);

@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/QtDao">
-        <file>entity/sqlite_cfg.xml</file>
+        <file>test/sqliteentity/sqlite_cfg.xml</file>
+        <file>test/sqliteentity/sqlite_cfg2.xml</file>
     </qresource>
 </RCC>

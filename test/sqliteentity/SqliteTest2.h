@@ -4,7 +4,7 @@
 #include <qobject.h>
 #include <qvariant.h>
 
-class Test2 {
+class SqliteTest2 {
 private:
     //自增长主键
     qint64 id;
@@ -21,11 +21,11 @@ private:
     QString nametmp;
 
 public:
-    Test2() {
+    SqliteTest2() {
         number = 0;
     }
 
-    Test2(
+    SqliteTest2(
         qint64 id,
         const QString& name,
         int number,
@@ -45,7 +45,16 @@ public:
         }
 
         static QString getTableName() {
-            return QStringLiteral("ts_test2");
+            return QStringLiteral("ts_sqlitetest2");
+        }
+
+        static QStringList getFields() {
+            return QStringList()
+                << "id"
+                << "name"
+                << "number"
+                << "number2"
+                << "varianttype";
         }
 
         static QStringList getFieldsType() {
@@ -99,4 +108,4 @@ public:
     //get 临时类型
     inline QString getNametmp() const {return nametmp;}
 };
-typedef QList<Test2> Test2List;
+typedef QList<SqliteTest2> SqliteTest2List;

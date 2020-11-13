@@ -10,7 +10,7 @@
 #include <qtest.h>
 
 void BaseQueryTest::initTestCase() {
-    DbLoader::loadConfig(":/QtDao/entity/sqlite_cfg.xml");
+    DbLoader::loadConfig(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
     DbLoader::getClient().testConnect();
 }
 
@@ -25,6 +25,19 @@ void BaseQueryTest::testPrimitiveQuery() {
     }, [&](QString err) {
         QFAIL(err.toLatin1());
     });
+
+    try {
+        auto query = BaseQuery::queryPrimitiveThrowable("select 10 + 20");
+        if (query.next()) {
+            int result = query.value(0).toInt();
+            QCOMPARE(result, 30);
+        } else {
+            QFAIL("primitive query fail!");
+        }
+    }
+    catch (DaoException& e) {
+        QFAIL(e.reason.toLatin1());
+    }
 }
 
 void BaseQueryTest::testPrimitiveQueryWithValue() {
@@ -38,12 +51,32 @@ void BaseQueryTest::testPrimitiveQueryWithValue() {
     }, [&](QString err) {
         QFAIL(err.toLatin1());
     });
+
+    try {
+        auto query = BaseQuery::queryPrimitiveThrowable("select ? + ?", QVariantList() << 10 << 20);
+        if (query.next()) {
+            int result = query.value(0).toInt();
+            QCOMPARE(result, 30);
+        } else {
+            QFAIL("primitive query fail!");
+        }
+    }
+    catch (DaoException& e) {
+        QFAIL(e.reason.toLatin1());
+    }
 }
 
 void BaseQueryTest::testPrimitiveQueryFail() {
     BaseQuery::queryPrimitive("select?+?", [&](QSqlQuery& query) {
         QFAIL("primitive query should fail!");
     }, [&](QString err) {});
+
+    try {
+        BaseQuery::queryPrimitiveThrowable("select?+?");
+        QFAIL("primitive query should fail!");
+    }
+    catch (DaoException& e) {
+    }
 }
 
 void BaseQueryTest::cleanup() {

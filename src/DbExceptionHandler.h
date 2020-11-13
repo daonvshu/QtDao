@@ -26,6 +26,12 @@ public:
     /// </summary>
     /// <param name="lastErr"></param>
     virtual void execFail(const QString& lastErr) {};
+
+    /// <summary>
+    /// 版本升级失败
+    /// </summary>
+    /// <param name="reason"></param>
+    virtual void upgradeFail(const QString& reason) {};
 };
 
 /// <summary>

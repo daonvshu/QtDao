@@ -3,8 +3,8 @@
 #include "../../src/DbLoader.h"
 #include "../../src/ConnectionPool.h"
 
-#include "../../entity/Test1.h"
-#include "../../entity/Test2.h"
+#include "../sqliteentity/SqliteTest1.h"
+#include "../sqliteentity/SqliteTest2.h"
 
 #include <qtest.h>
 
@@ -21,6 +21,10 @@ public:
     void execFail(const QString& lastErr) {
         QFAIL(("query fail:" + lastErr).toUtf8());
     }
+
+    void upgradeFail(const QString& reason) {
+        QFAIL(("upgrade fail:" + reason).toUtf8());
+    }
 };
 
 void DbLoaderTest::initTestCase() {
@@ -28,18 +32,31 @@ void DbLoaderTest::initTestCase() {
 }
 
 void DbLoaderTest::sqliteloadConfigTest() {
-    DbLoader::init(":/QtDao/entity/sqlite_cfg.xml", new DbLoaderTestExceptionHandler);
-    Test1::Info t1info;
+    DbLoader::init(":/QtDao/test/sqliteentity/sqlite_cfg.xml", new DbLoaderTestExceptionHandler);
+    SqliteTest1::Info t1info;
     QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
-    Test2::Info t2info;
+    SqliteTest2::Info t2info;
     QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
+    QCOMPARE(DbLoader::getLocalVersion(), 1);
+}
+
+void DbLoaderTest::sqliteUpgradeTest() {
+    //reinit
+    DbLoader::init(":/QtDao/test/sqliteentity/sqlite_cfg2.xml");
+    SqliteTest1::Info t1info;
+    QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
+    SqliteTest2::Info t2info;
+    QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
+
+    //test version
+    QCOMPARE(DbLoader::getLocalVersion(), 3);
 }
 
 void DbLoaderTest::cleanup() {
-    ConnectionPool::release();
-    DbLoader::getClient().dropDatabase();
+    
 }
 
 void DbLoaderTest::cleanupTestCase() {
-
+    ConnectionPool::release();
+    DbLoader::getClient().dropDatabase();
 }

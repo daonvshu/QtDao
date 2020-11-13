@@ -9,6 +9,7 @@ private slots:
     void initTestCase();
 
     void sqliteloadConfigTest();
+    void sqliteUpgradeTest();
 
     void cleanup();
 

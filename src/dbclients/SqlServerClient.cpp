@@ -18,3 +18,16 @@ void SqlServerClient::createTableIfNotExist(const QString& tbName, QStringList f
 
 void SqlServerClient::createIndex(const QString& tbName, QStringList fields, IndexType type) {
 }
+
+void SqlServerClient::renameTable(const QString& oldName, const QString& newName) {
+}
+
+void SqlServerClient::dropTable(const QString& tbName) {
+}
+
+QStringList SqlServerClient::getTagTableFields(const QString& tbName) {
+    return QStringList();
+}
+
+void SqlServerClient::dropAllIndexOnTable(const QString& tbName) {
+}

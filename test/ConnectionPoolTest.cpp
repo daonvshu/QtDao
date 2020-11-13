@@ -17,7 +17,7 @@ void ConnectionPoolTest::initTestCase() {
 }
 
 void ConnectionPoolTest::testSqliteConnect() {
-    DbLoader::loadConfig(":/QtDao/entity/sqlite_cfg.xml");
+    DbLoader::loadConfig(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
     {
         auto db = ConnectionPool::getConnection();
         QVERIFY(db.isOpen());
@@ -28,7 +28,7 @@ void ConnectionPoolTest::testSqliteConnect() {
 }
 
 void ConnectionPoolTest::testReuseConnection() {
-    DbLoader::loadConfig(":/QtDao/entity/sqlite_cfg.xml");
+    DbLoader::loadConfig(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
     {
         QString savedConnection;
         auto db = ConnectionPool::getConnection();
@@ -44,7 +44,7 @@ void ConnectionPoolTest::testReuseConnection() {
 }
 
 void ConnectionPoolTest::testMultiThreadOpenConnection() {
-    DbLoader::loadConfig(":/QtDao/entity/sqlite_cfg.xml");
+    DbLoader::loadConfig(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
     QEventLoop loop;
 
     QString connection1, connection2;
@@ -76,7 +76,7 @@ void ConnectionPoolTest::testMultiThreadOpenConnection() {
 }
 
 void ConnectionPoolTest::testReuseConnectionInOtherThread() {
-    DbLoader::loadConfig(":/QtDao/entity/sqlite_cfg.xml");
+    DbLoader::loadConfig(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
     QEventLoop loop;
 
     QString connection1, connection2;

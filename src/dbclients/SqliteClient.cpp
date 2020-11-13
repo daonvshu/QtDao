@@ -26,7 +26,9 @@ void SqliteClient::dropDatabase() {
     auto dbPath = appLocal + "/" + DbLoader::getConfig().dbName + ".db";
     QFile file(dbPath);
     if (file.exists()) {
-        file.remove();
+        if (!file.remove()) {
+            throw DaoException("unable remove database file!");
+        }
     }
     QDir dir(appLocal);
     if (dir.exists()) {
@@ -47,33 +49,26 @@ bool SqliteClient::checkTableExist(const QString& tbName) {
 }
 
 void SqliteClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType, QStringList primaryKeys) {
-    QString str = "create table %1(";
+    QString str = "create table if not exists %1(";
     str = str.arg(tbName);
     for (const auto& ft : fieldsType) {
         str.append(ft).append(",");
     }
     if (primaryKeys.size() <= 1) {
-        str = str.left(str.length() - 1);
+        str.chop(1);
     } else {
         str.append("primary key(");
         for (const auto& key : primaryKeys) {
             str.append(key).append(",");
         }
-        str = str.left(str.length() - 1);
+        str.chop(1);
         str.append(")");
     }
     str.append(")");
     
-    BaseQuery::queryPrimitive(str);
+    BaseQuery::queryPrimitiveThrowable(str);
 }
 
-/*
-CREATE INDEX "main"."asdasd"
-ON "ts_test5" (
-  "name" ASC,
-  "nametmp" DESC
-);
-*/
 void SqliteClient::createIndex(const QString& tbName, QStringList fields, IndexType type) {
     QString str = "create %1 index %2 on %3 (";
     QString indexName = "index";
@@ -87,8 +82,45 @@ void SqliteClient::createIndex(const QString& tbName, QStringList fields, IndexT
         typeStr = "unique";
         break;
     }
-    str = str.left(str.length() - 1).arg(typeStr).arg(indexName).arg(tbName);
+    str = str.chopped(1).arg(typeStr).arg(indexName).arg(tbName);
     str.append(")");
 
+    BaseQuery::queryPrimitiveThrowable(str);
+}
+
+void SqliteClient::renameTable(const QString& oldName, const QString& newName) {
+    auto str = QString("alter table %1 rename to %2").arg(oldName, newName);
+    BaseQuery::queryPrimitiveThrowable(str);
+}
+
+void SqliteClient::dropTable(const QString& tbName) {
+    auto str = QString("drop table if exists %1").arg(tbName);
     BaseQuery::queryPrimitive(str);
+}
+
+QStringList SqliteClient::getTagTableFields(const QString& tbName) {
+    QStringList fields;
+    auto query = BaseQuery::queryPrimitiveThrowable(QString("pragma table_info('%1')").arg(tbName));
+    while (query.next()) {
+        fields << query.value(1).toString();
+    }
+    return fields;
+}
+
+void SqliteClient::dropAllIndexOnTable(const QString& tbName) {
+    auto query = BaseQuery::queryPrimitiveThrowable(
+        QString("select *from sqlite_master where type='index' and tbl_name = '%1'").arg(tbName)
+    );
+    QStringList indexNames;
+    while (query.next()) {
+        QString indexName = query.value(1).toString();
+        if (!indexName.startsWith("index_"))
+            continue;
+        indexNames << indexName;
+    }
+    for (const auto& name : indexNames) {
+        BaseQuery::queryPrimitiveThrowable(
+            QString("drop index %1").arg(name)
+        );
+    }
 }

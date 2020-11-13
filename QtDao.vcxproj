@@ -91,17 +91,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="entity\EntityInclude.cpp">
-      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">input</DynamicSource>
-      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename).moc</QtMocFileName>
-      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">input</DynamicSource>
-      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).moc</QtMocFileName>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\ConnectionPool.cpp" />
     <ClCompile Include="src\DaoUtil.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="src\dbclients\AbstractClient.cpp" />
     <ClCompile Include="src\dbclients\MysqlClient.cpp" />
     <ClCompile Include="src\dbclients\SqliteClient.cpp" />
     <ClCompile Include="src\dbclients\SqlServerClient.cpp" />
@@ -114,6 +109,7 @@
     <ClCompile Include="test\ConnectionPoolTest.cpp" />
     <ClCompile Include="test\loader\DbLoaderTest.cpp" />
     <ClCompile Include="test\query\BaseQueryTest.cpp" />
+    <ClCompile Include="test\sqliteentity\EntityInclude.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dao_cfg.h">
@@ -122,9 +118,6 @@
     <ClInclude Include="dao_entity.h">
       <DependentUpon>entity\dao_entity.xsd</DependentUpon>
     </ClInclude>
-    <QtMoc Include="entity\EntityInclude.h" />
-    <ClInclude Include="entity\Test1.h" />
-    <ClInclude Include="entity\Test2.h" />
     <ClInclude Include="sqlite_entity.h">
       <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
     </ClInclude>
@@ -144,16 +137,21 @@
     <ClInclude Include="src\EntityField.h" />
     <ClInclude Include="src\EntityFunction.h" />
     <ClInclude Include="src\query\BaseQuery.h" />
+    <ClInclude Include="test\sqliteentity\SqliteTest1.h" />
+    <ClInclude Include="test\sqliteentity\SqliteTest2.h" />
+    <QtMoc Include="test\sqliteentity\EntityInclude.h" />
     <QtMoc Include="test\query\BaseQueryTest.h" />
     <QtMoc Include="test\loader\DbLoaderTest.h" />
     <ClInclude Include="test\RunnableHandler.h" />
     <QtMoc Include="test\ConnectionPoolTest.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="entity\sqlite_cfg.xml" />
     <Xml Include="entity\dao_entity.xml" />
     <Xml Include="entity\mysql_entity.xml" />
     <Xml Include="entity\sqlite_entity.xml" />
+    <Xml Include="test\sqliteentity\sqlite_cfg.xml" />
+    <Xml Include="test\sqliteentity\sqlite_cfg2.xml" />
+    <Xml Include="test\sqliteentity\sqlite_entity.xml" />
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="entity\dao_cfg.xsd">
@@ -171,6 +169,9 @@
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="resource.qrc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="readme.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

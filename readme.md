@@ -1,7 +1,7 @@
 ## QtDao2.0
 #### TODO List:
 - **support**
-  - [ ] sqlite
+  - [x] sqlite
   - [ ] mysql
   - [ ] sqlserver
   - [ ] Confusion
@@ -9,22 +9,22 @@
 - **loader**
   - [x] configure loader
   - [ ] driver loader
-  - [ ] connect test
-  - [ ] auto create database/table (use config)
+  - [x] connect test
+  - [x] auto create database/table (use config)
   - [ ] truncate/drop table
   - [ ] drop database
   - [ ] database switch
 - **upgrader**
-  - [ ] version check
-  - [ ] table upgrade
+  - [x] version check
+  - [x] table upgrade
 - **log**
   - [ ] sql statement print 
   - [ ] value list print
 - **entity generator**
-  - [ ] field getter/setter
-  - [ ] table field
-  - [ ] transient field
-  - [ ] default value
+  - [x] field getter/setter
+  - [x] table field
+  - [x] transient field
+  - [x] default value
   - [ ] function query result getter
 - **query condition**
   - [ ] operator field <-> value
@@ -44,7 +44,7 @@
     - [ ] inner/left/right/full join
     - [ ] recursive query
     - [ ] query in query/join results
-    - [ ] original query
+    - [x] original query
     - [ ] custom function query
     - [ ] custom statement query
   - count operator
@@ -67,7 +67,7 @@
 - **auto close connection**
   - [ ] auto close connection when work thread end
 - **exception**
-  - [ ] load configure exception
-  - [ ] upgrade exception
-  - [ ] query exception
+  - [x] load configure exception
+  - [x] upgrade exception
+  - [x] query exception
   - [x] connection pool exception

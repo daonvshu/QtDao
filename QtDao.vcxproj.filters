@@ -57,6 +57,9 @@
     <Filter Include="Source Files\test\loader">
       <UniqueIdentifier>{91a1b60b-752a-40f3-a0dc-269f7a398b1b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\test\sqliteentity">
+      <UniqueIdentifier>{11b59312-025f-4563-860b-638de94940aa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -104,8 +107,11 @@
     <ClCompile Include="test\loader\DbLoaderTest.cpp">
       <Filter>Source Files\test\loader</Filter>
     </ClCompile>
-    <ClCompile Include="entity\EntityInclude.cpp">
-      <Filter>Header Files\entity</Filter>
+    <ClCompile Include="test\sqliteentity\EntityInclude.cpp">
+      <Filter>Header Files\test\sqliteentity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbclients\AbstractClient.cpp">
+      <Filter>Source Files\src\dbclients</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,11 +160,11 @@
     <ClInclude Include="src\dbclients\SqlServerClient.h">
       <Filter>Header Files\src\dbclients</Filter>
     </ClInclude>
-    <ClInclude Include="entity\Test1.h">
-      <Filter>Header Files\entity</Filter>
+    <ClInclude Include="test\sqliteentity\SqliteTest1.h">
+      <Filter>Header Files\test\sqliteentity</Filter>
     </ClInclude>
-    <ClInclude Include="entity\Test2.h">
-      <Filter>Header Files\entity</Filter>
+    <ClInclude Include="test\sqliteentity\SqliteTest2.h">
+      <Filter>Header Files\test\sqliteentity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -171,7 +177,13 @@
     <Xml Include="entity\mysql_entity.xml">
       <Filter>Header Files\entity</Filter>
     </Xml>
-    <Xml Include="entity\sqlite_cfg.xml">
+    <Xml Include="test\sqliteentity\sqlite_entity.xml">
+      <Filter>Header Files\test\sqliteentity</Filter>
+    </Xml>
+    <Xml Include="test\sqliteentity\sqlite_cfg.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="test\sqliteentity\sqlite_cfg2.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>
@@ -199,13 +211,18 @@
     <QtMoc Include="test\loader\DbLoaderTest.h">
       <Filter>Header Files\test\loader</Filter>
     </QtMoc>
-    <QtMoc Include="entity\EntityInclude.h">
-      <Filter>Header Files\entity</Filter>
+    <QtMoc Include="test\sqliteentity\EntityInclude.h">
+      <Filter>Header Files\test\sqliteentity</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="resource.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="readme.md">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -50,6 +50,20 @@ void BaseQuery::queryPrimitive(const QString& statement, const QVariantList& val
     }
 }
 
+QSqlQuery BaseQuery::queryPrimitiveThrowable(const QString& statement) {
+    return queryPrimitiveThrowable(statement, QVariantList());
+}
+
+QSqlQuery BaseQuery::queryPrimitiveThrowable(const QString& statement, const QVariantList& values) {
+    BaseQuery executor(statement, values);
+    auto query = executor.getQuery();
+    if (query.exec()) {
+        return query;
+    } else {
+        throw DaoException(query.lastError().text());
+    }
+}
+
 QSqlQuery BaseQuery::getQuery() {
     auto db = ConnectionPool::getConnection();
     QSqlQuery query(db);

@@ -28,6 +28,15 @@ public:
         QueryFailCallback failCallback = nullptr
     );
 
+    static QSqlQuery queryPrimitiveThrowable(
+        const QString& statement
+    );
+
+    static QSqlQuery queryPrimitiveThrowable(
+        const QString& statement,
+        const QVariantList& values
+    );
+
 protected:
     virtual void solveQueryResult(const QSqlQuery& query) {};
 

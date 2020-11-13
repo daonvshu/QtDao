@@ -45,6 +45,12 @@ public:
         return *sqlClient;
     }
 
+    /// <summary>
+    /// 获取当前数据库版本号，不存在返回-1
+    /// </summary>
+    /// <returns></returns>
+    static int getLocalVersion();
+
 private:
     static DbConfig config;
     static AbstractClient* sqlClient;
@@ -52,5 +58,10 @@ private:
 private:
     static void init_priv();
 
-    static void checkLocalVersion();
+    static void updateLocalVersion();
+
+    static void invokeCreateTables();
+    static void invokeTableUpgrade();
+
+    static QByteArray getDelegateStr();
 };
