@@ -66,6 +66,12 @@
     <Filter Include="Source Files\src\condition">
       <UniqueIdentifier>{2baf88fa-76aa-4bfa-a5ea-19fdb3aeef08}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\test\condition">
+      <UniqueIdentifier>{6397f782-a6b0-4051-9c85-ec1aad1200b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\test\condition">
+      <UniqueIdentifier>{e5129d86-3fdb-4205-8969-ab765363d71e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -119,7 +125,13 @@
     <ClCompile Include="src\dbclients\AbstractClient.cpp">
       <Filter>Source Files\src\dbclients</Filter>
     </ClCompile>
-    <ClCompile Include="src\condition\ConditionField.cpp">
+    <ClCompile Include="src\condition\EntityCondition.cpp">
+      <Filter>Source Files\src\condition</Filter>
+    </ClCompile>
+    <ClCompile Include="test\condition\ConnectorTest.cpp">
+      <Filter>Source Files\test\condition</Filter>
+    </ClCompile>
+    <ClCompile Include="src\condition\ConnectorItem.cpp">
       <Filter>Source Files\src\condition</Filter>
     </ClCompile>
   </ItemGroup>
@@ -175,7 +187,16 @@
     <ClInclude Include="test\sqliteentity\SqliteTest2.h">
       <Filter>Header Files\test\sqliteentity</Filter>
     </ClInclude>
-    <ClInclude Include="src\condition\ConditionField.h">
+    <ClInclude Include="src\condition\EntityField.h">
+      <Filter>Header Files\src\condition</Filter>
+    </ClInclude>
+    <ClInclude Include="src\condition\EntityCondition.h">
+      <Filter>Header Files\src\condition</Filter>
+    </ClInclude>
+    <ClInclude Include="src\condition\Connector.h">
+      <Filter>Header Files\src\condition</Filter>
+    </ClInclude>
+    <ClInclude Include="src\condition\ConnectorItem.h">
       <Filter>Header Files\src\condition</Filter>
     </ClInclude>
   </ItemGroup>
@@ -225,6 +246,9 @@
     </QtMoc>
     <QtMoc Include="test\sqliteentity\EntityInclude.h">
       <Filter>Header Files\test\sqliteentity</Filter>
+    </QtMoc>
+    <QtMoc Include="test\condition\ConnectorTest.h">
+      <Filter>Header Files\test\condition</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

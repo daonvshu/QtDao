@@ -4,6 +4,8 @@
 #include <qobject.h>
 #include <qvariant.h>
 
+#include "../../src/condition/EntityField.h"
+
 class SqliteTest2 {
 private:
     //自增长主键
@@ -39,6 +41,14 @@ public:
     { }
 
 public:
+    struct Fields {
+        EntityField<qint64> id = "id";
+        EntityField<QString> name = "name";
+        EntityField<int> number = "number";
+        EntityField<int> number2 = "number2";
+        EntityField<QVariant> varianttype = "varianttype";
+    };
+
     struct Info {
         static int fieldSize() {
             return 5;

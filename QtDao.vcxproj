@@ -92,7 +92,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="src\condition\ConditionField.cpp" />
+    <ClCompile Include="src\condition\ConnectorItem.cpp" />
+    <ClCompile Include="src\condition\EntityCondition.cpp" />
     <ClCompile Include="src\ConnectionPool.cpp" />
     <ClCompile Include="src\DaoUtil.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -113,6 +114,7 @@
     </ClCompile>
     <ClCompile Include="src\qtdao.cpp" />
     <ClCompile Include="src\query\BaseQuery.cpp" />
+    <ClCompile Include="test\condition\ConnectorTest.cpp" />
     <ClCompile Include="test\ConnectionPoolTest.cpp" />
     <ClCompile Include="test\loader\DbLoaderTest.cpp" />
     <ClCompile Include="test\query\BaseQueryTest.cpp" />
@@ -128,7 +130,10 @@
     <ClInclude Include="sqlite_entity.h">
       <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
     </ClInclude>
-    <ClInclude Include="src\condition\ConditionField.h" />
+    <ClInclude Include="src\condition\Connector.h" />
+    <ClInclude Include="src\condition\ConnectorItem.h" />
+    <ClInclude Include="src\condition\EntityField.h" />
+    <ClInclude Include="src\condition\EntityCondition.h" />
     <ClInclude Include="src\ConnectionPool.h" />
     <ClInclude Include="src\DaoUtil.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -153,6 +158,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="src\query\BaseQuery.h" />
+    <QtMoc Include="test\condition\ConnectorTest.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest1.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest2.h" />
     <QtMoc Include="test\sqliteentity\EntityInclude.h" />

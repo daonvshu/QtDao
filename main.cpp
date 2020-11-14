@@ -5,6 +5,7 @@
 #include "test/ConnectionPoolTest.h"
 #include "test/query/BaseQueryTest.h"
 #include "test/loader/DbLoaderTest.h"
+#include "test/condition/ConnectorTest.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,6 +19,9 @@ int main(int argc, char *argv[])
 
     DbLoaderTest dbLoadTest;
     QTest::qExec(&dbLoadTest);
+
+    ConnectorTest connectorTest;
+    QTest::qExec(&connectorTest);
 
     return a.exec();
 }

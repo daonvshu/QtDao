@@ -1,1 +1,0 @@
-DbEntityGenerator_dev.exe sqlite_entity.xml ../../src

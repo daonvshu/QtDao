@@ -4,6 +4,8 @@
 #include <qobject.h>
 #include <qvariant.h>
 
+#include "../../src/condition/EntityField.h"
+
 class SqliteTest1 {
 private:
     //Ö÷¼ü
@@ -33,6 +35,13 @@ public:
     { }
 
 public:
+    struct Fields {
+        EntityField<qint64> id = "id";
+        EntityField<QString> name = "name";
+        EntityField<qreal> number = "number";
+        EntityField<QByteArray> hex = "hex";
+    };
+
     struct Info {
         static int fieldSize() {
             return 4;
