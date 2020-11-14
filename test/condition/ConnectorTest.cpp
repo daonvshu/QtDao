@@ -14,12 +14,19 @@ void ConnectorTest::cleanup() {
 
 void ConnectorTest::conditionConnectortest() {
     SqliteTest2::Fields sf;
-    auto condition = _and(sf.id == 1, _or(sf.name == "alice", sf.varianttype == "qwe", sf.number2++));
+    auto condition = _and(
+        sf.id == 1, 
+        _or(sf.name == "alice", sf.varianttype == "qwe", sf.number2++),
+        sf.name.in(QStringList() << "r" << "t" << "u"),
+        sf.number.between(10, 20)
+    );
     condition.connect("");
     QString conditionStr = condition.getConditionStr();
-    QCOMPARE(conditionStr, QString("(id=? and (name=? or varianttype=? or number2=number2+?))"));
+    QCOMPARE(conditionStr, 
+        QString("(id=? and (name=? or varianttype=? or number2=number2+?) and name in (?,?,?) and number between ? and ?)")
+    );
     QVariantList values = condition.getValues();
-    QCOMPARE(values, QVariantList() << 1 << "alice" << "qwe" << 1);
+    QCOMPARE(values, QVariantList() << 1 << "alice" << "qwe" << 1 << "r" << "t" << "u" << 10 << 20);
 }
 
 void ConnectorTest::cleanupTestCase() {

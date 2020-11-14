@@ -85,6 +85,16 @@ public:
         return setValueSelf("-", 1);
     }
 
+    /*condition in*/
+    EntityCondition in(const QList<T>& value) {
+        return EntityCondition::conditionIn(name, value);
+    }
+
+    /*condition between*/
+    EntityCondition between(const T& a, const T& b) {
+        return EntityCondition::conditionBetween(name, a, b);
+    }
+
     friend class EntityCondition;
 };
 
