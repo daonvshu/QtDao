@@ -199,6 +199,9 @@
     <ClInclude Include="src\condition\ConnectorItem.h">
       <Filter>Header Files\src\condition</Filter>
     </ClInclude>
+    <ClInclude Include="src\condition\ConditionConstraint.h">
+      <Filter>Header Files\src\condition</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\dao_entity.xml">

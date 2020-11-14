@@ -133,6 +133,7 @@
     </ClInclude>
     <ClInclude Include="src\condition\Connector.h" />
     <ClInclude Include="src\condition\ConnectorItem.h" />
+    <ClInclude Include="src\condition\ConditionConstraint.h" />
     <ClInclude Include="src\condition\EntityField.h" />
     <ClInclude Include="src\condition\EntityCondition.h" />
     <ClInclude Include="src\ConnectionPool.h" />
