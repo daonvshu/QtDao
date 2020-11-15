@@ -4,7 +4,8 @@
 #include <qvariant.h>
 
 #include "EntityCondition.h"
-#include "Connector.h"
+
+class ConditionConstraint;
 
 template<typename T>
 class EntityField {
@@ -15,6 +16,8 @@ private:
     QString name;
 
 private:
+    EntityField(const QString& name) : name(name) {}
+
     EntityCondition setValue(const char* op, const T& v) {
         return EntityCondition(name, op, QVariantList() << v);
     }
@@ -95,6 +98,12 @@ public:
         return EntityCondition::conditionBetween(name, a, b);
     }
 
+    /*for order by*/
+    EntityField desc() {
+        return EntityField(name + " desc");
+    }
+
     friend class EntityCondition;
+    friend class ConditionConstraint;
 };
 

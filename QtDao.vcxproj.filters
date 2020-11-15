@@ -134,6 +134,9 @@
     <ClCompile Include="src\condition\ConnectorItem.cpp">
       <Filter>Source Files\src\condition</Filter>
     </ClCompile>
+    <ClCompile Include="src\condition\ConditionConstraint.cpp">
+      <Filter>Source Files\src\condition</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ConnectionPool.h">
@@ -200,6 +203,9 @@
       <Filter>Header Files\src\condition</Filter>
     </ClInclude>
     <ClInclude Include="src\condition\ConditionConstraint.h">
+      <Filter>Header Files\src\condition</Filter>
+    </ClInclude>
+    <ClInclude Include="src\condition\ConditionOperator.h">
       <Filter>Header Files\src\condition</Filter>
     </ClInclude>
   </ItemGroup>

@@ -53,7 +53,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
-    <QtInstall>msvc2017</QtInstall>
+    <QtInstall>msvc2017_x86</QtInstall>
     <QtModules>core;sql;testlib;xml</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
@@ -93,6 +93,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\condition\ConditionConstraint.cpp" />
     <ClCompile Include="src\condition\ConnectorItem.cpp" />
     <ClCompile Include="src\condition\EntityCondition.cpp" />
     <ClCompile Include="src\ConnectionPool.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="sqlite_entity.h">
       <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
     </ClInclude>
+    <ClInclude Include="src\condition\ConditionOperator.h" />
     <ClInclude Include="src\condition\Connector.h" />
     <ClInclude Include="src\condition\ConnectorItem.h" />
     <ClInclude Include="src\condition\ConditionConstraint.h" />

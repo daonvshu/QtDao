@@ -15,6 +15,17 @@ EntityCondition::EntityCondition(
 {
 }
 
+EntityCondition::EntityCondition(
+    const QString& fieldName,
+    const QVariantList& values, 
+    ConditionType type
+)
+    :fieldName(fieldName)
+    , values(values)
+    , conditionType(type)
+{
+}
+
 void EntityCondition::combine(const QString& fieldPrefix) {
     switch (conditionType) {
     case TypeNormal:

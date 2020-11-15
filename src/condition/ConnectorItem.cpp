@@ -4,13 +4,17 @@
 
 ConnectorItemData::ConnectorItemData()
     : connector(nullptr)
-    , condition(nullptr) {
+    , condition(nullptr) 
+    , constraint(nullptr)
+{
 }
 
 ConnectorItemData::ConnectorItemData(const ConnectorItemData& other)
     : QSharedData(other)
     , connector(other.connector)
-    , condition(other.condition) {
+    , condition(other.condition) 
+    , constraint(other.constraint)
+{
 }
 
 ConnectorItemData::~ConnectorItemData() {
@@ -22,19 +26,10 @@ ConnectorItemData::~ConnectorItemData() {
         delete condition;
         condition = nullptr;
     }
-}
-
-ConnectorItem::ConnectorItem() {
-    d = new ConnectorItemData;
-}
-
-ConnectorItem::ConnectorItem(
-    Connector* connector, 
-    EntityCondition* condition
-) {
-    d = new ConnectorItemData;
-    d->connector = connector;
-    d->condition = condition;
+    if (constraint != nullptr) {
+        delete constraint;
+        constraint = nullptr;
+    }
 }
 
 ConnectorItem::ConnectorItem(const ConnectorItem& other)
@@ -49,4 +44,9 @@ ConnectorItem::ConnectorItem(const Connector& connector) {
 ConnectorItem::ConnectorItem(const EntityCondition& condition) {
     d = new ConnectorItemData;
     d->condition = new EntityCondition(condition);
+}
+
+ConnectorItem::ConnectorItem(const ConditionConstraint& constraint) {
+    d = new ConnectorItemData;
+    d->constraint = new ConditionConstraint(constraint);
 }

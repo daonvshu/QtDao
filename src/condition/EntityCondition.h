@@ -7,6 +7,11 @@ enum ConditionType {
     TypeNormal,
     TypeIn,
     TypeBetween,
+    //constraint
+    TypeLimit,
+    TypeOrderBy,
+    TypeGroupBy,
+    TypeHaving,
 };
 
 template<typename T>
@@ -14,13 +19,19 @@ class EntityField;
 
 class Connector;
 class EntityCondition {
-private:
+protected:
     EntityCondition(
         const QString& fieldName,
         const QString& op,
         const QVariantList& values,
         bool selfOperate = false,
         ConditionType type = TypeNormal
+    );
+
+    EntityCondition(
+        const QString& fieldName,
+        const QVariantList& values,
+        ConditionType type
     );
 
     template<typename T>
@@ -36,7 +47,7 @@ private:
         const T& b
     );
 
-private:
+protected:
     QString fieldName;
     QString op;
     QVariantList values;
@@ -45,11 +56,15 @@ private:
 
     ConditionType conditionType;
 
-private:
-    void combine(const QString& fieldPrefix);
+protected:
+    virtual void combine(const QString& fieldPrefix);
     void combineNormal(const QString& fieldPrefix);
     void combineIn(const QString& fieldPrefix);
     void combineBetween(const QString& fieldPrefix);
+
+    virtual QVariantList getValues() {
+        return values;
+    }
 
     friend class Connector;
 
@@ -65,9 +80,7 @@ inline EntityCondition EntityCondition::conditionIn(const QString& fieldName, co
     }
     return EntityCondition(
         fieldName,
-        "in",
         variantValues,
-        false,
         TypeIn
     );
 }
@@ -78,9 +91,7 @@ inline EntityCondition EntityCondition::conditionBetween(const QString& fieldNam
     values << a << b;
     return EntityCondition(
         fieldName,
-        "between",
         values,
-        false,
         TypeBetween
     );
 }

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "EntityCondition.h"
+#include "ConditionConstraint.h"
 #include "ConnectorItem.h"
 
 class ConnectorData : public QSharedData {
@@ -44,9 +45,10 @@ public:
     Connector& append(const C& condition, const T&... conditions) {
         Q_STATIC_ASSERT((
             std::is_same<C, EntityCondition>::value ||
+            std::is_same<C, ConditionConstraint>::value ||
             std::is_same<C, Connector>::value
         ));
-        appendCondition(condition);
+        d->conditions.append(condition);
         return append(conditions...);
     }
 
@@ -65,21 +67,27 @@ public:
             if (condition != nullptr) {
                 condition->combine(fieldPrefix);
                 d->conditionStr.append(condition->combineStr);
-                d->values.append(condition->values);
+                d->values.append(condition->getValues());
+                continue;
+            }
+
+            auto constraint = item.getConstraint();
+            if (constraint != nullptr) {
+                constraint->combine(fieldPrefix);
+                d->conditionStr.append(constraint->combineStr);
+                d->values.append(constraint->getValues());
                 continue;
             }
 
             auto connector = item.getConnector();
             if (connector != nullptr) {
                 connector->connect(fieldPrefix);
-                d->conditionStr.append(connector->d->conditionStr);
+                d->conditionStr.append('(').append(connector->d->conditionStr).append(')');
                 d->values.append(connector->d->values);
                 continue;
             }
 
         }
-        d->conditionStr.prepend('(');
-        d->conditionStr.append(')');
     }
 
     const QString& getConditionStr() {
@@ -92,28 +100,13 @@ public:
 
 protected:
     virtual void appendConnector() {
+        if (d->connectOperator.isEmpty()) {
+            d->conditionStr.append(' ');
+            return;
+        }
         d->conditionStr.append(' ').append(d->connectOperator).append(' ');
     };
 
 private:
-    template<typename T>
-    void appendCondition(const T& condition);
-
-private:
     QSharedDataPointer<ConnectorData> d;
 };
-
-template<>
-inline void Connector::appendCondition(const EntityCondition& condition) {
-    d->conditions.append(condition);
-}
-
-template<>
-inline void Connector::appendCondition(const Connector& connector) {
-    d->conditions.append(connector);
-}
-
-
-#define _and(...) Connector("and").append(__VA_ARGS__)
-#define _or(...) Connector("or").append(__VA_ARGS__)
-
