@@ -5,7 +5,7 @@
 
 BaseQuery::BaseQuery(const QString& statement, const QVariantList& values)
     : statement(statement)
-    , values(&values)
+    , values(values)
 {
     if (getQueryLogPrinter()) {
         getQueryLogPrinter()(statement, values);
@@ -73,7 +73,7 @@ QSqlQuery BaseQuery::getQuery() {
 }
 
 void BaseQuery::bindQueryValues(QSqlQuery& query) {
-    for (const auto& d : *values) {
+    for (const auto& d : values) {
         query.addBindValue(d, d.type() == QMetaType::QByteArray ? QSql::Binary : QSql::In);
     }
 }

@@ -42,7 +42,7 @@ protected:
 
 private:
     const QString statement;
-    const QVariantList* values;
+    const QVariantList values;
 
 private:
     QSqlQuery getQuery();
