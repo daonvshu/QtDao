@@ -5,27 +5,24 @@
 
 #include <functional>
 
-typedef std::function<void(QSqlQuery& query)> QueryCallback;
-typedef std::function<void(QString)> QueryFailCallback;
+#include "../condition/Connector.h"
+
+template<typename T, template<typename> class Query>
+class QueryBuilder;
 
 class BaseQuery {
 public:
-    BaseQuery(const QString& statement, const QVariantList& values);
-
-    void exec();
-    void execBatch();
-
     static void queryPrimitive(
         const QString& statement, 
-        QueryCallback callback = nullptr,
-        QueryFailCallback failCallback = nullptr
+        std::function<void(QSqlQuery& query)> callback = nullptr,
+        std::function<void(QString)> failCallback = nullptr
     );
 
     static void queryPrimitive(
         const QString& statement,
         const QVariantList& values,
-        QueryCallback callback = nullptr,
-        QueryFailCallback failCallback = nullptr
+        std::function<void(QSqlQuery& query)> callback = nullptr,
+        std::function<void(QString)> failCallback = nullptr
     );
 
     static QSqlQuery queryPrimitiveThrowable(
@@ -38,11 +35,20 @@ public:
     );
 
 protected:
-    virtual void solveQueryResult(const QSqlQuery& query) {};
+    void setSqlQueryStatement(const QString& statement, const QVariantList& values);
+
+    void exec(const std::function<void(const QSqlQuery&)>& solveQueryResult);
+    void execBatch(const std::function<void(const QSqlQuery&)>& solveQueryResult);
 
 private:
-    const QString statement;
-    const QVariantList values;
+    QString statement;
+    QVariantList values;
+
+protected:
+    Connector connector;
+
+    template<typename T, template<typename> class Query>
+    friend class QueryBuilder;
 
 private:
     QSqlQuery getQuery();

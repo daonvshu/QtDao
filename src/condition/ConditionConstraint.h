@@ -32,12 +32,7 @@ protected:
     void combineOrderBy(const QString& fieldPrefix);
     void combineGroupBy(const QString& fieldPrefix);
 
-    QVariantList getValues() override {
-        if (conditionType == TypeOrderBy || conditionType == TypeGroupBy) {
-            return QVariantList();
-        }
-        return EntityCondition::getValues();
-    }
+    QVariantList getValues() override;
 
     ConditionConstraint& orderByNext() {
         return *this;

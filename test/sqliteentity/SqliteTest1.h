@@ -36,10 +36,10 @@ public:
 
 public:
     struct Fields {
-        EntityField<qint64> id = "id";
-        EntityField<QString> name = "name";
-        EntityField<qreal> number = "number";
-        EntityField<QByteArray> hex = "hex";
+        EntityField<qint64> id = EntityField<qint64>("id");
+        EntityField<QString> name = EntityField<QString>("name");
+        EntityField<qreal> number = EntityField<qreal>("number");
+        EntityField<QByteArray> hex = EntityField<QByteArray>("hex");
     };
 
     struct Info {
@@ -77,6 +77,10 @@ public:
 
         static QList<QStringList> getUniqueIndexFields() {
             return QList<QStringList>();
+        }
+
+        static bool isAutoIncrement(const QString& name) {
+            return false;
         }
     };
 

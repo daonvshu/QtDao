@@ -3,16 +3,7 @@
 #include "../ConnectionPool.h"
 #include "../DbExceptionHandler.h"
 
-BaseQuery::BaseQuery(const QString& statement, const QVariantList& values)
-    : statement(statement)
-    , values(values)
-{
-    if (getQueryLogPrinter()) {
-        getQueryLogPrinter()(statement, values);
-    }
-}
-
-void BaseQuery::exec() {
+void BaseQuery::exec(const std::function<void(const QSqlQuery&)>& solveQueryResult) {
     auto query = getQuery();
     if (query.exec()) {
         solveQueryResult(query);
@@ -21,7 +12,7 @@ void BaseQuery::exec() {
     }
 }
 
-void BaseQuery::execBatch() {
+void BaseQuery::execBatch(const std::function<void(const QSqlQuery&)>& solveQueryResult) {
     auto query = getQuery();
     if (query.execBatch()) {
         solveQueryResult(query);
@@ -30,12 +21,13 @@ void BaseQuery::execBatch() {
     }
 }
 
-void BaseQuery::queryPrimitive(const QString& statement, QueryCallback callback, QueryFailCallback failCallback) {
+void BaseQuery::queryPrimitive(const QString& statement, std::function<void(QSqlQuery& query)> callback, std::function<void(QString)> failCallback) {
     queryPrimitive(statement, QVariantList(), callback, failCallback);
 }
 
-void BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, QueryCallback callback, QueryFailCallback failCallback) {
-    BaseQuery executor(statement, values);
+void BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, std::function<void(QSqlQuery& query)> callback, std::function<void(QString)> failCallback) {
+    BaseQuery executor;
+    executor.setSqlQueryStatement(statement, values);
     auto query = executor.getQuery();
     if (query.exec()) {
         if (callback) {
@@ -55,12 +47,21 @@ QSqlQuery BaseQuery::queryPrimitiveThrowable(const QString& statement) {
 }
 
 QSqlQuery BaseQuery::queryPrimitiveThrowable(const QString& statement, const QVariantList& values) {
-    BaseQuery executor(statement, values);
+    BaseQuery executor;
+    executor.setSqlQueryStatement(statement, values);
     auto query = executor.getQuery();
     if (query.exec()) {
         return query;
     } else {
         throw DaoException(query.lastError().text());
+    }
+}
+
+void BaseQuery::setSqlQueryStatement(const QString& statement, const QVariantList& values) {
+    this->statement = statement;
+    this->values = values;
+    if (getQueryLogPrinter()) {
+        getQueryLogPrinter()(statement, values);
     }
 }
 

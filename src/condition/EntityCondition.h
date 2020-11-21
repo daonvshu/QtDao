@@ -3,22 +3,18 @@
 #include <qobject.h>
 #include <qvariant.h>
 
-enum ConditionType {
-    TypeNormal,
-    TypeIn,
-    TypeBetween,
-    //constraint
-    TypeLimit,
-    TypeOrderBy,
-    TypeGroupBy,
-    TypeHaving,
-};
+#include <qsharedpointer.h>
+
+#include "EntityConditionData.h"
 
 template<typename T>
 class EntityField;
 
 class Connector;
 class EntityCondition {
+public:
+    EntityCondition() {}
+
 protected:
     EntityCondition(
         const QString& fieldName,
@@ -48,13 +44,7 @@ protected:
     );
 
 protected:
-    QString fieldName;
-    QString op;
-    QVariantList values;
-    bool selfOperate;
-    QString combineStr;
-
-    ConditionType conditionType;
+    QSharedDataPointer<EntityConditionData> d;
 
 protected:
     virtual void combine(const QString& fieldPrefix);
@@ -62,9 +52,7 @@ protected:
     void combineIn(const QString& fieldPrefix);
     void combineBetween(const QString& fieldPrefix);
 
-    virtual QVariantList getValues() {
-        return values;
-    }
+    virtual QVariantList getValues();
 
     friend class Connector;
 

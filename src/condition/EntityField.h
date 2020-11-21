@@ -10,14 +10,12 @@ class ConditionConstraint;
 template<typename T>
 class EntityField {
 public:
-    EntityField(const char* fieldName) : name(fieldName) {}
+    explicit EntityField(const char* fieldName) : name(fieldName) {}
 
 private:
     QString name;
 
 private:
-    EntityField(const QString& name) : name(name) {}
-
     EntityCondition setValue(const char* op, const T& v) {
         return EntityCondition(name, op, QVariantList() << v);
     }
@@ -26,29 +24,63 @@ private:
         return EntityCondition(name, op, QVariantList() << v, true);
     }
 
+    EntityCondition setValue(const char* op, const QList<T>& v) {
+        QVariantList values;
+        for (const auto& i : v) {
+            values << i;
+        }
+        return EntityCondition(name, op, QVariantList() << QVariant(values));
+    }
+
+    EntityCondition setValueSelf(const char* op, const QList<T>& v) {
+        QVariantList values;
+        for (const auto& i : v) {
+            values << i;
+        }
+        return EntityCondition(name, op, QVariantList() << QVariant(values), true);
+    }
+
 public:
     /*equal "="*/
     EntityCondition operator==(const T& v) {
+        return setValue("=", v);
+    }
+    EntityCondition operator==(const QList<T>& v) {
         return setValue("=", v);
     }
     /*no equal "!="*/
     EntityCondition operator!=(const T& v) {
         return setValue("!=", v);
     }
+    EntityCondition operator!=(const QList<T>& v) {
+        return setValue("!=", v);
+    }
     /*greater than ">"*/
     EntityCondition operator>(const T& v) {
+        return setValue(">", v);
+    }
+    EntityCondition operator>(const QList<T>& v) {
         return setValue(">", v);
     }
     /*greater than and equal ">=" */
     EntityCondition operator>=(const T& v) {
         return setValue(">=", v);
     }
+    EntityCondition operator>=(const QList<T>& v) {
+        return setValue(">=", v);
+    }
     /*less than "<"*/
     EntityCondition operator<(const T& v) {
         return setValue("<", v);
     }
+    EntityCondition operator<(const QList<T>& v) {
+        return setValue("<", v);
+    }
     /*less than and equal "<="*/
     EntityCondition operator<=(const T& v) {
+        return setValue("<=", v);
+    }
+    EntityCondition operator<=(const QList<T>& v) {
         return setValue("<=", v);
     }
 
@@ -56,26 +88,50 @@ public:
     EntityCondition like(const T& v) {
         return setValue(" like ", v);
     }
+    EntityCondition like(const QList<T>& v) {
+        return setValue(" like ", v);
+    }
 
     //set condition
+    EntityCondition operator=(const T& v) {
+        return setValue("=", v);
+    }
+    EntityCondition operator=(const QList<T>& v) {
+        return setValue("=", v);
+    }
     /*mod "a=a%value*/
     EntityCondition operator%(const T& v) {
+        return setValueSelf("%", v);
+    }
+    EntityCondition operator%(const QList<T>& v) {
         return setValueSelf("%", v);
     }
     /*plus value "a=a+value"*/
     EntityCondition operator+(const T& v) {
         return setValueSelf("+", v);
     }
+    EntityCondition operator+(const QList<T>& v) {
+        return setValueSelf("+", v);
+    }
     /*minus value "a=a-value"*/
     EntityCondition operator-(const T& v) {
+        return setValueSelf("-", v);
+    }
+    EntityCondition operator-(const QList<T>& v) {
         return setValueSelf("-", v);
     }
     /*repeat count "a=a*count"*/
     EntityCondition operator*(const T& v) {
         return setValueSelf("*", v);
     }
+    EntityCondition operator*(const QList<T>& v) {
+        return setValueSelf("*", v);
+    }
     /*divide count "a=a/count"*/
     EntityCondition operator/(const T& v) {
+        return setValueSelf("/", v);
+    }
+    EntityCondition operator/(const QList<T>& v) {
         return setValueSelf("/", v);
     }
 
@@ -100,7 +156,7 @@ public:
 
     /*for order by*/
     EntityField desc() {
-        return EntityField(name + " desc");
+        return EntityField((name + " desc").toUtf8().constData());
     }
 
     friend class EntityCondition;

@@ -35,7 +35,7 @@
 - **query executor**
   - insert operator
     - [ ] object(s) insert
-    - [ ] part field value insert
+    - [x] part field value insert
     - [ ] insert in query results
   - query operator
     - [ ] unique/list query

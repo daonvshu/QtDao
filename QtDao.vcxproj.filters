@@ -72,6 +72,9 @@
     <Filter Include="Header Files\test\condition">
       <UniqueIdentifier>{e5129d86-3fdb-4205-8969-ab765363d71e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\src\builder">
+      <UniqueIdentifier>{6bf656e7-de92-4d41-bcc0-e6c37bb88fee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -131,10 +134,13 @@
     <ClCompile Include="test\condition\ConnectorTest.cpp">
       <Filter>Source Files\test\condition</Filter>
     </ClCompile>
-    <ClCompile Include="src\condition\ConnectorItem.cpp">
+    <ClCompile Include="src\condition\ConditionConstraint.cpp">
       <Filter>Source Files\src\condition</Filter>
     </ClCompile>
-    <ClCompile Include="src\condition\ConditionConstraint.cpp">
+    <ClCompile Include="test\query\InsertTest.cpp">
+      <Filter>Source Files\test\query</Filter>
+    </ClCompile>
+    <ClCompile Include="src\condition\ConnectorData.cpp">
       <Filter>Source Files\src\condition</Filter>
     </ClCompile>
   </ItemGroup>
@@ -199,13 +205,25 @@
     <ClInclude Include="src\condition\Connector.h">
       <Filter>Header Files\src\condition</Filter>
     </ClInclude>
-    <ClInclude Include="src\condition\ConnectorItem.h">
-      <Filter>Header Files\src\condition</Filter>
-    </ClInclude>
     <ClInclude Include="src\condition\ConditionConstraint.h">
       <Filter>Header Files\src\condition</Filter>
     </ClInclude>
     <ClInclude Include="src\condition\ConditionOperator.h">
+      <Filter>Header Files\src\condition</Filter>
+    </ClInclude>
+    <ClInclude Include="src\builder\QueryBuilder.h">
+      <Filter>Header Files\src\builder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\query\Insert.h">
+      <Filter>Header Files\src\query</Filter>
+    </ClInclude>
+    <ClInclude Include="src\dao.h">
+      <Filter>Header Files\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\condition\EntityConditionData.h">
+      <Filter>Header Files\src\condition</Filter>
+    </ClInclude>
+    <ClInclude Include="src\condition\ConnectorData.h">
       <Filter>Header Files\src\condition</Filter>
     </ClInclude>
   </ItemGroup>
@@ -258,6 +276,9 @@
     </QtMoc>
     <QtMoc Include="test\condition\ConnectorTest.h">
       <Filter>Header Files\test\condition</Filter>
+    </QtMoc>
+    <QtMoc Include="test\query\InsertTest.h">
+      <Filter>Header Files\test\query</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

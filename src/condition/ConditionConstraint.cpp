@@ -37,7 +37,7 @@ ConditionConstraint ConditionConstraint::groupBy(const QString& fieldName) {
 }
 
 void ConditionConstraint::combine(const QString& fieldPrefix) {
-    switch (conditionType) {
+    switch (d->conditionType) {
     case TypeLimit:
         combineLimit(fieldPrefix);
         break;
@@ -55,27 +55,34 @@ void ConditionConstraint::combine(const QString& fieldPrefix) {
 }
 
 void ConditionConstraint::combineLimit(const QString& fieldPrefix) {
-    if (values.size() == 1) {
-        combineStr = "limit ?";
-    } else if (values.size() == 2) {
-        combineStr = "limit ?,?";
+    if (d->values.size() == 1) {
+        d->combineStr = "limit ?";
+    } else if (d->values.size() == 2) {
+        d->combineStr = "limit ?,?";
     }
 }
 
 void ConditionConstraint::combineOrderBy(const QString& fieldPrefix) {
-    combineStr = "order by ";
-    for (const auto& v : values) {
-        combineStr.append(fieldPrefix).append(v.toString()).append(',');
+    d->combineStr = "order by ";
+    for (const auto& v : d->values) {
+        d->combineStr.append(fieldPrefix).append(v.toString()).append(',');
     }
-    combineStr.chop(1);
+    d->combineStr.chop(1);
 }
 
 void ConditionConstraint::combineGroupBy(const QString& fieldPrefix) {
-    combineStr = "group by ";
-    for (const auto& v : values) {
-        combineStr.append(fieldPrefix).append(v.toString()).append(',');
+    d->combineStr = "group by ";
+    for (const auto& v : d->values) {
+        d->combineStr.append(fieldPrefix).append(v.toString()).append(',');
     }
-    combineStr.chop(1);
+    d->combineStr.chop(1);
+}
+
+QVariantList ConditionConstraint::getValues() {
+    if (d->conditionType == TypeOrderBy || d->conditionType == TypeGroupBy) {
+        return QVariantList();
+    }
+    return EntityCondition::getValues();
 }
 
 ConditionConstraint& ConditionConstraint::orderByNext(const QString& fieldName, bool asc) {
@@ -83,11 +90,11 @@ ConditionConstraint& ConditionConstraint::orderByNext(const QString& fieldName, 
     if (!asc) {
         tmpValue += " desc";
     }
-    values << tmpValue;
+    d->values << tmpValue;
     return *this;
 }
 
 ConditionConstraint& ConditionConstraint::groupByNext(const QString& fieldName) {
-    values << fieldName;
+    d->values << fieldName;
     return *this;
 }

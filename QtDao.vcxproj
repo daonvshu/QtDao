@@ -53,7 +53,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
-    <QtInstall>msvc2017</QtInstall>
+    <QtInstall>msvc2017_x86</QtInstall>
     <QtModules>core;sql;testlib;xml</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
@@ -94,7 +94,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\condition\ConditionConstraint.cpp" />
-    <ClCompile Include="src\condition\ConnectorItem.cpp" />
+    <ClCompile Include="src\condition\ConnectorData.cpp" />
     <ClCompile Include="src\condition\EntityCondition.cpp" />
     <ClCompile Include="src\ConnectionPool.cpp" />
     <ClCompile Include="src\DaoUtil.cpp">
@@ -120,6 +120,7 @@
     <ClCompile Include="test\ConnectionPoolTest.cpp" />
     <ClCompile Include="test\loader\DbLoaderTest.cpp" />
     <ClCompile Include="test\query\BaseQueryTest.cpp" />
+    <ClCompile Include="test\query\InsertTest.cpp" />
     <ClCompile Include="test\sqliteentity\EntityInclude.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -132,13 +133,16 @@
     <ClInclude Include="sqlite_entity.h">
       <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
     </ClInclude>
+    <ClInclude Include="src\builder\QueryBuilder.h" />
     <ClInclude Include="src\condition\ConditionOperator.h" />
     <ClInclude Include="src\condition\Connector.h" />
-    <ClInclude Include="src\condition\ConnectorItem.h" />
+    <ClInclude Include="src\condition\ConnectorData.h" />
     <ClInclude Include="src\condition\ConditionConstraint.h" />
+    <ClInclude Include="src\condition\EntityConditionData.h" />
     <ClInclude Include="src\condition\EntityField.h" />
     <ClInclude Include="src\condition\EntityCondition.h" />
     <ClInclude Include="src\ConnectionPool.h" />
+    <ClInclude Include="src\dao.h" />
     <ClInclude Include="src\DaoUtil.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
@@ -163,6 +167,8 @@
     </ClInclude>
     <ClInclude Include="src\query\BaseQuery.h" />
     <QtMoc Include="test\condition\ConnectorTest.h" />
+    <ClInclude Include="src\query\Insert.h" />
+    <QtMoc Include="test\query\InsertTest.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest1.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest2.h" />
     <QtMoc Include="test\sqliteentity\EntityInclude.h" />
