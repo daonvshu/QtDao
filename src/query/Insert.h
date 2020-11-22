@@ -2,6 +2,9 @@
 
 #include "BaseQuery.h"
 
+template<typename T>
+class InsertBuilder;
+
 template<typename E>
 class Insert : public BaseQuery {
 public:
@@ -40,6 +43,11 @@ private:
     QString buildInsertObjectSqlStatement();
     QString buildInsertObjectsSqlStatement();
     QString buildInsertObjects2SqlStatement(int valueSize);
+
+private:
+    Connector connector;
+
+    friend class InsertBuilder<E>;
 };
 
 template<typename E>

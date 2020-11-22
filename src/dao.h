@@ -1,6 +1,6 @@
 #pragma once
 
-#include "builder/QueryBuilder.h"
+#include "builder/InsertBuilder.h"
 
 #include "ConnectionPool.h"
 #include "DbLoader.h"
@@ -10,7 +10,7 @@
 class dao {
 public:
     template<typename T>
-    static QueryBuilder<T, Insert> _insert() {
-        return QueryBuilder<T, Insert>();
+    static InsertBuilder<T> _insert() {
+        return InsertBuilder<T>();
     }
 };

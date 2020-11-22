@@ -226,6 +226,15 @@
     <ClInclude Include="src\condition\ConnectorData.h">
       <Filter>Header Files\src\condition</Filter>
     </ClInclude>
+    <ClInclude Include="src\query\Select.h">
+      <Filter>Header Files\src\query</Filter>
+    </ClInclude>
+    <ClInclude Include="src\builder\InsertBuilder.h">
+      <Filter>Header Files\src\builder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\builder\SelectBuilder.h">
+      <Filter>Header Files\src\builder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\dao_entity.xml">

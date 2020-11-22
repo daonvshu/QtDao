@@ -133,7 +133,9 @@
     <ClInclude Include="sqlite_entity.h">
       <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
     </ClInclude>
+    <ClInclude Include="src\builder\InsertBuilder.h" />
     <ClInclude Include="src\builder\QueryBuilder.h" />
+    <ClInclude Include="src\builder\SelectBuilder.h" />
     <ClInclude Include="src\condition\ConditionOperator.h" />
     <ClInclude Include="src\condition\Connector.h" />
     <ClInclude Include="src\condition\ConnectorData.h" />
@@ -169,6 +171,7 @@
     <QtMoc Include="test\condition\ConnectorTest.h" />
     <ClInclude Include="src\query\Insert.h" />
     <QtMoc Include="test\query\InsertTest.h" />
+    <ClInclude Include="src\query\Select.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest1.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest2.h" />
     <QtMoc Include="test\sqliteentity\EntityInclude.h" />

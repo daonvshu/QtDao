@@ -47,7 +47,6 @@ private:
     QVariantList values;
 
 protected:
-    Connector connector;
     bool queryThrowable;
 
     template<typename T, template<typename> class Query>
