@@ -75,7 +75,7 @@ void BaseQueryTest::testPrimitiveQueryFail() {
         BaseQuery::queryPrimitiveThrowable("select?+?");
         QFAIL("primitive query should fail!");
     }
-    catch (DaoException& e) {
+    catch (DaoException&) {
     }
 }
 

@@ -19,25 +19,27 @@ public:
     bool insert(E& entity);
 
     /// <summary>
-    /// 批量插入对象，插入成功后将id设置回对象列表
+    /// 批量插入对象
     /// 使用execbatch插入
     /// </summary>
     /// <param name="entities"></param>
     /// <returns></returns>
-    bool insert(QList<E>& entities);
+    bool insert(const QList<E>& entities);
 
     /// <summary>
     /// 批量插入对象方式2
     /// 使用exec方式插入，值列表使用values拼接（警告：sql语句长度限制）
-    /// insert into E values(xx,xx), (xx, xx), (xx, xx)
+    /// insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx)
     /// </summary>
     /// <param name="entities"></param>
     /// <returns></returns>
-    bool insert2(QList<E>& entities);
+    bool insert2(const QList<E>& entities);
 
 private:
     bool buildInsertBySetSqlStatement();
-
+    QString buildInsertObjectSqlStatement();
+    QString buildInsertObjectsSqlStatement();
+    QString buildInsertObjects2SqlStatement(int valueSize);
 };
 
 template<typename E>
@@ -58,17 +60,63 @@ inline bool Insert<E>::insert() {
 
 template<typename E>
 inline bool Insert<E>::insert(E& entity) {
-
+    auto sqlstatement = buildInsertObjectSqlStatement();
+    typename E::Info info;
+    auto values = info.getValueWithoutAutoIncrement(entity);
+    setSqlQueryStatement(sqlstatement, values);
+    bool execSuccess = false;
+    exec([&](const QSqlQuery& query) {
+        execSuccess = true;
+        info.bindAutoIncrementId(entity, query.lastInsertId());
+    });
+    return execSuccess;
 }
 
 template<typename E>
-inline bool Insert<E>::insert(QList<E>& entities) {
-
+inline bool Insert<E>::insert(const QList<E>& entities) {
+    auto sqlstatement = buildInsertObjectsSqlStatement();
+    typename E::Info info;
+    QList<QVariantList> values;
+    for (int i = 0; i < info.fieldSize(); i++) {
+        values << QVariantList();
+    }
+    int usedValueSize = 0;
+    for (const auto& entity : entities) {
+        auto v = info.getValueWithoutAutoIncrement(entity);
+        usedValueSize = v.size();
+        for (int i = 0; i < v.size(); i++) {
+            values[i] << v.at(i);
+        }
+    }
+    QVariantList tagValues;
+    for (int i = 0; i < usedValueSize; i++) {
+        tagValues << QVariant(values.at(i));
+    }
+    setSqlQueryStatement(sqlstatement, tagValues);
+    bool execSuccess = false;
+    execBatch([&](const QSqlQuery& query) {
+        execSuccess = true;
+    });
+    return execSuccess;
 }
 
 template<typename E>
-inline bool Insert<E>::insert2(QList<E>& entities) {
-
+inline bool Insert<E>::insert2(const QList<E>& entities) {
+    int entitySize = entities.size();
+    Q_ASSERT(entitySize != 0);
+    auto sqlstatement = buildInsertObjects2SqlStatement(entitySize);
+    QVariantList values;
+    typename E::Info info;
+    for (const auto& entity : entities) {
+        auto v = info.getValueWithoutAutoIncrement(entity);
+        values.append(v);
+    }
+    setSqlQueryStatement(sqlstatement, values);
+    bool execSuccess = false;
+    exec([&](const QSqlQuery& query) {
+        execSuccess = true;
+    });
+    return execSuccess;
 }
 
 template<typename E>
@@ -104,4 +152,54 @@ inline bool Insert<E>::buildInsertBySetSqlStatement() {
     sql.append(")");
     setSqlQueryStatement(sql, values);
     return operateBatch;
+}
+
+template<typename E>
+inline QString Insert<E>::buildInsertObjectSqlStatement() {
+    typename E::Info info;
+    
+    QString sql = "insert into %1 (";
+    sql = sql.arg(info.getTableName());
+
+    QStringList fields = info.getFieldsWithoutAutoIncrement();
+    for (const auto& f : fields) {
+        sql.append(f).append(",");
+    }
+    if (!fields.isEmpty()) {
+        sql.chop(1);
+    }
+    sql.append(") values (");
+    sql.append(QString("?,").repeated(fields.size()));
+    sql.chop(1);
+    sql.append(")");
+    return sql;
+}
+
+template<typename E>
+inline QString Insert<E>::buildInsertObjectsSqlStatement() {
+    return buildInsertObjectSqlStatement();
+}
+
+template<typename E>
+inline QString Insert<E>::buildInsertObjects2SqlStatement(int valueSize) {
+    typename E::Info info;
+
+    QString sql = "insert into %1 (";
+    sql = sql.arg(info.getTableName());
+
+    QStringList fields = info.getFieldsWithoutAutoIncrement();
+    for (const auto& f : fields) {
+        sql.append(f).append(",");
+    }
+    if (!fields.isEmpty()) {
+        sql.chop(1);
+    }
+    sql.append(") values ");
+    QString vstr = "(";
+    vstr.append(QString("?,").repeated(fields.size()));
+    vstr.chop(1);
+    vstr.append("),");
+    sql.append(vstr.repeated(valueSize));
+    sql.chop(1);
+    return sql;
 }

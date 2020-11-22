@@ -10,6 +10,9 @@ private slots:
 
     void setInsertTest();
     void setInsertBatchTest();
+    void insertObjectTest();
+    void insertObjectsTest();
+    void insertObjects2Test();
 
     void cleanup();
 

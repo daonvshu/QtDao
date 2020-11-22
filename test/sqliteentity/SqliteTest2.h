@@ -67,6 +67,14 @@ public:
                 << "varianttype";
         }
 
+        static QStringList getFieldsWithoutAutoIncrement() {
+            return QStringList()
+                << "name"
+                << "number"
+                << "number2"
+                << "varianttype";
+        }
+
         static QStringList getFieldsType() {
             return QStringList() 
                 << QStringLiteral("id integer primary key autoincrement")
@@ -93,6 +101,18 @@ public:
 
         static bool isAutoIncrement(const QString& name) {
             return name == "id";
+        }
+
+        static QVariantList getValueWithoutAutoIncrement(const SqliteTest2& entity) {
+            return QVariantList()
+                << entity.name
+                << entity.number
+                << entity.number2
+                << entity.varianttype;
+        }
+
+        static void bindAutoIncrementId(SqliteTest2& entity, const QVariant& id) {
+            entity.id = id.value<qint64>();
         }
     };
 

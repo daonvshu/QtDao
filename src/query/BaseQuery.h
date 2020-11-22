@@ -12,6 +12,8 @@ class QueryBuilder;
 
 class BaseQuery {
 public:
+    BaseQuery();
+
     static void queryPrimitive(
         const QString& statement, 
         std::function<void(QSqlQuery& query)> callback = nullptr,
@@ -46,6 +48,7 @@ private:
 
 protected:
     Connector connector;
+    bool queryThrowable;
 
     template<typename T, template<typename> class Query>
     friend class QueryBuilder;

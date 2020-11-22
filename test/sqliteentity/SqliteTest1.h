@@ -59,6 +59,14 @@ public:
                 << "hex";
         }
 
+        static QStringList getFieldsWithoutAutoIncrement() {
+            return QStringList()
+                << "id"
+                << "name"
+                << "number"
+                << "hex";
+        }
+
         static QStringList getFieldsType() {
             return QStringList() 
                 << QStringLiteral("id integer")
@@ -81,6 +89,18 @@ public:
 
         static bool isAutoIncrement(const QString& name) {
             return false;
+        }
+
+        static QVariantList getValueWithoutAutoIncrement(const SqliteTest1& entity) {
+            return QVariantList()
+                << entity.id
+                << entity.name
+                << entity.number
+                << entity.hex;
+        }
+
+        static void bindAutoIncrementId(SqliteTest1& entity, const QVariant& id) {
+            
         }
     };
 

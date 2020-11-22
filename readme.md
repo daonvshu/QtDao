@@ -34,7 +34,7 @@
   - [ ] operator field <-> query results
 - **query executor**
   - insert operator
-    - [ ] object(s) insert
+    - [x] object(s) insert
     - [x] part field value insert
     - [ ] insert in query results
   - query operator
