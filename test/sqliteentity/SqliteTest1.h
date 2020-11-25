@@ -19,6 +19,7 @@ private:
 
 public:
     SqliteTest1() {
+        id = -1;
         name = "text";
         number = 10.0;
     }
@@ -69,7 +70,7 @@ public:
 
         static QStringList getFieldsType() {
             return QStringList() 
-                << QStringLiteral("id integer")
+                << QStringLiteral("id integer default -1")
                 << QStringLiteral("name text default 'text'")
                 << QStringLiteral("number real default 10.0")
                 << QStringLiteral("hex blob");
@@ -90,7 +91,9 @@ public:
         static bool isAutoIncrement(const QString& name) {
             return false;
         }
+    };
 
+    struct Tool {
         static QVariantList getValueWithoutAutoIncrement(const SqliteTest1& entity) {
             return QVariantList()
                 << entity.id
@@ -101,6 +104,18 @@ public:
 
         static void bindAutoIncrementId(SqliteTest1& entity, const QVariant& id) {
             
+        }
+
+        static void bindValue(SqliteTest1& entity, const QString& target, QVariant value) {
+            if (target == "id") {
+                entity.id = value.value<qint64>();
+            } else if (target == "name") {
+                entity.name = value.value<QString>();
+            } else if (target == "number") {
+                entity.number = value.value<qreal>();
+            } else if (target == "hex") {
+                entity.hex = value.value<QByteArray>();
+            }
         }
     };
 

@@ -2,6 +2,7 @@
 
 #include <qvariant.h>
 #include <qsqlquery.h>
+#include <qsqlrecord.h>
 
 #include <functional>
 
@@ -41,6 +42,8 @@ protected:
 
     void exec(const std::function<void(const QSqlQuery&)>& solveQueryResult);
     void execBatch(const std::function<void(const QSqlQuery&)>& solveQueryResult);
+
+    void printException(const QString& reason);
 
 private:
     QString statement;

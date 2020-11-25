@@ -24,6 +24,7 @@ private:
 
 public:
     SqliteTest2() {
+        id = -1;
         number = 0;
     }
 
@@ -77,7 +78,7 @@ public:
 
         static QStringList getFieldsType() {
             return QStringList() 
-                << QStringLiteral("id integer primary key autoincrement")
+                << QStringLiteral("id integer default -1 primary key autoincrement")
                 << QStringLiteral("name text")
                 << QStringLiteral("number integer default 0")
                 << QStringLiteral("number2 integer")
@@ -102,7 +103,9 @@ public:
         static bool isAutoIncrement(const QString& name) {
             return name == "id";
         }
+    };
 
+    struct Tool {
         static QVariantList getValueWithoutAutoIncrement(const SqliteTest2& entity) {
             return QVariantList()
                 << entity.name
@@ -113,6 +116,20 @@ public:
 
         static void bindAutoIncrementId(SqliteTest2& entity, const QVariant& id) {
             entity.id = id.value<qint64>();
+        }
+
+        static void bindValue(SqliteTest2& entity, const QString& target, QVariant value) {
+            if (target == "id") {
+                entity.id = value.value<qint64>();
+            } else if (target == "name") {
+                entity.name = value.value<QString>();
+            } else if (target == "number") {
+                entity.number = value.value<int>();
+            } else if (target == "number2") {
+                entity.number2 = value.value<int>();
+            } else if (target == "varianttype") {
+                entity.varianttype = value.value<QVariant>();
+            }
         }
     };
 

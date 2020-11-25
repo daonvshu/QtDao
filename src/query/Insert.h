@@ -69,13 +69,13 @@ inline bool Insert<E>::insert() {
 template<typename E>
 inline bool Insert<E>::insert(E& entity) {
     auto sqlstatement = buildInsertObjectSqlStatement();
-    typename E::Info info;
-    auto values = info.getValueWithoutAutoIncrement(entity);
+    typename E::Tool tool;
+    auto values = tool.getValueWithoutAutoIncrement(entity);
     setSqlQueryStatement(sqlstatement, values);
     bool execSuccess = false;
     exec([&](const QSqlQuery& query) {
         execSuccess = true;
-        info.bindAutoIncrementId(entity, query.lastInsertId());
+        tool.bindAutoIncrementId(entity, query.lastInsertId());
     });
     return execSuccess;
 }
@@ -84,13 +84,14 @@ template<typename E>
 inline bool Insert<E>::insert(const QList<E>& entities) {
     auto sqlstatement = buildInsertObjectsSqlStatement();
     typename E::Info info;
+    typename E::Tool tool;
     QList<QVariantList> values;
     for (int i = 0; i < info.fieldSize(); i++) {
         values << QVariantList();
     }
     int usedValueSize = 0;
     for (const auto& entity : entities) {
-        auto v = info.getValueWithoutAutoIncrement(entity);
+        auto v = tool.getValueWithoutAutoIncrement(entity);
         usedValueSize = v.size();
         for (int i = 0; i < v.size(); i++) {
             values[i] << v.at(i);
@@ -114,9 +115,9 @@ inline bool Insert<E>::insert2(const QList<E>& entities) {
     Q_ASSERT(entitySize != 0);
     auto sqlstatement = buildInsertObjects2SqlStatement(entitySize);
     QVariantList values;
-    typename E::Info info;
+    typename E::Tool tool;
     for (const auto& entity : entities) {
-        auto v = info.getValueWithoutAutoIncrement(entity);
+        auto v = tool.getValueWithoutAutoIncrement(entity);
         values.append(v);
     }
     setSqlQueryStatement(sqlstatement, values);

@@ -13,11 +13,7 @@ void BaseQuery::exec(const std::function<void(const QSqlQuery&)>& solveQueryResu
     if (query.exec()) {
         solveQueryResult(query);
     } else {
-        if (queryThrowable) {
-            throw DaoException(query.lastError().text());
-        } else {
-            DbExceptionHandler::exceptionHandler->execFail(query.lastError().text());
-        }
+        printException(query.lastError().text());
     }
 }
 
@@ -26,11 +22,15 @@ void BaseQuery::execBatch(const std::function<void(const QSqlQuery&)>& solveQuer
     if (query.execBatch()) {
         solveQueryResult(query);
     } else {
-        if (queryThrowable) {
-            throw DaoException(query.lastError().text());
-        } else {
-            DbExceptionHandler::exceptionHandler->execFail(query.lastError().text());
-        }
+        printException(query.lastError().text());
+    }
+}
+
+void BaseQuery::printException(const QString& reason) {
+    if (queryThrowable) {
+        throw DaoException(reason);
+    } else {
+        DbExceptionHandler::exceptionHandler->execFail(reason);
     }
 }
 
