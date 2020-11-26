@@ -27,7 +27,7 @@
   - [x] default value
   - [ ] function query result getter
 - **query condition**
-  - [ ] operator field <-> value
+  - [x] operator field <-> value
   - [ ] operator field <-> field
   - [ ] operator field <-> function
   - [ ] operator function <-> function
@@ -38,7 +38,7 @@
     - [x] part field value insert
     - [ ] insert in query results
   - query operator
-    - [ ] unique/list query
+    - [x] unique/list query
     - [ ] multi-table query
     - [ ] union query
     - [ ] inner/left/right/full join
