@@ -84,7 +84,7 @@ void InsertTest::insertObjectTest() {
                     data << query.value(f);
                 }
             }
-            QCOMPARE(data, SqliteTest1::Info::getValueWithoutAutoIncrement(test1));
+            QCOMPARE(data, SqliteTest1::Tool::getValueWithoutAutoIncrement(test1));
         }
             , [&](QString err) {
             QFAIL(("test insert object fail! " + err).toUtf8());
@@ -113,7 +113,7 @@ void InsertTest::insertObjectTest() {
                     data << query.value(f);
                 }
             }
-            QCOMPARE(data, SqliteTest2::Info::getValueWithoutAutoIncrement(test3));
+            QCOMPARE(data, SqliteTest2::Tool::getValueWithoutAutoIncrement(test3));
         }
             , [&](QString err) {
             QFAIL(("test insert object fail! " + err).toUtf8());
@@ -141,7 +141,7 @@ void InsertTest::insertObjectsTest() {
             }
             QList<QVariantList> excepted;
             for (const auto& t : test) {
-                excepted << SqliteTest2::Info::getValueWithoutAutoIncrement(t);
+                excepted << SqliteTest2::Tool::getValueWithoutAutoIncrement(t);
             }
             QCOMPARE(data, excepted);
         }
@@ -171,7 +171,7 @@ void InsertTest::insertObjects2Test() {
             }
             QList<QVariantList> excepted;
             for (const auto& t : test) {
-                excepted << SqliteTest2::Info::getValueWithoutAutoIncrement(t);
+                excepted << SqliteTest2::Tool::getValueWithoutAutoIncrement(t);
             }
             QCOMPARE(data, excepted);
         }

@@ -55,11 +55,11 @@ inline bool Insert<E>::insert() {
     bool operateBatch = buildInsertBySetSqlStatement();
     bool execSuccess = false;
     if (operateBatch) {
-        execBatch([&] (const QSqlQuery&) {
+        execBatch([&] (QSqlQuery&) {
             execSuccess = true;
         });
     } else {
-        exec([&] (const QSqlQuery&) {
+        exec([&] (QSqlQuery&) {
             execSuccess = true;
         });
     }
@@ -73,7 +73,7 @@ inline bool Insert<E>::insert(E& entity) {
     auto values = tool.getValueWithoutAutoIncrement(entity);
     setSqlQueryStatement(sqlstatement, values);
     bool execSuccess = false;
-    exec([&](const QSqlQuery& query) {
+    exec([&](QSqlQuery& query) {
         execSuccess = true;
         tool.bindAutoIncrementId(entity, query.lastInsertId());
     });
@@ -103,7 +103,7 @@ inline bool Insert<E>::insert(const QList<E>& entities) {
     }
     setSqlQueryStatement(sqlstatement, tagValues);
     bool execSuccess = false;
-    execBatch([&](const QSqlQuery& query) {
+    execBatch([&](QSqlQuery& query) {
         execSuccess = true;
     });
     return execSuccess;
@@ -122,7 +122,7 @@ inline bool Insert<E>::insert2(const QList<E>& entities) {
     }
     setSqlQueryStatement(sqlstatement, values);
     bool execSuccess = false;
-    exec([&](const QSqlQuery& query) {
+    exec([&](QSqlQuery& query) {
         execSuccess = true;
     });
     return execSuccess;

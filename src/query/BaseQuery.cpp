@@ -8,7 +8,7 @@ BaseQuery::BaseQuery()
 {
 }
 
-void BaseQuery::exec(const std::function<void(const QSqlQuery&)>& solveQueryResult) {
+void BaseQuery::exec(const std::function<void(QSqlQuery&)>& solveQueryResult) {
     auto query = getQuery();
     if (query.exec()) {
         solveQueryResult(query);
@@ -17,7 +17,7 @@ void BaseQuery::exec(const std::function<void(const QSqlQuery&)>& solveQueryResu
     }
 }
 
-void BaseQuery::execBatch(const std::function<void(const QSqlQuery&)>& solveQueryResult) {
+void BaseQuery::execBatch(const std::function<void(QSqlQuery&)>& solveQueryResult) {
     auto query = getQuery();
     if (query.execBatch()) {
         solveQueryResult(query);

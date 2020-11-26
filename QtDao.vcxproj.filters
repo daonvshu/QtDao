@@ -143,6 +143,9 @@
     <ClCompile Include="src\condition\ConnectorData.cpp">
       <Filter>Source Files\src\condition</Filter>
     </ClCompile>
+    <ClCompile Include="test\query\SelectTest.cpp">
+      <Filter>Source Files\test\query</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ConnectionPool.h">
@@ -287,6 +290,9 @@
       <Filter>Header Files\test\condition</Filter>
     </QtMoc>
     <QtMoc Include="test\query\InsertTest.h">
+      <Filter>Header Files\test\query</Filter>
+    </QtMoc>
+    <QtMoc Include="test\query\SelectTest.h">
       <Filter>Header Files\test\query</Filter>
     </QtMoc>
   </ItemGroup>

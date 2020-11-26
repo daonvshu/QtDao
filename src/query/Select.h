@@ -8,10 +8,22 @@ class SelectBuilder;
 template<typename E>
 class Select : public BaseQuery {
 public:
+    /// <summary>
+    /// 读取一条数据，多条结果将报错，未读到数据将使用默认值
+    /// </summary>
+    /// <returns></returns>
     E unique();
 
+    /// <summary>
+    /// 读取数据并取结果集中一条数据，未读到数据将使用默认值
+    /// </summary>
+    /// <returns></returns>
     E one();
 
+    /// <summary>
+    /// 读取所有符合条件的数据
+    /// </summary>
+    /// <returns></returns>
     QList<E> list();
 
 private:
@@ -27,17 +39,18 @@ template<typename E>
 inline E Select<E>::unique() {
     buildFilterSqlStatement();
     E entity;
-    exec([&](const QSqlQuery& query) {
-        int resultSize = query.size();
-        if (resultSize > 1) {
-            printException("unique result size > 1, actual is " + QString::number(resultSize));
-        } else {
-            query.next();
+    exec([&](QSqlQuery& query) {
+        int resultSize = 0;
+        while (query.next()) {
             E::Tool tool;
             QSqlRecord record = query.record();
             for (int i = 0; i < record.count(); i++) {
                 tool.bindValue(entity, record.fieldName(i), record.value(i));
             }
+            resultSize++;
+        }
+        if (resultSize > 1) {
+            printException("unique result size > 1, actual is " + QString::number(resultSize));
         }
     });
     return entity;
@@ -47,7 +60,7 @@ template<typename E>
 inline E Select<E>::one() {
     buildFilterSqlStatement();
     E entity;
-    exec([&](const QSqlQuery& query) {
+    exec([&](QSqlQuery& query) {
         if (query.next()) {
             E::Tool tool;
             QSqlRecord record = query.record();
@@ -61,7 +74,20 @@ inline E Select<E>::one() {
 
 template<typename E>
 inline QList<E> Select<E>::list() {
-    return QList<E>();
+    buildFilterSqlStatement();
+    QList<E> data;
+    exec([&](QSqlQuery& query) {
+        E::Tool tool;
+        while (query.next()) {
+            E entity;
+            QSqlRecord record = query.record();
+            for (int i = 0; i < record.count(); i++) {
+                tool.bindValue(entity, record.fieldName(i), record.value(i));
+            }
+            data << entity;
+        }
+    });
+    return data;
 }
 
 template<typename E>

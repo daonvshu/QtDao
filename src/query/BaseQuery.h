@@ -40,8 +40,8 @@ public:
 protected:
     void setSqlQueryStatement(const QString& statement, const QVariantList& values);
 
-    void exec(const std::function<void(const QSqlQuery&)>& solveQueryResult);
-    void execBatch(const std::function<void(const QSqlQuery&)>& solveQueryResult);
+    void exec(const std::function<void(QSqlQuery&)>& solveQueryResult);
+    void execBatch(const std::function<void(QSqlQuery&)>& solveQueryResult);
 
     void printException(const QString& reason);
 

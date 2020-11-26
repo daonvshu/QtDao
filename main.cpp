@@ -5,6 +5,7 @@
 #include "test/ConnectionPoolTest.h"
 #include "test/query/BaseQueryTest.h"
 #include "test/query/InsertTest.h"
+#include "test/query/SelectTest.h"
 #include "test/loader/DbLoaderTest.h"
 #include "test/condition/ConnectorTest.h"
 
@@ -26,6 +27,9 @@ int main(int argc, char *argv[])
 
     InsertTest insertTest;
     QTest::qExec(&insertTest);
+
+    SelectTest selectTest;
+    QTest::qExec(&selectTest);
 
     return a.exec();
 }

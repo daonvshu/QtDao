@@ -121,6 +121,7 @@
     <ClCompile Include="test\loader\DbLoaderTest.cpp" />
     <ClCompile Include="test\query\BaseQueryTest.cpp" />
     <ClCompile Include="test\query\InsertTest.cpp" />
+    <ClCompile Include="test\query\SelectTest.cpp" />
     <ClCompile Include="test\sqliteentity\EntityInclude.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +173,7 @@
     <ClInclude Include="src\query\Insert.h" />
     <QtMoc Include="test\query\InsertTest.h" />
     <ClInclude Include="src\query\Select.h" />
+    <QtMoc Include="test\query\SelectTest.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest1.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest2.h" />
     <QtMoc Include="test\sqliteentity\EntityInclude.h" />
