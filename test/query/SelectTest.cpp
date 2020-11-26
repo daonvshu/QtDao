@@ -46,6 +46,11 @@ void SelectTest::uniqueSelectTest() {
     }
     catch (DaoException&) {
     }
+
+    auto d4 = dao::_select<SqliteTest1>()
+        .filter(sf1.name == "joker")
+        .build().unique();
+    QVERIFY(d4.getId() == -1);
 }
 
 void SelectTest::listSelectTest() {
@@ -75,6 +80,11 @@ void SelectTest::listSelectTest() {
         expectValue << sft1.getValueWithoutAutoIncrement(d);
     }
     QCOMPARE(actualValues, expectValue);
+
+    auto d3 = dao::_select<SqliteTest1>()
+        .filter(sf1.id > 10)
+        .build().list();
+    QVERIFY(d3.isEmpty());
 }
 
 void SelectTest::cleanup() {
