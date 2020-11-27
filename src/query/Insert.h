@@ -6,7 +6,7 @@ template<typename T>
 class InsertBuilder;
 
 template<typename E>
-class Insert : public BaseQuery {
+class Insert : BaseQuery {
 public:
     /// <summary>
     /// 使用set条件插入一条记录，可批量插入

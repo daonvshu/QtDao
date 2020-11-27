@@ -12,6 +12,11 @@ class EntityField {
 public:
     explicit EntityField(const char* fieldName) : name(fieldName) {}
 
+    /*get name*/
+    QString operator()() {
+        return name;
+    }
+
 private:
     QString name;
 

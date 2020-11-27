@@ -6,7 +6,7 @@ template<typename T>
 class SelectBuilder;
 
 template<typename E>
-class Select : public BaseQuery {
+class Select : BaseQuery {
 public:
     /// <summary>
     /// 读取一条数据，多条结果将报错，未读到数据将使用默认值
@@ -25,6 +25,12 @@ public:
     /// </summary>
     /// <returns></returns>
     QList<E> list();
+
+    /// <summary>
+    /// 原始结果查询，当结果集很大时跳过对象转换，直接读取query结果
+    /// </summary>
+    /// <param name="callback"></param>
+    void raw(std::function<void(QSqlQuery&)> callback);
 
 private:
     void buildFilterSqlStatement();
@@ -88,6 +94,12 @@ inline QList<E> Select<E>::list() {
         }
     });
     return data;
+}
+
+template<typename E>
+inline void Select<E>::raw(std::function<void(QSqlQuery&)> callback) {
+    buildFilterSqlStatement();
+    exec(callback);
 }
 
 template<typename E>

@@ -13,6 +13,7 @@ private slots:
 
     void uniqueSelectTest();
     void listSelectTest();
+    void rawSelectTest();
 
     void cleanup();
 

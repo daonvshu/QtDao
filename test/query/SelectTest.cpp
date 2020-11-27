@@ -87,6 +87,23 @@ void SelectTest::listSelectTest() {
     QVERIFY(d3.isEmpty());
 }
 
+void SelectTest::rawSelectTest() {
+    SqliteTest1::Fields sf1;
+    dao::_select<SqliteTest1>()
+        .filter(sf1.number == 14)
+        .build().raw([&](QSqlQuery& query) {
+        if (query.next()) {
+            QVariantList result;
+            result << query.value(sf1.id());
+            result << query.value(sf1.name());
+            result << query.value(sf1.number());
+            result << query.value(sf1.hex());
+
+            QCOMPARE(result, SqliteTest1::Tool::getValueWithoutAutoIncrement(data1.at(3)));
+        }
+    });
+}
+
 void SelectTest::cleanup() {
 
 }
