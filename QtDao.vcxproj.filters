@@ -244,6 +244,9 @@
     <ClInclude Include="src\condition\FunctionConditionData.h">
       <Filter>Header Files\src\condition</Filter>
     </ClInclude>
+    <ClInclude Include="src\builder\CountBuilder.h">
+      <Filter>Header Files\src\builder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\dao_entity.xml">

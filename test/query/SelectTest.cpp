@@ -113,6 +113,22 @@ void SelectTest::funtionSelectTest() {
     QCOMPARE(data.__getExtra("sumnumber").toInt(), 52);
 }
 
+void SelectTest::countSelectTest() {
+    SqliteTest1::Fields sf1;
+
+    int count = dao::_count<SqliteTest1>().count();
+    QCOMPARE(count, 5);
+    
+    count = dao::_count<SqliteTest1>()
+        .filter(sf1.name.like("%l%")).count();
+    QCOMPARE(count, 3);
+
+    count = dao::_count<SqliteTest1>()
+        .filter(sf1.number > 10)
+        .count();
+    QCOMPARE(count, 4);
+}
+
 void SelectTest::cleanup() {
 
 }

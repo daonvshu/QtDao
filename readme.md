@@ -48,7 +48,7 @@
     - [x] custom function query
     - [ ] custom statement query
   - count operator
-    - [ ] condition count
+    - [x] condition count
     - [ ] multi-table count
     - [ ] count in query result
   - update operator

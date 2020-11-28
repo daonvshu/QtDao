@@ -135,6 +135,7 @@
     <ClInclude Include="sqlite_entity.h">
       <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
     </ClInclude>
+    <ClInclude Include="src\builder\CountBuilder.h" />
     <ClInclude Include="src\builder\InsertBuilder.h" />
     <ClInclude Include="src\builder\QueryBuilder.h" />
     <ClInclude Include="src\builder\SelectBuilder.h" />

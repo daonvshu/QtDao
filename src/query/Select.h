@@ -32,7 +32,7 @@ public:
     /// <param name="callback"></param>
     void raw(std::function<void(QSqlQuery&)> callback);
 
-private:
+protected:
     void buildFilterSqlStatement();
 
 protected:

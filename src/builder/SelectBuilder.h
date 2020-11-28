@@ -33,7 +33,7 @@ public:
 
     Select<T> build() override;
 
-private:
+protected:
     Connector columnBind, filterCondition, constraintCondition;
 };
 
