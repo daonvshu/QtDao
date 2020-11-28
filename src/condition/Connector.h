@@ -1,6 +1,12 @@
 ﻿#pragma once
 
 #include "ConnectorData.h"
+#include "EntityField.h"
+
+template<typename T>
+class SelectBuilder;
+
+class FunctionCondition;
 
 class Connector {
 public:
@@ -15,7 +21,8 @@ public:
         Q_STATIC_ASSERT((
             std::is_same<C, EntityCondition>::value ||
             std::is_same<C, ConditionConstraint>::value ||
-            std::is_same<C, Connector>::value
+            std::is_same<C, Connector>::value ||
+            std::is_same<C, FunctionCondition>::value
         ));
         d->append(condition);
         return append(conditions...);
@@ -35,6 +42,27 @@ public:
 
 protected:
     virtual void appendConnector();
+
+private:
+    template<typename E, typename... Args>
+    Connector& appendCol(const EntityField<E>& field, const Args&... condition) {
+        d->append(field());
+        return appendCol(condition...);
+    }
+
+    template<typename T, typename... Args>
+    Connector& appendCol(const T& function, const Args&... condition) {
+        Q_STATIC_ASSERT((std::is_same<T, FunctionCondition>::value));
+        d->append(function);
+        return appendCol(condition...);
+    }
+
+    Connector& appendCol() {
+        return *this;
+    }
+
+    template<typename T>
+    friend class SelectBuilder;
 
 private:
     QSharedDataPointer<ConnectorData> d;

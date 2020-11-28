@@ -14,6 +14,7 @@ private slots:
     void uniqueSelectTest();
     void listSelectTest();
     void rawSelectTest();
+    void funtionSelectTest();
 
     void cleanup();
 

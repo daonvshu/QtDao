@@ -146,6 +146,9 @@
     <ClCompile Include="test\query\SelectTest.cpp">
       <Filter>Source Files\test\query</Filter>
     </ClCompile>
+    <ClCompile Include="src\condition\FunctionCondition.cpp">
+      <Filter>Source Files\src\condition</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ConnectionPool.h">
@@ -238,6 +241,9 @@
     <ClInclude Include="src\builder\SelectBuilder.h">
       <Filter>Header Files\src\builder</Filter>
     </ClInclude>
+    <ClInclude Include="src\condition\FunctionConditionData.h">
+      <Filter>Header Files\src\condition</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\dao_entity.xml">
@@ -304,6 +310,9 @@
   <ItemGroup>
     <None Include="readme.md">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="src\condition\FunctionCondition.h">
+      <Filter>Header Files\src\condition</Filter>
     </None>
   </ItemGroup>
 </Project>

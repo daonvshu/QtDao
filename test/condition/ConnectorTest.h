@@ -12,6 +12,7 @@ private slots:
 
     void conditionConnectortest();
     void constraintConditionTest();
+    void functionConnectorTest();
 
     void cleanupTestCase();
 };

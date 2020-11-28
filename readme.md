@@ -25,12 +25,12 @@
   - [x] table field
   - [x] transient field
   - [x] default value
-  - [ ] function query result getter
+  - [x] function query result getter
 - **query condition**
   - [x] operator field <-> value
   - [ ] operator field <-> field
-  - [ ] operator field <-> function
-  - [ ] operator function <-> function
+  - [ ] ~~operator field <-> function~~
+  - [ ] ~~operator function <-> function~~
   - [ ] operator field <-> query results
 - **query executor**
   - insert operator
@@ -45,7 +45,7 @@
     - [ ] recursive query
     - [ ] query in query/join results
     - [x] original query
-    - [ ] custom function query
+    - [x] custom function query
     - [ ] custom statement query
   - count operator
     - [ ] condition count

@@ -26,7 +26,7 @@ void SelectTest::uniqueSelectTest() {
     SqliteTest1::Fields sf1;
     SqliteTest1::Tool sft1;
     auto d1 = dao::_select<SqliteTest1>()
-        .filter(sf1.name == "client", sf1.number == 12)
+        .filter(sf1.name == "client", _or(sf1.number == 12, sf1.name == "bob"))
         .build().one();
     QVERIFY(d1.getId() != -1);
     QCOMPARE(sft1.getValueWithoutAutoIncrement(data1.at(4)), sft1.getValueWithoutAutoIncrement(d1));
@@ -102,6 +102,15 @@ void SelectTest::rawSelectTest() {
             QCOMPARE(result, SqliteTest1::Tool::getValueWithoutAutoIncrement(data1.at(3)));
         }
     });
+}
+
+void SelectTest::funtionSelectTest() {
+    SqliteTest1::Fields sf1;
+    auto data = dao::_select<SqliteTest1>()
+        .column(sf1.id, _fun("sum(%1) + ? as sumnumber").field(sf1.number).value(5), sf1.name)
+        .filter(_or(sf1.name.like("a%"), _fun("%1 > case when %2 = ? then ? else ? end").field(sf1.number, sf1.name).value("client", 12, 10)))
+        .build().one();
+    QCOMPARE(data.__getExtra("sumnumber").toInt(), 52);
 }
 
 void SelectTest::cleanup() {

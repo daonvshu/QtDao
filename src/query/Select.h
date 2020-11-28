@@ -35,8 +35,11 @@ public:
 private:
     void buildFilterSqlStatement();
 
+protected:
+    QString getBindColumns(QVariantList& values);
+
 private:
-    Connector filterCondition, constraintCondition;
+    Connector columnBind, filterCondition, constraintCondition;
 
     friend class SelectBuilder<E>;
 };
@@ -104,11 +107,12 @@ inline void Select<E>::raw(std::function<void(QSqlQuery&)> callback) {
 
 template<typename E>
 inline void Select<E>::buildFilterSqlStatement() {
-    QString sql = "select *from ";
+    QString sql = "select %1 from %2";
     typename E::Info info;
-    sql.append(info.getTableName());
-
     QVariantList values;
+
+    sql = sql.arg(getBindColumns(values));
+    sql = sql.arg(info.getTableName());
 
     filterCondition.connect("");
     if (!filterCondition.getConditionStr().isEmpty()) {
@@ -123,4 +127,14 @@ inline void Select<E>::buildFilterSqlStatement() {
     }
 
     setSqlQueryStatement(sql, values);
-} 
+}
+template<typename E>
+inline QString Select<E>::getBindColumns(QVariantList& values) {
+    columnBind.connect("");
+    if (columnBind.getConditionStr().isEmpty()) {
+        return "*";
+    }
+    values << columnBind.getValues();
+    return columnBind.getConditionStr();
+}
+

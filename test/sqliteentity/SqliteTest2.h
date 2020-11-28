@@ -22,6 +22,8 @@ private:
     ///transient 临时类型
     QString nametmp;
 
+    QHash<QString, QVariant> __extra;
+
 public:
     SqliteTest2() {
         id = -1;
@@ -129,6 +131,8 @@ public:
                 entity.number2 = value.value<int>();
             } else if (target == "varianttype") {
                 entity.varianttype = value.value<QVariant>();
+            } else {
+                entity.__putExtra(target, value);
             }
         }
     };
@@ -158,5 +162,9 @@ public:
     inline void setNametmp(const QString& nametmp) {this->nametmp = nametmp;}
     //get 临时类型
     inline QString getNametmp() const {return nametmp;}
+    //set temp data
+    inline void __putExtra(const QString& key, const QVariant& extra) {this->__extra.insert(key, extra);}
+    //get function select result, like get "as" field result
+    inline QVariant __getExtra(const QString& key) {return __extra.value(key);}
 };
 typedef QList<SqliteTest2> SqliteTest2List;

@@ -2,6 +2,8 @@
 
 #include "../condition/EntityCondition.h"
 #include "../condition/Connector.h"
+#include "../condition/FunctionCondition.h"
+#include "../condition/EntityField.h"
 
 #include "../query/BaseQuery.h"
 

@@ -17,6 +17,8 @@ private:
     //二进制
     QByteArray hex;
 
+    QHash<QString, QVariant> __extra;
+
 public:
     SqliteTest1() {
         id = -1;
@@ -115,6 +117,8 @@ public:
                 entity.number = value.value<qreal>();
             } else if (target == "hex") {
                 entity.hex = value.value<QByteArray>();
+            } else {
+                entity.__putExtra(target, value);
             }
         }
     };
@@ -136,6 +140,10 @@ public:
     inline void setHex(const QByteArray& hex) {this->hex = hex;}
     //get 二进制
     inline QByteArray getHex() const {return hex;}
+    //set temp data
+    inline void __putExtra(const QString& key, const QVariant& extra) {this->__extra.insert(key, extra);}
+    //get function select result, like get "as" field result
+    inline QVariant __getExtra(const QString& key) {return __extra.value(key);}
 };
 typedef QList<SqliteTest1> SqliteTest1List;
 Q_DECLARE_METATYPE(SqliteTest1);

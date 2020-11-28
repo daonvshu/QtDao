@@ -96,6 +96,7 @@
     <ClCompile Include="src\condition\ConditionConstraint.cpp" />
     <ClCompile Include="src\condition\ConnectorData.cpp" />
     <ClCompile Include="src\condition\EntityCondition.cpp" />
+    <ClCompile Include="src\condition\FunctionCondition.cpp" />
     <ClCompile Include="src\ConnectionPool.cpp" />
     <ClCompile Include="src\DaoUtil.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -144,6 +145,7 @@
     <ClInclude Include="src\condition\EntityConditionData.h" />
     <ClInclude Include="src\condition\EntityField.h" />
     <ClInclude Include="src\condition\EntityCondition.h" />
+    <ClInclude Include="src\condition\FunctionConditionData.h" />
     <ClInclude Include="src\ConnectionPool.h" />
     <ClInclude Include="src\dao.h" />
     <ClInclude Include="src\DaoUtil.h">
@@ -209,6 +211,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.md" />
+    <None Include="src\condition\FunctionCondition.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

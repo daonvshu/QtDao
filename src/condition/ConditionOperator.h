@@ -2,6 +2,7 @@
 #include "EntityField.h"
 #include "EntityCondition.h"
 #include "ConditionConstraint.h"
+#include "FunctionCondition.h"
 
 template<typename... T>
 inline Connector _and(const T&... t) {
@@ -36,3 +37,6 @@ inline ConditionConstraint _groupBy(const EntityField<N>&... n) {
     return ConditionConstraint::groupBy(n...);
 }
 
+inline FunctionCondition _fun(const QString& expressions) {
+    return FunctionCondition(expressions);
+}

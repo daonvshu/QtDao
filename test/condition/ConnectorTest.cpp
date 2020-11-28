@@ -65,6 +65,19 @@ void ConnectorTest::constraintConditionTest() {
     );
 }
 
+void ConnectorTest::functionConnectorTest() {
+    SqliteTest2::Fields sf;
+    auto connector = _and(
+        sf.number2 == 1,
+        _fun("sum(case when %1=? then ? else ? end)").field(sf.number).value(3, "ee", "ff")
+    );
+    connector.connect("a.");
+    QCOMPARE(connector.getConditionStr(), "a.number2=? and sum(case when a.number=? then ? else ? end)");
+    QCOMPARE(connector.getValues(),
+        QVariantList() << 1 << 3 << "ee" << "ff"
+    );
+}
+
 void ConnectorTest::cleanupTestCase() {
 
 }

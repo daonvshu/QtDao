@@ -57,20 +57,20 @@ protected:
 
 template<typename T, typename... E>
 inline ConditionConstraint ConditionConstraint::orderBy(const EntityField<T>& field, const EntityField<E>&... n) {
-    return orderBy(field.name).orderByNext(n...);
+    return orderBy(field()).orderByNext(n...);
 }
 
 template<typename T, typename... E>
 inline ConditionConstraint ConditionConstraint::groupBy(const EntityField<T>& field, const EntityField<E>&... n) {
-    return groupBy(field.name).groupByNext(n...);
+    return groupBy(field()).groupByNext(n...);
 }
 
 template<typename T, typename... E>
 inline ConditionConstraint& ConditionConstraint::orderByNext(const EntityField<T>& field, const EntityField<E>&... n) {
-    return orderByNext(field.name, true).orderByNext(n...);
+    return orderByNext(field(), true).orderByNext(n...);
 }
 
 template<typename E, typename ...N>
 inline ConditionConstraint& ConditionConstraint::groupByNext(const EntityField<E>& field, const N & ...n) {
-    return groupByNext(field.name).groupByNext(n...);
+    return groupByNext(field()).groupByNext(n...);
 }

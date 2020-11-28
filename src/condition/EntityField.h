@@ -5,15 +5,13 @@
 
 #include "EntityCondition.h"
 
-class ConditionConstraint;
-
 template<typename T>
 class EntityField {
 public:
     explicit EntityField(const char* fieldName) : name(fieldName) {}
 
     /*get name*/
-    QString operator()() {
+    QString operator()() const {
         return name;
     }
 
@@ -163,8 +161,5 @@ public:
     EntityField desc() {
         return EntityField((name + " desc").toUtf8().constData());
     }
-
-    friend class EntityCondition;
-    friend class ConditionConstraint;
 };
 

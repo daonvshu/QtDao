@@ -5,9 +5,12 @@
 #include "../query/Select.h"
 
 template<typename T>
+class EntityField;
+
+template<typename T>
 class SelectBuilder : public QueryBuilder<T, Select> {
 public:
-    SelectBuilder() : filterCondition("and") {
+    SelectBuilder() : columnBind(","), filterCondition("and") {
     }
 
     template<typename... Args>
@@ -19,14 +22,19 @@ public:
     template<typename... Args>
     SelectBuilder& with(const ConditionConstraint& constaint, const Args&... args);
 
+    template<typename Col, typename... Args>
+    SelectBuilder& column(const Col& function, const Args&... args);
+
     SelectBuilder& filter();
 
     SelectBuilder& with();
 
+    SelectBuilder& column();
+
     Select<T> build() override;
 
 private:
-    Connector filterCondition, constraintCondition;
+    Connector columnBind, filterCondition, constraintCondition;
 };
 
 template<typename T>
@@ -51,6 +59,13 @@ inline SelectBuilder<T>& SelectBuilder<T>::with(const ConditionConstraint& const
 }
 
 template<typename T>
+template<typename Col, typename ...Args>
+inline SelectBuilder<T>& SelectBuilder<T>::column(const Col& function, const Args & ...args) {
+    columnBind.appendCol(function);
+    return column(args...);
+}
+
+template<typename T>
 inline SelectBuilder<T>& SelectBuilder<T>::filter() {
     return *this;
 }
@@ -61,8 +76,14 @@ inline SelectBuilder<T>& SelectBuilder<T>::with() {
 }
 
 template<typename T>
+inline SelectBuilder<T>& SelectBuilder<T>::column() {
+    return *this;
+}
+
+template<typename T>
 inline Select<T> SelectBuilder<T>::build() {
     Select<T> query;
+    query.columnBind = columnBind;
     query.filterCondition = filterCondition;
     query.constraintCondition = constraintCondition;
     query.queryThrowable = setThrowable;

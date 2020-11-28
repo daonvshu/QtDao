@@ -8,11 +8,14 @@ enum ConnectorItemType {
     TypeConnector,
     TypeCondition,
     TypeConstraint,
+    TypeFunction,
+    TypeField,
 };
 
 class Connector;
 class EntityCondition;
 class ConditionConstraint;
+class FunctionCondition;
 
 class ConnectorItem;
 class ConnectorData : public QSharedData {
@@ -32,4 +35,6 @@ public:
     void append(const Connector& other);
     void append(const EntityCondition& condition);
     void append(const ConditionConstraint& constraint);
+    void append(const FunctionCondition& function);
+    void append(const QString& fieldName);
 };
