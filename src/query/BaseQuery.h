@@ -44,6 +44,7 @@ protected:
     void execBatch(const std::function<void(QSqlQuery&)>& solveQueryResult);
 
     void printException(const QString& reason);
+    void printWarning(const QString& info);
 
 private:
     QString statement;

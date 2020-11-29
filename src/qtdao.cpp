@@ -12,6 +12,10 @@ public:
     void execFail(const QString& lastErr) {
         qWarning() << lastErr;
     }
+
+    void execWarning(const QString& info) {
+        qWarning() << info;
+    }
 };
 
 DbConfig DbLoader::config;

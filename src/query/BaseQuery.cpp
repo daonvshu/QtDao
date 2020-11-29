@@ -34,6 +34,10 @@ void BaseQuery::printException(const QString& reason) {
     }
 }
 
+void BaseQuery::printWarning(const QString& info) {
+    DbExceptionHandler::exceptionHandler->execWarning(info);
+}
+
 void BaseQuery::queryPrimitive(const QString& statement, std::function<void(QSqlQuery& query)> callback, std::function<void(QString)> failCallback) {
     queryPrimitive(statement, QVariantList(), callback, failCallback);
 }

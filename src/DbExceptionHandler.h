@@ -28,6 +28,12 @@ public:
     virtual void execFail(const QString& lastErr) {};
 
     /// <summary>
+    /// 执行SQL语句警告
+    /// </summary>
+    /// <param name="info"></param>
+    virtual void execWarning(const QString& info) {};
+
+    /// <summary>
     /// 版本升级失败
     /// </summary>
     /// <param name="reason"></param>

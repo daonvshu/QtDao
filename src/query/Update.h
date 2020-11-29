@@ -1,0 +1,127 @@
+﻿#pragma once
+
+template<typename T>
+class UpdateBuilder;
+
+template<typename E>
+class Update : BaseQuery {
+public:
+    /// <summary>
+    /// 通过set条件更新
+    /// </summary>
+    /// <returns></returns>
+    bool update();
+
+    /// <summary>
+    /// 通过set条件批量更新
+    /// </summary>
+    /// <returns></returns>
+    bool updateBatch();
+
+    /// <summary>
+    /// 通过实例更新
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    bool update(E& entity);
+
+    /// <summary>
+    /// 通过实例批量更新
+    /// </summary>
+    /// <param name="entities"></param>
+    /// <returns></returns>
+    bool updateBatch(QList<E>& entities);
+
+private:
+    void buildUpdateBySetSqlStatement();
+    void bindUpdateEntitiesCondition(QList<E>& entities);
+
+private:
+    Connector setCondition, filterCondition;
+
+    friend class UpdateBuilder<E>;
+};
+
+template<typename E>
+inline bool Update<E>::update() {
+    buildUpdateBySetSqlStatement();
+    bool updateSuccess = false;
+    exec([&](QSqlQuery& query) {
+        updateSuccess = true;
+        int affectRow = query.numRowsAffected();
+        if (affectRow <= 0) {
+            printWarning("update last effect row is 0!");
+        }
+    });
+    return updateSuccess;
+}
+
+template<typename E>
+inline bool Update<E>::updateBatch() {
+    buildUpdateBySetSqlStatement();
+    bool updateSuccess = false;
+    execBatch([&](QSqlQuery& query) {
+        updateSuccess = true;
+        int affectRow = query.numRowsAffected();
+        if (affectRow <= 0) {
+            printWarning("update batch last effect row is 0!");
+        }
+    });
+    return updateSuccess;
+}
+
+template<typename E>
+inline bool Update<E>::update(E& entity) {
+    bindUpdateEntitiesCondition(QList<E>() << entity);
+    return update();
+}
+
+template<typename E>
+inline bool Update<E>::updateBatch(QList<E>& entities) {
+    bindUpdateEntitiesCondition(entities);
+    return updateBatch();
+}
+
+template<typename E>
+inline void Update<E>::buildUpdateBySetSqlStatement() {
+    typename E::Info info;
+    QString sql = "update ";
+    sql,append(info.getTableName());
+
+    QVariantList value;
+
+    setCondition.connect("");
+    Q_ASSERT(!setCondition.getConditionStr().isEmpty());
+    sql.append(" set ");
+    sql.append(setCondition.getConditionStr());
+    value << setCondition.getValues();
+
+    filterCondition.connect("");
+    if (filterCondition.getConditionStr().isEmpty()) {
+        sql.append(" where ").append(filterCondition.getValues());
+    }
+    setSqlQueryStatement(sql, value);
+}
+
+template<typename E>
+inline void Update<E>::bindUpdateEntitiesCondition(QList<E>& entities) {
+    Q_ASSERT(setCondition.isEmpty());
+    Q_ASSERT(filterCondition.isEmpty());
+    E::Info info;
+    E::Tool tool;
+    QStringList primaryKeys = info.getPrimaryKeys();
+    Q_ASSERT(!primaryKeys.isEmpty());
+    QStringList fields = info.getFields();
+    for (const auto& field : fields) {
+        QVariantList fieldValue;
+        for (const auto& entity : entities) {
+            fieldValue << tool.getValueByName(entity, field);
+        }
+        auto condition = EntityCondition(field, "=", fieldValue);
+        if (primaryKeys.contains(field)) {
+            setCondition.append(condition);
+        } else {
+            filterCondition.append(condition);
+        }
+    }
+}

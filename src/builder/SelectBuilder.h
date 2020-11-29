@@ -20,6 +20,9 @@ public:
     SelectBuilder& filter(const Connector& condition, const Args&... args);
 
     template<typename... Args>
+    SelectBuilder& filter(const FunctionCondition& condition, const Args&... args);
+
+    template<typename... Args>
     SelectBuilder& with(const ConditionConstraint& constaint, const Args&... args);
 
     template<typename Col, typename... Args>
@@ -47,6 +50,13 @@ inline SelectBuilder<T>& SelectBuilder<T>::filter(const EntityCondition& conditi
 template<typename T>
 template<typename ...Args>
 inline SelectBuilder<T>& SelectBuilder<T>::filter(const Connector& condition, const Args & ...args) {
+    filterCondition.append(condition);
+    return filter(args...);
+}
+
+template<typename T>
+template<typename ...Args>
+inline SelectBuilder<T>& SelectBuilder<T>::filter(const FunctionCondition& condition, const Args & ...args) {
     filterCondition.append(condition);
     return filter(args...);
 }
