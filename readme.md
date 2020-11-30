@@ -52,8 +52,8 @@
     - [ ] multi-table count
     - [ ] count in query result
   - update operator
-    - [ ] set by where update
-    - [ ] object(s) update
+    - [x] set by where update
+    - [x] object(s) update
     - [ ] update with query results
   - delete operator
     - [ ] condition delete
