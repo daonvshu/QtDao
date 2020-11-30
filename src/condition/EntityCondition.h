@@ -10,6 +10,9 @@
 template<typename T>
 class EntityField;
 
+template<typename E>
+class Update;
+
 class Connector;
 class EntityCondition {
 public:
@@ -58,6 +61,9 @@ protected:
 
     template<typename T>
     friend class EntityField;
+
+    template<typename E>
+    friend class Update;
 };
 
 template<typename T>

@@ -72,7 +72,7 @@ inline UpdateBuilder<T>& UpdateBuilder<T>::filter() {
 
 template<typename T>
 inline Update<T> UpdateBuilder<T>::build() {
-    Update<T>() query;
+    Update<T> query;
     query.setCondition = setCondition;
     query.filterCondition = filterCondition;
     query.queryThrowable = setThrowable;

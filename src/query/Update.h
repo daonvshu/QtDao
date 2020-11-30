@@ -86,7 +86,7 @@ template<typename E>
 inline void Update<E>::buildUpdateBySetSqlStatement() {
     typename E::Info info;
     QString sql = "update ";
-    sql,append(info.getTableName());
+    sql.append(info.getTableName());
 
     QVariantList value;
 
@@ -97,8 +97,9 @@ inline void Update<E>::buildUpdateBySetSqlStatement() {
     value << setCondition.getValues();
 
     filterCondition.connect("");
-    if (filterCondition.getConditionStr().isEmpty()) {
-        sql.append(" where ").append(filterCondition.getValues());
+    if (!filterCondition.getConditionStr().isEmpty()) {
+        sql.append(" where ").append(filterCondition.getConditionStr());
+        value << filterCondition.getValues();
     }
     setSqlQueryStatement(sql, value);
 }
@@ -117,11 +118,11 @@ inline void Update<E>::bindUpdateEntitiesCondition(QList<E>& entities) {
         for (const auto& entity : entities) {
             fieldValue << tool.getValueByName(entity, field);
         }
-        auto condition = EntityCondition(field, "=", fieldValue);
+        auto condition = EntityCondition(field, "=", fieldValue.size() == 1 ? fieldValue : QVariantList() << QVariant(fieldValue));
         if (primaryKeys.contains(field)) {
-            setCondition.append(condition);
-        } else {
             filterCondition.append(condition);
+        } else {
+            setCondition.append(condition);
         }
     }
 }

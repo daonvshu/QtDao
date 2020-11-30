@@ -53,7 +53,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
-    <QtInstall>msvc2017_x86</QtInstall>
+    <QtInstall>msvc2017</QtInstall>
     <QtModules>core;sql;testlib;xml</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
@@ -123,6 +123,7 @@
     <ClCompile Include="test\query\BaseQueryTest.cpp" />
     <ClCompile Include="test\query\InsertTest.cpp" />
     <ClCompile Include="test\query\SelectTest.cpp" />
+    <ClCompile Include="test\query\UpdateTest.cpp" />
     <ClCompile Include="test\sqliteentity\EntityInclude.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +180,7 @@
     <ClInclude Include="src\query\Select.h" />
     <QtMoc Include="test\query\SelectTest.h" />
     <ClInclude Include="src\query\Update.h" />
+    <QtMoc Include="test\query\UpdateTest.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest1.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest2.h" />
     <QtMoc Include="test\sqliteentity\EntityInclude.h" />

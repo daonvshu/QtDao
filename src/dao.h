@@ -6,6 +6,7 @@
 #include "builder/InsertBuilder.h"
 #include "builder/SelectBuilder.h"
 #include "builder/CountBuilder.h"
+#include "builder/UpdateBuilder.h"
 
 #include "condition/ConditionOperator.h"
 
@@ -29,5 +30,10 @@ public:
     template<typename T>
     static CountBuilder<T> _count() {
         return CountBuilder<T>();
+    }
+
+    template<typename T>
+    static UpdateBuilder<T> _update() {
+        return UpdateBuilder<T>();
     }
 };
