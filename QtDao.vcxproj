@@ -137,6 +137,7 @@
       <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
     </ClInclude>
     <ClInclude Include="src\builder\CountBuilder.h" />
+    <ClInclude Include="src\builder\DeleteBuilder.h" />
     <ClInclude Include="src\builder\InsertBuilder.h" />
     <ClInclude Include="src\builder\QueryBuilder.h" />
     <ClInclude Include="src\builder\SelectBuilder.h" />
@@ -175,6 +176,7 @@
     </ClInclude>
     <ClInclude Include="src\query\BaseQuery.h" />
     <QtMoc Include="test\condition\ConnectorTest.h" />
+    <ClInclude Include="src\query\Delete.h" />
     <ClInclude Include="src\query\Insert.h" />
     <QtMoc Include="test\query\InsertTest.h" />
     <ClInclude Include="src\query\Select.h" />

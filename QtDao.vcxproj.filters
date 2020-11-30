@@ -256,6 +256,12 @@
     <ClInclude Include="src\builder\UpdateBuilder.h">
       <Filter>Header Files\src\builder</Filter>
     </ClInclude>
+    <ClInclude Include="src\builder\DeleteBuilder.h">
+      <Filter>Header Files\src\builder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\query\Delete.h">
+      <Filter>Header Files\src\query</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\dao_entity.xml">

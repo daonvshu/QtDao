@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "BaseQuery.h"
+
 template<typename T>
 class UpdateBuilder;
 
@@ -19,22 +21,22 @@ public:
     bool updateBatch();
 
     /// <summary>
-    /// 通过实例更新
+    /// 通过实例primary key更新
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
-    bool update(E& entity);
+    bool update(const E& entity);
 
     /// <summary>
-    /// 通过实例批量更新
+    /// 通过实例primary key批量更新
     /// </summary>
     /// <param name="entities"></param>
     /// <returns></returns>
-    bool updateBatch(QList<E>& entities);
+    bool updateBatch(const QList<E>& entities);
 
 private:
     void buildUpdateBySetSqlStatement();
-    void bindUpdateEntitiesCondition(QList<E>& entities);
+    void bindUpdateEntitiesCondition(const QList<E>& entities);
 
 private:
     Connector setCondition, filterCondition;
@@ -71,13 +73,13 @@ inline bool Update<E>::updateBatch() {
 }
 
 template<typename E>
-inline bool Update<E>::update(E& entity) {
+inline bool Update<E>::update(const E& entity) {
     bindUpdateEntitiesCondition(QList<E>() << entity);
     return update();
 }
 
 template<typename E>
-inline bool Update<E>::updateBatch(QList<E>& entities) {
+inline bool Update<E>::updateBatch(const QList<E>& entities) {
     bindUpdateEntitiesCondition(entities);
     return updateBatch();
 }
@@ -105,11 +107,11 @@ inline void Update<E>::buildUpdateBySetSqlStatement() {
 }
 
 template<typename E>
-inline void Update<E>::bindUpdateEntitiesCondition(QList<E>& entities) {
+inline void Update<E>::bindUpdateEntitiesCondition(const QList<E>& entities) {
     Q_ASSERT(setCondition.isEmpty());
     Q_ASSERT(filterCondition.isEmpty());
-    E::Info info;
-    E::Tool tool;
+    typename E::Info info;
+    typename E::Tool tool;
     QStringList primaryKeys = info.getPrimaryKeys();
     Q_ASSERT(!primaryKeys.isEmpty());
     QStringList fields = info.getFields();
