@@ -155,6 +155,9 @@
     <ClCompile Include="test\query\DeleteTest.cpp">
       <Filter>Source Files\test\query</Filter>
     </ClCompile>
+    <ClCompile Include="test\query\JoinTest.cpp">
+      <Filter>Source Files\test\query</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ConnectionPool.h">
@@ -223,9 +226,6 @@
     <ClInclude Include="src\condition\ConditionOperator.h">
       <Filter>Header Files\src\condition</Filter>
     </ClInclude>
-    <ClInclude Include="src\builder\QueryBuilder.h">
-      <Filter>Header Files\src\builder</Filter>
-    </ClInclude>
     <ClInclude Include="src\query\Insert.h">
       <Filter>Header Files\src\query</Filter>
     </ClInclude>
@@ -264,6 +264,9 @@
     </ClInclude>
     <ClInclude Include="src\query\Delete.h">
       <Filter>Header Files\src\query</Filter>
+    </ClInclude>
+    <ClInclude Include="src\builder\BaseQueryBuilder.h">
+      <Filter>Header Files\src\builder</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -326,6 +329,9 @@
       <Filter>Header Files\test\query</Filter>
     </QtMoc>
     <QtMoc Include="test\query\DeleteTest.h">
+      <Filter>Header Files\test\query</Filter>
+    </QtMoc>
+    <QtMoc Include="test\query\JoinTest.h">
       <Filter>Header Files\test\query</Filter>
     </QtMoc>
   </ItemGroup>

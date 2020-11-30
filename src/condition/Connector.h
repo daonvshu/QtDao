@@ -3,8 +3,8 @@
 #include "ConnectorData.h"
 #include "EntityField.h"
 
-template<typename T>
-class SelectBuilder;
+template<typename T, template<typename> class Query>
+class BaseQueryBuilder;
 
 class FunctionCondition;
 
@@ -61,8 +61,8 @@ private:
         return *this;
     }
 
-    template<typename T>
-    friend class SelectBuilder;
+    template<typename T, template<typename> class Query>
+    friend class BaseQueryBuilder;
 
 private:
     QSharedDataPointer<ConnectorData> d;

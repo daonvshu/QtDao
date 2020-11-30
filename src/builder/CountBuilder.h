@@ -9,17 +9,7 @@ public:
         column(FunctionCondition("count(*) as __selectcount"));
     }
 
-    template<typename... Args>
-    CountBuilder& filter(const EntityCondition& condition, const Args&... args) {
-        __super::filter(condition, args...);
-        return *this;
-    }
-
-    template<typename... Args>
-    CountBuilder& filter(const Connector& condition, const Args&... args) {
-        __super::filter(condition, args...);
-        return *this;
-    }
+    QUERY_BUILDER_USE_FILTER(CountBuilder);
     
     int count() {
         QList<T> data = build().list();

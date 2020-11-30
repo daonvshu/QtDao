@@ -123,6 +123,7 @@
     <ClCompile Include="test\query\BaseQueryTest.cpp" />
     <ClCompile Include="test\query\DeleteTest.cpp" />
     <ClCompile Include="test\query\InsertTest.cpp" />
+    <ClCompile Include="test\query\JoinTest.cpp" />
     <ClCompile Include="test\query\SelectTest.cpp" />
     <ClCompile Include="test\query\UpdateTest.cpp" />
     <ClCompile Include="test\sqliteentity\EntityInclude.cpp" />
@@ -137,10 +138,10 @@
     <ClInclude Include="sqlite_entity.h">
       <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
     </ClInclude>
+    <ClInclude Include="src\builder\BaseQueryBuilder.h" />
     <ClInclude Include="src\builder\CountBuilder.h" />
     <ClInclude Include="src\builder\DeleteBuilder.h" />
     <ClInclude Include="src\builder\InsertBuilder.h" />
-    <ClInclude Include="src\builder\QueryBuilder.h" />
     <ClInclude Include="src\builder\SelectBuilder.h" />
     <ClInclude Include="src\builder\UpdateBuilder.h" />
     <ClInclude Include="src\condition\ConditionOperator.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="src\query\Update.h" />
     <QtMoc Include="test\query\UpdateTest.h" />
     <QtMoc Include="test\query\DeleteTest.h" />
+    <QtMoc Include="test\query\JoinTest.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest1.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest2.h" />
     <QtMoc Include="test\sqliteentity\EntityInclude.h" />
