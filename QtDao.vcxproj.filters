@@ -152,6 +152,9 @@
     <ClCompile Include="test\query\UpdateTest.cpp">
       <Filter>Source Files\test\query</Filter>
     </ClCompile>
+    <ClCompile Include="test\query\DeleteTest.cpp">
+      <Filter>Source Files\test\query</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ConnectionPool.h">
@@ -320,6 +323,9 @@
       <Filter>Header Files\test\query</Filter>
     </QtMoc>
     <QtMoc Include="test\query\UpdateTest.h">
+      <Filter>Header Files\test\query</Filter>
+    </QtMoc>
+    <QtMoc Include="test\query\DeleteTest.h">
       <Filter>Header Files\test\query</Filter>
     </QtMoc>
   </ItemGroup>

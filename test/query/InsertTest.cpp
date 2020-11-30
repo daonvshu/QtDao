@@ -9,7 +9,6 @@
 
 void InsertTest::initTestCase() {
     DbLoader::init(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
-    DbLoader::getClient().testConnect();
 }
 
 void InsertTest::setInsertTest() {

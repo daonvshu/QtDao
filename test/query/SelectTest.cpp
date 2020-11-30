@@ -6,7 +6,6 @@
 
 void SelectTest::initTestCase() {
     DbLoader::init(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
-    DbLoader::getClient().testConnect();
 
     data1 << SqliteTest1(1, "abc", 10, "");
     data1 << SqliteTest1(2, "alice", 11, "alice1");

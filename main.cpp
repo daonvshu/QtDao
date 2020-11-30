@@ -7,6 +7,7 @@
 #include "test/query/InsertTest.h"
 #include "test/query/SelectTest.h"
 #include "test/query/UpdateTest.h"
+#include "test/query/DeleteTest.h"
 #include "test/loader/DbLoaderTest.h"
 #include "test/condition/ConnectorTest.h"
 
@@ -34,6 +35,9 @@ int main(int argc, char *argv[])
 
     UpdateTest updateTest;
     QTest::qExec(&updateTest);
+
+    DeleteTest deleteTest;
+    QTest::qExec(&deleteTest);
 
     return a.exec();
 }

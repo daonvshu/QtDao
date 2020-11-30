@@ -56,8 +56,8 @@
     - [x] object(s) update
     - [ ] update with query results
   - delete operator
-    - [ ] condition delete
-    - [ ] object(s) delete
+    - [x] condition delete
+    - [x] object(s) delete
     - [ ] delete by query results
   - [ ] transaction
 - **connection pool**

@@ -7,6 +7,7 @@
 #include "builder/SelectBuilder.h"
 #include "builder/CountBuilder.h"
 #include "builder/UpdateBuilder.h"
+#include "builder/DeleteBuilder.h"
 
 #include "condition/ConditionOperator.h"
 
@@ -35,5 +36,10 @@ public:
     template<typename T>
     static UpdateBuilder<T> _update() {
         return UpdateBuilder<T>();
+    }
+
+    template<typename T>
+    static DeleteBuilder<T> _delete() {
+        return DeleteBuilder<T>();
     }
 };

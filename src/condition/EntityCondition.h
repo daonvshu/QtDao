@@ -13,6 +13,9 @@ class EntityField;
 template<typename E>
 class Update;
 
+template<typename E>
+class Delete;
+
 class Connector;
 class EntityCondition {
 public:
@@ -64,6 +67,9 @@ protected:
 
     template<typename E>
     friend class Update;
+
+    template<typename E>
+    friend class Delete;
 };
 
 template<typename T>

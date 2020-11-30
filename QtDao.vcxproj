@@ -121,6 +121,7 @@
     <ClCompile Include="test\ConnectionPoolTest.cpp" />
     <ClCompile Include="test\loader\DbLoaderTest.cpp" />
     <ClCompile Include="test\query\BaseQueryTest.cpp" />
+    <ClCompile Include="test\query\DeleteTest.cpp" />
     <ClCompile Include="test\query\InsertTest.cpp" />
     <ClCompile Include="test\query\SelectTest.cpp" />
     <ClCompile Include="test\query\UpdateTest.cpp" />
@@ -183,6 +184,7 @@
     <QtMoc Include="test\query\SelectTest.h" />
     <ClInclude Include="src\query\Update.h" />
     <QtMoc Include="test\query\UpdateTest.h" />
+    <QtMoc Include="test\query\DeleteTest.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest1.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest2.h" />
     <QtMoc Include="test\sqliteentity\EntityInclude.h" />
