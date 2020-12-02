@@ -5,11 +5,12 @@
 #include "../query/Insert.h"
 
 template<typename T>
-class InsertBuilder : public BaseQueryBuilder<T, Insert> {
+class InsertBuilder : public BaseQueryBuilder {
 public:
+    QUERY_BUILDER_USE_THROWABLE(InsertBuilder);
     QUERY_BUILDER_USE_SET(InsertBuilder);
 
-    Insert<T> build() override;
+    Insert<T> build();
 };
 
 template<typename T>

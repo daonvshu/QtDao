@@ -92,13 +92,13 @@ inline void Update<E>::buildUpdateBySetSqlStatement() {
 
     QVariantList value;
 
-    setCondition.connect("");
+    setCondition.connect();
     Q_ASSERT(!setCondition.getConditionStr().isEmpty());
     sql.append(" set ");
     sql.append(setCondition.getConditionStr());
     value << setCondition.getValues();
 
-    filterCondition.connect("");
+    filterCondition.connect();
     if (!filterCondition.getConditionStr().isEmpty()) {
         sql.append(" where ").append(filterCondition.getConditionStr());
         value << filterCondition.getValues();
@@ -120,7 +120,8 @@ inline void Update<E>::bindUpdateEntitiesCondition(const QList<E>& entities) {
         for (const auto& entity : entities) {
             fieldValue << tool.getValueByName(entity, field);
         }
-        auto condition = EntityCondition(field, "=", fieldValue.size() == 1 ? fieldValue : QVariantList() << QVariant(fieldValue));
+        auto condition = 
+            EntityCondition(FieldInfo{ field, info.getTableName() }, "=", fieldValue.size() == 1 ? fieldValue.at(0) : fieldValue);
         if (primaryKeys.contains(field)) {
             filterCondition.append(condition);
         } else {

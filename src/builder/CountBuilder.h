@@ -9,6 +9,7 @@ public:
         column(FunctionCondition("count(*) as __selectcount"));
     }
 
+    QUERY_BUILDER_USE_THROWABLE(CountBuilder);
     QUERY_BUILDER_USE_FILTER(CountBuilder);
     
     int count() {

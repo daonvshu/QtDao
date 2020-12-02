@@ -268,6 +268,12 @@
     <ClInclude Include="src\builder\BaseQueryBuilder.h">
       <Filter>Header Files\src\builder</Filter>
     </ClInclude>
+    <ClInclude Include="src\builder\JoinBuilder.h">
+      <Filter>Header Files\src\builder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\query\Join.h">
+      <Filter>Header Files\src\query</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\dao_entity.xml">

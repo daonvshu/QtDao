@@ -25,7 +25,9 @@ private:
 	QSharedDataPointer<FunctionConditionData> d;
 
 private:
-	void combine(const QString& fieldPrefix);
+	void setFieldPrefixGetter(std::function<QString(const QString&)> prefixGetter);
+
+	void combine();
 
 	friend class Connector;
 };
@@ -37,7 +39,7 @@ inline FunctionCondition& FunctionCondition::field(const EntityField<T>& f, cons
 
 template<typename T>
 inline FunctionCondition& FunctionCondition::field(const EntityField<T>& f) {
-	d->fieldNames << f();
+	d->fields << FieldInfo{f.name, f.bindTable};
 	return *this;
 }
 

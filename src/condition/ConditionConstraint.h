@@ -9,13 +9,11 @@ public:
     static ConditionConstraint limit(int a, int b);
     static ConditionConstraint limit(int a);
 
-    static ConditionConstraint orderBy(const QString& fieldName, bool asc = true);
-
+    //order by interface
     template<typename T, typename... E>
     static ConditionConstraint orderBy(const EntityField<T>& field, const EntityField<E>&... n);
 
-    static ConditionConstraint groupBy(const QString& fieldName);
-
+    //group by interface
     template<typename T, typename... E>
     static ConditionConstraint groupBy(const EntityField<T>& field, const EntityField<E>&... n);
 
@@ -23,54 +21,66 @@ public:
     template<typename... T>
     static ConditionConstraint having();
 
+private:
+    //create condition with type order by
+    static ConditionConstraint orderBy(const QString& fieldName, const QString& tbName, bool asc = true);
+    //create condition with type group by
+    static ConditionConstraint groupBy(const QString& fieldName, const QString& tbName);
+
 protected:
     using EntityCondition::EntityCondition;
 
 protected:
-    void combine(const QString& fieldPrefix) override;
-    void combineLimit(const QString& fieldPrefix);
-    void combineOrderBy(const QString& fieldPrefix);
-    void combineGroupBy(const QString& fieldPrefix);
+    void combine() override;
+    void combineLimit();
+    void combineOrderBy();
+    void combineGroupBy();
 
     QVariantList getValues() override;
 
+    //save field info
+    ConditionConstraint& orderBySave(const QString& fieldName, const QString& tbName, bool asc);
+
+    //unpack entities
+    template<typename T, typename... E>
+    ConditionConstraint& orderByNext(const EntityField<T>& field, const EntityField<E>&... n);
+
+    //end order by unpack entities
     ConditionConstraint& orderByNext() {
         return *this;
     }
 
-    ConditionConstraint& orderByNext(const QString& fieldName, bool asc);
+    //save field info
+    ConditionConstraint& groupBySave(const QString& fieldName, const QString& tbName);
 
-    template<typename T, typename... E>
-    ConditionConstraint& orderByNext(const EntityField<T>& field, const EntityField<E>&... n);
+    //unpack entities
+    template<typename E, typename... N>
+    ConditionConstraint& groupByNext(const EntityField<E>& field, const N&... n);
 
+    //end group by unpack entities
     ConditionConstraint& groupByNext() {
         return *this;
     }
-
-    ConditionConstraint& groupByNext(const QString& fieldName);
-
-    template<typename E, typename... N>
-    ConditionConstraint& groupByNext(const EntityField<E>& field, const N&... n);
 
     friend class Connector;
 };
 
 template<typename T, typename... E>
 inline ConditionConstraint ConditionConstraint::orderBy(const EntityField<T>& field, const EntityField<E>&... n) {
-    return orderBy(field()).orderByNext(n...);
+    return orderBy(field.name, field.bindTable).orderByNext(n...);
 }
 
 template<typename T, typename... E>
 inline ConditionConstraint ConditionConstraint::groupBy(const EntityField<T>& field, const EntityField<E>&... n) {
-    return groupBy(field()).groupByNext(n...);
+    return groupBy(field.name, field.bindTable).groupByNext(n...);
 }
 
 template<typename T, typename... E>
 inline ConditionConstraint& ConditionConstraint::orderByNext(const EntityField<T>& field, const EntityField<E>&... n) {
-    return orderByNext(field(), true).orderByNext(n...);
+    return orderBySave(field.name, field.bindTable, true).orderByNext(n...);
 }
 
 template<typename E, typename ...N>
 inline ConditionConstraint& ConditionConstraint::groupByNext(const EntityField<E>& field, const N & ...n) {
-    return groupByNext(field()).groupByNext(n...);
+    return groupBySave(field.name, field.bindTable).groupByNext(n...);
 }

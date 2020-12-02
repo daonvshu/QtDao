@@ -2,10 +2,9 @@
 
 #include "ConnectorData.h"
 #include "EntityField.h"
+#include <functional>
 
-template<typename T, template<typename> class Query>
 class BaseQueryBuilder;
-
 class FunctionCondition;
 
 class Connector {
@@ -32,7 +31,7 @@ public:
         return *this;
     }
 
-    void connect(const QString& fieldPrefix);
+    void connect(std::function<QString(const QString&)> prefixGetter = nullptr);
 
     const QStringList& getUsedFieldNames();
     const QString& getConditionStr();
@@ -46,7 +45,7 @@ protected:
 private:
     template<typename E, typename... Args>
     Connector& appendCol(const EntityField<E>& field, const Args&... condition) {
-        d->append(field());
+        d->append(FieldInfo{ field.name, field.bindTable });
         return appendCol(condition...);
     }
 
@@ -61,7 +60,6 @@ private:
         return *this;
     }
 
-    template<typename T, template<typename> class Query>
     friend class BaseQueryBuilder;
 
 private:

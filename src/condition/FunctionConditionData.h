@@ -4,10 +4,8 @@
 #include <qstring.h>
 #include <qvariant.h>
 
-struct FunctionConditionData : public QSharedData {
-    QString expressions;
-    QStringList fieldNames;
-    QVariantList values;
+#include "EntityConditionData.h"
 
-    QString combineStr;
+struct FunctionConditionData : public EntityConditionData {
+    QString expressions;
 };

@@ -5,10 +5,17 @@
 
 #include "EntityCondition.h"
 
+class ConditionConstraint;
+class FunctionCondition;
+class Connector;
+
 template<typename T>
 class EntityField {
 public:
-    explicit EntityField(const char* fieldName) : name(fieldName) {}
+    explicit EntityField(const QString& fieldName, const QString& bindTable)
+        : name(fieldName)
+        , bindTable(bindTable)
+    {}
 
     /*get name*/
     QString operator()() const {
@@ -17,14 +24,19 @@ public:
 
 private:
     QString name;
+    QString bindTable;
+
+    friend class ConditionConstraint;
+    friend class FunctionCondition;
+    friend class Connector;
 
 private:
     EntityCondition setValue(const char* op, const T& v) {
-        return EntityCondition(name, op, QVariantList() << v);
+        return EntityCondition(FieldInfo{ name, bindTable }, op, v);
     }
 
     EntityCondition setValueSelf(const char* op, const T& v) {
-        return EntityCondition(name, op, QVariantList() << v, true);
+        return EntityCondition(FieldInfo{ name, bindTable }, op, v, true);
     }
 
     EntityCondition setValue(const char* op, const QList<T>& v) {
@@ -32,7 +44,7 @@ private:
         for (const auto& i : v) {
             values << i;
         }
-        return EntityCondition(name, op, QVariantList() << QVariant(values));
+        return EntityCondition(FieldInfo{ name, bindTable }, op, values);
     }
 
     EntityCondition setValueSelf(const char* op, const QList<T>& v) {
@@ -40,7 +52,14 @@ private:
         for (const auto& i : v) {
             values << i;
         }
-        return EntityCondition(name, op, QVariantList() << QVariant(values), true);
+        return EntityCondition(FieldInfo{ name, bindTable }, op, values, true);
+    }
+
+    EntityCondition setValue(const char* op, const EntityField<T>& other) {
+        QList<FieldInfo> info;
+        info << FieldInfo{ name, bindTable };
+        info << FieldInfo{ other.name, other.bindTable };
+        return EntityCondition(info, op);
     }
 
 public:
@@ -51,12 +70,18 @@ public:
     EntityCondition operator==(const QList<T>& v) {
         return setValue("=", v);
     }
+    EntityCondition operator==(const EntityField<T>& other) {
+        return setValue("=", other);
+    }
     /*no equal "!="*/
     EntityCondition operator!=(const T& v) {
         return setValue("!=", v);
     }
     EntityCondition operator!=(const QList<T>& v) {
         return setValue("!=", v);
+    }
+    EntityCondition operator!=(const EntityField<T>& other) {
+        return setValue("!=", other);
     }
     /*greater than ">"*/
     EntityCondition operator>(const T& v) {
@@ -65,12 +90,18 @@ public:
     EntityCondition operator>(const QList<T>& v) {
         return setValue(">", v);
     }
+    EntityCondition operator>(const EntityField<T>& other) {
+        return setValue(">", other);
+    }
     /*greater than and equal ">=" */
     EntityCondition operator>=(const T& v) {
         return setValue(">=", v);
     }
     EntityCondition operator>=(const QList<T>& v) {
         return setValue(">=", v);
+    }
+    EntityCondition operator>=(const EntityField<T>& other) {
+        return setValue(">=", other);
     }
     /*less than "<"*/
     EntityCondition operator<(const T& v) {
@@ -79,12 +110,18 @@ public:
     EntityCondition operator<(const QList<T>& v) {
         return setValue("<", v);
     }
+    EntityCondition operator<(const EntityField<T>& other) {
+        return setValue("<", other);
+    }
     /*less than and equal "<="*/
     EntityCondition operator<=(const T& v) {
         return setValue("<=", v);
     }
     EntityCondition operator<=(const QList<T>& v) {
         return setValue("<=", v);
+    }
+    EntityCondition operator<=(const EntityField<T>& other) {
+        return setValue("<=", other);
     }
 
     /*like "like"*/
@@ -149,17 +186,17 @@ public:
 
     /*condition in*/
     EntityCondition in(const QList<T>& value) {
-        return EntityCondition::conditionIn(name, value);
+        return EntityCondition::conditionIn(FieldInfo{name, bindTable}, value);
     }
 
     /*condition between*/
     EntityCondition between(const T& a, const T& b) {
-        return EntityCondition::conditionBetween(name, a, b);
+        return EntityCondition::conditionBetween(FieldInfo{ name, bindTable }, a, b);
     }
 
     /*for order by*/
     EntityField desc() {
-        return EntityField((name + " desc").toUtf8().constData());
+        return EntityField(name + " desc", bindTable);
     }
 };
 

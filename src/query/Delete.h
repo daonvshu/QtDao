@@ -83,7 +83,7 @@ inline void Delete<E>::buildDeleteByFilterSqlStatement() {
     sql.append(info.getTableName());
 
     QVariantList value;
-    filterCondition.connect("");
+    filterCondition.connect();
     if (!filterCondition.getConditionStr().isEmpty()) {
         sql.append(" where ").append(filterCondition.getConditionStr());
         value << filterCondition.getValues();
@@ -97,12 +97,14 @@ inline void Delete<E>::buildDeleteEntitiesCondition(const QList<E>& entities) {
     typename E::Tool tool;
     QStringList primaryKeys = info.getPrimaryKeys();
     Q_ASSERT(!primaryKeys.isEmpty());
+
     for (const auto& field : primaryKeys) {
         QVariantList fieldValue;
         for (const auto& entity : entities) {
             fieldValue << tool.getValueByName(entity, field);
         }
-        auto condition = EntityCondition(field, "=", fieldValue.size() == 1 ? fieldValue : QVariantList() << QVariant(fieldValue));
+        auto condition = 
+            EntityCondition(FieldInfo{ field, info.getTableName() }, "=", fieldValue.size() == 1 ? fieldValue.at(0) : fieldValue);
         filterCondition.append(condition);
     }
 }

@@ -1,67 +1,94 @@
 #include "EntityCondition.h"
 
 EntityCondition::EntityCondition(
-    const QString& fieldName,
+    const FieldInfo& field,
     const QString& op,
-    const QVariantList& values,
-    bool selfOperate,
-    ConditionType type
+    const QVariant& value,
+    bool selfOperate
 ) {
     d = new EntityConditionData;
-    d->fieldName = fieldName;
+    d->fields << field;
     d->op = op;
-    d->values = values;
+    d->values << value;
     d->selfOperate = selfOperate;
-    d->conditionType = type;
 }
 
 EntityCondition::EntityCondition(
-    const QString& fieldName,
+    const FieldInfo& field,
     const QVariantList& values, 
     ConditionType type
 ) {
     d = new EntityConditionData;
-    d->fieldName = fieldName;
+    d->fields << field;
     d->values = values;
     d->conditionType = type;
 }
 
-void EntityCondition::combine(const QString& fieldPrefix) {
+EntityCondition::EntityCondition(
+    const QVariantList& values,
+    ConditionType type
+) {
+    d = new EntityConditionData;
+    d->values = values;
+    d->conditionType = type;
+}
+
+EntityCondition::EntityCondition(
+    const QList<FieldInfo>& fields,
+    const QString& op
+) {
+    d = new EntityConditionData;
+    d->fields = fields;
+    d->op = op;
+}
+
+void EntityCondition::combine() {
     switch (d->conditionType) {
     case TypeNormal:
-        combineNormal(fieldPrefix);
+        combineNormal();
         break;
     case TypeIn:
-        combineIn(fieldPrefix);
+        combineIn();
         break;
     case TypeBetween:
-        combineBetween(fieldPrefix);
+        combineBetween();
         break;
     default:
         break;
     }
 }
 
-void EntityCondition::combineNormal(const QString& fieldPrefix) {
-    QString str;
-    if (d->selfOperate) {
-        str = "%1=%1%2?";
-    } else {
-        str = "%1%2?";
+void EntityCondition::combineNormal() {
+    if (d->fields.size() == 1) {
+        QString str;
+        if (d->selfOperate) {
+            str = "%1=%1%2?";
+        } else {
+            str = "%1%2?";
+        }
+        d->combineStr = str.arg(d->getField(0)).arg(d->op);
+    } else if (d->fields.size() == 2) {
+        d->combineStr = QString("%1%2%3")
+            .arg(d->getField(0))
+            .arg(d->op)
+            .arg(d->getField(1));
     }
-    d->combineStr = str.arg(fieldPrefix + d->fieldName).arg(d->op);
 }
 
-void EntityCondition::combineIn(const QString& fieldPrefix) {
+void EntityCondition::combineIn() {
     QString str = "%1 in (%2)";
     d->combineStr = str
-        .arg(fieldPrefix + d->fieldName)
+        .arg(d->getField(0))
         .arg(QString("?,").repeated(d->values.size()).chopped(1));
 }
 
-void EntityCondition::combineBetween(const QString& fieldPrefix) {
+void EntityCondition::setFieldPrefixGetter(std::function<QString(const QString&)> prefixGetter) {
+    d->fieldPrefixGetter = prefixGetter;
+}
+
+void EntityCondition::combineBetween() {
     QString str = "%1 between ? and ?";
-    d->combineStr = str.arg(fieldPrefix + d->fieldName);
+    d->combineStr = str.arg(d->getField(0));
 }
 
 QVariantList EntityCondition::getValues() {

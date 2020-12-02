@@ -16,6 +16,7 @@ class Connector;
 class EntityCondition;
 class ConditionConstraint;
 class FunctionCondition;
+struct FieldInfo;
 
 class ConnectorItem;
 class ConnectorData : public QSharedData {
@@ -36,5 +37,5 @@ public:
     void append(const EntityCondition& condition);
     void append(const ConditionConstraint& constraint);
     void append(const FunctionCondition& function);
-    void append(const QString& fieldName);
+    void append(const FieldInfo& field);
 };

@@ -11,13 +11,13 @@ public:
     EntityCondition condition;
     ConditionConstraint constraint;
     FunctionCondition function;
-    QString field;
+    FieldInfo field;
 
     ConnectorItem(const Connector& other);
     ConnectorItem(const EntityCondition& condition);
     ConnectorItem(const ConditionConstraint& constraint);
     ConnectorItem(const FunctionCondition& funtion);
-    ConnectorItem(const QString& field);
+    ConnectorItem(const FieldInfo& field);
 
     ConnectorItemType type;
 };
@@ -51,8 +51,8 @@ void ConnectorData::append(const FunctionCondition& function) {
     conditions.append(function);
 }
 
-void ConnectorData::append(const QString& fieldName) {
-    conditions.append(fieldName);
+void ConnectorData::append(const FieldInfo& field) {
+    conditions.append(field);
 }
 
 ConnectorItem::ConnectorItem(const Connector& other) 
@@ -79,7 +79,7 @@ ConnectorItem::ConnectorItem(const FunctionCondition& function)
 {
 }
 
-ConnectorItem::ConnectorItem(const QString& field) 
+ConnectorItem::ConnectorItem(const FieldInfo& field)
     : field(field)
     , type(TypeField)
 {
@@ -119,7 +119,7 @@ void Connector::appendConnector() {
 };
 
 
-void Connector::connect(const QString& fieldPrefix) {
+void Connector::connect(std::function<QString(const QString&)> prefixGetter) {
     QMutableListIterator<ConnectorItem> it(d->conditions);
     while (it.hasNext()) {
         if (it.hasPrevious()) {
@@ -130,7 +130,7 @@ void Connector::connect(const QString& fieldPrefix) {
         case TypeConnector:
             {
                 auto connector = &item.connector;
-                connector->connect(fieldPrefix);
+                connector->connect(prefixGetter);
                 d->usedFieldList.append(connector->d->usedFieldList);
                 if (d->conditionStr.isEmpty()) {
                     d->conditionStr.append(connector->d->conditionStr);
@@ -143,8 +143,9 @@ void Connector::connect(const QString& fieldPrefix) {
         case TypeCondition:
             {
                 auto condition = &item.condition;
-                condition->combine(fieldPrefix);
-                d->usedFieldList.append(condition->d->fieldName);
+                condition->setFieldPrefixGetter(prefixGetter);
+                condition->combine();
+                d->usedFieldList.append(condition->d->getUsedFields());
                 d->conditionStr.append(condition->d->combineStr);
                 d->values.append(condition->getValues());
             }
@@ -152,8 +153,9 @@ void Connector::connect(const QString& fieldPrefix) {
         case TypeConstraint:
             {
                 auto constraint = &item.constraint;
-                constraint->combine(fieldPrefix);
-                d->usedFieldList.append(constraint->d->fieldName);
+                constraint->setFieldPrefixGetter(prefixGetter);
+                constraint->combine();
+                d->usedFieldList.append(constraint->d->getUsedFields());
                 d->conditionStr.append(constraint->d->combineStr);
                 d->values.append(constraint->getValues());
             }
@@ -161,8 +163,9 @@ void Connector::connect(const QString& fieldPrefix) {
         case TypeFunction:
             {
                 auto function = &item.function;
-                function->combine(fieldPrefix);
-                d->usedFieldList.append(function->d->fieldNames);
+                function->setFieldPrefixGetter(prefixGetter);
+                function->combine();
+                d->usedFieldList.append(function->d->getUsedFields());
                 d->conditionStr.append(function->d->combineStr);
                 d->values.append(function->d->values);
             }
@@ -170,8 +173,12 @@ void Connector::connect(const QString& fieldPrefix) {
         case TypeField:
             {
                 auto field = item.field;
-                d->usedFieldList.append(field);
-                d->conditionStr.append(fieldPrefix + field);
+                d->usedFieldList.append(field.name);
+                if (prefixGetter != nullptr) {
+                    d->conditionStr.append(prefixGetter(field.bindTable) + field.name);
+                } else {
+                    d->conditionStr.append(field.name);
+                }
             }
             break;
         }

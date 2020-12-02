@@ -2,6 +2,7 @@
 
 #include <qobject.h>
 #include <qvariant.h>
+#include <functional>
 
 #include <qsharedpointer.h>
 
@@ -22,29 +23,42 @@ public:
     EntityCondition() {}
 
 protected:
+    //for class EntityField
     EntityCondition(
-        const QString& fieldName,
+        const FieldInfo& field,
         const QString& op,
-        const QVariantList& values,
-        bool selfOperate = false,
-        ConditionType type = TypeNormal
+        const QVariant& value,
+        bool selfOperate = false
     );
 
+    //for in/between
     EntityCondition(
-        const QString& fieldName,
+        const FieldInfo& field,
         const QVariantList& values,
         ConditionType type
     );
 
+    //for constraint
+    EntityCondition(
+        const QVariantList& values,
+        ConditionType type
+    );
+
+    //for pair condition
+    EntityCondition(
+        const QList<FieldInfo>& fields,
+        const QString& op
+    );
+
     template<typename T>
     static EntityCondition conditionIn(
-        const QString& fieldName,
+        const FieldInfo& field,
         const QList<T>& values
     );
 
     template<typename T>
     static EntityCondition conditionBetween(
-        const QString& fieldName,
+        const FieldInfo& field,
         const T& a, 
         const T& b
     );
@@ -53,10 +67,12 @@ protected:
     QSharedDataPointer<EntityConditionData> d;
 
 protected:
-    virtual void combine(const QString& fieldPrefix);
-    void combineNormal(const QString& fieldPrefix);
-    void combineIn(const QString& fieldPrefix);
-    void combineBetween(const QString& fieldPrefix);
+    void setFieldPrefixGetter(std::function<QString(const QString&)> prefixGetter);
+
+    virtual void combine();
+    void combineNormal();
+    void combineIn();
+    void combineBetween();
 
     virtual QVariantList getValues();
 
@@ -73,24 +89,30 @@ protected:
 };
 
 template<typename T>
-inline EntityCondition EntityCondition::conditionIn(const QString& fieldName, const QList<T>& values) {
+inline EntityCondition EntityCondition::conditionIn(
+    const FieldInfo& field,
+    const QList<T>& values
+) {
     QVariantList variantValues;
     for (const T& t : values) {
         variantValues << t;
     }
     return EntityCondition(
-        fieldName,
+        field,
         variantValues,
         TypeIn
     );
 }
 
 template<typename T>
-inline EntityCondition EntityCondition::conditionBetween(const QString& fieldName,  const T& a, const T& b) {
+inline EntityCondition EntityCondition::conditionBetween(
+    const FieldInfo& field,
+    const T& a, const T& b
+) {
     QVariantList values;
     values << a << b;
     return EntityCondition(
-        fieldName,
+        field,
         values,
         TypeBetween
     );

@@ -8,6 +8,7 @@
 #include "builder/CountBuilder.h"
 #include "builder/UpdateBuilder.h"
 #include "builder/DeleteBuilder.h"
+#include "builder/JoinBuilder.h"
 
 #include "condition/ConditionOperator.h"
 
@@ -41,5 +42,10 @@ public:
     template<typename T>
     static DeleteBuilder<T> _delete() {
         return DeleteBuilder<T>();
+    }
+
+    template<typename... T>
+    static JoinBuilder<T...> _join() {
+        return JoinBuilder<T...>();
     }
 };

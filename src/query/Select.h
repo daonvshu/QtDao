@@ -114,13 +114,13 @@ inline void Select<E>::buildFilterSqlStatement() {
     sql = sql.arg(getBindColumns(values));
     sql = sql.arg(info.getTableName());
 
-    filterCondition.connect("");
+    filterCondition.connect();
     if (!filterCondition.getConditionStr().isEmpty()) {
         sql.append(" where ").append(filterCondition.getConditionStr());
         values.append(filterCondition.getValues());
     }
 
-    constraintCondition.connect("");
+    constraintCondition.connect();
     if (!constraintCondition.getConditionStr().isEmpty()) {
         sql.append(" ").append(constraintCondition.getConditionStr());
         values.append(constraintCondition.getValues());
@@ -130,7 +130,7 @@ inline void Select<E>::buildFilterSqlStatement() {
 }
 template<typename E>
 inline QString Select<E>::getBindColumns(QVariantList& values) {
-    columnBind.connect("");
+    columnBind.connect();
     if (columnBind.getConditionStr().isEmpty()) {
         return "*";
     }

@@ -4,7 +4,6 @@ ConditionConstraint ConditionConstraint::limit(int a, int b) {
     QVariantList values;
     values << a << b;
     return ConditionConstraint(
-        "",
         values,
         TypeLimit
     );
@@ -14,38 +13,35 @@ ConditionConstraint ConditionConstraint::limit(int a) {
     QVariantList values;
     values << a;
     return ConditionConstraint(
-        "",
         values,
         TypeLimit
     );
 }
 
-ConditionConstraint ConditionConstraint::orderBy(const QString& fieldName, bool asc) {
+ConditionConstraint ConditionConstraint::orderBy(const QString& fieldName, const QString& tbName, bool asc) {
     return ConditionConstraint(
-        "",
         QVariantList(),
         TypeOrderBy
-    ).orderByNext(fieldName, asc);
+    ).orderBySave(fieldName, tbName, asc);
 }
 
-ConditionConstraint ConditionConstraint::groupBy(const QString& fieldName) {
+ConditionConstraint ConditionConstraint::groupBy(const QString& fieldName, const QString& tbName) {
     return ConditionConstraint(
-        "",
         QVariantList() << fieldName,
         TypeGroupBy
-    );
+    ).groupBySave(fieldName, tbName);
 }
 
-void ConditionConstraint::combine(const QString& fieldPrefix) {
+void ConditionConstraint::combine() {
     switch (d->conditionType) {
     case TypeLimit:
-        combineLimit(fieldPrefix);
+        combineLimit();
         break;
     case TypeOrderBy:
-        combineOrderBy(fieldPrefix);
+        combineOrderBy();
         break;
     case TypeGroupBy:
-        combineGroupBy(fieldPrefix);
+        combineGroupBy();
         break;
     case TypeHaving:
         break;
@@ -54,7 +50,7 @@ void ConditionConstraint::combine(const QString& fieldPrefix) {
     }
 }
 
-void ConditionConstraint::combineLimit(const QString& fieldPrefix) {
+void ConditionConstraint::combineLimit() {
     if (d->values.size() == 1) {
         d->combineStr = "limit ?";
     } else if (d->values.size() == 2) {
@@ -62,18 +58,18 @@ void ConditionConstraint::combineLimit(const QString& fieldPrefix) {
     }
 }
 
-void ConditionConstraint::combineOrderBy(const QString& fieldPrefix) {
+void ConditionConstraint::combineOrderBy() {
     d->combineStr = "order by ";
-    for (const auto& v : d->values) {
-        d->combineStr.append(fieldPrefix).append(v.toString()).append(',');
+    for (int i = 0; i < d->fields.size(); i++) {
+        d->combineStr.append(d->getField(i)).append(',');
     }
     d->combineStr.chop(1);
 }
 
-void ConditionConstraint::combineGroupBy(const QString& fieldPrefix) {
+void ConditionConstraint::combineGroupBy() {
     d->combineStr = "group by ";
-    for (const auto& v : d->values) {
-        d->combineStr.append(fieldPrefix).append(v.toString()).append(',');
+    for (int i = 0; i < d->fields.size(); i++) {
+        d->combineStr.append(d->getField(i)).append(',');
     }
     d->combineStr.chop(1);
 }
@@ -85,16 +81,16 @@ QVariantList ConditionConstraint::getValues() {
     return EntityCondition::getValues();
 }
 
-ConditionConstraint& ConditionConstraint::orderByNext(const QString& fieldName, bool asc) {
+ConditionConstraint& ConditionConstraint::orderBySave(const QString& fieldName, const QString& tbName, bool asc) {
     QString tmpValue = fieldName;
     if (!asc) {
         tmpValue += " desc";
     }
-    d->values << tmpValue;
+    d->fields << FieldInfo {tmpValue, tbName};
     return *this;
 }
 
-ConditionConstraint& ConditionConstraint::groupByNext(const QString& fieldName) {
-    d->values << fieldName;
+ConditionConstraint& ConditionConstraint::groupBySave(const QString& fieldName, const QString& tbName) {
+    d->fields << FieldInfo { fieldName, tbName };
     return *this;
 }

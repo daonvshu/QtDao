@@ -142,6 +142,9 @@
     <ClInclude Include="src\builder\CountBuilder.h" />
     <ClInclude Include="src\builder\DeleteBuilder.h" />
     <ClInclude Include="src\builder\InsertBuilder.h" />
+    <ClInclude Include="src\builder\JoinBuilder.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="src\builder\SelectBuilder.h" />
     <ClInclude Include="src\builder\UpdateBuilder.h" />
     <ClInclude Include="src\condition\ConditionOperator.h" />
@@ -181,6 +184,7 @@
     <ClInclude Include="src\query\Delete.h" />
     <ClInclude Include="src\query\Insert.h" />
     <QtMoc Include="test\query\InsertTest.h" />
+    <ClInclude Include="src\query\Join.h" />
     <ClInclude Include="src\query\Select.h" />
     <QtMoc Include="test\query\SelectTest.h" />
     <ClInclude Include="src\query\Update.h" />

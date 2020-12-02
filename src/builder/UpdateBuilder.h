@@ -5,12 +5,13 @@
 #include "../query/Update.h"
 
 template<typename T>
-class UpdateBuilder : public BaseQueryBuilder<T, Update> {
+class UpdateBuilder : public BaseQueryBuilder {
 public:
+    QUERY_BUILDER_USE_THROWABLE(UpdateBuilder);
     QUERY_BUILDER_USE_SET(UpdateBuilder);
     QUERY_BUILDER_USE_FILTER(UpdateBuilder);
 
-    Update<T> build() override;
+    Update<T> build();
 };
 
 template<typename T>

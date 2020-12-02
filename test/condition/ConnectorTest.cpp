@@ -23,7 +23,7 @@ void ConnectorTest::conditionConnectortest() {
         sf.number.between(10, 20)
     );
     auto condition2 = condition;
-    condition.connect("a.");
+    condition.connect([&](const QString&) { return "a."; });
     QCOMPARE(condition.getConditionStr(),
         QString("a.id=? and (a.name=? or a.varianttype=? or a.number2=a.number2+?) and a.name in (?,?,?) and a.number between ? and ?")
     );
@@ -39,7 +39,7 @@ void ConnectorTest::constraintConditionTest() {
         _limit(10),
         _limit(20, 30)
     );
-    limit.connect("");
+    limit.connect();
     QCOMPARE(limit.getConditionStr(),
         QString("limit ? limit ?,?")
     );
@@ -56,7 +56,7 @@ void ConnectorTest::constraintConditionTest() {
         _orderBy(sf.id, sf.name, sf.number2),
         _orderBy(sf.id, sf.name.desc(), sf.number)
     );
-    groupOrderBy.connect("a.");
+    groupOrderBy.connect([&](const QString&) { return "a."; });
     QCOMPARE(groupOrderBy.getConditionStr(),
         QString("group by a.id group by a.name,a.number order by a.id order by a.id desc order by a.id,a.name,a.number2 order by a.id,a.name desc,a.number")
     );
@@ -71,7 +71,7 @@ void ConnectorTest::functionConnectorTest() {
         sf.number2 == 1,
         _fun("sum(case when %1=? then ? else ? end)").field(sf.number).value(3, "ee", "ff")
     );
-    connector.connect("a.");
+    connector.connect([&](const QString&) { return "a."; });
     QCOMPARE(connector.getConditionStr(), "a.number2=? and sum(case when a.number=? then ? else ? end)");
     QCOMPARE(connector.getValues(),
         QVariantList() << 1 << 3 << "ee" << "ff"

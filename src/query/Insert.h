@@ -130,7 +130,7 @@ inline bool Insert<E>::insert2(const QList<E>& entities) {
 
 template<typename E>
 inline bool Insert<E>::buildInsertBySetSqlStatement() {
-    connector.connect("");
+    connector.connect();
     QStringList usedFieldName = connector.getUsedFieldNames();
     QVariantList values = connector.getValues();
     Q_ASSERT(!values.isEmpty());

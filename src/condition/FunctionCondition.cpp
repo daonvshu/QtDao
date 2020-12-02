@@ -5,10 +5,14 @@ FunctionCondition::FunctionCondition(const QString& expressions) {
     d->expressions = expressions;
 }
 
-void FunctionCondition::combine(const QString& fieldPrefix) {
+void FunctionCondition::setFieldPrefixGetter(std::function<QString(const QString&)> prefixGetter) {
+    d->fieldPrefixGetter = prefixGetter;
+}
+
+void FunctionCondition::combine() {
     QString str = d->expressions;
-    for (const auto& f : d->fieldNames) {
-        str = str.arg(fieldPrefix + f);
+    for (int i = 0; i < d->fields.size(); i++) {
+        str = str.arg(d->getField(i));
     }
     d->combineStr = str;
 }

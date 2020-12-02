@@ -5,11 +5,12 @@
 #include "../query/Delete.h"
 
 template<typename T>
-class DeleteBuilder : public BaseQueryBuilder<T, Delete> {
+class DeleteBuilder : public BaseQueryBuilder {
 public:
+    QUERY_BUILDER_USE_THROWABLE(DeleteBuilder);
     QUERY_BUILDER_USE_FILTER(DeleteBuilder);
 
-    Delete<T> build() override;
+    Delete<T> build();
 };
 
 template<typename T>
