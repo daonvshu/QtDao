@@ -32,8 +32,9 @@ public:
     }
 
     void connect(std::function<QString(const QString&)> prefixGetter = nullptr);
+    void clear();
 
-    const QStringList& getUsedFieldNames();
+    const QList<FieldInfo>& getUsedFieldNames();
     const QString& getConditionStr();
     const QVariantList& getValues();
 

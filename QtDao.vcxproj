@@ -180,6 +180,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="src\query\BaseQuery.h" />
+    <ClInclude Include="test\sqliteentity\SqliteTest3.h" />
     <QtMoc Include="test\condition\ConnectorTest.h" />
     <ClInclude Include="src\query\Delete.h" />
     <ClInclude Include="src\query\Insert.h" />

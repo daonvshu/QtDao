@@ -274,6 +274,9 @@
     <ClInclude Include="src\query\Join.h">
       <Filter>Header Files\src\query</Filter>
     </ClInclude>
+    <ClInclude Include="test\sqliteentity\SqliteTest3.h">
+      <Filter>Header Files\test\sqliteentity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\dao_entity.xml">

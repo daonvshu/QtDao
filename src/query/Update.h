@@ -98,8 +98,8 @@ inline void Update<E>::buildUpdateBySetSqlStatement() {
     sql.append(setCondition.getConditionStr());
     value << setCondition.getValues();
 
-    filterCondition.connect();
-    if (!filterCondition.getConditionStr().isEmpty()) {
+    if (!filterCondition.isEmpty()) {
+        filterCondition.connect();
         sql.append(" where ").append(filterCondition.getConditionStr());
         value << filterCondition.getValues();
     }

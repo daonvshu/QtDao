@@ -8,8 +8,9 @@ template<typename... T>
 class JoinBuilder : BaseQueryBuilder {
 public:
     QUERY_BUILDER_USE_THROWABLE(JoinBuilder);
-    QUERY_BUILDER_USE_COLUMN(JoinBuilder);
     QUERY_BUILDER_USE_FILTER(JoinBuilder);
+    QUERY_BUILDER_USE_WITH(JoinBuilder);
+    QUERY_BUILDER_USE_COLUMN(JoinBuilder);
     QUERY_BUILDER_USE_ON(JoinBuilder);
 
     void filter() override;
@@ -36,26 +37,28 @@ public:
     Join<T...> build();
 
 private:
-    QString lastTableName;
-    typename Join<T...>::JoinType lastType;
-    typename Join<T...>::JoinData mainData;
-    QHash<QString, typename Join<T...>::JoinData> subJoinData;
+    QString lastTableName, mainTable;
+    JoinType lastType;
+    JoinData mainData;
+    QHash<QString, JoinData> subJoinData;
 };
 
 template<typename ...T>
 inline void JoinBuilder<T...>::filter() {
-
+    mainData.joinType = lastType;
+    mainData.filter = filterCondition;
 }
 
 template<typename ...T>
 inline void JoinBuilder<T...>::on() {
-
+    subJoinData.insert(lastTableName, JoinData{ lastType, onCondition });
+    onCondition.clear();
 }
 
 template<typename ...T>
 template<typename E>
 inline JoinBuilder<T...>& JoinBuilder<T...>::from() {
-    lastTableName = E::Info::getTableName();
+    mainTable = E::Info::getTableName();
     return *this;
 }
 
@@ -63,7 +66,7 @@ template<typename ...T>
 template<typename E>
 inline JoinBuilder<T...>& JoinBuilder<T...>::crossJoin() {
     lastTableName = E::Info::getTableName();
-    lastType = Join<T...>::CrossJoin;
+    lastType = CrossJoin;
     return *this;
 }
 
@@ -71,7 +74,7 @@ template<typename ...T>
 template<typename E>
 inline JoinBuilder<T...>& JoinBuilder<T...>::innerJoin() {
     lastTableName = E::Info::getTableName();
-    lastType = Join<T...>::InnerJoin;
+    lastType = InnerJoin;
     return *this;
 }
 
@@ -79,7 +82,7 @@ template<typename ...T>
 template<typename E>
 inline JoinBuilder<T...>& JoinBuilder<T...>::leftJoin() {
     lastTableName = E::Info::getTableName();
-    lastType = Join<T...>::LeftJoin;
+    lastType = LeftJoin;
     return *this;
 }
 
@@ -87,7 +90,7 @@ template<typename ...T>
 template<typename E>
 inline JoinBuilder<T...>& JoinBuilder<T...>::rightJoin() {
     lastTableName = E::Info::getTableName();
-    lastType = Join<T...>::RightJoin;
+    lastType = RightJoin;
     return *this;
 }
 
@@ -95,11 +98,17 @@ template<typename ...T>
 template<typename E>
 inline JoinBuilder<T...>& JoinBuilder<T...>::fullJoin() {
     lastTableName = E::Info::getTableName();
-    lastType = Join<T...>::FullJoin;
+    lastType = FullJoin;
     return *this;
 }
 
 template<typename ...T>
 inline Join<T...> JoinBuilder<T...>::build() {
-    return Join<T...>();
+    Join<T...> query;
+    query.mainData = mainData;
+    query.mainTable = mainTable;
+    query.subJoinData = subJoinData;
+    query.columnBind = columnBind;
+    query.constraintCondition = constraintCondition;
+    return query;
 }

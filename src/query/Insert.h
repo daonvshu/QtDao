@@ -131,7 +131,7 @@ inline bool Insert<E>::insert2(const QList<E>& entities) {
 template<typename E>
 inline bool Insert<E>::buildInsertBySetSqlStatement() {
     connector.connect();
-    QStringList usedFieldName = connector.getUsedFieldNames();
+    auto usedFieldName = connector.getUsedFieldNames();
     QVariantList values = connector.getValues();
     Q_ASSERT(!values.isEmpty());
     bool operateBatch = values.at(0).type() == QMetaType::QVariantList;
@@ -143,11 +143,11 @@ inline bool Insert<E>::buildInsertBySetSqlStatement() {
     bool hasPre = false;
     for (int i = 0; i < usedFieldName.size(); ) {
         auto field = usedFieldName.at(i);
-        if (!info.isAutoIncrement(field)) {
+        if (!info.isAutoIncrement(field.name)) {
             if (hasPre) {
                 sql.append(",");
             }
-            sql.append(field);
+            sql.append(field.name);
             hasPre = true;
             i++;
         } else {

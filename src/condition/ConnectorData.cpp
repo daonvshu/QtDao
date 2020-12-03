@@ -94,7 +94,7 @@ Connector::Connector(const char* connectOperator) {
     d->connectOperator = connectOperator;
 }
 
-const QStringList& Connector::getUsedFieldNames() {
+const QList<FieldInfo>& Connector::getUsedFieldNames() {
     return d->usedFieldList;
 }
 
@@ -113,6 +113,10 @@ bool Connector::isEmpty() {
 void Connector::appendConnector() {
     if (d->connectOperator.isEmpty()) {
         d->conditionStr.append(' ');
+        return;
+    }
+    if (d->connectOperator == ',') {
+        d->conditionStr.append(d->connectOperator);
         return;
     }
     d->conditionStr.append(' ').append(d->connectOperator).append(' ');
@@ -155,7 +159,7 @@ void Connector::connect(std::function<QString(const QString&)> prefixGetter) {
                 auto constraint = &item.constraint;
                 constraint->setFieldPrefixGetter(prefixGetter);
                 constraint->combine();
-                d->usedFieldList.append(constraint->d->getUsedFields());
+                //d->usedFieldList.append(constraint->d->getUsedFields());    //not use
                 d->conditionStr.append(constraint->d->combineStr);
                 d->values.append(constraint->getValues());
             }
@@ -173,15 +177,21 @@ void Connector::connect(std::function<QString(const QString&)> prefixGetter) {
         case TypeField:
             {
                 auto field = item.field;
-                d->usedFieldList.append(field.name);
+                QString fieldName;
                 if (prefixGetter != nullptr) {
-                    d->conditionStr.append(prefixGetter(field.bindTable) + field.name);
+                    fieldName = prefixGetter(field.bindTable) + field.name;
                 } else {
-                    d->conditionStr.append(field.name);
+                    fieldName = field.name;
                 }
+                d->conditionStr.append(fieldName);
+                d->usedFieldList.append(field);
             }
             break;
         }
 
     }
+}
+
+void Connector::clear() {
+    d->conditions.clear();
 }

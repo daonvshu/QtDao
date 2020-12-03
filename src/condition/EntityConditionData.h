@@ -47,11 +47,7 @@ struct EntityConditionData : public QSharedData {
         return fieldPrefixGetter(fields.at(index).bindTable) + fields.at(index).name;
     }
 
-    QStringList getUsedFields() {
-        QStringList names;
-        for (const auto& field : fields) {
-            names << field.name;
-        }
-        return names;
+    virtual QList<FieldInfo> getUsedFields() {
+        return fields;
     }
 };

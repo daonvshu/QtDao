@@ -55,4 +55,6 @@ void DeleteTest::cleanup() {
 }
 
 void DeleteTest::cleanupTestCase() {
+    ConnectionPool::release();
+    DbLoader::getClient().dropDatabase();
 }

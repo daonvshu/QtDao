@@ -25,4 +25,11 @@
       <field>number2</field>
     </index>
   </tb>
+  <tb name="SqliteTest3">
+    <item name="id" type="long" default="-1" constraints="primary key" autoincrement="true" />
+    <item name="tbi1" type="long" default="-1" note="绑定到SqliteTest1 id"/>
+    <item name="tbi2" type="long" default="-1" note="绑定到SqliteTest2 id"/>
+    <item name="name" type="text"/>
+    <item name="size" type="int"/>
+  </tb>
 </dao>

@@ -22,7 +22,7 @@ class ConnectorItem;
 class ConnectorData : public QSharedData {
 public:
     QList<ConnectorItem> conditions;
-    QStringList usedFieldList;
+    QList<FieldInfo> usedFieldList;
     QString conditionStr;
     QVariantList values;
     QString connectOperator;

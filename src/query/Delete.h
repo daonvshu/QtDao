@@ -83,8 +83,8 @@ inline void Delete<E>::buildDeleteByFilterSqlStatement() {
     sql.append(info.getTableName());
 
     QVariantList value;
-    filterCondition.connect();
-    if (!filterCondition.getConditionStr().isEmpty()) {
+    if (!filterCondition.isEmpty()) {
+        filterCondition.connect();
         sql.append(" where ").append(filterCondition.getConditionStr());
         value << filterCondition.getValues();
     }
