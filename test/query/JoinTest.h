@@ -13,6 +13,7 @@ private slots:
     void initTestCase();
 
     void testJoinTable();
+    void testJoinSelfTable();
 
     void cleanup();
 

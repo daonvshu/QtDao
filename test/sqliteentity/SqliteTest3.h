@@ -175,6 +175,6 @@ public:
     //set temp data
     inline void __putExtra(const QString& key, const QVariant& extra) {this->__extra.insert(key, extra);}
     //get function select result, like get "as" field result
-    inline QVariant __getExtra(const QString& key) {return __extra.value(key);}
+    inline QVariant __getExtra(const QString& key) const {return __extra.value(key);}
 };
 typedef QList<SqliteTest3> SqliteTest3List;

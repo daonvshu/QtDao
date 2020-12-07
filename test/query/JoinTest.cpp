@@ -20,7 +20,7 @@ void JoinTest::initTestCase() {
     data2 << SqliteTest2(0, "joker", 9999, -1, 30);
     data2 << SqliteTest2(0, "bob", 10, 0, "abc");
     data2 << SqliteTest2(0, "func", 10, -2, 50);
-    data2 << SqliteTest2(0, "func", 50, 0, 50);
+    data2 << SqliteTest2(0, "func", 50, 10, 50);
     dao::_insert<SqliteTest2>().build().insert2(data2);
 
     data3 << SqliteTest3(0, 3, 2, "bob group", 2);
@@ -57,6 +57,43 @@ void JoinTest::testJoinTable() {
             <<"func" << "abc" << "func group1" << 10 << 10
             <<"func" << "abc" << "func group2" << 10 << 50
     );
+
+    auto result2 = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+        .column(sf2.name, _fun("sum(%1) as sumn").field(sf1.number))
+        .from<SqliteTest1>()
+        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
+        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .with(_groupBy(sf2.name), _orderBy(sf2.name))
+        .build().list();
+    data.clear();
+    for (const auto& r : result2) {
+        data << std::get<1>(r).getName();
+        data << std::get<0>(r).__getExtra("sumn");
+    }
+    QCOMPARE(
+        data,
+        QVariantList() << "bob" << 12 << "func" << 20 << "joker" << 26
+    );
+
+    auto result3 = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+        .from<SqliteTest1>()
+        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
+        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id, sf3.name == "func group1")
+        .build().list();
+    data.clear();
+    for (const auto& r : result3) {
+        data << SqliteTest1::Tool::getValueWithoutAutoIncrement(std::get<0>(r));
+        data << SqliteTest2::Tool::getValueWithoutAutoIncrement(std::get<1>(r));
+        data << SqliteTest3::Tool::getValueWithoutAutoIncrement(std::get<2>(r));
+    }
+    QCOMPARE(
+        data,
+        QVariantList() << 1 << "abc" << 10 << "" << "func" << 10 << -2 << 50 << 1 << 3 << "func group1" << 6
+    );
+}
+
+void JoinTest::testJoinSelfTable() {
+    
 }
 
 void JoinTest::cleanup() {

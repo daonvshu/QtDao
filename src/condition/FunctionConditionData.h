@@ -11,11 +11,11 @@ struct FunctionConditionData : public EntityConditionData {
 
     QList<FieldInfo> getUsedFields() override {
         int asIndex = expressions.indexOf(" as ");
-        if (asIndex == -1) {
+        if (asIndex != -1) {
             if (fields.isEmpty()) {
-                return QList<FieldInfo>() << FieldInfo{ expressions.mid(asIndex), "" }; //empty tablename
+                return QList<FieldInfo>() << FieldInfo{ expressions.mid(asIndex + 4), "" }; //empty tablename
             } else {
-                return QList<FieldInfo>() << FieldInfo{ expressions.mid(asIndex), fields.at(0).bindTable }; //use first bind table
+                return QList<FieldInfo>() << FieldInfo{ expressions.mid(asIndex + 4), fields.at(0).bindTable }; //use first bind table
             }
         }
         if (fields.isEmpty()) {
