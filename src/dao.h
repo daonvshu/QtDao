@@ -48,4 +48,29 @@ public:
     static JoinBuilder<T...> _join() {
         return JoinBuilder<T...>();
     }
+
+    template<typename E>
+    class self : public E {
+    public:
+        struct Info : E::Info {
+            enum {
+                Attach = E::Info::Attach + 1
+            };
+
+            static QString getSourceName() {
+                return E::Info::getSourceName();
+            }
+
+            static QString getTableName() {
+                return getSourceName() + "_" + QString::number(Attach);
+            }
+        };
+
+        class Fields : public E::Fields {
+        public:
+            Fields() {
+                reset(Info::getTableName());
+            }
+        };
+    };
 };

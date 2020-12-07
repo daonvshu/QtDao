@@ -38,20 +38,37 @@ public:
     { }
 
 public:
-    struct Fields {
+    class Fields {
+    public:
         EntityField<qint64> id = EntityField<qint64>("id", "ts_sqlitetest1");
         EntityField<QString> name = EntityField<QString>("name", "ts_sqlitetest1");
         EntityField<qreal> number = EntityField<qreal>("number", "ts_sqlitetest1");
         EntityField<QByteArray> hex = EntityField<QByteArray>("hex", "ts_sqlitetest1");
+
+    protected:
+        void reset(const QString& tbName) {
+            id = EntityField<qint64>("id", tbName);
+            name = EntityField<QString>("name", tbName);
+            number = EntityField<qreal>("number", tbName);
+            hex = EntityField<QByteArray>("hex", tbName);
+        }
     };
 
     struct Info {
+        enum {
+            Attach = 1
+        };
+
         static int fieldSize() {
             return 4;
         }
 
         static QString getTableName() {
             return QStringLiteral("ts_sqlitetest1");
+        }
+
+        static QString getSourceName() {
+            return getTableName();
         }
 
         static QStringList getFields() {

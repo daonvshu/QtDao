@@ -18,7 +18,7 @@ void JoinTest::initTestCase() {
     dao::_insert<SqliteTest1>().build().insert2(data1);
 
     data2 << SqliteTest2(0, "joker", 9999, -1, 30);
-    data2 << SqliteTest2(0, "bob", 10, 0, "abc");
+    data2 << SqliteTest2(0, "bob", 10, 9999, "abc");
     data2 << SqliteTest2(0, "func", 10, -2, 50);
     data2 << SqliteTest2(0, "func", 50, 10, 50);
     dao::_insert<SqliteTest2>().build().insert2(data2);
@@ -93,7 +93,42 @@ void JoinTest::testJoinTable() {
 }
 
 void JoinTest::testJoinSelfTable() {
-    
+    class SqliteTest2Tmp : public dao::self<SqliteTest2> {};
+    SqliteTest2::Fields sf1;
+    SqliteTest2Tmp::Fields sf2;
+    auto result = dao::_join<SqliteTest2, SqliteTest2Tmp>()
+        .column(sf1.name, sf2.name)
+        .from<SqliteTest2>()
+        .innerJoin<SqliteTest2Tmp>().on(sf2.number2 == sf1.number)
+        .build().list();
+    QVariantList data;
+    for (const auto& r : result) {
+        data << std::get<0>(r).getName();
+        data << std::get<1>(r).getName();
+    }
+    QCOMPARE(
+        data,
+        QVariantList() << "bob" << "func" << "func" << "func" << "joker" << "bob"
+    );
+
+    class SqliteTest2Tmp2 : public dao::self<SqliteTest2Tmp> {};
+    SqliteTest2Tmp2::Fields sf3;
+    auto result2 = dao::_join<SqliteTest2, SqliteTest2Tmp, SqliteTest2Tmp2>()
+        .column(sf1.name, sf2.name, sf3.name)
+        .from<SqliteTest2>()
+        .innerJoin<SqliteTest2Tmp>().on(sf2.number2 == sf1.number)
+        .innerJoin<SqliteTest2Tmp2>().on(sf3.number2 == sf2.number)
+        .build().list();
+    data.clear();
+    for (const auto& r : result2) {
+        data << std::get<0>(r).getName();
+        data << std::get<1>(r).getName();
+        data << std::get<2>(r).getName();
+    }
+    QCOMPARE(
+        data,
+        QVariantList() << "joker" << "bob" << "func"
+    );
 }
 
 void JoinTest::cleanup() {

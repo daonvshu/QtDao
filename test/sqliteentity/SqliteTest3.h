@@ -42,21 +42,39 @@ public:
     { }
 
 public:
-    struct Fields {
+    class Fields {
+    public:
         EntityField<qint64> id = EntityField<qint64>("id", "ts_sqlitetest3");
         EntityField<qint64> tbi1 = EntityField<qint64>("tbi1", "ts_sqlitetest3");
         EntityField<qint64> tbi2 = EntityField<qint64>("tbi2", "ts_sqlitetest3");
         EntityField<QString> name = EntityField<QString>("name", "ts_sqlitetest3");
         EntityField<int> size = EntityField<int>("size", "ts_sqlitetest3");
+
+    protected:
+        void reset(const QString& tbName) {
+            id = EntityField<qint64>("id", tbName);
+            tbi1 = EntityField<qint64>("tbi1", tbName);
+            tbi2 = EntityField<qint64>("tbi2", tbName);
+            name = EntityField<QString>("name", tbName);
+            size = EntityField<int>("size", tbName);
+        }
     };
 
     struct Info {
+        enum {
+            Attach = 1
+        };
+
         static int fieldSize() {
             return 5;
         }
 
         static QString getTableName() {
             return QStringLiteral("ts_sqlitetest3");
+        }
+
+        static QString getSourceName() {
+            return getTableName();
         }
 
         static QStringList getFields() {

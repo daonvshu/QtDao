@@ -58,7 +58,7 @@ inline void JoinBuilder<T...>::on() {
 template<typename ...T>
 template<typename E>
 inline JoinBuilder<T...>& JoinBuilder<T...>::from() {
-    mainTable = E::Info::getTableName();
+    mainTable = E::Info::getSourceName();
     return *this;
 }
 

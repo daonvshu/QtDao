@@ -29,9 +29,9 @@ private:
     QHash<QString, JoinData> subJoinData;
     Connector columnBind, constraintCondition;
     QList<FieldInfo> usedColumns;
-    QStringList sequenceTableNames;
 
     QHash<QString, QString> tableOrder;
+    QList<QPair<QString, QString>> sequenceTableNames;
 
     friend class JoinBuilder<E...>;
 
@@ -41,9 +41,7 @@ private:
     void setTableOrder();
     QString getAllEntityField();
     QString getJoinTypeName(JoinType type);
-    QStringList getSequenceTbName();
-
-    QVector<QStringList> groupUsedColumnsByTableOrder();
+    void initSequenceTbName();
 
     void resultBind(std::tuple<E...>& result, QSqlQuery& query);
 };
@@ -85,16 +83,16 @@ inline void Join<E...>::buildJoinSqlStatement() {
     sql.append(mainTable).append(' ').append(prefixGetter(mainTable));
     sql.chop(1);
 
-    sequenceTableNames = getSequenceTbName();
+    initSequenceTbName();
     for (const auto& tb : sequenceTableNames) {
-        if (tb == mainTable) {
+        if (tb.first == mainTable) {
             continue;
         }
-        auto joinData = subJoinData.value(tb);
+        auto joinData = subJoinData.value(tb.first);
         sql.append(' ');
         sql.append(getJoinTypeName(joinData.joinType));
         sql.append(' ');
-        sql.append(tb).append(' ').append(prefixGetter(tb));
+        sql.append(tb.second).append(' ').append(prefixGetter(tb.first));
         sql.chop(1);
         if (!joinData.filter.isEmpty()) {
             joinData.filter.connect(prefixGetter);
@@ -137,20 +135,20 @@ struct JoinEUnpackHelper<E, T...> : JoinEUnpackHelper<T...> {
         return str;
     }
 
-    static QStringList getTbName() {
+    static QList<QPair<QString, QString>> getTbName() {
         typename E::Info info;
-        QStringList names;
-        names.append(info.getTableName());
+        QList<QPair<QString, QString>> names;
+        names << qMakePair(info.getTableName(), info.getSourceName());
         names.append(JoinEUnpackHelper<T...>::getTbName());
         return names;
     }
 
     template<int I, typename... K>
-    static void bindTupleValue(std::tuple<K...>& result, const QVector<QList<std::tuple<QString, QVariant>>>& values) {
+    static void bindTupleValue(std::tuple<K...>& result, const QVector<QList<QPair<QString, QVariant>>>& values) {
         typename E::Tool tool;
         const auto& value = values.at(I);
         for (const auto& v : value) {
-            tool.bindValue(std::get<I>(result), std::get<0>(v), std::get<1>(v));
+            tool.bindValue(std::get<I>(result), v.first, v.second);
         }
         JoinEUnpackHelper<T...>::bindTupleValue<I + 1, K...>(result, values);
     }
@@ -158,10 +156,10 @@ struct JoinEUnpackHelper<E, T...> : JoinEUnpackHelper<T...> {
 template<> struct JoinEUnpackHelper<> {
     static void setOrder(QHash<QString, QString>& orderMap, int i) {}
     static QString readEntityFields(const QHash<QString, QString>& orderMap, QList<FieldInfo>& fieldInfo) { return QString(); }
-    static QStringList getTbName() { return QStringList(); }
+    static QList<QPair<QString, QString>> getTbName() { return QList<QPair<QString, QString>>(); }
 
     template<int I, typename... K>
-    static void bindTupleValue(std::tuple<K...>& result, const QVector<QList<std::tuple<QString, QVariant>>>& values) {}
+    static void bindTupleValue(std::tuple<K...>& result, const QVector<QList<QPair<QString, QVariant>>>& values) {}
 };
 
 template<typename ...E>
@@ -195,29 +193,23 @@ inline QString Join<E...>::getJoinTypeName(JoinType type) {
 }
 
 template<typename ...E>
-inline QStringList Join<E...>::getSequenceTbName() {
-    return JoinEUnpackHelper<E...>::getTbName();
-}
-
-template<typename ...E>
-inline QVector<QStringList> Join<E...>::groupUsedColumnsByTableOrder() {
-    QVector<QStringList> results;
-    auto tables = getSequenceTbName();
-    results.resize(tables.size());
-    for (const auto& col : usedColumns) {
-        int colIndex = qMax(0, tables.indexOf(col.bindTable));
-        results[colIndex].append(col.name);
-    }
-    return results;
+inline void Join<E...>::initSequenceTbName() {
+    sequenceTableNames = JoinEUnpackHelper<E...>::getTbName();
 }
 
 template<typename ...E>
 inline void Join<E...>::resultBind(std::tuple<E...>& result, QSqlQuery& query) {
-    QVector<QList<std::tuple<QString, QVariant>>> resultValues(sequenceTableNames.size());
+    QVector<QList<QPair<QString, QVariant>>> resultValues(sequenceTableNames.size());
     for (int i = 0; i < usedColumns.size(); i++) {
         auto tb = usedColumns.at(i).bindTable;
-        int tbIndex = sequenceTableNames.indexOf(tb);
-        resultValues[tbIndex] << std::make_tuple(usedColumns.at(i).name, query.value(i));
+        int tbIndex = 0;
+        for (int j = 0; j < sequenceTableNames.size(); j++) {
+            if (tb == sequenceTableNames.at(j).first) {
+                tbIndex = j;
+                break;
+            }
+        }
+        resultValues[tbIndex] << qMakePair(usedColumns.at(i).name, query.value(i));
     }
     JoinEUnpackHelper<E...>::bindTupleValue<0, E...>(result, resultValues);
 }
