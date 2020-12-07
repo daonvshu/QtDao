@@ -28,7 +28,7 @@
   - [x] function query result getter
 - **query condition**
   - [x] operator field <-> value
-  - [ ] operator field <-> field
+  - [x] operator field <-> field
   - [ ] ~~operator field <-> function~~
   - [ ] ~~operator function <-> function~~
   - [ ] operator field <-> query results
@@ -39,14 +39,14 @@
     - [ ] insert in query results
   - query operator
     - [x] unique/list query
-    - [ ] multi-table query
+    - [ ] ~~multi-table query~~
     - [ ] union query
     - [x] inner/left/right/full join
     - [ ] recursive query
     - [ ] query in query/join results
     - [x] original query
     - [x] custom function query
-    - [ ] custom statement query
+    - [ ] ~~custom statement query~~
   - count operator
     - [x] condition count
     - [ ] multi-table count
