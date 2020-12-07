@@ -41,7 +41,7 @@
     - [x] unique/list query
     - [ ] multi-table query
     - [ ] union query
-    - [ ] inner/left/right/full join
+    - [x] inner/left/right/full join
     - [ ] recursive query
     - [ ] query in query/join results
     - [x] original query
