@@ -16,6 +16,7 @@ private slots:
     void rawSelectTest();
     void funtionSelectTest();
     void countSelectTest();
+    void selectFromSelectTest();
 
     void cleanup();
 

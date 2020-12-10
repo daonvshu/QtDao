@@ -2,6 +2,8 @@
 
 #include "SelectBuilder.h"
 
+#include "../macro/macro.h"
+
 template<typename T>
 class CountBuilder : SelectBuilder<T> {
 public:
@@ -11,6 +13,8 @@ public:
 
     QUERY_BUILDER_USE_THROWABLE(CountBuilder);
     QUERY_BUILDER_USE_FILTER(CountBuilder);
+
+    QUERY_BUILDER_USE_QUERY_FROM(CountBuilder);
     
     int count() {
         QList<T> data = build().list();

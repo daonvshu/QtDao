@@ -27,13 +27,13 @@ private:
     JoinData mainData;
     QString mainTable;
     QHash<QString, JoinData> subJoinData;
-    Connector columnBind, constraintCondition;
     QList<FieldInfo> usedColumns;
 
     QHash<QString, QString> tableOrder;
     QList<QPair<QString, QString>> sequenceTableNames;
 
     friend class JoinBuilder<E...>;
+    Join(bool throwable, JoinBuilder<E...>* builder) : BaseQuery(throwable, builder) {}
 
 private:
     void buildJoinSqlStatement();
@@ -71,11 +71,11 @@ inline void Join<E...>::buildJoinSqlStatement() {
         return tableOrder.value(tb);
     };
     usedColumns.clear();
-    if (!columnBind.isEmpty()) {
-        columnBind.connect(prefixGetter);
-        sql.append(columnBind.getConditionStr());
-        values.append(columnBind.getValues());
-        usedColumns = columnBind.getUsedFieldNames();
+    if (!builder->columnBind.isEmpty()) {
+        builder->columnBind.connect(prefixGetter);
+        sql.append(builder->columnBind.getConditionStr());
+        values.append(builder->columnBind.getValues());
+        usedColumns = builder->columnBind.getUsedFieldNames();
     } else {
         sql.append(getAllEntityField());
     }
@@ -105,11 +105,11 @@ inline void Join<E...>::buildJoinSqlStatement() {
         sql.append(" where ").append(mainData.filter.getConditionStr());
         values.append(mainData.filter.getValues());
     }
-    if (!constraintCondition.isEmpty()) {
-        constraintCondition.connect(prefixGetter);
+    if (!builder->constraintCondition.isEmpty()) {
+        builder->constraintCondition.connect(prefixGetter);
         sql.append(' ');
-        sql.append(constraintCondition.getConditionStr());
-        values.append(constraintCondition.getValues());
+        sql.append(builder->constraintCondition.getConditionStr());
+        values.append(builder->constraintCondition.getValues());
     }
     setSqlQueryStatement(sql, values);
 }

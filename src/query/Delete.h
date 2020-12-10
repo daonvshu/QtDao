@@ -2,6 +2,8 @@
 
 #include "BaseQuery.h"
 
+#include "../macro/macro.h"
+
 template<typename T>
 class DeleteBuilder;
 
@@ -39,9 +41,7 @@ private:
     void buildDeleteEntitiesCondition(const QList<E>& entities);
 
 private:
-    Connector filterCondition;
-
-    friend class DeleteBuilder<E>;
+    BASE_QUERY_CONSTRUCTOR_DECLARE(Delete);
 };
 
 template<typename E>
@@ -83,10 +83,10 @@ inline void Delete<E>::buildDeleteByFilterSqlStatement() {
     sql.append(info.getTableName());
 
     QVariantList value;
-    if (!filterCondition.isEmpty()) {
-        filterCondition.connect();
-        sql.append(" where ").append(filterCondition.getConditionStr());
-        value << filterCondition.getValues();
+    if (!builder->filterCondition.isEmpty()) {
+        builder->filterCondition.connect();
+        sql.append(" where ").append(builder->filterCondition.getConditionStr());
+        value << builder->filterCondition.getValues();
     }
     setSqlQueryStatement(sql, value);
 }
@@ -105,6 +105,6 @@ inline void Delete<E>::buildDeleteEntitiesCondition(const QList<E>& entities) {
         }
         auto condition = 
             EntityCondition(FieldInfo{ field, info.getTableName() }, "=", fieldValue.size() == 1 ? fieldValue.at(0) : fieldValue);
-        filterCondition.append(condition);
+        builder->filterCondition.append(condition);
     }
 }

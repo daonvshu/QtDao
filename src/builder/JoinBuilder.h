@@ -2,10 +2,12 @@
 
 #include "BaseQueryBuilder.h"
 
+#include "../macro/macro.h" 
+
 #include "../query/Join.h"
 
 template<typename... T>
-class JoinBuilder : BaseQueryBuilder {
+class JoinBuilder : public BaseQueryBuilder {
 public:
     QUERY_BUILDER_USE_THROWABLE(JoinBuilder);
     QUERY_BUILDER_USE_FILTER(JoinBuilder);
@@ -104,11 +106,9 @@ inline JoinBuilder<T...>& JoinBuilder<T...>::fullJoin() {
 
 template<typename ...T>
 inline Join<T...> JoinBuilder<T...>::build() {
-    Join<T...> query;
+    Join<T...> query(setThrowable, this);
     query.mainData = mainData;
     query.mainTable = mainTable;
     query.subJoinData = subJoinData;
-    query.columnBind = columnBind;
-    query.constraintCondition = constraintCondition;
     return query;
 }

@@ -2,6 +2,8 @@
 
 #include "BaseQueryBuilder.h"
 
+#include "../macro/macro.h"
+
 #include "../query/Insert.h"
 
 template<typename T>
@@ -10,13 +12,5 @@ public:
     QUERY_BUILDER_USE_THROWABLE(InsertBuilder);
     QUERY_BUILDER_USE_SET(InsertBuilder);
 
-    Insert<T> build();
+    QUERY_BUILDER_BUILDER_DECLARE(Insert);
 };
-
-template<typename T>
-inline Insert<T> InsertBuilder<T>::build() {
-    Insert<T> query;
-    query.connector = setCondition;
-    query.queryThrowable = setThrowable;
-    return query;
-}

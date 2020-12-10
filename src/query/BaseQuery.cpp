@@ -3,9 +3,26 @@
 #include "../ConnectionPool.h"
 #include "../DbExceptionHandler.h"
 
-BaseQuery::BaseQuery()
-    : queryThrowable(false)
+BaseQuery::BaseQuery(bool throwable, BaseQueryBuilder* builder)
+    : queryThrowable(throwable)
+    , builder(builder)
 {
+    if (builder != nullptr) {
+        this->builder = new BaseQueryBuilder(*builder);
+    }
+}
+
+BaseQuery::BaseQuery(const BaseQuery& other) {
+    this->statement = other.statement;
+    this->values = other.values;
+    this->builder = new BaseQueryBuilder(*other.builder);
+}
+
+BaseQuery::~BaseQuery() {
+    if (builder != nullptr) {
+        delete builder;
+        builder = nullptr;
+    }
 }
 
 void BaseQuery::exec(const std::function<void(QSqlQuery&)>& solveQueryResult) {
@@ -77,9 +94,6 @@ QSqlQuery BaseQuery::queryPrimitiveThrowable(const QString& statement, const QVa
 void BaseQuery::setSqlQueryStatement(const QString& statement, const QVariantList& values) {
     this->statement = statement;
     this->values = values;
-    if (getQueryLogPrinter()) {
-        getQueryLogPrinter()(statement, values);
-    }
 }
 
 QSqlQuery BaseQuery::getQuery() {
@@ -87,6 +101,9 @@ QSqlQuery BaseQuery::getQuery() {
     QSqlQuery query(db);
     query.prepare(statement);
     bindQueryValues(query);
+    if (getQueryLogPrinter()) {
+        getQueryLogPrinter()(statement, values);
+    }
     return query;
 }
 

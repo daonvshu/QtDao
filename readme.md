@@ -31,34 +31,35 @@
   - [x] operator field <-> field
   - [ ] ~~operator field <-> function~~
   - [ ] ~~operator function <-> function~~
-  - [ ] operator field <-> query results
+  - [ ] ~~operator field <-> select results~~(move to function query)
 - **query executor**
   - insert operator
     - [x] object(s) insert
     - [x] part field value insert
-    - [ ] insert in query results
-  - query operator
-    - [x] unique/list query
-    - [ ] ~~multi-table query~~
-    - [ ] union query
+    - [ ] insert in select results
+  - select operator
+    - [x] unique/list select
+    - [ ] ~~multi-table select~~
+    - [ ] union select
     - [x] inner/left/right/full join
-    - [ ] recursive query
-    - [ ] query in query/join results
+    - [ ] recursive select
+    - [x] select in select
+    - [ ] join result <-> select result 
     - [x] original query
     - [x] custom function query
     - [ ] ~~custom statement query~~
   - count operator
     - [x] condition count
-    - [ ] multi-table count
-    - [ ] count in query result
+    - [ ] ~~multi-table count~~
+    - [x] count in select result
   - update operator
     - [x] set by where update
     - [x] object(s) update
-    - [ ] update with query results
+    - [ ] update with select results
   - delete operator
     - [x] condition delete
     - [x] object(s) delete
-    - [ ] delete by query results
+    - [ ] delete by select results
   - [ ] transaction
 - **connection pool**
   - [x] connection reuse

@@ -2,6 +2,8 @@
 
 #include "BaseQuery.h"
 
+#include "../macro/macro.h"
+
 template<typename T>
 class UpdateBuilder;
 
@@ -39,9 +41,7 @@ private:
     void bindUpdateEntitiesCondition(const QList<E>& entities);
 
 private:
-    Connector setCondition, filterCondition;
-
-    friend class UpdateBuilder<E>;
+    BASE_QUERY_CONSTRUCTOR_DECLARE(Update);
 };
 
 template<typename E>
@@ -92,24 +92,24 @@ inline void Update<E>::buildUpdateBySetSqlStatement() {
 
     QVariantList value;
 
-    setCondition.connect();
-    Q_ASSERT(!setCondition.getConditionStr().isEmpty());
+    builder->setCondition.connect();
+    Q_ASSERT(!builder->setCondition.getConditionStr().isEmpty());
     sql.append(" set ");
-    sql.append(setCondition.getConditionStr());
-    value << setCondition.getValues();
+    sql.append(builder->setCondition.getConditionStr());
+    value << builder->setCondition.getValues();
 
-    if (!filterCondition.isEmpty()) {
-        filterCondition.connect();
-        sql.append(" where ").append(filterCondition.getConditionStr());
-        value << filterCondition.getValues();
+    if (!builder->filterCondition.isEmpty()) {
+        builder->filterCondition.connect();
+        sql.append(" where ").append(builder->filterCondition.getConditionStr());
+        value << builder->filterCondition.getValues();
     }
     setSqlQueryStatement(sql, value);
 }
 
 template<typename E>
 inline void Update<E>::bindUpdateEntitiesCondition(const QList<E>& entities) {
-    Q_ASSERT(setCondition.isEmpty());
-    Q_ASSERT(filterCondition.isEmpty());
+    Q_ASSERT(builder->setCondition.isEmpty());
+    Q_ASSERT(builder->filterCondition.isEmpty());
     typename E::Info info;
     typename E::Tool tool;
     QStringList primaryKeys = info.getPrimaryKeys();
@@ -123,9 +123,9 @@ inline void Update<E>::bindUpdateEntitiesCondition(const QList<E>& entities) {
         auto condition = 
             EntityCondition(FieldInfo{ field, info.getTableName() }, "=", fieldValue.size() == 1 ? fieldValue.at(0) : fieldValue);
         if (primaryKeys.contains(field)) {
-            filterCondition.append(condition);
+            builder->filterCondition.append(condition);
         } else {
-            setCondition.append(condition);
+            builder->setCondition.append(condition);
         }
     }
 }

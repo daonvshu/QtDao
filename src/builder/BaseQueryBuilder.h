@@ -5,26 +5,13 @@
 #include "../condition/FunctionCondition.h"
 #include "../condition/EntityField.h"
 
-#include "../query/BaseQuery.h"
+#include "../query/Select.h"
 
-#define QUERY_BUILDER_USE(T, name) \
-template<typename... Args>\
-T& name(const Args&... args) {\
-    __super::name(args...);\
-    return *this;\
-}
-
-#define QUERY_BUILDER_USE_THROWABLE(T)\
-T& throwable() {\
-    setThrowable = true;\
-    return *this;\
-}
-
-#define QUERY_BUILDER_USE_SET(T)          QUERY_BUILDER_USE(T, set)
-#define QUERY_BUILDER_USE_FILTER(T)     QUERY_BUILDER_USE(T, filter)
-#define QUERY_BUILDER_USE_WITH(T)       QUERY_BUILDER_USE(T, with)
-#define QUERY_BUILDER_USE_COLUMN(T)   QUERY_BUILDER_USE(T, column)
-#define QUERY_BUILDER_USE_ON(T)            QUERY_BUILDER_USE(T, on)
+template<typename T> class Insert;
+template<typename T> class Select;
+template<typename T> class Update;
+template<typename T> class Delete;
+template<typename... E> class Join;
 
 class BaseQueryBuilder {
 public:
@@ -36,6 +23,8 @@ public:
         , onCondition("and")
     {
     }
+
+    ~BaseQueryBuilder() {}
 
 protected:
     template<typename... Args>
@@ -71,9 +60,21 @@ protected:
     virtual void column() {}
     virtual void on() {}
 
+    template<typename T>
+    void from(Select<T>& select);
+
 protected:
     bool setThrowable;
     Connector setCondition, columnBind, filterCondition, constraintCondition, onCondition;
+    QString fromSelectStatement;
+    QVariantList fromSelectValues;
+    QString fromSelectAs;
+
+    template<typename T> friend class Insert;
+    template<typename T> friend class Select;
+    template<typename T> friend class Update;
+    template<typename T> friend class Delete;
+    template<typename... E> friend class Join;
 };
 
 template<typename ...Args>
@@ -128,4 +129,16 @@ template<typename Col, typename ...Args>
 inline void BaseQueryBuilder::column(const Col& function, const Args & ...args) {
     columnBind.appendCol(function);
     column(args...);
+}
+
+template<typename T>
+inline void BaseQueryBuilder::from(Select<T>& select) {
+    select.buildFilterSqlStatement();
+    fromSelectStatement = select.statement;
+    fromSelectValues = select.values;
+    if (select.builder->fromSelectAs.isEmpty()) {
+        fromSelectAs = "sel_" + T::Info::getTableName();
+    } else {
+        fromSelectAs = "sel_" + select.builder->fromSelectAs;
+    }
 }

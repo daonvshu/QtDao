@@ -128,6 +128,34 @@ void SelectTest::countSelectTest() {
     QCOMPARE(count, 4);
 }
 
+void SelectTest::selectFromSelectTest() {
+    SqliteTest1::Fields sf1;
+    auto select = dao::_select<SqliteTest1>().filter(sf1.number > 10).build();
+    try {
+        auto select1 = dao::_select<SqliteTest1>()
+            .from(select)
+            .filter(sf1.name.like("%b%"))
+            .throwable()
+            .build();
+
+        auto result = select1.unique();
+        QCOMPARE(
+            SqliteTest1::Tool::getValueWithoutAutoIncrement(result),
+            SqliteTest1::Tool::getValueWithoutAutoIncrement(data1.at(2))
+        );
+
+        auto count = dao::_count<SqliteTest1>()
+            .from(select1)
+            .throwable()
+            .filter(sf1.number != 0)
+            .count();
+        QCOMPARE(count, 1);
+    }
+    catch (DaoException& e) {
+        QFAIL(("test select from select fail!" + e.reason).toUtf8());
+    }
+}
+
 void SelectTest::cleanup() {
 
 }

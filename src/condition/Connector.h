@@ -11,9 +11,9 @@ class Connector {
 public:
     Connector();
     Connector(const char* connectOperator);
+    Connector(const Connector& other);
 
-    ~Connector() {
-    }
+    ~Connector();
 
     template<typename C, typename... T>
     Connector& append(const C& condition, const T&... conditions) {

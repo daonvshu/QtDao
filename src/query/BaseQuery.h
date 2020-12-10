@@ -7,13 +7,13 @@
 #include <functional>
 
 #include "../condition/Connector.h"
-
-template<typename T, template<typename> class Query>
-class QueryBuilder;
+#include "../builder/BaseQueryBuilder.h"
 
 class BaseQuery {
 public:
-    BaseQuery();
+    BaseQuery(bool throwable = false, BaseQueryBuilder* builder = nullptr);
+    BaseQuery(const BaseQuery& other);
+    ~BaseQuery();
 
     static void queryPrimitive(
         const QString& statement, 
@@ -46,15 +46,15 @@ protected:
     void printException(const QString& reason);
     void printWarning(const QString& info);
 
-private:
+protected:
     QString statement;
     QVariantList values;
+    BaseQueryBuilder* builder;
 
 protected:
     bool queryThrowable;
 
-    template<typename T, template<typename> class Query>
-    friend class QueryBuilder;
+    friend class BaseQueryBuilder;
 
 private:
     QSqlQuery getQuery();

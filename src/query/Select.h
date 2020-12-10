@@ -2,6 +2,8 @@
 
 #include "BaseQuery.h"
 
+#include "../macro/macro.h"
+
 template<typename T>
 class SelectBuilder;
 
@@ -38,10 +40,9 @@ protected:
 protected:
     QString getBindColumns(QVariantList& values);
 
-private:
-    Connector columnBind, filterCondition, constraintCondition;
+    BASE_QUERY_CONSTRUCTOR_DECLARE(Select);
 
-    friend class SelectBuilder<E>;
+    friend class BaseQueryBuilder;
 };
 
 template<typename E>
@@ -112,29 +113,34 @@ inline void Select<E>::buildFilterSqlStatement() {
     QVariantList values;
 
     sql = sql.arg(getBindColumns(values));
-    sql = sql.arg(info.getTableName());
-
-    if (!filterCondition.isEmpty()) {
-        filterCondition.connect();
-        sql.append(" where ").append(filterCondition.getConditionStr());
-        values.append(filterCondition.getValues());
+    if (builder->fromSelectStatement.isEmpty()) {
+        sql = sql.arg(info.getTableName());
+    } else {
+        sql = sql.arg('(' + builder->fromSelectStatement + ") as " + builder->fromSelectAs);
+        values.append(builder->fromSelectValues);
     }
 
-    if (!constraintCondition.isEmpty()) {
-        constraintCondition.connect();
-        sql.append(" ").append(constraintCondition.getConditionStr());
-        values.append(constraintCondition.getValues());
+    if (!builder->filterCondition.isEmpty()) {
+        builder->filterCondition.connect();
+        sql.append(" where ").append(builder->filterCondition.getConditionStr());
+        values.append(builder->filterCondition.getValues());
+    }
+
+    if (!builder->constraintCondition.isEmpty()) {
+        builder->constraintCondition.connect();
+        sql.append(" ").append(builder->constraintCondition.getConditionStr());
+        values.append(builder->constraintCondition.getValues());
     }
 
     setSqlQueryStatement(sql, values);
 }
 template<typename E>
 inline QString Select<E>::getBindColumns(QVariantList& values) {
-    if (columnBind.isEmpty()) {
+    if (builder->columnBind.isEmpty()) {
         return "*";
     }
-    columnBind.connect();
-    values << columnBind.getValues();
-    return columnBind.getConditionStr();
+    builder->columnBind.connect();
+    values << builder->columnBind.getValues();
+    return builder->columnBind.getConditionStr();
 }
 

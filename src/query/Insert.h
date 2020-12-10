@@ -2,6 +2,8 @@
 
 #include "BaseQuery.h"
 
+#include "../macro/macro.h"
+
 template<typename T>
 class InsertBuilder;
 
@@ -45,9 +47,7 @@ private:
     QString buildInsertObjects2SqlStatement(int valueSize);
 
 private:
-    Connector connector;
-
-    friend class InsertBuilder<E>;
+    BASE_QUERY_CONSTRUCTOR_DECLARE(Insert);
 };
 
 template<typename E>
@@ -130,9 +130,9 @@ inline bool Insert<E>::insert2(const QList<E>& entities) {
 
 template<typename E>
 inline bool Insert<E>::buildInsertBySetSqlStatement() {
-    connector.connect();
-    auto usedFieldName = connector.getUsedFieldNames();
-    QVariantList values = connector.getValues();
+    builder->setCondition.connect();
+    auto usedFieldName = builder->setCondition.getUsedFieldNames();
+    QVariantList values = builder->setCondition.getValues();
     Q_ASSERT(!values.isEmpty());
     bool operateBatch = values.at(0).type() == QMetaType::QVariantList;
 

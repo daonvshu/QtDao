@@ -2,6 +2,8 @@
 
 #include "BaseQueryBuilder.h"
 
+#include "../macro/macro.h"
+
 #include "../query/Update.h"
 
 template<typename T>
@@ -11,14 +13,5 @@ public:
     QUERY_BUILDER_USE_SET(UpdateBuilder);
     QUERY_BUILDER_USE_FILTER(UpdateBuilder);
 
-    Update<T> build();
+    QUERY_BUILDER_BUILDER_DECLARE(Update);
 };
-
-template<typename T>
-inline Update<T> UpdateBuilder<T>::build() {
-    Update<T> query;
-    query.setCondition = setCondition;
-    query.filterCondition = filterCondition;
-    query.queryThrowable = setThrowable;
-    return query;
-}

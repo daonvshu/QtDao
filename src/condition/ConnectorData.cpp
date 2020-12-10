@@ -94,6 +94,12 @@ Connector::Connector(const char* connectOperator) {
     d->connectOperator = connectOperator;
 }
 
+Connector::Connector(const Connector& other) : d(other.d) {
+}
+
+Connector::~Connector() {
+}
+
 const QList<FieldInfo>& Connector::getUsedFieldNames() {
     return d->usedFieldList;
 }
@@ -125,6 +131,9 @@ void Connector::appendConnector() {
 
 void Connector::connect(std::function<QString(const QString&)> prefixGetter) {
     QMutableListIterator<ConnectorItem> it(d->conditions);
+    d->usedFieldList.clear();
+    d->conditionStr = "";
+    d->values.clear();
     while (it.hasNext()) {
         if (it.hasPrevious()) {
             appendConnector();

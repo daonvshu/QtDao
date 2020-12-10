@@ -75,6 +75,9 @@
     <Filter Include="Header Files\src\builder">
       <UniqueIdentifier>{6bf656e7-de92-4d41-bcc0-e6c37bb88fee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\src\macro">
+      <UniqueIdentifier>{bbfbfa4d-8ef8-4745-8e00-dffff760df15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -84,15 +87,6 @@
       <Filter>Source Files\src</Filter>
     </ClCompile>
     <ClCompile Include="src\DaoUtil.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EntityConditions.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EntityField.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EntityFunction.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
     <ClCompile Include="src\DbLoader.cpp">
@@ -164,18 +158,6 @@
       <Filter>Header Files\src</Filter>
     </ClInclude>
     <ClInclude Include="src\DaoUtil.h">
-      <Filter>Header Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EntityConditionInterface.h">
-      <Filter>Header Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EntityConditions.h">
-      <Filter>Header Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EntityField.h">
-      <Filter>Header Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EntityFunction.h">
       <Filter>Header Files\src</Filter>
     </ClInclude>
     <ClInclude Include="src\DbConfig.h">
@@ -276,6 +258,9 @@
     </ClInclude>
     <ClInclude Include="test\sqliteentity\SqliteTest3.h">
       <Filter>Header Files\test\sqliteentity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\macro\macro.h">
+      <Filter>Header Files\src\macro</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

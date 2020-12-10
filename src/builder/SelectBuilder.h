@@ -2,6 +2,8 @@
 
 #include "BaseQueryBuilder.h"
 
+#include "../macro/macro.h"
+
 #include "../query/Select.h"
 
 template<typename T>
@@ -12,15 +14,7 @@ public:
     QUERY_BUILDER_USE_WITH(SelectBuilder);
     QUERY_BUILDER_USE_COLUMN(SelectBuilder);
 
-    Select<T> build();
-};
+    QUERY_BUILDER_USE_QUERY_FROM(SelectBuilder);
 
-template<typename T>
-inline Select<T> SelectBuilder<T>::build() {
-    Select<T> query;
-    query.columnBind = columnBind;
-    query.filterCondition = filterCondition;
-    query.constraintCondition = constraintCondition;
-    query.queryThrowable = setThrowable;
-    return query;
-}
+    QUERY_BUILDER_BUILDER_DECLARE(Select);
+};

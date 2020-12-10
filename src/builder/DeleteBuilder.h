@@ -2,6 +2,8 @@
 
 #include "BaseQueryBuilder.h"
 
+#include "../macro/macro.h"
+
 #include "../query/Delete.h"
 
 template<typename T>
@@ -10,13 +12,5 @@ public:
     QUERY_BUILDER_USE_THROWABLE(DeleteBuilder);
     QUERY_BUILDER_USE_FILTER(DeleteBuilder);
 
-    Delete<T> build();
+    QUERY_BUILDER_BUILDER_DECLARE(Delete);
 };
-
-template<typename T>
-inline Delete<T> DeleteBuilder<T>::build() {
-    Delete<T> query;
-    query.filterCondition = filterCondition;
-    query.queryThrowable = setThrowable;
-    return query;
-}
