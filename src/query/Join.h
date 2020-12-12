@@ -16,6 +16,10 @@ enum JoinType {
 struct JoinData {
     JoinType joinType;
     Connector filter;
+    //select from select
+    QString fromSelectStatement;
+    QVariantList fromSelectValues;
+    QString fromSelectAs;
 };
 
 template<typename... E>
@@ -44,6 +48,8 @@ private:
     void initSequenceTbName();
 
     void resultBind(std::tuple<E...>& result, QSqlQuery& query);
+
+    friend class BaseQueryBuilder;
 };
 
 template<typename ...E>
@@ -62,7 +68,7 @@ inline QList<std::tuple<E...>> Join<E...>::list() {
 
 template<typename ...E>
 inline void Join<E...>::buildJoinSqlStatement() {
-    //select (columns) from (main) a (jointype) (joinfilter) (mainfilter) (main constrain)
+    //select (columns) from (main/select/join) a (jointype) (table/select/join) (joinfilter) (mainfilter) (main constrain)
     QString sql = "select ";
     QVariantList values;
 
@@ -80,7 +86,13 @@ inline void Join<E...>::buildJoinSqlStatement() {
         sql.append(getAllEntityField());
     }
     sql.append(" from ");
-    sql.append(mainTable).append(' ').append(prefixGetter(mainTable));
+    if (mainData.fromSelectStatement.isEmpty()) {
+        sql.append(mainTable);
+    } else {
+        sql.append("(").append(mainData.fromSelectStatement).append(")");
+        values.append(mainData.fromSelectValues);
+    }
+    sql.append(' ').append(prefixGetter(mainTable));
     sql.chop(1);
 
     initSequenceTbName();
@@ -92,7 +104,13 @@ inline void Join<E...>::buildJoinSqlStatement() {
         sql.append(' ');
         sql.append(getJoinTypeName(joinData.joinType));
         sql.append(' ');
-        sql.append(tb.second).append(' ').append(prefixGetter(tb.first));
+        if (joinData.fromSelectStatement.isEmpty()) {
+            sql.append(tb.second);
+        } else {
+            sql.append("(").append(joinData.fromSelectStatement).append(")");
+            values.append(joinData.fromSelectValues);
+        }
+        sql.append(' ').append(prefixGetter(tb.first));
         sql.chop(1);
         if (!joinData.filter.isEmpty()) {
             joinData.filter.connect(prefixGetter);

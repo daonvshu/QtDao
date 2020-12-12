@@ -6,6 +6,7 @@
 #include "../condition/EntityField.h"
 
 #include "../query/Select.h"
+#include "../query/Join.h"
 
 template<typename T> class Insert;
 template<typename T> class Select;
@@ -62,6 +63,11 @@ protected:
 
     template<typename T>
     void from(Select<T>& select);
+
+    template<typename... T>
+    void from(Join<T...>& join);
+
+    void fromDataClear();
 
 protected:
     bool setThrowable;
@@ -141,4 +147,22 @@ inline void BaseQueryBuilder::from(Select<T>& select) {
     } else {
         fromSelectAs = "sel_" + select.builder->fromSelectAs;
     }
+}
+
+template<typename ...T>
+inline void BaseQueryBuilder::from(Join<T...>& join) {
+    join.buildJoinSqlStatement();
+    fromSelectStatement = join.statement;
+    fromSelectValues = join.values;
+    if (join.builder->fromSelectAs.isEmpty()) {
+        fromSelectAs = "join_" + join.mainTable;
+    } else {
+        fromSelectAs = "join_" + join.builder->fromSelectAs;
+    }
+}
+
+inline void BaseQueryBuilder::fromDataClear() {
+    fromSelectStatement.clear();
+    fromSelectValues.clear();
+    fromSelectAs.clear();
 }

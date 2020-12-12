@@ -14,6 +14,9 @@ private slots:
 
     void testJoinTable();
     void testJoinSelfTable();
+    void testSelectFromJoin();
+    void testJoinFromSelect();
+    void testJoinOnSelect();
 
     void cleanup();
 

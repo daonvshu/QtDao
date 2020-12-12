@@ -1,0 +1,11 @@
+********* Start testing of JoinTest *********
+Config: Using QtTest library 5.12.3, Qt 5.12.3 (i386-little_endian-ilp32 shared (dynamic) debug build; by MSVC 2017)
+PASS   : JoinTest::initTestCase()
+PASS   : JoinTest::testJoinTable()
+PASS   : JoinTest::testJoinSelfTable()
+PASS   : JoinTest::testSelectFromJoin()
+PASS   : JoinTest::testJoinFromSelect()
+PASS   : JoinTest::testJoinOnSelect()
+PASS   : JoinTest::cleanupTestCase()
+Totals: 7 passed, 0 failed, 0 skipped, 0 blacklisted, 42ms
+********* Finished testing of JoinTest *********

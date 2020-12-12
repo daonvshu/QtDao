@@ -19,9 +19,29 @@ T& throwable() {\
 #define QUERY_BUILDER_USE_COLUMN(T)         QUERY_BUILDER_USE(T, column)
 #define QUERY_BUILDER_USE_ON(T)             QUERY_BUILDER_USE(T, on)
 
-#define QUERY_BUILDER_USE_QUERY_FROM(B)\
+#define QUERY_BUILDER_USE_QUERY_FROM_SELECT(B)\
 B& from(Select<T>& select){\
     __super::from(select);\
+    return *this;\
+}
+
+#define QUERY_BUILDER_USE_QUERY_FROM_SELECT2(B)\
+template<typename K>\
+B& from(Select<K>& select){\
+    __super::from(select);\
+    return *this;\
+}
+
+#define QUERY_BUILDER_USE_QUERY_FROM_JOIN(B)\
+B& from(Join<T...>& join) {\
+    __super::from(join);\
+    return *this;\
+}
+
+#define QUERY_BUILDER_USE_QUERY_FROM_JOIN2(B)\
+template<typename... K>\
+B& from(Join<K...>& join) {\
+    __super::from(join);\
     return *this;\
 }
 

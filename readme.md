@@ -37,6 +37,7 @@
     - [x] object(s) insert
     - [x] part field value insert
     - [ ] insert in select results
+    - [ ] insert or update
   - select operator
     - [x] unique/list select
     - [ ] ~~multi-table select~~
@@ -44,7 +45,7 @@
     - [x] inner/left/right/full join
     - [ ] recursive select
     - [x] select in select
-    - [ ] join result <-> select result 
+    - [x] join result <-> select result 
     - [x] original query
     - [x] custom function query
     - [ ] ~~custom statement query~~

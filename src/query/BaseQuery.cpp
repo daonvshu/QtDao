@@ -16,6 +16,7 @@ BaseQuery::BaseQuery(const BaseQuery& other) {
     this->statement = other.statement;
     this->values = other.values;
     this->builder = new BaseQueryBuilder(*other.builder);
+    this->queryThrowable = other.queryThrowable;
 }
 
 BaseQuery::~BaseQuery() {

@@ -131,6 +131,88 @@ void JoinTest::testJoinSelfTable() {
     );
 }
 
+void JoinTest::testSelectFromJoin() {
+    SqliteTest1::Fields sf1;
+    SqliteTest2::Fields sf2;
+    SqliteTest3::Fields sf3;
+
+    auto join1 = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+        .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
+        .from<SqliteTest1>()
+        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
+        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .build();
+
+    try {
+        auto count1 = dao::_count<SqliteTest1>()
+            .from(join1)
+            .filter(sf1.number > 10)
+            .count();
+        QCOMPARE(count1, 3);
+    }
+    catch (DaoException& e) {
+        QFAIL(("test join in select fail: " + e.reason).toUtf8());
+    }
+}
+
+void JoinTest::testJoinFromSelect() {
+    SqliteTest1::Fields sf1;
+    SqliteTest2::Fields sf2;
+    SqliteTest3::Fields sf3;
+
+    auto select = dao::_select<SqliteTest1>().filter(sf1.name == "client").build();
+
+    auto join = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+        .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
+        .from(select)
+        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
+        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .build().list();
+
+    QVariantList data;
+    for (const auto& r : join) {
+        auto s1 = std::get<0>(r);
+        auto s2 = std::get<1>(r);
+        auto s3 = std::get<2>(r);
+        data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
+    }
+    QCOMPARE(
+        data,
+        QVariantList()
+        << "joker" << "client" << "client group1" << 14 << 9999
+        << "joker" << "client" << "client group2" << 12 << 9999
+    );
+}
+
+void JoinTest::testJoinOnSelect() {
+    SqliteTest1::Fields sf1;
+    SqliteTest2::Fields sf2;
+    SqliteTest3::Fields sf3;
+
+    auto select = dao::_select<SqliteTest2>().filter(sf2.name == "joker").build();
+
+    auto join = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+        .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
+        .from<SqliteTest1>()
+        .innerJoin(select).on(sf2.id == sf3.tbi2)
+        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .build().list();
+
+    QVariantList data;
+    for (const auto& r : join) {
+        auto s1 = std::get<0>(r);
+        auto s2 = std::get<1>(r);
+        auto s3 = std::get<2>(r);
+        data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
+    }
+    QCOMPARE(
+        data,
+        QVariantList()
+        << "joker" << "client" << "client group1" << 14 << 9999
+        << "joker" << "client" << "client group2" << 12 << 9999
+    );
+}
+
 void JoinTest::cleanup() {
 }
 

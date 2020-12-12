@@ -14,7 +14,8 @@ public:
     QUERY_BUILDER_USE_THROWABLE(CountBuilder);
     QUERY_BUILDER_USE_FILTER(CountBuilder);
 
-    QUERY_BUILDER_USE_QUERY_FROM(CountBuilder);
+    QUERY_BUILDER_USE_QUERY_FROM_SELECT(CountBuilder);
+    QUERY_BUILDER_USE_QUERY_FROM_JOIN2(CountBuilder);
     
     int count() {
         QList<T> data = build().list();

@@ -21,20 +21,38 @@ public:
     template<typename E>
     JoinBuilder<T...>& from();
 
+    template<typename K>
+    JoinBuilder<T...>& from(Select<K>& select);
+
     template<typename E>
     JoinBuilder<T...>& crossJoin();
+
+    template<typename K>
+    JoinBuilder<T...>& crossJoin(Select<K>& select);
 
     template<typename E>
     JoinBuilder<T...>& innerJoin();
 
+    template<typename K>
+    JoinBuilder<T...>& innerJoin(Select<K>& select);
+
     template<typename E>
     JoinBuilder<T...>& leftJoin();
+
+    template<typename K>
+    JoinBuilder<T...>& leftJoin(Select<K>& select);
 
     template<typename E>
     JoinBuilder<T...>& rightJoin();
 
+    template<typename K>
+    JoinBuilder<T...>& rightJoin(Select<K>& select);
+
     template<typename E>
     JoinBuilder<T...>& fullJoin();
+
+    template<typename K>
+    JoinBuilder<T...>& fullJoin(Select<K>& select);
 
     Join<T...> build();
 
@@ -53,14 +71,33 @@ inline void JoinBuilder<T...>::filter() {
 
 template<typename ...T>
 inline void JoinBuilder<T...>::on() {
-    subJoinData.insert(lastTableName, JoinData{ lastType, onCondition });
+    JoinData data;
+    data.joinType = lastType;
+    data.filter = onCondition;
+    data.fromSelectStatement = fromSelectStatement;
+    data.fromSelectValues = fromSelectValues;
+    data.fromSelectAs = fromSelectAs;
+    subJoinData.insert(lastTableName, data);
     onCondition.clear();
+    fromDataClear();
 }
 
 template<typename ...T>
 template<typename E>
 inline JoinBuilder<T...>& JoinBuilder<T...>::from() {
     mainTable = E::Info::getSourceName();
+    return *this;
+}
+
+template<typename ...T>
+template<typename K>
+inline JoinBuilder<T...>& JoinBuilder<T...>::from(Select<K>& select) {
+    __super::from(select);
+    mainTable = K::Info::getSourceName();
+    mainData.fromSelectStatement = fromSelectStatement;
+    mainData.fromSelectValues = fromSelectValues;
+    mainData.fromSelectAs = fromSelectAs;
+    fromDataClear();
     return *this;
 }
 
@@ -73,10 +110,26 @@ inline JoinBuilder<T...>& JoinBuilder<T...>::crossJoin() {
 }
 
 template<typename ...T>
+template<typename K>
+inline JoinBuilder<T...>& JoinBuilder<T...>::crossJoin(Select<K>& select) {
+    __super::from(select);
+    crossJoin<K>();
+    return *this;
+}
+
+template<typename ...T>
 template<typename E>
 inline JoinBuilder<T...>& JoinBuilder<T...>::innerJoin() {
     lastTableName = E::Info::getTableName();
     lastType = InnerJoin;
+    return *this;
+}
+
+template<typename ...T>
+template<typename K>
+inline JoinBuilder<T...>& JoinBuilder<T...>::innerJoin(Select<K>& select) {
+    __super::from(select);
+    innerJoin<K>();
     return *this;
 }
 
@@ -89,6 +142,14 @@ inline JoinBuilder<T...>& JoinBuilder<T...>::leftJoin() {
 }
 
 template<typename ...T>
+template<typename K>
+inline JoinBuilder<T...>& JoinBuilder<T...>::leftJoin(Select<K>& select) {
+    __super::from(select);
+    leftJoin<K>();
+    return *this;
+}
+
+template<typename ...T>
 template<typename E>
 inline JoinBuilder<T...>& JoinBuilder<T...>::rightJoin() {
     lastTableName = E::Info::getTableName();
@@ -97,10 +158,26 @@ inline JoinBuilder<T...>& JoinBuilder<T...>::rightJoin() {
 }
 
 template<typename ...T>
+template<typename K>
+inline JoinBuilder<T...>& JoinBuilder<T...>::rightJoin(Select<K>& select) {
+    __super::from(select);
+    rightJoin<K>();
+    return *this;
+}
+
+template<typename ...T>
 template<typename E>
 inline JoinBuilder<T...>& JoinBuilder<T...>::fullJoin() {
     lastTableName = E::Info::getTableName();
     lastType = FullJoin;
+    return *this;
+}
+
+template<typename ...T>
+template<typename K>
+inline JoinBuilder<T...>& JoinBuilder<T...>::fullJoin(Select<K>& select) {
+    __super::from(select);
+    fullJoin<K>();
     return *this;
 }
 

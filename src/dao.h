@@ -73,4 +73,29 @@ public:
             }
         };
     };
+
+    template<typename E>
+    class empty : public E {
+    public:
+        struct Info : E::Info {
+            enum {
+                Attach = E::Info::Attach + 1
+            };
+
+            static QString getSourceName() {
+                return QString();
+            }
+
+            static QString getTableName() {
+                return QString();
+            }
+        };
+
+        class Fields : public E::Fields {
+        public:
+            Fields() {
+                reset(Info::getTableName());
+            }
+        };
+    };
 };
