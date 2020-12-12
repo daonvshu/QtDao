@@ -8,10 +8,10 @@
 #include "../query/Select.h"
 #include "../query/Join.h"
 
-template<typename T> class Insert;
-template<typename T> class Select;
-template<typename T> class Update;
-template<typename T> class Delete;
+template<typename E> class Insert;
+template<typename E> class Select;
+template<typename E> class Update;
+template<typename E> class Delete;
 template<typename... E> class Join;
 
 class BaseQueryBuilder {
@@ -61,25 +61,36 @@ protected:
     virtual void column() {}
     virtual void on() {}
 
-    template<typename T>
-    void from(Select<T>& select);
+    template<typename E>
+    void from(Select<E>& select);
 
-    template<typename... T>
-    void from(Join<T...>& join);
+    template<typename... E>
+    void from(Join<E...>& join);
 
     void fromDataClear();
+
+    template<typename E>
+    void unionSelect(Select<E>& select, bool unionAll = false);
+
+    template<typename... E>
+    void unionSelect(Join<E...>& join, bool unionAll = false);
 
 protected:
     bool setThrowable;
     Connector setCondition, columnBind, filterCondition, constraintCondition, onCondition;
+    //from sub select
     QString fromSelectStatement;
     QVariantList fromSelectValues;
     QString fromSelectAs;
+    //union
+    QString unionSelectStatement;
+    QVariantList unionSelectValues;
+    bool unionAll;
 
-    template<typename T> friend class Insert;
-    template<typename T> friend class Select;
-    template<typename T> friend class Update;
-    template<typename T> friend class Delete;
+    template<typename E> friend class Insert;
+    template<typename E> friend class Select;
+    template<typename E> friend class Update;
+    template<typename E> friend class Delete;
     template<typename... E> friend class Join;
 };
 
@@ -137,20 +148,20 @@ inline void BaseQueryBuilder::column(const Col& function, const Args & ...args) 
     column(args...);
 }
 
-template<typename T>
-inline void BaseQueryBuilder::from(Select<T>& select) {
+template<typename E>
+inline void BaseQueryBuilder::from(Select<E>& select) {
     select.buildFilterSqlStatement();
     fromSelectStatement = select.statement;
     fromSelectValues = select.values;
     if (select.builder->fromSelectAs.isEmpty()) {
-        fromSelectAs = "sel_" + T::Info::getTableName();
+        fromSelectAs = "sel_" + E::Info::getTableName();
     } else {
         fromSelectAs = "sel_" + select.builder->fromSelectAs;
     }
 }
 
-template<typename ...T>
-inline void BaseQueryBuilder::from(Join<T...>& join) {
+template<typename ...E>
+inline void BaseQueryBuilder::from(Join<E...>& join) {
     join.buildJoinSqlStatement();
     fromSelectStatement = join.statement;
     fromSelectValues = join.values;
@@ -165,4 +176,20 @@ inline void BaseQueryBuilder::fromDataClear() {
     fromSelectStatement.clear();
     fromSelectValues.clear();
     fromSelectAs.clear();
+}
+
+template<typename E>
+inline void BaseQueryBuilder::unionSelect(Select<E>& select, bool unionAll) {
+    select.buildFilterSqlStatement();
+    unionSelectStatement = select.statement;
+    unionSelectValues = select.values;
+    this->unionAll = unionAll;
+}
+
+template<typename ...E>
+inline void BaseQueryBuilder::unionSelect(Join<E...>& join, bool unionAll) {
+    join.buildJoinSqlStatement();
+    unionSelectStatement = join.statement;
+    unionSelectValues = join.values;
+    this->unionAll = unionAll;
 }

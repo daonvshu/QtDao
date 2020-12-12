@@ -2,7 +2,7 @@
 
 #include "BaseQuery.h"
 
-template<typename... T>
+template<typename... E>
 class JoinBuilder;
 
 enum JoinType {

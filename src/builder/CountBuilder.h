@@ -4,8 +4,8 @@
 
 #include "../macro/macro.h"
 
-template<typename T>
-class CountBuilder : SelectBuilder<T> {
+template<typename E>
+class CountBuilder : SelectBuilder<E> {
 public:
     CountBuilder() {
         column(FunctionCondition("count(*) as __selectcount"));
@@ -18,7 +18,7 @@ public:
     QUERY_BUILDER_USE_QUERY_FROM_JOIN2(CountBuilder);
     
     int count() {
-        QList<T> data = build().list();
+        QList<E> data = build().list();
         if (data.isEmpty()) {
             return 0;
         } 

@@ -6,7 +6,7 @@
 
 #include "../query/Insert.h"
 
-template<typename T>
+template<typename E>
 class InsertBuilder : public BaseQueryBuilder {
 public:
     QUERY_BUILDER_USE_THROWABLE(InsertBuilder);

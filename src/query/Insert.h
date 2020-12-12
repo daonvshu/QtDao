@@ -4,7 +4,7 @@
 
 #include "../macro/macro.h"
 
-template<typename T>
+template<typename E>
 class InsertBuilder;
 
 template<typename E>

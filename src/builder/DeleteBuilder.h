@@ -6,7 +6,7 @@
 
 #include "../query/Delete.h"
 
-template<typename T>
+template<typename E>
 class DeleteBuilder : public BaseQueryBuilder {
 public:
     QUERY_BUILDER_USE_THROWABLE(DeleteBuilder);

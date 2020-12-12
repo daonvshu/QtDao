@@ -6,7 +6,7 @@
 
 #include "../query/Update.h"
 
-template<typename T>
+template<typename E>
 class UpdateBuilder : public BaseQueryBuilder {
 public:
     QUERY_BUILDER_USE_THROWABLE(UpdateBuilder);

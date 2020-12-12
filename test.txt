@@ -7,5 +7,5 @@ PASS   : JoinTest::testSelectFromJoin()
 PASS   : JoinTest::testJoinFromSelect()
 PASS   : JoinTest::testJoinOnSelect()
 PASS   : JoinTest::cleanupTestCase()
-Totals: 7 passed, 0 failed, 0 skipped, 0 blacklisted, 42ms
+Totals: 7 passed, 0 failed, 0 skipped, 0 blacklisted, 44ms
 ********* Finished testing of JoinTest *********

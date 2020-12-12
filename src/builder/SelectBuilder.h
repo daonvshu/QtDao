@@ -6,7 +6,7 @@
 
 #include "../query/Select.h"
 
-template<typename T>
+template<typename E>
 class SelectBuilder : public BaseQueryBuilder {
 public:
     QUERY_BUILDER_USE_THROWABLE(SelectBuilder);
@@ -16,6 +16,9 @@ public:
 
     QUERY_BUILDER_USE_QUERY_FROM_SELECT(SelectBuilder);
     QUERY_BUILDER_USE_QUERY_FROM_JOIN2(SelectBuilder);
+
+    QUERY_BUILDER_USE_QUERY_UNION_SELECT(SelectBuilder);
+    QUERY_BUILDER_USE_QUERY_UNION_JOIN(SelectBuilder);
 
     QUERY_BUILDER_BUILDER_DECLARE(Select);
 };
