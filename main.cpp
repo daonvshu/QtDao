@@ -33,6 +33,7 @@ void setColor() {
             }
             std::cout << line.toStdString();
         }
+        std::cout << std::endl;
         file.close();
     }
 }
@@ -40,20 +41,21 @@ void setColor() {
 template<typename... Arg> struct TestRunner;
 template<typename T, typename... Arg>
 struct TestRunner<T, Arg...> : TestRunner<Arg...> {
-    static void run(int argc, char* argv[]) {
+    static int run(int argc, char* argv[]) {
         T t;
-        QTest::qExec(&t, argc, argv);
+        int result = QTest::qExec(&t, argc, argv);
         setColor();
-        __super::run(argc, argv);
+        result += __super::run(argc, argv);
+        return result;
     }
 };
-template<> struct TestRunner<> { static void run(int argc, char* argv[]) {} };
+template<> struct TestRunner<> { static int run(int argc, char* argv[]) { return 0; } };
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    TestRunner<
+    int result = TestRunner<
         ConnectionPoolTest,
         BaseQueryTest,
         DbLoaderTest,
@@ -64,6 +66,10 @@ int main(int argc, char *argv[])
         DeleteTest,
         JoinTest
     >::run(argc, argv);
+    if (result != 0) {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
+        std::cout << "Not all tests are successful!" << std::endl;
+    }
 
     return a.exec();
 }

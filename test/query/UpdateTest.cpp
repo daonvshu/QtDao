@@ -88,6 +88,7 @@ void UpdateTest::objectUpdateTest() {
 }
 
 void UpdateTest::cleanup() {
+    clearCacheAndPrintIfTestFail();
 }
 
 void UpdateTest::cleanupTestCase() {

@@ -108,6 +108,7 @@
     <ClCompile Include="src\DbLoader.cpp" />
     <ClCompile Include="src\qtdao.cpp" />
     <ClCompile Include="src\query\BaseQuery.cpp" />
+    <ClCompile Include="test\BaseTest.cpp" />
     <ClCompile Include="test\condition\ConnectorTest.cpp" />
     <ClCompile Include="test\ConnectionPoolTest.cpp" />
     <ClCompile Include="test\loader\DbLoaderTest.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="src\DbLoader.h" />
     <ClInclude Include="src\macro\macro.h" />
     <ClInclude Include="src\query\BaseQuery.h" />
+    <ClInclude Include="test\BaseTest.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest3.h" />
     <QtMoc Include="test\condition\ConnectorTest.h" />
     <ClInclude Include="src\query\Delete.h" />

@@ -213,7 +213,118 @@ void JoinTest::testJoinOnSelect() {
     );
 }
 
+void JoinTest::testSelectUnionJoin() {
+    SqliteTest1::Fields sf1;
+    SqliteTest2::Fields sf2;
+    SqliteTest3::Fields sf3;
+
+    auto join = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+        .column(sf1.name, sf2.number)
+        .from<SqliteTest1>()
+        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
+        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .build();
+
+    auto select = dao::_select<SqliteTest1>()
+        .column(sf1.name, sf1.number)
+        .filter(sf1.name == "client")
+        .unionSelect(join, true)
+        .build().list();
+
+    QVariantList results;
+    for (const auto& r : select) {
+        results << r.getName() << r.getNumber();
+    }
+    QCOMPARE(
+        results,
+        QVariantList() << "client" << 14
+            << "client" << 12
+            << "bob" << 10
+            << "client" << 9999
+            << "client" << 9999
+            << "abc" << 10
+            << "abc" << 50
+    );
+}
+
+void JoinTest::testJoinUnionSelect() {
+    SqliteTest1::Fields sf1;
+    SqliteTest2::Fields sf2;
+    SqliteTest3::Fields sf3;
+
+    auto select = dao::_select<SqliteTest1>()
+        .column(sf1.name, sf1.number)
+        .filter(sf1.name == "client")
+        .with(_orderBy(sf1.name, sf1.number))
+        .build();
+
+    auto join = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+        .column(sf1.name, sf2.number)
+        .from<SqliteTest1>()
+        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
+        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .unionSelect(select)
+        .build().list();
+
+    QVariantList results;
+    for (const auto& r : join) {
+        auto s1 = std::get<0>(r);
+        auto s2 = std::get<1>(r);
+        auto s3 = std::get<2>(r);
+        results << s1.getName() << s2.getNumber();
+    }
+    QCOMPARE(
+        results,
+        QVariantList()
+        << "abc" << 10
+        << "abc" << 50
+        << "bob" << 10
+        << "client" << 12
+        << "client" << 14
+        << "client" << 9999
+    );
+}
+
+void JoinTest::testJoinUnionJoin() {
+    SqliteTest1::Fields sf1;
+    SqliteTest2::Fields sf2;
+    SqliteTest3::Fields sf3;
+
+    auto join1 = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+        .column(sf1.name, sf2.number)
+        .from<SqliteTest1>()
+        .filter(sf1.name == "client")
+        .with(_orderBy(sf1.name, sf2.number))
+        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
+        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .build();
+
+    auto join2 = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+        .column(sf1.name, sf2.number)
+        .from<SqliteTest1>()
+        .filter(sf1.number >= 12)
+        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
+        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .unionSelect(join1)
+        .build().list();
+
+    QVariantList results;
+    for (const auto& r : join2) {
+        auto s1 = std::get<0>(r);
+        auto s2 = std::get<1>(r);
+        auto s3 = std::get<2>(r);
+        results << s1.getName() << s2.getNumber();
+    }
+    QCOMPARE(
+        results,
+        QVariantList()
+        << "bob" << 10
+        << "client" << 9999
+    );
+}
+
 void JoinTest::cleanup() {
+    clearCacheAndPrintIfTestFail();
 }
 
 void JoinTest::cleanupTestCase() {

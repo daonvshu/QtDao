@@ -129,6 +129,12 @@ inline void Join<E...>::buildJoinSqlStatement() {
         sql.append(builder->constraintCondition.getConditionStr());
         values.append(builder->constraintCondition.getValues());
     }
+
+    if (!builder->unionSelectStatement.isEmpty()) {
+        sql.append(builder->unionAll ? " union all " : " union ");
+        sql.append(builder->unionSelectStatement);
+        values.append(builder->unionSelectValues);
+    }
     setSqlQueryStatement(sql, values);
 }
 

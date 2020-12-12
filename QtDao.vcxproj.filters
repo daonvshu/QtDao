@@ -152,6 +152,9 @@
     <ClCompile Include="test\query\JoinTest.cpp">
       <Filter>Source Files\test\query</Filter>
     </ClCompile>
+    <ClCompile Include="test\BaseTest.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ConnectionPool.h">
@@ -261,6 +264,9 @@
     </ClInclude>
     <ClInclude Include="src\macro\macro.h">
       <Filter>Header Files\src\macro</Filter>
+    </ClInclude>
+    <ClInclude Include="test\BaseTest.h">
+      <Filter>Header Files\test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

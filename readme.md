@@ -18,8 +18,8 @@
   - [x] version check
   - [x] table upgrade
 - **log**
-  - [ ] sql statement print 
-  - [ ] value list print
+  - [x] sql statement print 
+  - [x] value list print
 - **entity generator**
   - [x] field getter/setter
   - [x] table field
@@ -41,7 +41,7 @@
   - select operator
     - [x] unique/list select
     - [ ] ~~multi-table select~~
-    - [ ] union select
+    - [x] union select
     - [x] inner/left/right/full join
     - [ ] recursive select
     - [x] select in select

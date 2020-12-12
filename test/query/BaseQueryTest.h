@@ -2,7 +2,9 @@
 
 #include <qobject.h>
 
-class BaseQueryTest : public QObject {
+#include "../BaseTest.h"
+
+class BaseQueryTest : public BaseTest {
     Q_OBJECT
 
 private slots:

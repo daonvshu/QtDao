@@ -80,6 +80,7 @@ void BaseQueryTest::testPrimitiveQueryFail() {
 }
 
 void BaseQueryTest::cleanup() {
+    clearCacheAndPrintIfTestFail();
 }
 
 void BaseQueryTest::cleanupTestCase() {

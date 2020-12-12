@@ -2,10 +2,12 @@
 
 #include <qobject.h>
 
+#include "../BaseTest.h"
+
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
 
-class SelectTest : public QObject {
+class SelectTest : public BaseTest {
     Q_OBJECT
 
 private slots:
@@ -17,6 +19,7 @@ private slots:
     void funtionSelectTest();
     void countSelectTest();
     void selectFromSelectTest();
+    void unionSelectTest();
 
     void cleanup();
 

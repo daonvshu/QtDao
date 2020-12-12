@@ -181,7 +181,7 @@ void InsertTest::insertObjects2Test() {
 }
 
 void InsertTest::cleanup() {
-
+    clearCacheAndPrintIfTestFail();
 }
 
 void InsertTest::cleanupTestCase() {

@@ -15,7 +15,7 @@ void SelectTest::initTestCase() {
     dao::_insert<SqliteTest1>().build().insert2(data1);
 
     data2 << SqliteTest2(0, "joker", 9999, -1, 30);
-    data2 << SqliteTest2(0, "bob", 10, 0, "abc");
+    data2 << SqliteTest2(0, "bob", 12, 0, "abc");
     data2 << SqliteTest2(0, "func", 10, -2, 50);
     data2 << SqliteTest2(0, "func", 50, 0, 50);
     dao::_insert<SqliteTest2>().build().insert2(data2);
@@ -156,8 +156,47 @@ void SelectTest::selectFromSelectTest() {
     }
 }
 
-void SelectTest::cleanup() {
+void SelectTest::unionSelectTest() {
+    SqliteTest1::Fields sf1;
+    SqliteTest2::Fields sf2;
 
+    auto select1 = dao::_select<SqliteTest1>()
+        .column(sf1.name, sf1.number)
+        .filter(sf1.number >= 12)
+        .with(_orderBy(sf1.number))
+        .build();
+
+    auto select2 = dao::_select<SqliteTest2>()
+        .column(sf2.name, sf2.number)
+        .filter(sf2.number >= 12)
+        .unionSelect(select1)
+        .build().list();
+
+    QVariantList results;
+    for (const auto& r : select2) {
+        results << r.getName() << r.getNumber();
+    }
+    QVariantList expected;
+    QList<QPair<QString, qreal>> expectList;
+    for (const auto& d : data1) {
+        if (d.getNumber() < 12)
+            continue;
+        expectList << qMakePair(d.getName(), d.getNumber());
+    }
+    for (const auto& d : data2) {
+        if (d.getNumber() < 13)
+            continue;
+        expectList << qMakePair(d.getName(), d.getNumber());
+    }
+    qSort(expectList);
+    for (const auto& d : expectList) {
+        expected << d.first << d.second;
+    }
+    QCOMPARE(results, expected);
+}
+
+void SelectTest::cleanup() {
+    clearCacheAndPrintIfTestFail();
 }
 
 void SelectTest::cleanupTestCase() {

@@ -52,6 +52,7 @@ void DeleteTest::objectDeleteTest() {
 }
 
 void DeleteTest::cleanup() {
+    clearCacheAndPrintIfTestFail();
 }
 
 void DeleteTest::cleanupTestCase() {

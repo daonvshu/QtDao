@@ -2,10 +2,12 @@
 
 #include <qobject.h>
 
+#include "../BaseTest.h"
+
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
 
-class DeleteTest : public QObject {
+class DeleteTest : public BaseTest {
     Q_OBJECT
 
 private slots:

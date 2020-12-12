@@ -2,11 +2,13 @@
 
 #include <qobject.h>
 
+#include "../BaseTest.h"
+
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
 #include "../sqliteentity/SqliteTest3.h"
 
-class JoinTest : public QObject {
+class JoinTest : public BaseTest {
     Q_OBJECT
 
 private slots:
@@ -17,6 +19,9 @@ private slots:
     void testSelectFromJoin();
     void testJoinFromSelect();
     void testJoinOnSelect();
+    void testSelectUnionJoin();
+    void testJoinUnionSelect();
+    void testJoinUnionJoin();
 
     void cleanup();
 
