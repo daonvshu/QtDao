@@ -396,6 +396,37 @@ void JoinTest::recursiveQueryTest() {
     );
 }
 
+void JoinTest::functionSubJoinTest() {
+    SqliteTest1::Fields sf1;
+    SqliteTest2::Fields sf2;
+    SqliteTest3::Fields sf3;
+
+    auto select = dao::_select<SqliteTest2>().filter(sf2.name == "joker").build();
+
+    auto join = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+        .column(sf1.number)
+        .from<SqliteTest1>()
+        .innerJoin(select).on(sf2.id == sf3.tbi2)
+        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .build();
+
+    auto result = dao::_select<SqliteTest1>()
+        .filter(_fun("%1 in %2").field(sf1.number).from(join))
+        .build().list();
+
+    QVariantList actual;
+    for (const auto& d : result) {
+        actual << SqliteTest1::Tool::getValueWithoutAutoIncrement(d);
+    }
+    QVariantList expected;
+    for (const auto& d : data1) {
+        if (d.getNumber() != 12 && d.getNumber() != 14)
+            continue;
+        expected << SqliteTest1::Tool::getValueWithoutAutoIncrement(d);
+    }
+    QCOMPARE(actual, expected);
+}
+
 void JoinTest::cleanup() {
     clearCacheAndPrintIfTestFail();
 }

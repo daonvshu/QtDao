@@ -6,6 +6,7 @@ template<typename... E>
 class JoinBuilder;
 
 class RecursiveQueryBuilder;
+class FunctionCondition;
 
 enum JoinType {
     CrossJoin,
@@ -54,6 +55,7 @@ private:
 
     friend class BaseQueryBuilder;
     friend class RecursiveQueryBuilder;
+    friend class FunctionCondition;
 };
 
 template<typename ...E>

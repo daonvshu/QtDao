@@ -20,6 +20,7 @@ private slots:
     void countSelectTest();
     void selectFromSelectTest();
     void unionSelectTest();
+    void funtionSubSelectTest();
 
     void cleanup();
 

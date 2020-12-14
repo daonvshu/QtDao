@@ -7,6 +7,7 @@
 template<typename E>
 class SelectBuilder;
 
+class FunctionCondition;
 class RecursiveQueryBuilder;
 
 template<typename E>
@@ -46,6 +47,7 @@ protected:
 
     friend class BaseQueryBuilder;
     friend class RecursiveQueryBuilder;
+    friend class FunctionCondition;
 };
 
 template<typename E>

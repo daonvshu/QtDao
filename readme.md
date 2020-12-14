@@ -62,7 +62,7 @@
     - [x] object(s) delete
     - [ ] ~~delete by select results~~(move to function query)
   - other
-    - [ ] function with sub query
+    - [x] function with sub query
     - [ ] transaction
     - [ ] glob
     - [ ] distinct

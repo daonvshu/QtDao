@@ -3,6 +3,12 @@
 #include "EntityField.h"
 #include "FunctionConditionData.h"
 
+template<typename E>
+class Select;
+
+template<typename... E>
+class Join;
+
 class Connector;
 class FunctionCondition {
 public:
@@ -20,6 +26,12 @@ public:
 	FunctionCondition& value(QVariant v, Args... args);
 
 	FunctionCondition& value(QVariant v);
+
+	template<typename E>
+	FunctionCondition& from(Select<E>& select);
+
+	template<typename... E>
+	FunctionCondition& from(Join<E...>& join);
 
 private:
 	QSharedDataPointer<FunctionConditionData> d;
@@ -50,5 +62,21 @@ inline FunctionCondition& FunctionCondition::value(QVariant v, Args ...args) {
 
 inline FunctionCondition& FunctionCondition::value(QVariant v) {
 	d->values << v;
+	return *this;
+}
+
+template<typename E>
+inline FunctionCondition& FunctionCondition::from(Select<E>& select) {
+	select.buildFilterSqlStatement();
+	d->fields << FieldInfo{ select.statement.prepend("(").append(")"), "" };
+	d->values << select.values;
+	return *this;
+}
+
+template<typename ...E>
+inline FunctionCondition& FunctionCondition::from(Join<E...>& join) {
+	join.buildJoinSqlStatement();
+	d->fields << FieldInfo{ join.statement.prepend("(").append(")"), "" };
+	d->values << join.values;
 	return *this;
 }

@@ -195,6 +195,28 @@ void SelectTest::unionSelectTest() {
     QCOMPARE(results, expected);
 }
 
+void SelectTest::funtionSubSelectTest() {
+    SqliteTest1::Fields sf1;
+    SqliteTest2::Fields sf2;
+    auto data = dao::_select<SqliteTest1>()
+        .filter(_fun("%1 in %2").field(sf1.number).from(
+            dao::_select<SqliteTest2>().column(sf2.number).filter(sf2.number < 15).build()
+        ))
+        .with(_orderBy(sf1.number))
+        .build().list();
+    QVariantList actual;
+    for (const auto& d : data) {
+        actual << SqliteTest1::Tool::getValueWithoutAutoIncrement(d);
+    }
+    QVariantList expected;
+    for (const auto& d : data1) {
+        if (d.getNumber() != 10 && d.getNumber() != 12)
+            continue;
+        expected << SqliteTest1::Tool::getValueWithoutAutoIncrement(d);
+    }
+    QCOMPARE(actual, expected);
+}
+
 void SelectTest::cleanup() {
     clearCacheAndPrintIfTestFail();
 }
