@@ -13,7 +13,7 @@
   - [x] auto create database/table (use config)
   - [x] truncate/drop table
   - [x] drop database
-  - [ ] database switch
+  - [ ] ~~database switch~~
 - **upgrader**
   - [x] version check
   - [x] table upgrade

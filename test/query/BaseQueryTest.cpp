@@ -10,7 +10,7 @@
 #include <qtest.h>
 
 void BaseQueryTest::initTestCase() {
-    DbLoader::loadConfig(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
+    DbLoader::loadConfig(SqliteConfig());
     DbLoader::getClient().testConnect();
 }
 

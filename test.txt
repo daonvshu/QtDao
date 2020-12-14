@@ -4,5 +4,5 @@ PASS   : InsertIntoSelectTest::initTestCase()
 PASS   : InsertIntoSelectTest::testInsertIntoSelect()
 PASS   : InsertIntoSelectTest::testInsertIntoJoin()
 PASS   : InsertIntoSelectTest::cleanupTestCase()
-Totals: 4 passed, 0 failed, 0 skipped, 0 blacklisted, 44ms
+Totals: 4 passed, 0 failed, 0 skipped, 0 blacklisted, 42ms
 ********* Finished testing of InsertIntoSelectTest *********

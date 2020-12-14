@@ -6,6 +6,8 @@
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
 
+#include "../sqliteentity/SqliteConfig.h"
+
 #include <qtest.h>
 
 class DbLoaderTestExceptionHandler : public DbExceptionHandler {
@@ -32,7 +34,7 @@ void DbLoaderTest::initTestCase() {
 }
 
 void DbLoaderTest::sqliteloadConfigTest() {
-    DbLoader::init(":/QtDao/test/sqliteentity/sqlite_cfg.xml", new DbLoaderTestExceptionHandler);
+    DbLoader::init(SqliteConfig(), new DbLoaderTestExceptionHandler);
     SqliteTest1::Info t1info;
     QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
     SqliteTest2::Info t2info;
@@ -42,7 +44,9 @@ void DbLoaderTest::sqliteloadConfigTest() {
 
 void DbLoaderTest::sqliteUpgradeTest() {
     //reinit
-    DbLoader::init(":/QtDao/test/sqliteentity/sqlite_cfg2.xml");
+    SqliteConfig cfg;
+    cfg.ver = 3;
+    DbLoader::init(cfg);
     SqliteTest1::Info t1info;
     QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
     SqliteTest2::Info t2info;

@@ -11,23 +11,17 @@ public:
     DbLoader() = delete;
 
     /// <summary>
-    /// 加载配置文件
+    /// 加载配置，通过property获取配置数据
     /// </summary>
-    /// <param name="configPath">配置文件路径</param>
-    /// <param name="exceptionHandler">错误处理</param>
-    static void loadConfig(const QString& configPath, DbExceptionHandler* exceptionHandler = nullptr);
+    /// <param name="config"></param>
+    static void loadConfig(const QObject& config);
 
     /// <summary>
-    /// 初始化数据库
+    /// 加载配置并初始化
     /// </summary>
-    static void init();
-
-    /// <summary>
-    /// 加载配置文件并初始化
-    /// </summary>
-    /// <param name="configPath">配置文件路径</param>
-    /// <param name="exceptionHandler">错误处理</param>
-    static void init(const QString& configPath, DbExceptionHandler* exceptionHandler = nullptr);
+    /// <param name="config"></param>
+    /// <param name="exceptionHandler"></param>
+    static void init(const QObject& config, DbExceptionHandler* exceptionHandler = nullptr);
 
     /// <summary>
     /// 获取数据库配置参数引用
@@ -56,6 +50,7 @@ private:
     static AbstractClient* sqlClient;
 
 private:
+    static void init();
     static void init_priv();
 
     static void updateLocalVersion();

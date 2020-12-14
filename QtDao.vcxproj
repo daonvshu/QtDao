@@ -54,7 +54,7 @@
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
     <QtInstall>msvc2017</QtInstall>
-    <QtModules>core;sql;testlib;xml</QtModules>
+    <QtModules>core;sql;testlib</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
@@ -98,9 +98,6 @@
     <ClCompile Include="src\condition\EntityCondition.cpp" />
     <ClCompile Include="src\condition\FunctionCondition.cpp" />
     <ClCompile Include="src\ConnectionPool.cpp" />
-    <ClCompile Include="src\DaoUtil.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="src\dbclients\AbstractClient.cpp" />
     <ClCompile Include="src\dbclients\MysqlClient.cpp" />
     <ClCompile Include="src\dbclients\SqliteClient.cpp" />
@@ -152,9 +149,6 @@
     <ClInclude Include="src\condition\FunctionConditionData.h" />
     <ClInclude Include="src\ConnectionPool.h" />
     <ClInclude Include="src\dao.h" />
-    <ClInclude Include="src\DaoUtil.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="src\dbclients\AbstractClient.h" />
     <ClInclude Include="src\dbclients\MysqlClient.h" />
     <ClInclude Include="src\dbclients\SqliteClient.h" />
@@ -167,6 +161,7 @@
     <ClInclude Include="src\query\InsertIntoSelect.h" />
     <ClInclude Include="test\BaseTest.h" />
     <QtMoc Include="test\query\InsertIntoSelectTest.h" />
+    <QtMoc Include="test\sqliteentity\SqliteConfig.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest3.h" />
     <QtMoc Include="test\condition\ConnectorTest.h" />
     <ClInclude Include="src\query\Delete.h" />
@@ -191,8 +186,6 @@
     <Xml Include="entity\dao_entity.xml" />
     <Xml Include="entity\mysql_entity.xml" />
     <Xml Include="entity\sqlite_entity.xml" />
-    <Xml Include="test\sqliteentity\sqlite_cfg.xml" />
-    <Xml Include="test\sqliteentity\sqlite_cfg2.xml" />
     <Xml Include="test\sqliteentity\sqlite_entity.xml" />
   </ItemGroup>
   <ItemGroup>

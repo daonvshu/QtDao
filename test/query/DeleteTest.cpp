@@ -5,7 +5,7 @@
 #include "../../src/dao.h"
 
 void DeleteTest::initTestCase() {
-    DbLoader::init(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
+    DbLoader::init(SqliteConfig());
 
     data1 << SqliteTest1(1, "abc", 10, "");
     data1 << SqliteTest1(2, "alice", 11, "alice1");

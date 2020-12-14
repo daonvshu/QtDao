@@ -78,15 +78,15 @@
     <Filter Include="Header Files\src\macro">
       <UniqueIdentifier>{bbfbfa4d-8ef8-4745-8e00-dffff760df15}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\sqliteentity">
+      <UniqueIdentifier>{d3d06d6d-a684-4c50-97a3-a0d3953ddb8f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ConnectionPool.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DaoUtil.cpp">
       <Filter>Source Files\src</Filter>
     </ClCompile>
     <ClCompile Include="src\DbLoader.cpp">
@@ -115,9 +115,6 @@
     </ClCompile>
     <ClCompile Include="test\loader\DbLoaderTest.cpp">
       <Filter>Source Files\test\loader</Filter>
-    </ClCompile>
-    <ClCompile Include="test\sqliteentity\EntityInclude.cpp">
-      <Filter>Header Files\test\sqliteentity</Filter>
     </ClCompile>
     <ClCompile Include="src\dbclients\AbstractClient.cpp">
       <Filter>Source Files\src\dbclients</Filter>
@@ -158,12 +155,12 @@
     <ClCompile Include="test\query\InsertIntoSelectTest.cpp">
       <Filter>Source Files\test\query</Filter>
     </ClCompile>
+    <ClCompile Include="test\sqliteentity\EntityInclude.cpp">
+      <Filter>Source Files\src\sqliteentity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ConnectionPool.h">
-      <Filter>Header Files\src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DaoUtil.h">
       <Filter>Header Files\src</Filter>
     </ClInclude>
     <ClInclude Include="src\DbConfig.h">
@@ -294,12 +291,6 @@
     <Xml Include="test\sqliteentity\sqlite_entity.xml">
       <Filter>Header Files\test\sqliteentity</Filter>
     </Xml>
-    <Xml Include="test\sqliteentity\sqlite_cfg.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
-    <Xml Include="test\sqliteentity\sqlite_cfg2.xml">
-      <Filter>Resource Files</Filter>
-    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="entity\dao_entity.xsd">
@@ -348,6 +339,9 @@
     </QtMoc>
     <QtMoc Include="test\query\InsertIntoSelectTest.h">
       <Filter>Header Files\test\query</Filter>
+    </QtMoc>
+    <QtMoc Include="test\sqliteentity\SqliteConfig.h">
+      <Filter>Header Files\test\sqliteentity</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

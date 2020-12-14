@@ -5,6 +5,8 @@
 
 #include "../../src/dbclients/SqliteClient.h"
 
+#include "sqliteentity/SqliteConfig.h"
+
 #include "RunnableHandler.h"
 
 #include <qeventloop.h>
@@ -17,7 +19,7 @@ void ConnectionPoolTest::initTestCase() {
 }
 
 void ConnectionPoolTest::testSqliteConnect() {
-    DbLoader::loadConfig(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
+    DbLoader::loadConfig(SqliteConfig());
     {
         auto db = ConnectionPool::getConnection();
         QVERIFY(db.isOpen());
@@ -28,7 +30,7 @@ void ConnectionPoolTest::testSqliteConnect() {
 }
 
 void ConnectionPoolTest::testReuseConnection() {
-    DbLoader::loadConfig(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
+    DbLoader::loadConfig(SqliteConfig());
     {
         QString savedConnection;
         auto db = ConnectionPool::getConnection();
@@ -44,7 +46,7 @@ void ConnectionPoolTest::testReuseConnection() {
 }
 
 void ConnectionPoolTest::testMultiThreadOpenConnection() {
-    DbLoader::loadConfig(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
+    DbLoader::loadConfig(SqliteConfig());
     QEventLoop loop;
 
     QString connection1, connection2;
@@ -76,7 +78,7 @@ void ConnectionPoolTest::testMultiThreadOpenConnection() {
 }
 
 void ConnectionPoolTest::testReuseConnectionInOtherThread() {
-    DbLoader::loadConfig(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
+    DbLoader::loadConfig(SqliteConfig());
     QEventLoop loop;
 
     QString connection1, connection2;

@@ -22,7 +22,6 @@ void ConnectorTest::conditionConnectortest() {
         sf.name.in(QStringList() << "r" << "t" << "u"),
         sf.number.between(10, 20)
     );
-    auto condition2 = condition;
     condition.connect([&](const QString&) { return "a."; });
     QCOMPARE(condition.getConditionStr(),
         QString("a.id=? and (a.name=? or a.varianttype=? or a.number2=a.number2+?) and a.name in (?,?,?) and a.number between ? and ?")

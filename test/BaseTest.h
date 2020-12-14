@@ -2,6 +2,8 @@
 
 #include <qobject.h>
 
+#include "sqliteentity/SqliteConfig.h"
+
 class BaseTest : public QObject {
 public:
     BaseTest();

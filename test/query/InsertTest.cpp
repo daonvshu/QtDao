@@ -8,7 +8,7 @@
 #include "../../src/dao.h"
 
 void InsertTest::initTestCase() {
-    DbLoader::init(":/QtDao/test/sqliteentity/sqlite_cfg.xml");
+    DbLoader::init(SqliteConfig());
 }
 
 void InsertTest::setInsertTest() {
