@@ -132,6 +132,14 @@ public:
         return setValue(" like ", v);
     }
 
+    /*like sqlite "glob"*/
+    EntityCondition glob(const T& v) {
+        return setValue(" glob ", v);
+    }
+    EntityCondition glob(const QList<T>& v) {
+        return setValue(" glob ", v);
+    }
+
     //set condition
     EntityCondition operator=(const T& v) {
         return setValue("=", v);
@@ -197,6 +205,11 @@ public:
     /*for order by*/
     EntityField desc() {
         return EntityField(name + " desc", bindTable);
+    }
+
+    /*distinct*/
+    EntityField distinct() {
+        return EntityField("distinct " + name, bindTable);
     }
 };
 

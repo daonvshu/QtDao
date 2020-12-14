@@ -78,6 +78,21 @@ void ConnectorTest::functionConnectorTest() {
     );
 }
 
+void ConnectorTest::havingStatementTest() {
+    SqliteTest2::Fields sf;
+    auto having = _constraint(
+        _having(sf.number > 10),
+        _having(_fun("count(%1) > ?").field(sf.number).value(10))
+    );
+    having.connect([&](const QString&) {return "a."; });
+    QCOMPARE(having.getConditionStr(),
+        QString("having a.number>? having count(a.number) > ?")
+    );
+    QCOMPARE(having.getValues(),
+        QVariantList() << 10 << 10
+    );
+}
+
 void ConnectorTest::cleanupTestCase() {
 
 }

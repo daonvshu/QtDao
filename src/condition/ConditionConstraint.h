@@ -2,6 +2,7 @@
 
 #include "EntityCondition.h"
 #include "EntityField.h"
+#include "FunctionCondition.h"
 
 class Connector;
 class ConditionConstraint : public EntityCondition {
@@ -17,9 +18,9 @@ public:
     template<typename T, typename... E>
     static ConditionConstraint groupBy(const EntityField<T>& field, const EntityField<E>&... n);
 
-    //TODO
-    template<typename... T>
-    static ConditionConstraint having();
+    static ConditionConstraint having(const EntityCondition& other);
+
+    static ConditionConstraint having(const FunctionCondition& condition);
 
 private:
     //create condition with type order by
@@ -30,11 +31,16 @@ private:
 protected:
     using EntityCondition::EntityCondition;
 
+private:
+    EntityCondition havingCondition;
+    FunctionCondition havingFunction;
+
 protected:
     void combine() override;
     void combineLimit();
     void combineOrderBy();
     void combineGroupBy();
+    void combineHaving();
 
     QVariantList getValues() override;
 

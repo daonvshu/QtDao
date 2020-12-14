@@ -18,6 +18,18 @@ ConditionConstraint ConditionConstraint::limit(int a) {
     );
 }
 
+ConditionConstraint ConditionConstraint::having(const EntityCondition& other) {
+    ConditionConstraint constraint(QVariantList(), TypeHaving);
+    constraint.havingCondition = other;
+    return constraint;
+}
+
+ConditionConstraint ConditionConstraint::having(const FunctionCondition& condition) {
+    ConditionConstraint constraint(QVariantList(), TypeHaving);
+    constraint.havingFunction = condition;
+    return constraint;
+}
+
 ConditionConstraint ConditionConstraint::orderBy(const QString& fieldName, const QString& tbName, bool asc) {
     return ConditionConstraint(
         QVariantList(),
@@ -44,6 +56,7 @@ void ConditionConstraint::combine() {
         combineGroupBy();
         break;
     case TypeHaving:
+        combineHaving();
         break;
     default:
         break;
@@ -72,6 +85,21 @@ void ConditionConstraint::combineGroupBy() {
         d->combineStr.append(d->getField(i)).append(',');
     }
     d->combineStr.chop(1);
+}
+
+void ConditionConstraint::combineHaving() {
+    if (havingCondition.d) {
+        havingCondition.setFieldPrefixGetter(d->fieldPrefixGetter);
+        havingCondition.combine();
+        d->combineStr = "having " + havingCondition.d->combineStr;
+        d->values.append(havingCondition.d->values);
+    }
+    if (havingFunction.d) {
+        havingFunction.setFieldPrefixGetter(d->fieldPrefixGetter);
+        havingFunction.combine();
+        d->combineStr = "having " + havingFunction.d->combineStr;
+        d->values.append(havingFunction.d->values);
+    }
 }
 
 QVariantList ConditionConstraint::getValues() {

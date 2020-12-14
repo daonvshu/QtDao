@@ -17,6 +17,8 @@ class Update;
 template<typename E>
 class Delete;
 
+class ConditionConstraint;
+
 class Connector;
 class EntityCondition {
 public:
@@ -77,6 +79,7 @@ protected:
     virtual QVariantList getValues();
 
     friend class Connector;
+    friend class ConditionConstraint;
 
     template<typename T>
     friend class EntityField;

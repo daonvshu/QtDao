@@ -37,6 +37,14 @@ inline ConditionConstraint _groupBy(const EntityField<N>&... n) {
     return ConditionConstraint::groupBy(n...);
 }
 
+inline ConditionConstraint _having(const EntityCondition& condition) {
+    return ConditionConstraint::having(condition);
+}
+
+inline ConditionConstraint _having(const FunctionCondition& condition) {
+    return ConditionConstraint::having(condition);
+}
+
 inline FunctionCondition _fun(const QString& expressions) {
     return FunctionCondition(expressions);
 }

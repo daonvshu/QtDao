@@ -9,6 +9,8 @@ class Select;
 template<typename... E>
 class Join;
 
+class ConditionConstraint;
+
 class Connector;
 class FunctionCondition {
 public:
@@ -42,6 +44,7 @@ private:
 	void combine();
 
 	friend class Connector;
+	friend class ConditionConstraint;
 };
 
 template<typename T, typename ...E>

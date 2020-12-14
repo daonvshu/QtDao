@@ -64,9 +64,9 @@
   - other
     - [x] function with sub query
     - [ ] transaction
-    - [ ] glob
-    - [ ] distinct
-    - [ ] having
+    - [x] glob
+    - [x] distinct
+    - [x] having
     - [ ] between date to date
 - **connection pool**
   - [x] connection reuse
