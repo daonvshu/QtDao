@@ -37,7 +37,7 @@
     - [x] object(s) insert
     - [x] part field value insert
     - [ ] insert in select results
-    - [ ] insert or update
+    - [x] insert or replace
   - select operator
     - [x] unique/list select
     - [ ] ~~multi-table select~~

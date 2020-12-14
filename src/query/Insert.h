@@ -17,11 +17,32 @@ public:
     bool insert();
 
     /// <summary>
+    /// 使用set条件插入一条记录，可批量插入
+    /// 若唯一约束存在则更新，否则插入
+    /// </summary>
+    /// <returns></returns>
+    bool insertOrReplace() {
+        insertOrRp = true;
+        return insert();
+    }
+
+    /// <summary>
     /// 插入一个对象实例，插入成功后将id设置回对象
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
     bool insert(E& entity);
+
+    /// <summary>
+    /// 插入一个对象实例，插入成功后将id设置回对象
+    /// 若唯一约束存在则更新，否则插入
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    bool insertOrReplace(E& entity) {
+        insertOrRp = true;
+        return insert(entity);
+    }
 
     /// <summary>
     /// 批量插入对象
@@ -32,6 +53,18 @@ public:
     bool insert(const QList<E>& entities);
 
     /// <summary>
+    /// 批量插入对象
+    /// 使用execbatch插入
+    /// 若唯一约束存在则更新，否则插入
+    /// </summary>
+    /// <param name="entities"></param>
+    /// <returns></returns>
+    bool insertOrReplace(const QList<E>& entities) {
+        insertOrRp = true;
+        return insert(entities);
+    }
+
+    /// <summary>
     /// 批量插入对象方式2
     /// 使用exec方式插入，值列表使用values拼接（警告：sql语句长度限制）
     /// insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx)
@@ -40,6 +73,19 @@ public:
     /// <returns></returns>
     bool insert2(const QList<E>& entities);
 
+    /// <summary>
+    /// 批量插入对象方式2
+    /// 使用exec方式插入，值列表使用values拼接（警告：sql语句长度限制）
+    /// insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx)
+    /// 若唯一约束存在则更新，否则插入
+    /// </summary>
+    /// <param name="entities"></param>
+    /// <returns></returns>
+    bool insert2OrReplace(const QList<E>& entities) {
+        insertOrRp = true;
+        return insert2(entities);
+    }
+
 private:
     bool buildInsertBySetSqlStatement();
     QString buildInsertObjectSqlStatement();
@@ -47,6 +93,8 @@ private:
     QString buildInsertObjects2SqlStatement(int valueSize);
 
 private:
+    bool insertOrRp = false;
+
     BASE_QUERY_CONSTRUCTOR_DECLARE(Insert);
 };
 
@@ -138,6 +186,9 @@ inline bool Insert<E>::buildInsertBySetSqlStatement() {
 
     typename E::Info info;
     QString sql = "insert into %1 (";
+    if (insertOrRp) {
+        sql = "insert or replace into %1 (";
+    }
     sql = sql.arg(info.getTableName());
 
     bool hasPre = false;
@@ -168,6 +219,9 @@ inline QString Insert<E>::buildInsertObjectSqlStatement() {
     typename E::Info info;
     
     QString sql = "insert into %1 (";
+    if (insertOrRp) {
+        sql = "insert or replace into %1 (";
+    }
     sql = sql.arg(info.getTableName());
 
     QStringList fields = info.getFieldsWithoutAutoIncrement();
@@ -194,6 +248,9 @@ inline QString Insert<E>::buildInsertObjects2SqlStatement(int valueSize) {
     typename E::Info info;
 
     QString sql = "insert into %1 (";
+    if (insertOrRp) {
+        sql = "insert or replace into %1 (";
+    }
     sql = sql.arg(info.getTableName());
 
     QStringList fields = info.getFieldsWithoutAutoIncrement();

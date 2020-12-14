@@ -180,6 +180,31 @@ void InsertTest::insertObjects2Test() {
     }
 }
 
+void InsertTest::insertOrReplaceTest() {
+    auto entity = SqliteTest2(0, "testinsertorreplace", -1, -2, "666");
+    bool success = dao::_insert<SqliteTest2>().build().insertOrReplace(entity);
+    QVERIFY(success);
+    if (success) {
+        entity.setNumber2(100);
+        success = dao::_insert<SqliteTest2>().build().insertOrReplace(entity);
+        QVERIFY(success);
+        BaseQuery::queryPrimitive(QString("select * from %1 where name = 'testinsertorreplace'").arg(SqliteTest2::Info::getTableName())
+            , [&](QSqlQuery& query) {
+            int count = 0;
+            int number2 = 0;
+            while (query.next()) {
+                count++;
+                number2 = query.value("number2").toInt();
+            }
+            QCOMPARE(count, 1);
+            QCOMPARE(number2, 100);
+        }
+            , [&](QString err) {
+            QFAIL(("test insert or update fail! " + err).toUtf8());
+        });
+    }
+}
+
 void InsertTest::cleanup() {
     clearCacheAndPrintIfTestFail();
 }

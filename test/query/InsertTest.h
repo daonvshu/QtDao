@@ -15,6 +15,7 @@ private slots:
     void insertObjectTest();
     void insertObjectsTest();
     void insertObjects2Test();
+    void insertOrReplaceTest();
 
     void cleanup();
 
