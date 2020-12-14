@@ -114,6 +114,7 @@
     <ClCompile Include="test\loader\DbLoaderTest.cpp" />
     <ClCompile Include="test\query\BaseQueryTest.cpp" />
     <ClCompile Include="test\query\DeleteTest.cpp" />
+    <ClCompile Include="test\query\InsertIntoSelectTest.cpp" />
     <ClCompile Include="test\query\InsertTest.cpp" />
     <ClCompile Include="test\query\JoinTest.cpp" />
     <ClCompile Include="test\query\SelectTest.cpp" />
@@ -134,6 +135,7 @@
     <ClInclude Include="src\builder\CountBuilder.h" />
     <ClInclude Include="src\builder\DeleteBuilder.h" />
     <ClInclude Include="src\builder\InsertBuilder.h" />
+    <ClInclude Include="src\builder\InsertIntoSelectBuilder.h" />
     <ClInclude Include="src\builder\JoinBuilder.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
@@ -162,7 +164,9 @@
     <ClInclude Include="src\DbLoader.h" />
     <ClInclude Include="src\macro\macro.h" />
     <ClInclude Include="src\query\BaseQuery.h" />
+    <ClInclude Include="src\query\InsertIntoSelect.h" />
     <ClInclude Include="test\BaseTest.h" />
+    <QtMoc Include="test\query\InsertIntoSelectTest.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest3.h" />
     <QtMoc Include="test\condition\ConnectorTest.h" />
     <ClInclude Include="src\query\Delete.h" />

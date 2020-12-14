@@ -15,6 +15,7 @@ template<typename E> class Select;
 template<typename E> class Update;
 template<typename E> class Delete;
 template<typename... E> class Join;
+template<typename E> class InsertIntoSelect;
 
 class BaseQueryBuilder {
 public:
@@ -101,6 +102,7 @@ protected:
     template<typename E> friend class Update;
     template<typename E> friend class Delete;
     template<typename... E> friend class Join;
+    template<typename E> friend class InsertIntoSelect;
 };
 
 template<typename ...Args>

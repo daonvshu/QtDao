@@ -11,6 +11,7 @@
 #include "test/query/JoinTest.h"
 #include "test/loader/DbLoaderTest.h"
 #include "test/condition/ConnectorTest.h"
+#include "test/query/InsertIntoSelectTest.h"
 
 #include <qfile.h>
 #include <iostream>
@@ -64,7 +65,8 @@ int main(int argc, char *argv[])
         SelectTest,
         UpdateTest,
         DeleteTest,
-        JoinTest
+        JoinTest,
+        InsertIntoSelectTest
     >::run(argc, argv);
     if (result != 0) {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);

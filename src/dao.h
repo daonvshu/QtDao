@@ -10,6 +10,7 @@
 #include "builder/DeleteBuilder.h"
 #include "builder/JoinBuilder.h"
 #include "builder/RecursiveQueryBuilder.h"
+#include "builder/InsertIntoSelectBuilder.h"
 
 #include "condition/ConditionOperator.h"
 
@@ -18,6 +19,11 @@ public:
     template<typename T>
     static InsertBuilder<T> _insert() {
         return InsertBuilder<T>();
+    }
+
+    template<typename T>
+    static InsertIntoSelectBuilder<T> _insertIntoSelect() {
+        return InsertIntoSelectBuilder<T>();
     }
 
     template<typename T>

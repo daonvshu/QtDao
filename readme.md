@@ -36,7 +36,7 @@
   - insert operator
     - [x] object(s) insert
     - [x] part field value insert
-    - [ ] insert in select results
+    - [x] insert in select results
     - [x] insert or replace
   - select operator
     - [x] unique/list select

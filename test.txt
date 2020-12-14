@@ -1,15 +1,8 @@
-********* Start testing of JoinTest *********
+********* Start testing of InsertIntoSelectTest *********
 Config: Using QtTest library 5.12.3, Qt 5.12.3 (i386-little_endian-ilp32 shared (dynamic) debug build; by MSVC 2017)
-PASS   : JoinTest::initTestCase()
-PASS   : JoinTest::testJoinTable()
-PASS   : JoinTest::testJoinSelfTable()
-PASS   : JoinTest::testSelectFromJoin()
-PASS   : JoinTest::testJoinFromSelect()
-PASS   : JoinTest::testJoinOnSelect()
-PASS   : JoinTest::testSelectUnionJoin()
-PASS   : JoinTest::testJoinUnionSelect()
-PASS   : JoinTest::testJoinUnionJoin()
-PASS   : JoinTest::recursiveQueryTest()
-PASS   : JoinTest::cleanupTestCase()
-Totals: 11 passed, 0 failed, 0 skipped, 0 blacklisted, 61ms
-********* Finished testing of JoinTest *********
+PASS   : InsertIntoSelectTest::initTestCase()
+PASS   : InsertIntoSelectTest::testInsertIntoSelect()
+PASS   : InsertIntoSelectTest::testInsertIntoJoin()
+PASS   : InsertIntoSelectTest::cleanupTestCase()
+Totals: 4 passed, 0 failed, 0 skipped, 0 blacklisted, 48ms
+********* Finished testing of InsertIntoSelectTest *********
