@@ -65,6 +65,22 @@ public:
         DbLoader::getClient().truncateTable(E::Info::getTableName());
     }
 
+    static void transcation() {
+        auto db = ConnectionPool::getConnection();
+        Q_ASSERT(db.driver()->hasFeature(QSqlDriver::Transactions));
+        db.transaction();
+    }
+
+    static void commit() {
+        auto db = ConnectionPool::getConnection();
+        db.commit();
+    }
+
+    static void rollback() {
+        auto db = ConnectionPool::getConnection();
+        db.rollback();
+    }
+
     template<typename E>
     class self : public E {
     public:

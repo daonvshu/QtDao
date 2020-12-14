@@ -17,6 +17,8 @@ private slots:
     void insertObjects2Test();
     void insertOrReplaceTest();
 
+    void testTranscation();
+
     void cleanup();
 
     void cleanupTestCase();

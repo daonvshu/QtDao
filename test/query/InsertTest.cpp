@@ -205,6 +205,22 @@ void InsertTest::insertOrReplaceTest() {
     }
 }
 
+void InsertTest::testTranscation() {
+    dao::transcation();
+    auto entity = SqliteTest2(0, "test transcation", 10000, 10000, "666");
+    dao::_insert<SqliteTest2>().build().insert(entity);
+    try {
+        dao::_insert<SqliteTest2>().throwable().build().insert(entity);
+        dao::commit();
+    }
+    catch (DaoException&) {
+        dao::rollback();
+    }
+    SqliteTest2::Fields sf;
+    int count = dao::_count<SqliteTest2>().filter(sf.name == "test transcation").count();
+    QCOMPARE(count, 0);
+}
+
 void InsertTest::cleanup() {
     clearCacheAndPrintIfTestFail();
 }

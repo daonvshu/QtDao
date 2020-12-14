@@ -63,7 +63,7 @@
     - [ ] ~~delete by select results~~(move to function query)
   - other
     - [x] function with sub query
-    - [ ] transaction
+    - [x] transaction
     - [x] glob
     - [x] distinct
     - [x] having
