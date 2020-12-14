@@ -22,6 +22,7 @@ private slots:
     void testSelectUnionJoin();
     void testJoinUnionSelect();
     void testJoinUnionJoin();
+    void recursiveQueryTest();
 
     void cleanup();
 

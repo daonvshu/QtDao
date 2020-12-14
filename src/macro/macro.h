@@ -19,6 +19,12 @@ Builder& throwable() {\
 #define QUERY_BUILDER_USE_COLUMN(Builder)         QUERY_BUILDER_USE(Builder, column)
 #define QUERY_BUILDER_USE_ON(Builder)             QUERY_BUILDER_USE(Builder, on)
 
+#define QUERY_BUILDER_USE_COLUMNALL(Builder)\
+Builder& columnAll() {\
+    __super::columnAll<E>();\
+    return *this;\
+}
+
 #define QUERY_BUILDER_USE_QUERY_FROM_SELECT(Builder)\
 Builder& from(Select<E>& select){\
     __super::from(select);\
@@ -42,6 +48,12 @@ Builder& from(Join<E...>& join) {\
 template<typename... E2>\
 Builder& from(Join<E2...>& join) {\
     __super::from(join);\
+    return *this;\
+}
+
+#define QUERY_BUILDER_USE_QUERY_FROM_RECURSIVE(Builder)\
+Builder& from(RecursiveQueryBuilder& builder) {\
+    __super::from(builder);\
     return *this;\
 }
 

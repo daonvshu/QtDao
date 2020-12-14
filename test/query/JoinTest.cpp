@@ -18,8 +18,8 @@ void JoinTest::initTestCase() {
     dao::_insert<SqliteTest1>().build().insert2(data1);
 
     data2 << SqliteTest2(0, "joker", 9999, -1, 30);
-    data2 << SqliteTest2(0, "bob", 10, 9999, "abc");
-    data2 << SqliteTest2(0, "func", 10, -2, 50);
+    data2 << SqliteTest2(0, "bob", 9, 9999, "abc");
+    data2 << SqliteTest2(0, "func", 10, 9, 50);
     data2 << SqliteTest2(0, "func", 50, 10, 50);
     dao::_insert<SqliteTest2>().build().insert2(data2);
 
@@ -51,7 +51,7 @@ void JoinTest::testJoinTable() {
     }
     QCOMPARE(
         data,
-        QVariantList() << "bob" << "bob" << "bob group" << 12 << 10
+        QVariantList() << "bob" << "bob" << "bob group" << 12 << 9
             << "joker" << "client" << "client group1" << 14 << 9999
             << "joker" << "client" << "client group2" << 12 << 9999
             <<"func" << "abc" << "func group1" << 10 << 10
@@ -88,7 +88,7 @@ void JoinTest::testJoinTable() {
     }
     QCOMPARE(
         data,
-        QVariantList() << 1 << "abc" << 10 << "" << "func" << 10 << -2 << 50 << 1 << 3 << "func group1" << 6
+        QVariantList() << 1 << "abc" << 10 << "" << "func" << 10 << 9 << 50 << 1 << 3 << "func group1" << 6
     );
 }
 
@@ -116,6 +116,7 @@ void JoinTest::testJoinSelfTable() {
     auto result2 = dao::_join<SqliteTest2, SqliteTest2Tmp, SqliteTest2Tmp2>()
         .column(sf1.name, sf2.name, sf3.name)
         .from<SqliteTest2>()
+        .with(_orderBy(sf1.name.desc()))
         .innerJoin<SqliteTest2Tmp>().on(sf2.number2 == sf1.number)
         .innerJoin<SqliteTest2Tmp2>().on(sf3.number2 == sf2.number)
         .build().list();
@@ -127,7 +128,7 @@ void JoinTest::testJoinSelfTable() {
     }
     QCOMPARE(
         data,
-        QVariantList() << "joker" << "bob" << "func"
+        QVariantList() << "joker" << "bob" << "func" << "bob" << "func" << "func"
     );
 }
 
@@ -239,7 +240,7 @@ void JoinTest::testSelectUnionJoin() {
         results,
         QVariantList() << "client" << 14
             << "client" << 12
-            << "bob" << 10
+            << "bob" << 9
             << "client" << 9999
             << "client" << 9999
             << "abc" << 10
@@ -278,7 +279,7 @@ void JoinTest::testJoinUnionSelect() {
         QVariantList()
         << "abc" << 10
         << "abc" << 50
-        << "bob" << 10
+        << "bob" << 9
         << "client" << 12
         << "client" << 14
         << "client" << 9999
@@ -318,8 +319,80 @@ void JoinTest::testJoinUnionJoin() {
     QCOMPARE(
         results,
         QVariantList()
-        << "bob" << 10
+        << "bob" << 9
         << "client" << 9999
+    );
+}
+
+void JoinTest::recursiveQueryTest() {
+    class TmpTest2 : public dao::self<SqliteTest2> {};
+
+    SqliteTest1::Fields sf1;
+    SqliteTest2::Fields sf2;
+    SqliteTest3::Fields sf3;
+    TmpTest2::Fields sfs2;
+
+    auto recursive = dao::_recursive()
+        .tmp<TmpTest2>()
+        .initialSelect(
+            dao::_select<SqliteTest2>().filter(sf2.number == 50).build()
+        )
+        .recursiveSelect(
+            dao::_join<SqliteTest2, TmpTest2>()
+                .columnAll<SqliteTest2>()
+                .from<SqliteTest2>()
+                .innerJoin<TmpTest2>().on(sfs2.number2 == sf2.number)
+                .build()
+        );
+
+    auto select = dao::_select<TmpTest2>().from(recursive)
+        .column(sfs2.number).with(_orderBy(sfs2.number)).build().list();
+    QVariantList numbers;
+    for (const auto& r : select) {
+        numbers << r.getNumber();
+    }
+    QCOMPARE(numbers, QVariantList() << 9 << 10 << 50 << 9999);
+
+    auto join1 = dao::_join<TmpTest2, SqliteTest1, SqliteTest3>()
+        .column(sfs2.name, sf1.name, sf3.name, sf1.number, sfs2.number)
+        .from(recursive)
+        .innerJoin<SqliteTest1>().on(sf1.id == sf3.tbi1)
+        .innerJoin<SqliteTest3>().on(sf3.tbi2 == sfs2.id, sf3.name.like("client%"))
+        .build().list();
+
+    QVariantList data;
+    for (const auto& r : join1) {
+        auto s2 = std::get<0>(r);
+        auto s1 = std::get<1>(r);
+        auto s3 = std::get<2>(r);
+        data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
+    }
+    QCOMPARE(
+        data,
+        QVariantList()
+        << "joker" << "client" << "client group1" << 14 << 9999
+        << "joker" << "client" << "client group2" << 12 << 9999
+    );
+
+    auto join2 = dao::_join<SqliteTest1, TmpTest2, SqliteTest3>()
+        .column(sfs2.name, sf1.name, sf3.name, sf1.number, sfs2.number)
+        .from<SqliteTest1>()
+        .innerJoin(recursive).on(sfs2.id == sf3.tbi2)
+        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id, sf3.name.like("client%"))
+        .build().list();
+
+    data.clear();
+    for (const auto& r : join2) {
+        auto s1 = std::get<0>(r);
+        auto s2 = std::get<1>(r);
+        auto s3 = std::get<2>(r);
+        data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
+    }
+    QCOMPARE(
+        data,
+        QVariantList()
+        << "joker" << "client" << "client group1" << 14 << 9999
+        << "joker" << "client" << "client group2" << 12 << 9999
     );
 }
 

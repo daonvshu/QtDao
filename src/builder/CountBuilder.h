@@ -16,6 +16,7 @@ public:
 
     QUERY_BUILDER_USE_QUERY_FROM_SELECT(CountBuilder);
     QUERY_BUILDER_USE_QUERY_FROM_JOIN2(CountBuilder);
+    QUERY_BUILDER_USE_QUERY_FROM_RECURSIVE(CountBuilder);
     
     int count() {
         QList<E> data = build().list();

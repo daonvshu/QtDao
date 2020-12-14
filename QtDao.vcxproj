@@ -137,6 +137,7 @@
     <ClInclude Include="src\builder\JoinBuilder.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="src\builder\RecursiveQueryBuilder.h" />
     <ClInclude Include="src\builder\SelectBuilder.h" />
     <ClInclude Include="src\builder\UpdateBuilder.h" />
     <ClInclude Include="src\condition\ConditionOperator.h" />

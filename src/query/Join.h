@@ -5,6 +5,8 @@
 template<typename... E>
 class JoinBuilder;
 
+class RecursiveQueryBuilder;
+
 enum JoinType {
     CrossJoin,
     InnerJoin,
@@ -20,6 +22,7 @@ struct JoinData {
     QString fromSelectStatement;
     QVariantList fromSelectValues;
     QString fromSelectAs;
+    bool recursiveQuery;
 };
 
 template<typename... E>
@@ -50,6 +53,7 @@ private:
     void resultBind(std::tuple<E...>& result, QSqlQuery& query);
 
     friend class BaseQueryBuilder;
+    friend class RecursiveQueryBuilder;
 };
 
 template<typename ...E>
@@ -89,7 +93,11 @@ inline void Join<E...>::buildJoinSqlStatement() {
     if (mainData.fromSelectStatement.isEmpty()) {
         sql.append(mainTable);
     } else {
-        sql.append("(").append(mainData.fromSelectStatement).append(")");
+        if (mainData.recursiveQuery) {
+            sql.prepend(mainData.fromSelectStatement).append(mainData.fromSelectAs);
+        } else {
+            sql.append("(").append(mainData.fromSelectStatement).append(")");
+        }
         values.append(mainData.fromSelectValues);
     }
     sql.append(' ').append(prefixGetter(mainTable));
@@ -100,14 +108,18 @@ inline void Join<E...>::buildJoinSqlStatement() {
         if (tb.first == mainTable) {
             continue;
         }
-        auto joinData = subJoinData.value(tb.first);
+        auto joinData = subJoinData.take(tb.first);
         sql.append(' ');
         sql.append(getJoinTypeName(joinData.joinType));
         sql.append(' ');
         if (joinData.fromSelectStatement.isEmpty()) {
             sql.append(tb.second);
         } else {
-            sql.append("(").append(joinData.fromSelectStatement).append(")");
+            if (joinData.recursiveQuery) {
+                sql.prepend(joinData.fromSelectStatement).append(joinData.fromSelectAs);
+            } else {
+                sql.append("(").append(joinData.fromSelectStatement).append(")");
+            }
             values.append(joinData.fromSelectValues);
         }
         sql.append(' ').append(prefixGetter(tb.first));

@@ -57,6 +57,12 @@ private:
         return appendCol(condition...);
     }
 
+    template<typename... Args>
+    Connector& appendCol(const FieldInfo& info, const Args&... args) {
+        d->append(info);
+        return appendCol(args...);
+    }
+
     Connector& appendCol() {
         return *this;
     }

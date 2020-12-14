@@ -8,6 +8,8 @@
 #include "../query/Select.h"
 #include "../query/Join.h"
 
+#include "RecursiveQueryBuilder.h"
+
 template<typename E> class Insert;
 template<typename E> class Select;
 template<typename E> class Update;
@@ -22,6 +24,7 @@ public:
         , columnBind(",")
         , filterCondition("and")
         , onCondition("and")
+        , recursiveQuery(false)
     {
     }
 
@@ -55,6 +58,9 @@ protected:
     template<typename Col, typename... Args>
     void column(const Col& function, const Args&... args);
 
+    template<typename E>
+    void columnAll();
+
     virtual void set() {}
     virtual void filter() {}
     virtual void with() {}
@@ -66,6 +72,8 @@ protected:
 
     template<typename... E>
     void from(Join<E...>& join);
+
+    void from(RecursiveQueryBuilder& builder);
 
     void fromDataClear();
 
@@ -82,6 +90,7 @@ protected:
     QString fromSelectStatement;
     QVariantList fromSelectValues;
     QString fromSelectAs;
+    bool recursiveQuery;
     //union
     QString unionSelectStatement;
     QVariantList unionSelectValues;
@@ -149,6 +158,15 @@ inline void BaseQueryBuilder::column(const Col& function, const Args & ...args) 
 }
 
 template<typename E>
+inline void BaseQueryBuilder::columnAll() {
+    QString tbName = E::Info::getTableName();
+    QStringList fields = E::Info::getFields();
+    for (const auto& field : fields) {
+        columnBind.appendCol(FieldInfo{ field, tbName });
+    }
+}
+
+template<typename E>
 inline void BaseQueryBuilder::from(Select<E>& select) {
     select.buildFilterSqlStatement();
     fromSelectStatement = select.statement;
@@ -170,6 +188,23 @@ inline void BaseQueryBuilder::from(Join<E...>& join) {
     } else {
         fromSelectAs = "join_" + join.builder->fromSelectAs;
     }
+}
+
+inline void BaseQueryBuilder::from(RecursiveQueryBuilder& builder) {
+    Q_ASSERT(!builder.initialQueryStatement.isEmpty());
+    Q_ASSERT(!builder.recursiveQueryStatement.isEmpty());
+    Q_ASSERT(!builder.tmpTableName.isEmpty());
+
+    fromSelectAs = builder.tmpTableName;
+    fromSelectStatement = QString("with recursive %1 as (%2 %3 %4) ")
+        .arg(fromSelectAs)
+        .arg(builder.initialQueryStatement)
+        .arg(builder.unionAll ? "union all" : "union")
+        .arg(builder.recursiveQueryStatement)
+        ;
+    fromSelectValues.append(builder.initialQueryValue);
+    fromSelectValues.append(builder.recursiveQueryValue);
+    recursiveQuery = true;
 }
 
 inline void BaseQueryBuilder::fromDataClear() {

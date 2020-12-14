@@ -7,6 +7,8 @@
 template<typename E>
 class SelectBuilder;
 
+class RecursiveQueryBuilder;
+
 template<typename E>
 class Select : BaseQuery {
 public:
@@ -43,6 +45,7 @@ protected:
     BASE_QUERY_CONSTRUCTOR_DECLARE(Select);
 
     friend class BaseQueryBuilder;
+    friend class RecursiveQueryBuilder;
 };
 
 template<typename E>
@@ -116,7 +119,12 @@ inline void Select<E>::buildFilterSqlStatement() {
     if (builder->fromSelectStatement.isEmpty()) {
         sql = sql.arg(info.getTableName());
     } else {
-        sql = sql.arg('(' + builder->fromSelectStatement + ") as " + builder->fromSelectAs);
+        if (builder->recursiveQuery) {
+            sql = sql.arg(builder->fromSelectAs);
+            sql = builder->fromSelectStatement + sql;
+        } else {
+            sql = sql.arg('(' + builder->fromSelectStatement + ") as " + builder->fromSelectAs);
+        }
         values.append(builder->fromSelectValues);
     }
 

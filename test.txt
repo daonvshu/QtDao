@@ -9,6 +9,7 @@ PASS   : JoinTest::testJoinOnSelect()
 PASS   : JoinTest::testSelectUnionJoin()
 PASS   : JoinTest::testJoinUnionSelect()
 PASS   : JoinTest::testJoinUnionJoin()
+PASS   : JoinTest::recursiveQueryTest()
 PASS   : JoinTest::cleanupTestCase()
-Totals: 10 passed, 0 failed, 0 skipped, 0 blacklisted, 54ms
+Totals: 11 passed, 0 failed, 0 skipped, 0 blacklisted, 15934ms
 ********* Finished testing of JoinTest *********

@@ -9,6 +9,7 @@
 #include "builder/UpdateBuilder.h"
 #include "builder/DeleteBuilder.h"
 #include "builder/JoinBuilder.h"
+#include "builder/RecursiveQueryBuilder.h"
 
 #include "condition/ConditionOperator.h"
 
@@ -47,6 +48,10 @@ public:
     template<typename... T>
     static JoinBuilder<T...> _join() {
         return JoinBuilder<T...>();
+    }
+
+    static RecursiveQueryBuilder _recursive(bool unionAll = false) {
+        return RecursiveQueryBuilder(unionAll);
     }
 
     template<typename E>

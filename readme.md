@@ -43,7 +43,7 @@
     - [ ] ~~multi-table select~~
     - [x] union select
     - [x] inner/left/right/full join
-    - [ ] recursive select
+    - [x] recursive select
     - [x] select in select
     - [x] join result <-> select result 
     - [x] original query
@@ -56,12 +56,17 @@
   - update operator
     - [x] set by where update
     - [x] object(s) update
-    - [ ] update with select results
+    - [ ] ~~update with select results~~(move to function query)
   - delete operator
     - [x] condition delete
     - [x] object(s) delete
-    - [ ] delete by select results
-  - [ ] transaction
+    - [ ] ~~delete by select results~~(move to function query)
+  - other
+    - [ ] transaction
+    - [ ] glob
+    - [ ] distinct
+    - [ ] having
+    - [ ] between date to date
 - **connection pool**
   - [x] connection reuse
   - [x] work thread connection separate
