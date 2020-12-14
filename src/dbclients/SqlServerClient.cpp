@@ -25,6 +25,9 @@ void SqlServerClient::renameTable(const QString& oldName, const QString& newName
 void SqlServerClient::dropTable(const QString& tbName) {
 }
 
+void SqlServerClient::truncateTable(const QString& tbName) {
+}
+
 QStringList SqlServerClient::getTagTableFields(const QString& tbName) {
     return QStringList();
 }

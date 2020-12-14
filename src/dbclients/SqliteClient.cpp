@@ -98,6 +98,13 @@ void SqliteClient::dropTable(const QString& tbName) {
     BaseQuery::queryPrimitive(str);
 }
 
+void SqliteClient::truncateTable(const QString& tbName) {
+    auto str = QString("delete from %1").arg(tbName);
+    BaseQuery::queryPrimitive(str);
+    str = QString("delete from sqlite_sequence where name = \"%1\"").arg(tbName);
+    BaseQuery::queryPrimitive(str);
+}
+
 QStringList SqliteClient::getTagTableFields(const QString& tbName) {
     QStringList fields;
     auto query = BaseQuery::queryPrimitiveThrowable(QString("pragma table_info('%1')").arg(tbName));

@@ -30,6 +30,8 @@ public:
 
     virtual void dropTable(const QString& tbName) = 0;
 
+    virtual void truncateTable(const QString& tbName) = 0;
+
     virtual QStringList getTagTableFields(const QString& tbName) = 0;
 
     virtual void restoreDataBefore(const QString& tbName)  {}

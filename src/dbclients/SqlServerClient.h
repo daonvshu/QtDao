@@ -25,6 +25,8 @@ public:
 
     void dropTable(const QString& tbName);
 
+    void truncateTable(const QString& tbName);
+
     QStringList getTagTableFields(const QString& tbName);
 
     void dropAllIndexOnTable(const QString& tbName);

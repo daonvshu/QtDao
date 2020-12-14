@@ -61,6 +61,11 @@ public:
     }
 
     template<typename E>
+    static void _truncate() {
+        DbLoader::getClient().truncateTable(E::Info::getTableName());
+    }
+
+    template<typename E>
     class self : public E {
     public:
         struct Info : E::Info {

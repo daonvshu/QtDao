@@ -25,6 +25,9 @@ void MysqlClient::renameTable(const QString& oldName, const QString& newName) {
 void MysqlClient::dropTable(const QString& tbName) {
 }
 
+void MysqlClient::truncateTable(const QString& tbName) {
+}
+
 QStringList MysqlClient::getTagTableFields(const QString& tbName) {
     return QStringList();
 }

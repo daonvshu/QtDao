@@ -15,6 +15,7 @@ private slots:
 
     void filterDeleteTest();
     void objectDeleteTest();
+    void truncateTest();
 
     void cleanup();
 

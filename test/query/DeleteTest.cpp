@@ -51,6 +51,21 @@ void DeleteTest::objectDeleteTest() {
     QVERIFY(result2.isEmpty());
 }
 
+void DeleteTest::truncateTest() {
+    data2.clear();
+    data2 << SqliteTest2(0, "func2", 10, -2, 50);
+    data2 << SqliteTest2(0, "func2", 50, 0, 50);
+    dao::_insert<SqliteTest2>().build().insert2(data2);
+
+    dao::_truncate<SqliteTest2>();
+    auto select = dao::_selectAll<SqliteTest2>();
+    QVERIFY(select.isEmpty());
+
+    auto entity = SqliteTest2(0, "func2", 50, 0, 50);
+    dao::_insert<SqliteTest2>().build().insert(entity);
+    QVERIFY(entity.getId() == 1);
+}
+
 void DeleteTest::cleanup() {
     clearCacheAndPrintIfTestFail();
 }

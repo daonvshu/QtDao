@@ -4,15 +4,15 @@
   - [x] sqlite
   - [ ] mysql
   - [ ] sqlserver
-  - [ ] Confusion
+  - [ ] obfuscate field
 
 - **loader**
   - [x] configure loader
   - [ ] driver loader
   - [x] connect test
   - [x] auto create database/table (use config)
-  - [ ] truncate/drop table
-  - [ ] drop database
+  - [x] truncate/drop table
+  - [x] drop database
   - [ ] database switch
 - **upgrader**
   - [x] version check
@@ -62,6 +62,7 @@
     - [x] object(s) delete
     - [ ] ~~delete by select results~~(move to function query)
   - other
+    - [ ] function with sub query
     - [ ] transaction
     - [ ] glob
     - [ ] distinct
