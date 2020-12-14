@@ -13,6 +13,8 @@ private slots:
     void testMultiThreadOpenConnection();
     void testReuseConnectionInOtherThread();
 
+    void testAutoClose();
+
     void cleanup();
 
     void cleanupTestCase();

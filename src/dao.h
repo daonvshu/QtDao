@@ -105,4 +105,11 @@ public:
             }
         };
     };
+
+    class LocalQuery {
+    public:
+        ~LocalQuery() {
+            ConnectionPool::closeConnection();
+        }
+    };
 };

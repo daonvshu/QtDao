@@ -73,7 +73,7 @@
   - [x] work thread connection separate
   - [x] work thread connection reuse
 - **auto close connection**
-  - [ ] auto close connection when work thread end
+  - [x] auto close connection when work thread end
 - **exception**
   - [x] load configure exception
   - [x] upgrade exception

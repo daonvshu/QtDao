@@ -4,6 +4,7 @@
 #include "../../src/ConnectionPool.h"
 
 #include "../../src/dbclients/SqliteClient.h"
+#include "../../src/dao.h"
 
 #include "sqliteentity/SqliteConfig.h"
 
@@ -110,6 +111,45 @@ void ConnectionPoolTest::testReuseConnectionInOtherThread() {
         }
         ConnectionPool::closeConnection();
         QThread::msleep(20);
+    });
+    loop.exec();
+
+    QVERIFY(connection1 == connection2);
+    QCOMPARE(ConnectionPool::getUsedConnectionSize(), 1);
+}
+
+void ConnectionPoolTest::testAutoClose() {
+    DbLoader::loadConfig(SqliteConfig());
+    QEventLoop loop;
+
+    QString connection1, connection2;
+
+    RunnableHandler<void>::exec([&] {
+        dao::LocalQuery local;
+        {
+            auto db = ConnectionPool::getConnection();
+            QVERIFY(db.isOpen());
+            connection1 = db.connectionName();
+            QSqlQuery query(db);
+            query.exec("select 1");
+        }
+        QThread::msleep(200);
+        loop.quit();
+    });
+    loop.exec();
+
+    //new thread
+    RunnableHandler<void>::exec([&] {
+        dao::LocalQuery local;
+        {
+            auto db = ConnectionPool::getConnection();
+            QVERIFY(db.isOpen());
+            QSqlQuery query(db);
+            query.exec("select 1");
+            connection2 = db.connectionName();
+        }
+        QThread::msleep(20);
+        loop.quit();
     });
     loop.exec();
 

@@ -302,9 +302,6 @@
     <Xsd Include="entity\sqlite_entity.xsd">
       <Filter>Header Files\entity</Filter>
     </Xsd>
-    <Xsd Include="entity\dao_cfg.xsd">
-      <Filter>Resource Files</Filter>
-    </Xsd>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="test\ConnectionPoolTest.h">

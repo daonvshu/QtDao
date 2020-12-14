@@ -119,9 +119,6 @@
     <ClCompile Include="test\sqliteentity\EntityInclude.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dao_cfg.h">
-      <DependentUpon>entity\dao_cfg.xsd</DependentUpon>
-    </ClInclude>
     <ClInclude Include="dao_entity.h">
       <DependentUpon>entity\dao_entity.xsd</DependentUpon>
     </ClInclude>
@@ -189,9 +186,6 @@
     <Xml Include="test\sqliteentity\sqlite_entity.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="entity\dao_cfg.xsd">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </Xsd>
     <Xsd Include="entity\dao_entity.xsd">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </Xsd>
