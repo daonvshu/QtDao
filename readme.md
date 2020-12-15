@@ -1,81 +1,56 @@
-## QtDao2.0
-#### TODO List:
-- **support**
-  - [x] sqlite
-  - [ ] mysql
-  - [ ] sqlserver
-  - [ ] obfuscate field
+## qt database object library
 
-- **loader**
-  - [x] configure loader
-  - [ ] driver loader
-  - [x] connect test
-  - [x] auto create database/table (use config)
-  - [x] truncate/drop table
-  - [x] drop database
-  - [ ] ~~database switch~~
-- **upgrader**
-  - [x] version check
-  - [x] table upgrade
-- **log**
-  - [x] sql statement print 
-  - [x] value list print
-- **entity generator**
-  - [x] field getter/setter
-  - [x] table field
-  - [x] transient field
-  - [x] default value
-  - [x] function query result getter
-- **query condition**
-  - [x] operator field <-> value
-  - [x] operator field <-> field
-  - [ ] ~~operator field <-> function~~
-  - [ ] ~~operator function <-> function~~
-  - [ ] ~~operator field <-> select results~~(move to function query)
-- **query executor**
-  - insert operator
-    - [x] object(s) insert
-    - [x] part field value insert
-    - [x] insert in select results
-    - [x] insert or replace
-  - select operator
-    - [x] unique/list select
-    - [ ] ~~multi-table select~~
-    - [x] union select
-    - [x] inner/left/right/full join
-    - [x] recursive select
-    - [x] select in select
-    - [x] join result <-> select result 
-    - [x] original query
-    - [x] custom function query
-    - [ ] ~~custom statement query~~
-  - count operator
-    - [x] condition count
-    - [ ] ~~multi-table count~~
-    - [x] count in select result
-  - update operator
-    - [x] set by where update
-    - [x] object(s) update
-    - [ ] ~~update with select results~~(move to function query)
-  - delete operator
-    - [x] condition delete
-    - [x] object(s) delete
-    - [ ] ~~delete by select results~~(move to function query)
-  - other
-    - [x] function with sub query
-    - [x] transaction
-    - [x] glob
-    - [x] distinct
-    - [x] having
-    - [ ] between date to date
-- **connection pool**
-  - [x] connection reuse
-  - [x] work thread connection separate
-  - [x] work thread connection reuse
-- **auto close connection**
-  - [x] auto close connection when work thread end
-- **exception**
-  - [x] load configure exception
-  - [x] upgrade exception
-  - [x] query exception
-  - [x] connection pool exception
+这是一个数据库查询与对象转换的操作库，支持基本增删改查操作，它能简单的将查询结果转换为定义好的类实例，基本原理是通过代码生成器[DbEntityGenerator](https://github.com/daonvshu/DbEntityGenerator)和模板配合进行转换，下面是一个简单的示例展示了如何查询一个结果
+```c++
+Test1::Fields sf1;
+Test1 d1 = dao::_select<Test1>()
+        .filter(sf1.name == "client", _or(sf1.number == 12, sf1.name == "bob"))
+        .build().one();
+```
+等价于下面的sql语句：
+```sql
+select *from test1 where name='client' and (number=12 or name='bob')
+```
+
+下面是当前受支持的数据库
+- [x] sqlite
+- [ ] mysql
+- [ ] sqlserver
+
+## 如何使用
+当前只适配了sqlite，使用[qtdao-2.0-beta1分支下载库](https://github.com/daonvshu/QtDao/tree/qtdao-2.0-beta1)，使用步骤[看这](https://github.com/daonvshu/QtDao/blob/master/doc/setup/setup.md)
+
+## 支持的功能
+
+- **数据库初始化**
+  - 检查连接
+  - 自动创建数据库/数据表
+  - 检查版本并升级
+- **日志**
+  - 打印执行的sql语句
+  - 打印执行的sql值列表
+- **连接池**
+  - 多线程查询
+  - 连接名复用
+- **查询**
+  - insert([demo](https://github.com/daonvshu/QtDao/blob/master/doc/api/insert.md))
+    - 对象（/批量）插入
+    - 部分值插入
+    - 插入或替换(insert or replace)
+    - 使用查询结果插入(insert into select)
+  - select([demo](https://github.com/daonvshu/QtDao/blob/master/doc/api/select.md))
+    - 对象查询
+    - 联合(union)
+    - join
+    - 递归查询(recursive)
+    - 子查询（嵌套查询）
+    - 自定义语句查询
+    - 计数(count)
+  - update([demo](https://github.com/daonvshu/QtDao/blob/master/doc/api/update.md))
+    - 条件更新
+    - 对象（/批量）更新
+  - delete([demo](https://github.com/daonvshu/QtDao/blob/master/doc/api/delete.md))
+    - 条件删除
+    - 对象（/批量）删除
+  - 其他
+    - 事务
