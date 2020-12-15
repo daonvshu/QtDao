@@ -43,10 +43,7 @@ protected:
 protected:
     QString getBindColumns(QVariantList& values);
 
-    //BASE_QUERY_CONSTRUCTOR_DECLARE(Select);
-
-    friend class SelectBuilder<E>;
-    Select(bool throwable, SelectBuilder<E>* builder): BaseQuery(throwable, builder) {}
+    BASE_QUERY_CONSTRUCTOR_DECLARE(Select);
 
     friend class BaseQueryBuilder;
     friend class RecursiveQueryBuilder;
