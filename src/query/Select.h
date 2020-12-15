@@ -43,7 +43,10 @@ protected:
 protected:
     QString getBindColumns(QVariantList& values);
 
-    BASE_QUERY_CONSTRUCTOR_DECLARE(Select);
+    //BASE_QUERY_CONSTRUCTOR_DECLARE(Select);
+
+    friend class SelectBuilder<E>;
+    Select(bool throwable, SelectBuilder<E>* builder): BaseQuery(throwable, builder) {}
 
     friend class BaseQueryBuilder;
     friend class RecursiveQueryBuilder;
@@ -57,7 +60,7 @@ inline E Select<E>::unique() {
     exec([&](QSqlQuery& query) {
         int resultSize = 0;
         while (query.next()) {
-            E::Tool tool;
+            typename E::Tool tool;
             QSqlRecord record = query.record();
             for (int i = 0; i < record.count(); i++) {
                 tool.bindValue(entity, record.fieldName(i), record.value(i));
@@ -77,7 +80,7 @@ inline E Select<E>::one() {
     E entity;
     exec([&](QSqlQuery& query) {
         if (query.next()) {
-            E::Tool tool;
+            typename E::Tool tool;
             QSqlRecord record = query.record();
             for (int i = 0; i < record.count(); i++) {
                 tool.bindValue(entity, record.fieldName(i), record.value(i));
@@ -92,7 +95,7 @@ inline QList<E> Select<E>::list() {
     buildFilterSqlStatement();
     QList<E> data;
     exec([&](QSqlQuery& query) {
-        E::Tool tool;
+        typename E::Tool tool;
         while (query.next()) {
             E entity;
             QSqlRecord record = query.record();

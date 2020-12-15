@@ -81,6 +81,9 @@
     <Filter Include="Source Files\src\sqliteentity">
       <UniqueIdentifier>{d3d06d6d-a684-4c50-97a3-a0d3953ddb8f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\src\builder">
+      <UniqueIdentifier>{38474b50-e313-438e-b327-b673ea1f09a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -157,6 +160,9 @@
     </ClCompile>
     <ClCompile Include="test\sqliteentity\EntityInclude.cpp">
       <Filter>Source Files\src\sqliteentity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\builder\BaseQueryBuilder.cpp">
+      <Filter>Source Files\src\builder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

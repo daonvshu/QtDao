@@ -93,6 +93,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\builder\BaseQueryBuilder.cpp" />
     <ClCompile Include="src\condition\ConditionConstraint.cpp" />
     <ClCompile Include="src\condition\ConnectorData.cpp" />
     <ClCompile Include="src\condition\EntityCondition.cpp" />

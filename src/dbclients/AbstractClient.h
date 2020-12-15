@@ -34,14 +34,14 @@ public:
 
     virtual QStringList getTagTableFields(const QString& tbName) = 0;
 
-    virtual void restoreDataBefore(const QString& tbName)  {}
+    virtual void restoreDataBefore(const QString& tbName)  { Q_UNUSED(tbName) }
 
-    virtual void restoreDataAfter(const QString& tbName) {};
+    virtual void restoreDataAfter(const QString& tbName) { Q_UNUSED(tbName) }
 
     virtual void dropAllIndexOnTable(const QString& tbName) = 0;
 
 private:
-    template<typename... E> struct Delegate;
+    template<typename... E> class Delegate;
     template<typename T, typename... E>
     class Delegate<T, E...> : public Delegate<E...> {
     public:
@@ -124,12 +124,12 @@ inline void AbstractClient::tableUpgrade() {
 /////////////////////////////// delegate //////////////////////////////////
 template<typename T, typename ...E>
 inline void AbstractClient::Delegate<T, E...>::createTable() {
-    client->createTable<T>();
+    AbstractClient::Delegate<>::client->createTable<T>();
     Delegate<E...>::createTable();
 }
 
 template<typename T, typename ...E>
 inline void AbstractClient::Delegate<T, E...>::tableUpgrade() {
-    client->tableUpgrade<T>();
+    AbstractClient::Delegate<>::client->tableUpgrade<T>();
     Delegate<E...>::tableUpgrade();
 }

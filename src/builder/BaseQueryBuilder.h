@@ -5,17 +5,7 @@
 #include "../condition/FunctionCondition.h"
 #include "../condition/EntityField.h"
 
-#include "../query/Select.h"
-#include "../query/Join.h"
-
-#include "RecursiveQueryBuilder.h"
-
-template<typename E> class Insert;
-template<typename E> class Select;
-template<typename E> class Update;
-template<typename E> class Delete;
-template<typename... E> class Join;
-template<typename E> class InsertIntoSelect;
+class RecursiveQueryBuilder;
 
 class BaseQueryBuilder {
 public:
@@ -190,23 +180,6 @@ inline void BaseQueryBuilder::from(Join<E...>& join) {
     } else {
         fromSelectAs = "join_" + join.builder->fromSelectAs;
     }
-}
-
-inline void BaseQueryBuilder::from(RecursiveQueryBuilder& builder) {
-    Q_ASSERT(!builder.initialQueryStatement.isEmpty());
-    Q_ASSERT(!builder.recursiveQueryStatement.isEmpty());
-    Q_ASSERT(!builder.tmpTableName.isEmpty());
-
-    fromSelectAs = builder.tmpTableName;
-    fromSelectStatement = QString("with recursive %1 as (%2 %3 %4) ")
-        .arg(fromSelectAs)
-        .arg(builder.initialQueryStatement)
-        .arg(builder.unionAll ? "union all" : "union")
-        .arg(builder.recursiveQueryStatement)
-        ;
-    fromSelectValues.append(builder.initialQueryValue);
-    fromSelectValues.append(builder.recursiveQueryValue);
-    recursiveQuery = true;
 }
 
 inline void BaseQueryBuilder::fromDataClear() {

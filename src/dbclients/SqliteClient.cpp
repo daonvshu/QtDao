@@ -81,6 +81,8 @@ void SqliteClient::createIndex(const QString& tbName, QStringList fields, IndexT
     case AbstractClient::INDEX_UNIQUE:
         typeStr = "unique";
         break;
+    default:
+        break;
     }
     str = str.chopped(1).arg(typeStr).arg(indexName).arg(tbName);
     str.append(")");

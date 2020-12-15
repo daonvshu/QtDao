@@ -70,7 +70,6 @@ void DbLoader::init_priv() {
 
 void DbLoader::updateLocalVersion() {
     getClient().createTableIfNotExist("dao_version", QStringList() << "ver int", QStringList());
-    bool dataRowExist = false;
     auto query = BaseQuery::queryPrimitiveThrowable("select count(*) from dao_version");
     int count = 0;
     if (query.next()) {

@@ -22,7 +22,7 @@ class ConditionConstraint;
 class Connector;
 class EntityCondition {
 public:
-    EntityCondition() {}
+    EntityCondition();
 
 protected:
     //for class EntityField

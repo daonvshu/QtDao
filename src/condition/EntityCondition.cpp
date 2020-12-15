@@ -1,5 +1,8 @@
 #include "EntityCondition.h"
 
+EntityCondition::EntityCondition() {
+}
+
 EntityCondition::EntityCondition(
     const FieldInfo& field,
     const QString& op,

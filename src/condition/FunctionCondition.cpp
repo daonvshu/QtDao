@@ -1,5 +1,13 @@
 ﻿#include "FunctionCondition.h"
 
+FunctionCondition::FunctionCondition() {
+}
+
+FunctionCondition& FunctionCondition::value(QVariant v) {
+    d->values << v;
+    return *this;
+}
+
 FunctionCondition::FunctionCondition(const QString& expressions) {
     d = new FunctionConditionData;
     d->expressions = expressions;

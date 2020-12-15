@@ -14,7 +14,7 @@ class ConditionConstraint;
 class Connector;
 class FunctionCondition {
 public:
-	FunctionCondition() {}
+    FunctionCondition();
 
 	FunctionCondition(const QString& expressions);
 
@@ -61,11 +61,6 @@ inline FunctionCondition& FunctionCondition::field(const EntityField<T>& f) {
 template<typename ...Args>
 inline FunctionCondition& FunctionCondition::value(QVariant v, Args ...args) {
 	return value(v).value(args...);
-}
-
-inline FunctionCondition& FunctionCondition::value(QVariant v) {
-	d->values << v;
-	return *this;
 }
 
 template<typename E>
