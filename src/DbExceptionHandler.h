@@ -4,8 +4,10 @@
 #include <qstring.h>
 #include <qexception.h>
 
-class DbExceptionHandler {
+class DbExceptionHandler : public QObject {
 public:
+    using QObject::QObject;
+
     static DbExceptionHandler* exceptionHandler;
     static void setExceptionHandler(DbExceptionHandler* exceptionHandler);
 

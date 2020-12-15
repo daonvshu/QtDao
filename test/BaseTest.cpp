@@ -15,6 +15,8 @@ void SqlLogPrinter(const QString& sql, const QVariantList& values) {
 
 class UnitQueryTestExceptionHandler : public DbExceptionHandler {
 public:
+    using DbExceptionHandler::DbExceptionHandler;
+
     void execFail(const QString& lastErr) override {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
         std::cout << "----TEST EXECUTE ERR: " << lastErr.toStdString() << std::endl;
@@ -31,7 +33,7 @@ public:
 BaseTest::BaseTest() {
     cachedSqlLog.clear();
     daoSetQueryLogPrinter(SqlLogPrinter);
-    DbExceptionHandler::setExceptionHandler(new UnitQueryTestExceptionHandler);
+    DbExceptionHandler::setExceptionHandler(new UnitQueryTestExceptionHandler(this));
 }
 
 void BaseTest::clearCacheAndPrintIfTestFail() {
