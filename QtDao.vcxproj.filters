@@ -285,9 +285,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="entity\dao_entity.xml">
-      <Filter>Header Files\entity</Filter>
-    </Xml>
     <Xml Include="entity\sqlite_entity.xml">
       <Filter>Header Files\entity</Filter>
     </Xml>
@@ -299,9 +296,6 @@
     </Xml>
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="entity\dao_entity.xsd">
-      <Filter>Header Files\entity</Filter>
-    </Xsd>
     <Xsd Include="entity\mysql_entity.xsd">
       <Filter>Header Files\entity</Filter>
     </Xsd>
