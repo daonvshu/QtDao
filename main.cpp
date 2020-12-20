@@ -42,15 +42,15 @@ void setColor() {
 template<typename... Arg> struct TestRunner;
 template<typename T, typename... Arg>
 struct TestRunner<T, Arg...> : TestRunner<Arg...> {
-    static int run(int argc, char* argv[]) {
+    static int run() {
         T t;
-        int result = QTest::qExec(&t, argc, argv);
+        int result = QTest::qExec(&t, QStringList() << "QtDao.exe" << "-o" << "test.txt");
         setColor();
-        result += __super::run(argc, argv);
+        result += __super::run();
         return result;
     }
 };
-template<> struct TestRunner<> { static int run(int argc, char* argv[]) { return 0; } };
+template<> struct TestRunner<> { static int run() { return 0; } };
 
 int main(int argc, char *argv[])
 {
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
         DeleteTest,
         JoinTest,
         InsertIntoSelectTest
-    >::run(argc, argv);
+    >::run();
     if (result != 0) {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
         std::cout << "Not all tests are successful!" << std::endl;
