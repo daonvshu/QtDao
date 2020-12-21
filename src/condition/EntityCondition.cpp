@@ -56,6 +56,9 @@ void EntityCondition::combine() {
     case TypeBetween:
         combineBetween();
         break;
+    case TypeIs:
+        combineIs();
+        break;
     default:
         break;
     }
@@ -92,6 +95,13 @@ void EntityCondition::setFieldPrefixGetter(std::function<QString(const QString&)
 void EntityCondition::combineBetween() {
     QString str = "%1 between ? and ?";
     d->combineStr = str.arg(d->getField(0));
+}
+
+void EntityCondition::combineIs() {
+    d->combineStr = QString("%1 is %2")
+        .arg(d->getField(0))
+        .arg(d->values.at(0).toBool() ? "not null" : "null");
+    d->values.clear();
 }
 
 QVariantList EntityCondition::getValues() {

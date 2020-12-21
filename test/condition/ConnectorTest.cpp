@@ -20,11 +20,13 @@ void ConnectorTest::conditionConnectortest() {
         sf.id == 1, 
         _or(sf.name == "alice", sf.varianttype == "qwe", sf.number2++),
         sf.name.in(QStringList() << "r" << "t" << "u"),
-        sf.number.between(10, 20)
+        sf.number.between(10, 20),
+        sf.varianttype.notNull(),
+        sf.varianttype.lsNull()
     );
     condition.connect([&](const QString&) { return "a."; });
     QCOMPARE(condition.getConditionStr(),
-        QString("a.id=? and (a.name=? or a.varianttype=? or a.number2=a.number2+?) and a.name in (?,?,?) and a.number between ? and ?")
+        QString("a.id=? and (a.name=? or a.varianttype=? or a.number2=a.number2+?) and a.name in (?,?,?) and a.number between ? and ? and a.varianttype is not null and a.varianttype is null")
     );
     QCOMPARE(condition.getValues(), 
         QVariantList() << 1 << "alice" << "qwe" << 1 << "r" << "t" << "u" << 10 << 20

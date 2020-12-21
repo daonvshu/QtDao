@@ -1,8 +1,8 @@
 ********* Start testing of InsertIntoSelectTest *********
-Config: Using QtTest library 5.14.2, Qt 5.14.2 (i386-little_endian-ilp32 shared (dynamic) debug build; by MSVC 2017)
+Config: Using QtTest library 5.12.3, Qt 5.12.3 (i386-little_endian-ilp32 shared (dynamic) debug build; by MSVC 2017)
 PASS   : InsertIntoSelectTest::initTestCase()
 PASS   : InsertIntoSelectTest::testInsertIntoSelect()
 PASS   : InsertIntoSelectTest::testInsertIntoJoin()
 PASS   : InsertIntoSelectTest::cleanupTestCase()
-Totals: 4 passed, 0 failed, 0 skipped, 0 blacklisted, 64ms
+Totals: 4 passed, 0 failed, 0 skipped, 0 blacklisted, 50ms
 ********* Finished testing of InsertIntoSelectTest *********

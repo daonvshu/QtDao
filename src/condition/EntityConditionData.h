@@ -9,6 +9,7 @@ enum ConditionType {
     TypeNormal,
     TypeIn,
     TypeBetween,
+    TypeIs,
     //constraint
     TypeLimit,
     TypeOrderBy,

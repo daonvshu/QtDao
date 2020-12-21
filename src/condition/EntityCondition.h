@@ -65,6 +65,11 @@ protected:
         const T& b
     );
 
+    static EntityCondition conditionIs(
+        const FieldInfo& field,
+        bool notnull
+    );
+
 protected:
     QSharedDataPointer<EntityConditionData> d;
 
@@ -75,6 +80,7 @@ protected:
     void combineNormal();
     void combineIn();
     void combineBetween();
+    void combineIs();
 
     virtual QVariantList getValues();
 
@@ -118,5 +124,16 @@ inline EntityCondition EntityCondition::conditionBetween(
         field,
         values,
         TypeBetween
+    );
+}
+
+inline EntityCondition EntityCondition::conditionIs(
+    const FieldInfo& field, 
+    bool notnull
+) {
+    return EntityCondition(
+        field,
+        QVariantList() << notnull,
+        TypeIs
     );
 }

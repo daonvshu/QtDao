@@ -202,6 +202,16 @@ public:
         return EntityCondition::conditionBetween(FieldInfo{ name, bindTable }, a, b);
     }
 
+    /*condition is null*/
+    EntityCondition lsNull() {
+        return EntityCondition::conditionIs(FieldInfo{ name, bindTable }, false);
+    }
+
+    /*condition is not null*/
+    EntityCondition notNull() {
+        return EntityCondition::conditionIs(FieldInfo{ name, bindTable }, true);
+    }
+
     /*for order by*/
     EntityField desc() {
         return EntityField(name + " desc", bindTable);
