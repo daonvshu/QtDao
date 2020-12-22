@@ -8,7 +8,7 @@
 
 - **loader**
   - [ ] configure loader
-  - [ ] driver loader (todo)
+  - [x] driver loader
   - [ ] connect test
   - [ ] auto create database/table (use config)
   - [ ] truncate/drop table

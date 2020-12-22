@@ -14,9 +14,14 @@ struct DbConfig {
     bool versionValid;
 
     /// <summary>
-    /// 数据库类型，QSQLITE,QMYSQL,QODBC其中之一
+    /// 数据库类型，sqlite,mysql,sqlserver其中之一
     /// </summary>
     QString dbType;
+
+    /// <summary>
+    /// 数据库驱动，默认QSQLITE,QMYSQL,QODBC其中之一
+    /// </summary>
+    QString dbDriver;
 
     /// <summary>
     /// 数据库名称
@@ -53,7 +58,7 @@ struct DbConfig {
     /// </summary>
     /// <returns></returns>
     bool isSqlite() {
-        return dbType == "QSQLITE";
+        return dbType == "sqlite";
     }
 
     /// <summary>
@@ -61,7 +66,7 @@ struct DbConfig {
     /// </summary>
     /// <returns></returns>
     bool isMysql() {
-        return dbType == "QMYSQL";
+        return dbType == "mysql";
     }
 
     /// <summary>
@@ -69,6 +74,6 @@ struct DbConfig {
     /// </summary>
     /// <returns></returns>
     bool isSqlServer() {
-        return dbType == "QODBC";
+        return dbType == "sqlserver";
     }
 };

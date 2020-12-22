@@ -15,15 +15,19 @@ void DbLoader::init(const QObject& config, DbExceptionHandler* exceptionHandler)
 void DbLoader::loadConfig(const QObject& cg) {
     auto sqltype = cg.property("type");
     Q_ASSERT(sqltype.isValid());
-    if (sqltype == "sqlite") {
-        config.dbType = "QSQLITE";
-        sqlClient = new SqliteClient;
-    } else if (sqltype == "mysql") {
-        config.dbType = "QMYSQL";
-        sqlClient = new MysqlClient;
-    } else if (sqltype == "sqlserver") {
-        config.dbType = "QODBC";
-        sqlClient = new SqlServerClient;
+    config.dbType = sqltype.toString();
+    config.dbDriver = cg.property("driver").toString();
+    if (config.dbDriver.isEmpty()) {
+        if (sqltype == "sqlite") {
+            config.dbDriver = "QSQLITE";
+            sqlClient = new SqliteClient;
+        } else if (sqltype == "mysql") {
+            config.dbDriver = "QMYSQL";
+            sqlClient = new MysqlClient;
+        } else if (sqltype == "sqlserver") {
+            config.dbDriver = "QODBC";
+            sqlClient = new SqlServerClient;
+        }
     }
     
     config.version = cg.property("version").toInt();

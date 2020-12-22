@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <dao prefix="ts_" db="sqlite">
-  <tb name="Test1" declaremetatype="true">
-    <item name="id" type="long" constraints="primary key" note="主键" />
+  <tb name="SqliteTest1" declaremetatype="true">
+    <item name="id" type="long" default="-1" constraints="primary key" note="主键" />
     <item name="name" type="text" constraints="primary key" default="text" note="复合主键"/>
     <item name="number" type="real" note="浮点数字" default="10.0"/>
     <item name="hex" type="blob" note="二进制"/>
   </tb>
-  <tb name="Test2">
-    <item name="id" type="long" constraints="primary key" autoincrement="true" note="自增长主键"/>
+  <tb name="SqliteTest2">
+    <item name="id" type="long" default="-1" constraints="primary key" autoincrement="true" note="自增长主键"/>
     <item name="name" type="text" constraints="not null"/>
     <item name="number" type="int" default="0"/>
     <item name="number2" type="int"/>
@@ -24,5 +24,12 @@
       <field>number</field>
       <field>number2</field>
     </index>
+  </tb>
+  <tb name="SqliteTest3">
+    <item name="id" type="long" default="-1" constraints="primary key" autoincrement="true" />
+    <item name="tbi1" type="long" default="-1" note="绑定到SqliteTest1 id"/>
+    <item name="tbi2" type="long" default="-1" note="绑定到SqliteTest2 id"/>
+    <item name="name" type="text"/>
+    <item name="size" type="int"/>
   </tb>
 </dao>
