@@ -19,7 +19,7 @@ public:
     {
     }
 
-    ~BaseQueryBuilder() {}
+    virtual ~BaseQueryBuilder();
 
 protected:
     template<typename... Args>
@@ -52,11 +52,11 @@ protected:
     template<typename E>
     void columnAll();
 
-    virtual void set() {}
-    virtual void filter() {}
-    virtual void with() {}
-    virtual void column() {}
-    virtual void on() {}
+    virtual void set();
+    virtual void filter();
+    virtual void with();
+    virtual void column();
+    virtual void on();
 
     template<typename E>
     void from(Select<E>& select);

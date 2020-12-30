@@ -2,6 +2,24 @@
 
 #include "RecursiveQueryBuilder.h"
 
+BaseQueryBuilder::~BaseQueryBuilder() {
+}
+
+void BaseQueryBuilder::set() {
+}
+
+void BaseQueryBuilder::filter() {
+}
+
+void BaseQueryBuilder::with() {
+}
+
+void BaseQueryBuilder::column() {
+}
+
+void BaseQueryBuilder::on() {
+}
+
 void BaseQueryBuilder::from(RecursiveQueryBuilder& builder) {
     Q_ASSERT(!builder.initialQueryStatement.isEmpty());
     Q_ASSERT(!builder.recursiveQueryStatement.isEmpty());
@@ -18,3 +36,5 @@ void BaseQueryBuilder::from(RecursiveQueryBuilder& builder) {
     fromSelectValues.append(builder.recursiveQueryValue);
     recursiveQuery = true;
 }
+
+

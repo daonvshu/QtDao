@@ -1,8 +1,9 @@
 #pragma once
 
 #include <qvariant.h>
-#include <qsqlquery.h>
-#include <qsqlrecord.h>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlRecord>
+#include <QtSql/QSqlError>
 
 #include <functional>
 
@@ -50,8 +51,6 @@ protected:
     QString statement;
     QVariantList values;
     BaseQueryBuilder* builder;
-
-protected:
     bool queryThrowable;
 
     friend class BaseQueryBuilder;

@@ -2,17 +2,34 @@
 
 #include <qstandardpaths.h>
 #include <qdir.h>
+#include <qfileinfo.h>
 
 #include "../DbLoader.h"
 
 #include "../query/BaseQuery.h"
 
+bool createPath(QString path) {
+    QDir dir;
+    QFileInfo info(path);
+    if (!info.exists(path)) {
+        if (!dir.mkdir(path)) {
+            int index = path.lastIndexOf('/');
+            auto target = path.mid(0, index);
+            if (!createPath(target)) {
+                return false;
+            }
+            return dir.mkdir(path);
+        }
+    }
+    return true;
+}
+
 void SqliteClient::testConnect() {
     auto appLocal = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir dir;
     if (!dir.exists(appLocal)) {
-        if (!dir.mkdir(appLocal)) {
-            throw DaoException("cannot create sqlite store path!");
+        if (!createPath(appLocal)) { // create directories recursively
+            throw DaoException("cannot create sqlite store path! applocal = " + appLocal);
         }
     }
 }

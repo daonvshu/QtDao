@@ -9,14 +9,14 @@
 template<typename... E>
 class JoinBuilder : public BaseQueryBuilder {
 public:
-    QUERY_BUILDER_USE_THROWABLE(JoinBuilder);
-    QUERY_BUILDER_USE_FILTER(JoinBuilder);
-    QUERY_BUILDER_USE_WITH(JoinBuilder);
-    QUERY_BUILDER_USE_COLUMN(JoinBuilder);
-    QUERY_BUILDER_USE_ON(JoinBuilder);
+    QUERY_BUILDER_USE_THROWABLE(JoinBuilder)
+    QUERY_BUILDER_USE_FILTER(JoinBuilder)
+    QUERY_BUILDER_USE_WITH(JoinBuilder)
+    QUERY_BUILDER_USE_COLUMN(JoinBuilder)
+    QUERY_BUILDER_USE_ON(JoinBuilder)
 
-    QUERY_BUILDER_USE_QUERY_UNION_SELECT(JoinBuilder);
-    QUERY_BUILDER_USE_QUERY_UNION_JOIN(JoinBuilder);
+    QUERY_BUILDER_USE_QUERY_UNION_SELECT(JoinBuilder)
+    QUERY_BUILDER_USE_QUERY_UNION_JOIN(JoinBuilder)
 
     void filter() override;
     void on() override;
@@ -114,7 +114,7 @@ inline JoinBuilder<E...>& JoinBuilder<E...>::from() {
 template<typename ...E>
 template<typename E2>
 inline JoinBuilder<E...>& JoinBuilder<E...>::from(Select<E2>& select) {
-    __super::from(select);
+    BaseQueryBuilder::from(select);
     mainTable = E2::Info::getSourceName();
     mainData.fromSelectStatement = fromSelectStatement;
     mainData.fromSelectValues = fromSelectValues;
@@ -126,7 +126,7 @@ inline JoinBuilder<E...>& JoinBuilder<E...>::from(Select<E2>& select) {
 
 template<typename ...E>
 inline JoinBuilder<E...>& JoinBuilder<E...>::from(RecursiveQueryBuilder& builder) {
-    __super::from(builder);
+    BaseQueryBuilder::from(builder);
     mainTable = fromSelectAs;
     mainData.fromSelectStatement = fromSelectStatement;
     mainData.fromSelectValues = fromSelectValues;
@@ -147,14 +147,14 @@ inline JoinBuilder<E...>& JoinBuilder<E...>::crossJoin() {
 template<typename ...E>
 template<typename E2>
 inline JoinBuilder<E...>& JoinBuilder<E...>::crossJoin(Select<E2>& select) {
-    __super::from(select);
+    BaseQueryBuilder::from(select);
     crossJoin<E2>();
     return *this;
 }
 
 template<typename ...E>
 inline JoinBuilder<E...>& JoinBuilder<E...>::crossJoin(RecursiveQueryBuilder& builder) {
-    __super::from(builder);
+    BaseQueryBuilder::from(builder);
     lastTableName = fromSelectAs;
     lastType = CrossJoin;
     return *this;
@@ -171,14 +171,14 @@ inline JoinBuilder<E...>& JoinBuilder<E...>::innerJoin() {
 template<typename ...E>
 template<typename E2>
 inline JoinBuilder<E...>& JoinBuilder<E...>::innerJoin(Select<E2>& select) {
-    __super::from(select);
+    BaseQueryBuilder::from(select);
     innerJoin<E2>();
     return *this;
 }
 
 template<typename ...E>
 inline JoinBuilder<E...>& JoinBuilder<E...>::innerJoin(RecursiveQueryBuilder& builder) {
-    __super::from(builder);
+    BaseQueryBuilder::from(builder);
     lastTableName = fromSelectAs;
     lastType = InnerJoin;
     return *this;
@@ -195,14 +195,14 @@ inline JoinBuilder<E...>& JoinBuilder<E...>::leftJoin() {
 template<typename ...E>
 template<typename E2>
 inline JoinBuilder<E...>& JoinBuilder<E...>::leftJoin(Select<E2>& select) {
-    __super::from(select);
+    BaseQueryBuilder::from(select);
     leftJoin<E2>();
     return *this;
 }
 
 template<typename ...E>
 inline JoinBuilder<E...>& JoinBuilder<E...>::leftJoin(RecursiveQueryBuilder& builder) {
-    __super::from(builder);
+    BaseQueryBuilder::from(builder);
     lastTableName = fromSelectAs;
     lastType = LeftJoin;
     return *this;
@@ -219,14 +219,14 @@ inline JoinBuilder<E...>& JoinBuilder<E...>::rightJoin() {
 template<typename ...E>
 template<typename E2>
 inline JoinBuilder<E...>& JoinBuilder<E...>::rightJoin(Select<E2>& select) {
-    __super::from(select);
+    BaseQueryBuilder::from(select);
     rightJoin<E2>();
     return *this;
 }
 
 template<typename ...E>
 inline JoinBuilder<E...>& JoinBuilder<E...>::rightJoin(RecursiveQueryBuilder& builder) {
-    __super::from(builder);
+    BaseQueryBuilder::from(builder);
     lastTableName = fromSelectAs;
     lastType = RightJoin;
     return *this;
@@ -243,14 +243,14 @@ inline JoinBuilder<E...>& JoinBuilder<E...>::fullJoin() {
 template<typename ...E>
 template<typename E2>
 inline JoinBuilder<E...>& JoinBuilder<E...>::fullJoin(Select<E2>& select) {
-    __super::from(select);
+    BaseQueryBuilder::from(select);
     fullJoin<E2>();
     return *this;
 }
 
 template<typename ...E>
 inline JoinBuilder<E...>& JoinBuilder<E...>::fullJoin(RecursiveQueryBuilder& builder) {
-    __super::from(builder);
+    BaseQueryBuilder::from(builder);
     lastTableName = fromSelectAs;
     lastType = FullJoin;
     return *this;

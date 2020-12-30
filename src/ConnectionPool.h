@@ -1,17 +1,18 @@
 #pragma once
 
-#include <QtSql>
+#include <QtSql/QSqlDatabase>
 #include <QQueue>
 #include <QString>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QHash>
 
 class ConnectionPool {
 public:
-	static void release(); // 关闭所有的数据库连接
-	static QSqlDatabase getConnection(); // 获取数据库连接
-	static void closeConnection(); // 释放当前数据库连接回连接池
-	static int getUsedConnectionSize();//获取当前已经使用过的连接名数量
+	static void release(); // close all database connection
+	static QSqlDatabase getConnection(); // get current thread connection
+	static void closeConnection(); // close the current work thread connection and push back into the connection pool
+	static int getUsedConnectionSize();// get current used connection names
 
 	~ConnectionPool();
 
@@ -21,10 +22,10 @@ private:
 	static ConnectionPool& getInstance();
 
 	ConnectionPool();
-	QSqlDatabase createConnection(const QString &connectionName); // 创建数据库连接
+	QSqlDatabase createConnection(const QString &connectionName); // create database connection
 
-	QQueue<QString> unusedConnectionNames; // 未使用的数据库连接名
-	QHash<Qt::HANDLE, QString> keepConnections;//保存不同线程中的连接
+	QQueue<QString> unusedConnectionNames;
+	QHash<Qt::HANDLE, QString> keepConnections;// save work thread connections
 
 	static QMutex mutex;
 	static ConnectionPool *instance;

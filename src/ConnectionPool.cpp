@@ -5,6 +5,9 @@
 #include "DbLoader.h"
 #include "DbExceptionHandler.h"
 
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlError>
+
 #define MAX_CONNECTION_SIZE	200
 
 QMutex ConnectionPool::mutex;
@@ -14,7 +17,7 @@ ConnectionPool::ConnectionPool() {
 }
 
 ConnectionPool::~ConnectionPool() {
-	// 销毁连接池的时候删除所有的连接
+	// close all connection when destoryed, call release()
 	mutex.lock();
 	foreach(QString connectionName, keepConnections) {
 		QSqlDatabase::removeDatabase(connectionName);
@@ -25,7 +28,7 @@ ConnectionPool::~ConnectionPool() {
 	}
 	mutex.unlock();
 
-	//销毁默认连接
+	//destory default connection
 	QString name = QSqlDatabase::database().connectionName();
 	QSqlDatabase::removeDatabase(name);
 }
@@ -51,25 +54,25 @@ QSqlDatabase ConnectionPool::getConnection() {
 	QString connectionName;
 
 	QMutexLocker locker(&mutex);
-	//查询当前线程是否保持有连接
+	//check current work thread connection
 	auto currentThreadId = QThread::currentThreadId();
 	if (pool.keepConnections.contains(currentThreadId)) {
 		connectionName = pool.keepConnections.value(currentThreadId);
 	} else {
 		if (!pool.unusedConnectionNames.empty()) {
-			//复用线程已回收连接
+			//use unused connection
 			connectionName = pool.unusedConnectionNames.dequeue();
 		} else {
-			//创建新的连接名
+			//create new connection name
 			auto connectionCount = pool.keepConnections.size();
 			connectionName = QString("Connection-%1").arg(connectionCount + 1);
 		}
 	}
 
-	// 创建连接
+	// open connection
 	auto db = pool.createConnection(connectionName);
 
-	// 有效的连接才放入 usedConnectionNames
+	// push valid connection into usedConnectionNames
 	if (db.isOpen()) {
 		pool.keepConnections.insert(currentThreadId, connectionName);
 		Q_ASSERT_X(pool.keepConnections.size() <= MAX_CONNECTION_SIZE, "ConnectionPool::openConnection", "forget to release worker connections?");
@@ -81,7 +84,7 @@ QSqlDatabase ConnectionPool::getConnection() {
 void ConnectionPool::closeConnection() {
 	ConnectionPool& pool = ConnectionPool::getInstance();
 	auto currentThreadId = QThread::currentThreadId();
-	// 如果当前线程有连接，关闭连接并移除
+	// close and remove when current work thread have connection
 	if (pool.keepConnections.contains(currentThreadId)) {
 		mutex.lock();
 		auto connectionName = pool.keepConnections.take(currentThreadId);
@@ -97,7 +100,7 @@ int ConnectionPool::getUsedConnectionSize() {
 }
 
 QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
-	// 连接已经创建过了，复用它，而不是重新创建
+	// check connection name in QSqlDatabase
 	if (QSqlDatabase::contains(connectionName)) {
 		auto db1 = QSqlDatabase::database(connectionName);
 		QSqlQuery query("select 1", db1);
@@ -108,7 +111,7 @@ QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
 		return db1;
 	}
 
-	// 创建一个新的连接
+	// create new connection
 	auto db = prepareConnect(connectionName, DbLoader::getConfig().dbName);
 	if (!db.open()) {
 		DbExceptionHandler::exceptionHandler->databaseOpenFail(db.lastError().text());

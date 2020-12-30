@@ -1,6 +1,6 @@
 ﻿#include "InsertIntoSelectTest.h"
 
-#include <qtest.h>
+#include <QtTest>
 
 #include "../../src/dao.h"
 
@@ -21,11 +21,10 @@ void InsertIntoSelectTest::testInsertIntoSelect() {
     SqliteTest1::Fields sf1;
     SqliteTest2::Fields sf2;
 
+    auto select = dao::_select<SqliteTest1>().column(sf1.name, sf1.number).filter(sf1.number < 12).build();
     bool success = dao::_insertIntoSelect<SqliteTest2>()
         .column(sf2.name, sf2.number)
-        .from(
-            dao::_select<SqliteTest1>().column(sf1.name, sf1.number).filter(sf1.number < 12).build()
-        )
+        .from (select)
         .build().insert();
     QVERIFY(success);
     if (success) {

@@ -11,26 +11,26 @@ template<typename E>
 class Update : BaseQuery {
 public:
     /// <summary>
-    /// 通过set条件更新
+    /// using the SET condition to update a record
     /// </summary>
     /// <returns></returns>
     bool update();
 
     /// <summary>
-    /// 通过set条件批量更新
+    /// using the SET condition to update a record in batches 
     /// </summary>
     /// <returns></returns>
     bool updateBatch();
 
     /// <summary>
-    /// 通过实例primary key更新
+    /// update by object's primary key
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
     bool update(const E& entity);
 
     /// <summary>
-    /// 通过实例primary key批量更新
+    /// update by object's primary key in batches 
     /// </summary>
     /// <param name="entities"></param>
     /// <returns></returns>
@@ -41,7 +41,7 @@ private:
     void bindUpdateEntitiesCondition(const QList<E>& entities);
 
 private:
-    BASE_QUERY_CONSTRUCTOR_DECLARE(Update);
+    BASE_QUERY_CONSTRUCTOR_DECLARE(Update)
 };
 
 template<typename E>

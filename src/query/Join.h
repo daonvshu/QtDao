@@ -2,6 +2,9 @@
 
 #include "BaseQuery.h"
 
+#include <QVector>
+#include <QPair>
+
 template<typename... E>
 class JoinBuilder;
 
@@ -188,16 +191,16 @@ struct JoinEUnpackHelper<E, T...> : JoinEUnpackHelper<T...> {
         for (const auto& v : value) {
             tool.bindValue(std::get<I>(result), v.first, v.second);
         }
-        JoinEUnpackHelper<T...>::bindTupleValue<I + 1, K...>(result, values);
+        JoinEUnpackHelper<T...>::template bindTupleValue<I + 1, K...>(result, values);
     }
 };
 template<> struct JoinEUnpackHelper<> {
-    static void setOrder(QHash<QString, QString>& orderMap, int i) {}
-    static QString readEntityFields(const QHash<QString, QString>& orderMap, QList<FieldInfo>& fieldInfo) { return QString(); }
+    static void setOrder(QHash<QString, QString>& orderMap, int i) {Q_UNUSED(orderMap);Q_UNUSED(i);}
+    static QString readEntityFields(const QHash<QString, QString>& orderMap, QList<FieldInfo>& fieldInfo) { Q_UNUSED(orderMap); Q_UNUSED(fieldInfo); return QString(); }
     static QList<QPair<QString, QString>> getTbName() { return QList<QPair<QString, QString>>(); }
 
     template<int I, typename... K>
-    static void bindTupleValue(std::tuple<K...>& result, const QVector<QList<QPair<QString, QVariant>>>& values) {}
+    static void bindTupleValue(std::tuple<K...>& result, const QVector<QList<QPair<QString, QVariant>>>& values) {Q_UNUSED(result);Q_UNUSED(values);}
 };
 
 template<typename ...E>
@@ -224,8 +227,6 @@ inline QString Join<E...>::getJoinTypeName(JoinType type) {
         return "right join";
     case FullJoin:
         return "full join";
-    default:
-        break;
     }
     return QString();
 }
@@ -249,5 +250,5 @@ inline void Join<E...>::resultBind(std::tuple<E...>& result, QSqlQuery& query) {
         }
         resultValues[tbIndex] << qMakePair(usedColumns.at(i).name, query.value(i));
     }
-    JoinEUnpackHelper<E...>::bindTupleValue<0, E...>(result, resultValues);
+    JoinEUnpackHelper<E...>::template bindTupleValue<0, E...>(result, resultValues);
 }

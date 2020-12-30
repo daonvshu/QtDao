@@ -14,25 +14,28 @@ template<typename E>
 class Select : BaseQuery {
 public:
     /// <summary>
-    /// 读取一条数据，多条结果将报错，未读到数据将使用默认值
+    /// select a record, report errors when multiple results 
+    /// if there are no results, return use default value
     /// </summary>
     /// <returns></returns>
     E unique();
 
     /// <summary>
-    /// 读取数据并取结果集中一条数据，未读到数据将使用默认值
+    /// select one record 
+    /// if there are no results, return use default value
     /// </summary>
     /// <returns></returns>
     E one();
 
     /// <summary>
-    /// 读取所有符合条件的数据
+    /// read all data select by conditions
     /// </summary>
     /// <returns></returns>
     QList<E> list();
 
     /// <summary>
-    /// 原始结果查询，当结果集很大时跳过对象转换，直接读取query结果
+    /// the raw result query, when the result set is large, 
+    /// skips the object transformation and reads the query result directly
     /// </summary>
     /// <param name="callback"></param>
     void raw(std::function<void(QSqlQuery&)> callback);
@@ -43,7 +46,7 @@ protected:
 protected:
     QString getBindColumns(QVariantList& values);
 
-    BASE_QUERY_CONSTRUCTOR_DECLARE(Select);
+    BASE_QUERY_CONSTRUCTOR_DECLARE(Select)
 
     friend class BaseQueryBuilder;
     friend class RecursiveQueryBuilder;

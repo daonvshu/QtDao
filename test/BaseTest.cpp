@@ -2,7 +2,7 @@
 
 #include "../src/DbExceptionHandler.h"
 
-#include <qtest.h>
+#include <QtTest>
 #include <iostream>
 #include <qdebug.h>
 #include <Windows.h>

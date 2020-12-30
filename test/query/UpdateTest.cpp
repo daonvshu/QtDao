@@ -1,6 +1,6 @@
 ﻿#include "UpdateTest.h"
 
-#include <qtest.h>
+#include <QtTest>
 
 #include "../../src/dao.h"
 
@@ -95,3 +95,4 @@ void UpdateTest::cleanupTestCase() {
     ConnectionPool::release();
     DbLoader::getClient().dropDatabase();
 }
+

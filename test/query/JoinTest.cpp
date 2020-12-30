@@ -1,6 +1,6 @@
 ﻿#include "JoinTest.h"
 
-#include <qtest.h>
+#include <QtTest>
 
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
@@ -332,18 +332,16 @@ void JoinTest::recursiveQueryTest() {
     SqliteTest3::Fields sf3;
     TmpTest2::Fields sfs2;
 
+    auto init = dao::_select<SqliteTest2>().filter(sf2.number == 50).build();
+    auto recur = dao::_join<SqliteTest2, TmpTest2>()
+            .columnAll<SqliteTest2>()
+            .from<SqliteTest2>()
+            .innerJoin<TmpTest2>().on(sfs2.number2 == sf2.number)
+            .build();
     auto recursive = dao::_recursive()
         .tmp<TmpTest2>()
-        .initialSelect(
-            dao::_select<SqliteTest2>().filter(sf2.number == 50).build()
-        )
-        .recursiveSelect(
-            dao::_join<SqliteTest2, TmpTest2>()
-                .columnAll<SqliteTest2>()
-                .from<SqliteTest2>()
-                .innerJoin<TmpTest2>().on(sfs2.number2 == sf2.number)
-                .build()
-        );
+        .initialSelect(init)
+        .recursiveSelect(recur);
 
     auto select = dao::_select<TmpTest2>().from(recursive)
         .column(sfs2.number).with(_orderBy(sfs2.number)).build().list();
@@ -435,3 +433,4 @@ void JoinTest::cleanupTestCase() {
     ConnectionPool::release();
     DbLoader::getClient().dropDatabase();
 }
+

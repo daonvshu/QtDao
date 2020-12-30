@@ -4,8 +4,8 @@
 #include "../DbExceptionHandler.h"
 
 BaseQuery::BaseQuery(bool throwable, BaseQueryBuilder* builder)
-    : queryThrowable(throwable)
-    , builder(builder)
+    : builder(builder)
+    , queryThrowable(throwable)
 {
     if (builder != nullptr) {
         this->builder = new BaseQueryBuilder(*builder);
@@ -110,6 +110,6 @@ QSqlQuery BaseQuery::getQuery() {
 
 void BaseQuery::bindQueryValues(QSqlQuery& query) {
     for (const auto& d : values) {
-        query.addBindValue(d, d.type() == QMetaType::QByteArray ? QSql::Binary : QSql::In);
+        query.addBindValue(d, d.type() == QVariant::ByteArray ? QSql::Binary : QSql::In);
     }
 }

@@ -11,26 +11,26 @@ template<typename E>
 class Delete : BaseQuery {
 public:
     /// <summary>
-    /// 通过filter条件删除
+    /// delete by filter condition
     /// </summary>
     /// <returns></returns>
     bool deleteBy();
 
     /// <summary>
-    /// 通过filter条件批量删除
+    /// delete by filter condition in batches
     /// </summary>
     /// <returns></returns>
     bool deleteBatch();
 
     /// <summary>
-    /// 通过实例primary key删除
+    /// delete object by primary key
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
     bool deleteBy(const E& entity);
 
     /// <summary>
-    /// 通过实例primary key批量删除
+    /// delete object by primary key in batches
     /// </summary>
     /// <param name="entities"></param>
     /// <returns></returns>
@@ -41,7 +41,7 @@ private:
     void buildDeleteEntitiesCondition(const QList<E>& entities);
 
 private:
-    BASE_QUERY_CONSTRUCTOR_DECLARE(Delete);
+    BASE_QUERY_CONSTRUCTOR_DECLARE(Delete)
 };
 
 template<typename E>
@@ -49,6 +49,7 @@ inline bool Delete<E>::deleteBy() {
     buildDeleteByFilterSqlStatement();
     bool deleteSuccess = false;
     exec([&](QSqlQuery& query) {
+        Q_UNUSED(query);
         deleteSuccess = true;
     });
     return deleteSuccess;
@@ -59,6 +60,7 @@ inline bool Delete<E>::deleteBatch() {
     buildDeleteByFilterSqlStatement();
     bool deleteSuccess = false;
     execBatch([&](QSqlQuery& query) {
+        Q_UNUSED(query);
         deleteSuccess = true;
     });
     return deleteSuccess;

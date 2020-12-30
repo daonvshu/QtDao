@@ -1,6 +1,6 @@
 ﻿#include "DeleteTest.h"
 
-#include <qtest.h>
+#include <QtTest>
 
 #include "../../src/dao.h"
 
@@ -74,3 +74,4 @@ void DeleteTest::cleanupTestCase() {
     ConnectionPool::release();
     DbLoader::getClient().dropDatabase();
 }
+

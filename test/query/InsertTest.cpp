@@ -1,6 +1,6 @@
 ﻿#include "..\..\test\query\InsertTest.h"
 
-#include <qtest.h>
+#include <QtTest>
 
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
@@ -229,3 +229,4 @@ void InsertTest::cleanupTestCase() {
     ConnectionPool::release();
     DbLoader::getClient().dropDatabase();
 }
+

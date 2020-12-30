@@ -41,6 +41,8 @@ struct EntityConditionData : public QSharedData {
         conditionType = TypeNormal;
     }
 
+    virtual ~EntityConditionData() {}
+
     QString getField(int index) {
         if (fieldPrefixGetter == nullptr) {
             return fields.at(index).name;
@@ -48,7 +50,5 @@ struct EntityConditionData : public QSharedData {
         return fieldPrefixGetter(fields.at(index).bindTable) + fields.at(index).name;
     }
 
-    virtual QList<FieldInfo> getUsedFields() {
-        return fields;
-    }
+    virtual QList<FieldInfo> getUsedFields();
 };

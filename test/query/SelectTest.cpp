@@ -1,6 +1,6 @@
 ﻿#include "SelectTest.h"
 
-#include <qtest.h>
+#include <QtTest>
 
 #include "../../src/dao.h"
 
@@ -198,10 +198,9 @@ void SelectTest::unionSelectTest() {
 void SelectTest::funtionSubSelectTest() {
     SqliteTest1::Fields sf1;
     SqliteTest2::Fields sf2;
+    auto select = dao::_select<SqliteTest2>().column(sf2.number).filter(sf2.number < 15).build();
     auto data = dao::_select<SqliteTest1>()
-        .filter(_fun("%1 in %2").field(sf1.number).from(
-            dao::_select<SqliteTest2>().column(sf2.number).filter(sf2.number < 15).build()
-        ))
+        .filter(_fun("%1 in %2").field(sf1.number).from(select))
         .with(_orderBy(sf1.number))
         .build().list();
     QVariantList actual;
@@ -225,3 +224,4 @@ void SelectTest::cleanupTestCase() {
     ConnectionPool::release();
     DbLoader::getClient().dropDatabase();
 }
+

@@ -1,6 +1,6 @@
 #include <QtCore/QCoreApplication>
 
-#include <QtTest/qtest.h>
+#include <QtTest/QTest>
 
 #include "test/ConnectionPoolTest.h"
 #include "test/query/BaseQueryTest.h"
@@ -18,7 +18,7 @@
 #include <Windows.h>
 
 void setColor() {
-    QFile file("test.txt");
+    QFile file(QDir::currentPath() + "/test.txt");
     if (file.open(QIODevice::ReadOnly)) {
         while (true) {
             auto line = file.readLine();
@@ -42,20 +42,42 @@ void setColor() {
 template<typename... Arg> struct TestRunner;
 template<typename T, typename... Arg>
 struct TestRunner<T, Arg...> : TestRunner<Arg...> {
+#ifdef QT_DAO_TESTCASE
+    static int run(int argc, char *argv[]) {
+        T t;
+        int result = QTest::qExec(&t, argc, argv);
+        result += TestRunner<Arg...>::run(argc, argv);
+        return result;
+    }
+#else
     static int run() {
         T t;
         int result = QTest::qExec(&t, QStringList() << "QtDao.exe" << "-o" << "test.txt");
         setColor();
-        result += __super::run();
+        result += TestRunner<Arg...>::run();
         return result;
     }
+#endif
 };
-template<> struct TestRunner<> { static int run() { return 0; } };
+template<> struct TestRunner<> {
+#ifdef QT_DAO_TESTCASE
+    static int run(int argc, char *argv[]) {
+        Q_UNUSED(argc);
+        Q_UNUSED(argv);
+        return 0;
+    }
+#else
+    static int run() { return 0; }
+#endif
+};
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
+#ifdef QT_DAO_TESTCASE
+    QTEST_SET_MAIN_SOURCE_PATH;
+#endif
     int result = TestRunner<
         ConnectionPoolTest,
         BaseQueryTest,
@@ -67,11 +89,16 @@ int main(int argc, char *argv[])
         DeleteTest,
         JoinTest,
         InsertIntoSelectTest
-    >::run();
+    >
+#ifdef QT_DAO_TESTCASE
+            ::run(argc, argv);
+    return result;
+#else
+            ::run();
     if (result != 0) {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
         std::cout << "Not all tests are successful!" << std::endl;
     }
-
     return a.exec();
+#endif
 }

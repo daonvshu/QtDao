@@ -7,7 +7,7 @@
 
 #include "../../src/query/BaseQuery.h"
 
-#include <qtest.h>
+#include <QtTest>
 
 void BaseQueryTest::initTestCase() {
     DbLoader::loadConfig(SqliteConfig());
@@ -68,8 +68,11 @@ void BaseQueryTest::testPrimitiveQueryWithValue() {
 
 void BaseQueryTest::testPrimitiveQueryFail() {
     BaseQuery::queryPrimitive("select?+?", [&](QSqlQuery& query) {
+        Q_UNUSED(query);
         QFAIL("primitive query should fail!");
-    }, [&](QString err) {});
+    }, [&](QString err) {
+        Q_UNUSED(err);
+    });
 
     try {
         BaseQuery::queryPrimitiveThrowable("select?+?");
@@ -87,3 +90,4 @@ void BaseQueryTest::cleanupTestCase() {
     ConnectionPool::release();
     DbLoader::getClient().dropDatabase();
 }
+

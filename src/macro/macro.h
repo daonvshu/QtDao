@@ -9,7 +9,7 @@ Builder& name(const Args&... args) {\
 
 #define QUERY_BUILDER_USE_THROWABLE(Builder)\
 Builder& throwable() {\
-    setThrowable = true;\
+    this->setThrowable = true;\
     return *this;\
 }
 

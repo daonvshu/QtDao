@@ -11,14 +11,14 @@ template<typename E>
 class Insert : BaseQuery {
 public:
     /// <summary>
-    /// 使用set条件插入一条记录，可批量插入
+    /// using the SET condition to insert a record, can be inserted in batches
     /// </summary>
     /// <returns></returns>
     bool insert();
 
     /// <summary>
-    /// 使用set条件插入一条记录，可批量插入
-    /// 若唯一约束存在则更新，否则插入
+    /// using the SET condition to insert a record, can be inserted in batches 
+    /// update if a unique constraint exists, otherwise insert
     /// </summary>
     /// <returns></returns>
     bool insertOrReplace() {
@@ -27,15 +27,15 @@ public:
     }
 
     /// <summary>
-    /// 插入一个对象实例，插入成功后将id设置回对象
+    /// insert an object instance and set the ID back to the object after successful insertion
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
     bool insert(E& entity);
 
     /// <summary>
-    /// 插入一个对象实例，插入成功后将id设置回对象
-    /// 若唯一约束存在则更新，否则插入
+    /// insert an object instance and set the ID back to the object after successful insertion 
+    /// update if a unique constraint exists, otherwise insert
     /// </summary>
     /// <param name="entity"></param>
     /// <returns></returns>
@@ -45,17 +45,17 @@ public:
     }
 
     /// <summary>
-    /// 批量插入对象
-    /// 使用execbatch插入
+    /// insert objects in batches 
+    /// use 'execbatch'
     /// </summary>
     /// <param name="entities"></param>
     /// <returns></returns>
     bool insert(const QList<E>& entities);
 
     /// <summary>
-    /// 批量插入对象
-    /// 使用execbatch插入
-    /// 若唯一约束存在则更新，否则插入
+    /// insert objects in batches 
+    /// use 'execbatch' 
+    /// update if a unique constraint exists, otherwise insert
     /// </summary>
     /// <param name="entities"></param>
     /// <returns></returns>
@@ -65,8 +65,8 @@ public:
     }
 
     /// <summary>
-    /// 批量插入对象方式2
-    /// 使用exec方式插入，值列表使用values拼接（警告：sql语句长度限制）
+    /// insert objects in batches 
+    /// use 'exec'锛宼he values list connect by string(warning: sql statement length limit)
     /// insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx)
     /// </summary>
     /// <param name="entities"></param>
@@ -74,10 +74,10 @@ public:
     bool insert2(const QList<E>& entities);
 
     /// <summary>
-    /// 批量插入对象方式2
-    /// 使用exec方式插入，值列表使用values拼接（警告：sql语句长度限制）
+    /// insert objects in batches
+    /// use 'exec'锛宼he values list connect by string(warning: sql statement length limit)
     /// insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx)
-    /// 若唯一约束存在则更新，否则插入
+    /// update if a unique constraint exists, otherwise insert
     /// </summary>
     /// <param name="entities"></param>
     /// <returns></returns>
@@ -95,7 +95,7 @@ private:
 private:
     bool insertOrRp = false;
 
-    BASE_QUERY_CONSTRUCTOR_DECLARE(Insert);
+    BASE_QUERY_CONSTRUCTOR_DECLARE(Insert)
 };
 
 template<typename E>
@@ -152,6 +152,7 @@ inline bool Insert<E>::insert(const QList<E>& entities) {
     setSqlQueryStatement(sqlstatement, tagValues);
     bool execSuccess = false;
     execBatch([&](QSqlQuery& query) {
+        Q_UNUSED(query);
         execSuccess = true;
     });
     return execSuccess;
@@ -171,6 +172,7 @@ inline bool Insert<E>::insert2(const QList<E>& entities) {
     setSqlQueryStatement(sqlstatement, values);
     bool execSuccess = false;
     exec([&](QSqlQuery& query) {
+        Q_UNUSED(query);
         execSuccess = true;
     });
     return execSuccess;
@@ -182,7 +184,7 @@ inline bool Insert<E>::buildInsertBySetSqlStatement() {
     auto usedFieldName = builder->setCondition.getUsedFieldNames();
     QVariantList values = builder->setCondition.getValues();
     Q_ASSERT(!values.isEmpty());
-    bool operateBatch = values.at(0).type() == QMetaType::QVariantList;
+    bool operateBatch = values.at(0).type() == QVariant::List;
 
     typename E::Info info;
     QString sql = "insert into %1 (";

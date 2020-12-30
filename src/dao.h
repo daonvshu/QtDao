@@ -14,6 +14,8 @@
 
 #include "condition/ConditionOperator.h"
 
+#include <QtSql/QSqlDriver>
+
 class dao {
 public:
     template<typename T>
@@ -101,7 +103,7 @@ public:
         class Fields : public E::Fields {
         public:
             Fields() {
-                reset(Info::getTableName());
+                this->reset(Info::getTableName());
             }
         };
     };

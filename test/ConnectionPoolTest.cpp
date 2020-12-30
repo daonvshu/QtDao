@@ -12,7 +12,7 @@
 
 #include <qeventloop.h>
 
-#include <QtTest/qtest.h>
+#include <QtTest>
 
 void ConnectionPoolTest::initTestCase() {
     SqliteClient().testConnect();
@@ -164,3 +164,4 @@ void ConnectionPoolTest::cleanup() {
 void ConnectionPoolTest::cleanupTestCase() {
     SqliteClient().dropDatabase();
 }
+

@@ -8,7 +8,7 @@
 
 #include "../sqliteentity/SqliteConfig.h"
 
-#include <qtest.h>
+#include <QtTest>
 
 class DbLoaderTestExceptionHandler : public DbExceptionHandler {
 public:

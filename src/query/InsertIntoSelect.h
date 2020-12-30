@@ -11,7 +11,7 @@ template<typename E>
 class InsertIntoSelect : BaseQuery {
 public:
     /// <summary>
-    /// 从select结果中复制数据到新表中
+    /// select and copy from other select results
     /// </summary>
     /// <returns></returns>
     bool insert();
@@ -19,7 +19,7 @@ public:
 protected:
     void buildSqlStatement();
 
-    BASE_QUERY_CONSTRUCTOR_DECLARE(InsertIntoSelect);
+    BASE_QUERY_CONSTRUCTOR_DECLARE(InsertIntoSelect)
 };
 
 template<typename E>
