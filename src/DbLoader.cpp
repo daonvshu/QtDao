@@ -20,14 +20,19 @@ void DbLoader::loadConfig(const QObject& cg) {
     if (config.dbDriver.isEmpty()) {
         if (sqltype == "sqlite") {
             config.dbDriver = "QSQLITE";
-            sqlClient = new SqliteClient;
         } else if (sqltype == "mysql") {
             config.dbDriver = "QMYSQL";
-            sqlClient = new MysqlClient;
         } else if (sqltype == "sqlserver") {
             config.dbDriver = "QODBC";
-            sqlClient = new SqlServerClient;
         }
+    }
+
+    if (sqltype == "sqlite") {
+        sqlClient = new SqliteClient;
+    } else if (sqltype == "mysql") {
+        sqlClient = new MysqlClient;
+    } else if (sqltype == "sqlserver") {
+        sqlClient = new SqlServerClient;
     }
     
     config.version = cg.property("version").toInt();
