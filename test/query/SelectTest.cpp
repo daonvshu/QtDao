@@ -14,10 +14,10 @@ void SelectTest::initTestCase() {
     data1 << SqliteTest1(5, "client", 12, "xxx");
     dao::_insert<SqliteTest1>().build().insert2(data1);
 
-    data2 << SqliteTest2(0, "joker", 9999, -1, 30);
-    data2 << SqliteTest2(0, "bob", 12, 0, "abc");
-    data2 << SqliteTest2(0, "func", 10, -2, 50);
-    data2 << SqliteTest2(0, "func", 50, 0, 50);
+    data2 << SqliteTest2("joker", 9999, -1, 30);
+    data2 << SqliteTest2("bob", 12, 0, "abc");
+    data2 << SqliteTest2("func", 10, -2, 50);
+    data2 << SqliteTest2("func", 50, 0, 50);
     dao::_insert<SqliteTest2>().build().insert2(data2);
 }
 

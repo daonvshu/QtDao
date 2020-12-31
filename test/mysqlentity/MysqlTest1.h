@@ -3,33 +3,34 @@
 
 #include <qobject.h>
 #include <qvariant.h>
+#include <qdatetime.h>
 
 #include "../../src/condition/EntityField.h"
 
-class SqliteTest1 {
+class MysqlTest1 {
 private:
     //主键
     qint64 id;
     //复合主键
     QString name;
     //浮点数字
-    qreal number;
+    double number;
     //二进制
     QByteArray hex;
 
     QHash<QString, QVariant> __extra;
 
 public:
-    SqliteTest1() {
+    MysqlTest1() {
         id = -1;
         name = "text";
         number = 10.0;
     }
 
-    SqliteTest1(
+    MysqlTest1(
         qint64 id,
         const QString& name,
-        qreal number,
+        double number,
         const QByteArray& hex
     ) : id(id)
     , name(name)
@@ -40,16 +41,16 @@ public:
 public:
     class Fields {
     public:
-        EntityField<qint64> id = EntityField<qint64>("id", "ts_sqlitetest1");
-        EntityField<QString> name = EntityField<QString>("name", "ts_sqlitetest1");
-        EntityField<qreal> number = EntityField<qreal>("number", "ts_sqlitetest1");
-        EntityField<QByteArray> hex = EntityField<QByteArray>("hex", "ts_sqlitetest1");
+        EntityField<qint64> id = EntityField<qint64>("id", "ts_mysqltest1");
+        EntityField<QString> name = EntityField<QString>("name", "ts_mysqltest1");
+        EntityField<double> number = EntityField<double>("number", "ts_mysqltest1");
+        EntityField<QByteArray> hex = EntityField<QByteArray>("hex", "ts_mysqltest1");
 
     protected:
         void reset(const QString& tbName) {
             id = EntityField<qint64>("id", tbName);
             name = EntityField<QString>("name", tbName);
-            number = EntityField<qreal>("number", tbName);
+            number = EntityField<double>("number", tbName);
             hex = EntityField<QByteArray>("hex", tbName);
         }
     };
@@ -64,11 +65,15 @@ public:
         }
 
         static QString getTableName() {
-            return QStringLiteral("ts_sqlitetest1");
+            return QStringLiteral("ts_mysqltest1");
         }
 
         static QString getSourceName() {
             return getTableName();
+        }
+
+        static QString getTableEngine() {
+            return "MyISAM";
         }
 
         static QStringList getFields() {
@@ -89,10 +94,10 @@ public:
 
         static QStringList getFieldsType() {
             return QStringList() 
-                << QStringLiteral("id integer default -1")
-                << QStringLiteral("name text default 'text'")
-                << QStringLiteral("number real default 10.0")
-                << QStringLiteral("hex blob");
+                << QStringLiteral("id bigint default -1 comment '主键'")
+                << QStringLiteral("name text default 'text' comment '复合主键'")
+                << QStringLiteral("number double default 10.0 comment '浮点数字'")
+                << QStringLiteral("hex blob comment '二进制'");
         }
 
         static QStringList getPrimaryKeys() {
@@ -114,7 +119,7 @@ public:
     };
 
     struct Tool {
-        static QVariantList getValueWithoutAutoIncrement(const SqliteTest1& entity) {
+        static QVariantList getValueWithoutAutoIncrement(const MysqlTest1& entity) {
             return QVariantList()
                 << entity.id
                 << entity.name
@@ -122,7 +127,7 @@ public:
                 << entity.hex;
         }
 
-        static QVariant getValueByName(const SqliteTest1& entity, const QString& target) {
+        static QVariant getValueByName(const MysqlTest1& entity, const QString& target) {
             if (target == "id") {
                 return entity.id;
             }
@@ -138,18 +143,18 @@ public:
             return entity.__extra.value(target);
         }
 
-        static void bindAutoIncrementId(SqliteTest1& entity, const QVariant& id) {
+        static void bindAutoIncrementId(MysqlTest1& entity, const QVariant& id) {
             Q_UNUSED(entity);
             Q_UNUSED(id);
         }
 
-        static void bindValue(SqliteTest1& entity, const QString& target, QVariant value) {
+        static void bindValue(MysqlTest1& entity, const QString& target, QVariant value) {
             if (target == "id") {
                 entity.id = value.value<qint64>();
             } else if (target == "name") {
                 entity.name = value.value<QString>();
             } else if (target == "number") {
-                entity.number = value.value<qreal>();
+                entity.number = value.value<double>();
             } else if (target == "hex") {
                 entity.hex = value.value<QByteArray>();
             } else {
@@ -168,9 +173,9 @@ public:
     //get 复合主键
     inline QString getName() const {return name;}
     //set 浮点数字
-    inline void setNumber(qreal number) {this->number = number;}
+    inline void setNumber(double number) {this->number = number;}
     //get 浮点数字
-    inline qreal getNumber() const {return number;}
+    inline double getNumber() const {return number;}
     //set 二进制
     inline void setHex(const QByteArray& hex) {this->hex = hex;}
     //get 二进制
@@ -180,5 +185,5 @@ public:
     //get function select result, like get "as" field result
     inline QVariant __getExtra(const QString& key) const {return __extra.value(key);}
 };
-typedef QList<SqliteTest1> SqliteTest1List;
-Q_DECLARE_METATYPE(SqliteTest1);
+typedef QList<MysqlTest1> MysqlTest1List;
+Q_DECLARE_METATYPE(MysqlTest1);

@@ -3,10 +3,11 @@
 
 #include <qobject.h>
 #include <qvariant.h>
+#include <qdatetime.h>
 
 #include "../../src/condition/EntityField.h"
 
-class SqliteTest2 {
+class MysqlTest2 {
 private:
     //自增长主键
     qint64 id;
@@ -25,12 +26,12 @@ private:
     QHash<QString, QVariant> __extra;
 
 public:
-    SqliteTest2() {
+    MysqlTest2() {
         id = -1;
         number = 0;
     }
 
-    SqliteTest2(
+    MysqlTest2(
         const QString& name,
         int number,
         int number2,
@@ -44,11 +45,11 @@ public:
 public:
     class Fields {
     public:
-        EntityField<qint64> id = EntityField<qint64>("id", "ts_sqlitetest2");
-        EntityField<QString> name = EntityField<QString>("name", "ts_sqlitetest2");
-        EntityField<int> number = EntityField<int>("number", "ts_sqlitetest2");
-        EntityField<int> number2 = EntityField<int>("number2", "ts_sqlitetest2");
-        EntityField<QVariant> varianttype = EntityField<QVariant>("varianttype", "ts_sqlitetest2");
+        EntityField<qint64> id = EntityField<qint64>("id", "ts_mysqltest2");
+        EntityField<QString> name = EntityField<QString>("name", "ts_mysqltest2");
+        EntityField<int> number = EntityField<int>("number", "ts_mysqltest2");
+        EntityField<int> number2 = EntityField<int>("number2", "ts_mysqltest2");
+        EntityField<QVariant> varianttype = EntityField<QVariant>("varianttype", "ts_mysqltest2");
 
     protected:
         void reset(const QString& tbName) {
@@ -70,11 +71,15 @@ public:
         }
 
         static QString getTableName() {
-            return QStringLiteral("ts_sqlitetest2");
+            return QStringLiteral("ts_mysqltest2");
         }
 
         static QString getSourceName() {
             return getTableName();
+        }
+
+        static QString getTableEngine() {
+            return "InnoDB";
         }
 
         static QStringList getFields() {
@@ -96,11 +101,11 @@ public:
 
         static QStringList getFieldsType() {
             return QStringList() 
-                << QStringLiteral("id integer primary key autoincrement")
-                << QStringLiteral("name text not null")
-                << QStringLiteral("number integer default 0")
-                << QStringLiteral("number2 integer")
-                << QStringLiteral("varianttype blob");
+                << QStringLiteral("id bigint primary key auto_increment comment '自增长主键'")
+                << QStringLiteral("name text not null comment ''")
+                << QStringLiteral("number int default 0 comment ''")
+                << QStringLiteral("number2 int comment ''")
+                << QStringLiteral("varianttype blob comment '自定义类型'");
         }
 
         static QStringList getPrimaryKeys() {
@@ -124,7 +129,7 @@ public:
     };
 
     struct Tool {
-        static QVariantList getValueWithoutAutoIncrement(const SqliteTest2& entity) {
+        static QVariantList getValueWithoutAutoIncrement(const MysqlTest2& entity) {
             return QVariantList()
                 << entity.name
                 << entity.number
@@ -132,7 +137,7 @@ public:
                 << entity.varianttype;
         }
 
-        static QVariant getValueByName(const SqliteTest2& entity, const QString& target) {
+        static QVariant getValueByName(const MysqlTest2& entity, const QString& target) {
             if (target == "id") {
                 return entity.id;
             }
@@ -154,11 +159,11 @@ public:
             return entity.__extra.value(target);
         }
 
-        static void bindAutoIncrementId(SqliteTest2& entity, const QVariant& id) {
+        static void bindAutoIncrementId(MysqlTest2& entity, const QVariant& id) {
             entity.id = id.value<qint64>();
         }
 
-        static void bindValue(SqliteTest2& entity, const QString& target, QVariant value) {
+        static void bindValue(MysqlTest2& entity, const QString& target, QVariant value) {
             if (target == "id") {
                 entity.id = value.value<qint64>();
             } else if (target == "name") {
@@ -205,4 +210,4 @@ public:
     //get function select result, like get "as" field result
     inline QVariant __getExtra(const QString& key) const {return __extra.value(key);}
 };
-typedef QList<SqliteTest2> SqliteTest2List;
+typedef QList<MysqlTest2> MysqlTest2List;

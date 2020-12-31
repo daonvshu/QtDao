@@ -29,13 +29,11 @@ public:
     }
 
     SqliteTest3(
-        qint64 id,
         qint64 tbi1,
         qint64 tbi2,
         const QString& name,
         int size
-    ) : id(id)
-    , tbi1(tbi1)
+    ) : tbi1(tbi1)
     , tbi2(tbi2)
     , name(name)
     , size(size)
@@ -96,7 +94,7 @@ public:
 
         static QStringList getFieldsType() {
             return QStringList() 
-                << QStringLiteral("id integer default -1 primary key autoincrement")
+                << QStringLiteral("id integer primary key autoincrement")
                 << QStringLiteral("tbi1 integer default -1")
                 << QStringLiteral("tbi2 integer default -1")
                 << QStringLiteral("name text")

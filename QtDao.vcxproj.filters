@@ -84,6 +84,12 @@
     <Filter Include="Source Files\src\builder">
       <UniqueIdentifier>{38474b50-e313-438e-b327-b673ea1f09a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\test\mysqlentity">
+      <UniqueIdentifier>{6ce33e4d-4198-4081-a595-10ac37d0ea4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\src\mysqlentity">
+      <UniqueIdentifier>{ccc15394-562c-485f-a672-5d29e0392c1f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -163,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="src\builder\BaseQueryBuilder.cpp">
       <Filter>Source Files\src\builder</Filter>
+    </ClCompile>
+    <ClCompile Include="test\mysqlentity\EntityInclude.cpp">
+      <Filter>Source Files\src\mysqlentity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -283,6 +292,18 @@
     <ClInclude Include="src\builder\InsertIntoSelectBuilder.h">
       <Filter>Header Files\src\builder</Filter>
     </ClInclude>
+    <ClInclude Include="test\mysqlentity\EntityInclude.h">
+      <Filter>Header Files\test\mysqlentity</Filter>
+    </ClInclude>
+    <ClInclude Include="test\mysqlentity\MysqlTest1.h">
+      <Filter>Header Files\test\mysqlentity</Filter>
+    </ClInclude>
+    <ClInclude Include="test\mysqlentity\MysqlTest2.h">
+      <Filter>Header Files\test\mysqlentity</Filter>
+    </ClInclude>
+    <ClInclude Include="test\mysqlentity\MysqlTest3.h">
+      <Filter>Header Files\test\mysqlentity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\sqlite_entity.xml">
@@ -293,6 +314,9 @@
     </Xml>
     <Xml Include="test\sqliteentity\sqlite_entity.xml">
       <Filter>Header Files\test\sqliteentity</Filter>
+    </Xml>
+    <Xml Include="test\mysqlentity\mysql_entity.xml">
+      <Filter>Header Files\test\mysqlentity</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>

@@ -13,6 +13,7 @@
 #include "test/condition/ConnectorTest.h"
 #include "test/query/InsertIntoSelectTest.h"
 
+#ifndef QT_DAO_TESTCASE
 #include <qfile.h>
 #include <iostream>
 #include <Windows.h>
@@ -38,6 +39,7 @@ void setColor() {
         file.close();
     }
 }
+#endif
 
 template<typename... Arg> struct TestRunner;
 template<typename T, typename... Arg>

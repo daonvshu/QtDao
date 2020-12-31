@@ -2,7 +2,7 @@
 
 #include <qobject.h>
 
-namespace DaoSqlite {
+namespace DaoMysql {
     class EntityDelegate : public QObject {
         Q_OBJECT
 
@@ -14,4 +14,4 @@ namespace DaoSqlite {
         Q_INVOKABLE void entityTablesUpgrade();
     };
 }
-Q_DECLARE_METATYPE(DaoSqlite::EntityDelegate*);
+Q_DECLARE_METATYPE(DaoMysql::EntityDelegate*);

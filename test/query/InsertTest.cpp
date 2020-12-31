@@ -99,7 +99,7 @@ void InsertTest::insertObjectTest() {
     catch (DaoException&) {
     }
 
-    SqliteTest2 test3(10, "testname", 23, 233, QDate(2020, 10, 20));
+    SqliteTest2 test3("testname", 23, 233, QDate(2020, 10, 20));
     success = dao::_insert<SqliteTest2>().build().insert(test3);
     QVERIFY(success);
     QCOMPARE(test3.getId(), 3);
@@ -122,9 +122,9 @@ void InsertTest::insertObjectTest() {
 
 void InsertTest::insertObjectsTest() {
     SqliteTest2List test;
-    test << SqliteTest2(0, "name1", 1, 11, 111);
-    test << SqliteTest2(0, "name2", 2, 22, 22.2);
-    test << SqliteTest2(0, "name3", 3, 33, "333");
+    test << SqliteTest2("name1", 1, 11, 111);
+    test << SqliteTest2("name2", 2, 22, 22.2);
+    test << SqliteTest2("name3", 3, 33, "333");
     bool success = dao::_insert<SqliteTest2>().build().insert(test);
     QVERIFY(success);
     if (success) {
@@ -152,9 +152,9 @@ void InsertTest::insertObjectsTest() {
 
 void InsertTest::insertObjects2Test() {
     SqliteTest2List test;
-    test << SqliteTest2(0, "name4", 4, 44, 444);
-    test << SqliteTest2(0, "name5", 5, 55, 55.2);
-    test << SqliteTest2(0, "name6", 6, 66, "666");
+    test << SqliteTest2("name4", 4, 44, 444);
+    test << SqliteTest2("name5", 5, 55, 55.2);
+    test << SqliteTest2("name6", 6, 66, "666");
     bool success = dao::_insert<SqliteTest2>().build().insert2(test);
     QVERIFY(success);
     if (success) {
@@ -181,7 +181,7 @@ void InsertTest::insertObjects2Test() {
 }
 
 void InsertTest::insertOrReplaceTest() {
-    auto entity = SqliteTest2(0, "testinsertorreplace", -1, -2, "666");
+    auto entity = SqliteTest2("testinsertorreplace", -1, -2, "666");
     bool success = dao::_insert<SqliteTest2>().build().insertOrReplace(entity);
     QVERIFY(success);
     if (success) {
@@ -207,7 +207,7 @@ void InsertTest::insertOrReplaceTest() {
 
 void InsertTest::testTranscation() {
     dao::transcation();
-    auto entity = SqliteTest2(0, "test transcation", 10000, 10000, "666");
+    auto entity = SqliteTest2("test transcation", 10000, 10000, "666");
     dao::_insert<SqliteTest2>().build().insert(entity);
     try {
         dao::_insert<SqliteTest2>().throwable().build().insert(entity);

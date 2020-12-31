@@ -50,7 +50,11 @@
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
+    <QtMoc>
+      <QtMocDir>$(IntDir)moc\%(RelativeDir)\</QtMocDir>
+    </QtMoc>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
     <QtInstall>msvc2017</QtInstall>
@@ -110,6 +114,7 @@
     <ClCompile Include="test\condition\ConnectorTest.cpp" />
     <ClCompile Include="test\ConnectionPoolTest.cpp" />
     <ClCompile Include="test\loader\DbLoaderTest.cpp" />
+    <ClCompile Include="test\mysqlentity\EntityInclude.cpp" />
     <ClCompile Include="test\query\BaseQueryTest.cpp" />
     <ClCompile Include="test\query\DeleteTest.cpp" />
     <ClCompile Include="test\query\InsertIntoSelectTest.cpp" />
@@ -157,6 +162,10 @@
     <ClInclude Include="test\BaseTest.h" />
     <QtMoc Include="test\query\InsertIntoSelectTest.h" />
     <QtMoc Include="test\sqliteentity\SqliteConfig.h" />
+    <ClInclude Include="test\mysqlentity\EntityInclude.h" />
+    <ClInclude Include="test\mysqlentity\MysqlTest1.h" />
+    <ClInclude Include="test\mysqlentity\MysqlTest2.h" />
+    <ClInclude Include="test\mysqlentity\MysqlTest3.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest3.h" />
     <QtMoc Include="test\condition\ConnectorTest.h" />
     <ClInclude Include="src\query\Delete.h" />
@@ -180,6 +189,7 @@
   <ItemGroup>
     <Xml Include="entity\mysql_entity.xml" />
     <Xml Include="entity\sqlite_entity.xml" />
+    <Xml Include="test\mysqlentity\mysql_entity.xml" />
     <Xml Include="test\sqliteentity\sqlite_entity.xml" />
   </ItemGroup>
   <ItemGroup>

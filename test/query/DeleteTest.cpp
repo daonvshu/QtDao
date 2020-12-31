@@ -14,10 +14,10 @@ void DeleteTest::initTestCase() {
     data1 << SqliteTest1(5, "client", 12, "xxx");
     dao::_insert<SqliteTest1>().build().insert2(data1);
 
-    data2 << SqliteTest2(0, "joker", 9999, -1, 30);
-    data2 << SqliteTest2(0, "bob", 10, 0, "abc");
-    data2 << SqliteTest2(0, "func", 10, -2, 50);
-    data2 << SqliteTest2(0, "func", 50, 0, 50);
+    data2 << SqliteTest2("joker", 9999, -1, 30);
+    data2 << SqliteTest2("bob", 10, 0, "abc");
+    data2 << SqliteTest2("func", 10, -2, 50);
+    data2 << SqliteTest2("func", 50, 0, 50);
     dao::_insert<SqliteTest2>().build().insert2(data2);
 }
 
@@ -53,15 +53,15 @@ void DeleteTest::objectDeleteTest() {
 
 void DeleteTest::truncateTest() {
     data2.clear();
-    data2 << SqliteTest2(0, "func2", 10, -2, 50);
-    data2 << SqliteTest2(0, "func2", 50, 0, 50);
+    data2 << SqliteTest2("func2", 10, -2, 50);
+    data2 << SqliteTest2("func2", 50, 0, 50);
     dao::_insert<SqliteTest2>().build().insert2(data2);
 
     dao::_truncate<SqliteTest2>();
     auto select = dao::_selectAll<SqliteTest2>();
     QVERIFY(select.isEmpty());
 
-    auto entity = SqliteTest2(0, "func2", 50, 0, 50);
+    auto entity = SqliteTest2("func2", 50, 0, 50);
     dao::_insert<SqliteTest2>().build().insert(entity);
     QVERIFY(entity.getId() == 1);
 }

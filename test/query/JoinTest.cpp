@@ -17,17 +17,17 @@ void JoinTest::initTestCase() {
     data1 << SqliteTest1(5, "client", 12, "xxx");
     dao::_insert<SqliteTest1>().build().insert2(data1);
 
-    data2 << SqliteTest2(0, "joker", 9999, -1, 30);
-    data2 << SqliteTest2(0, "bob", 9, 9999, "abc");
-    data2 << SqliteTest2(0, "func", 10, 9, 50);
-    data2 << SqliteTest2(0, "func", 50, 10, 50);
+    data2 << SqliteTest2("joker", 9999, -1, 30);
+    data2 << SqliteTest2("bob", 9, 9999, "abc");
+    data2 << SqliteTest2("func", 10, 9, 50);
+    data2 << SqliteTest2("func", 50, 10, 50);
     dao::_insert<SqliteTest2>().build().insert2(data2);
 
-    data3 << SqliteTest3(0, 3, 2, "bob group", 2);
-    data3 << SqliteTest3(0, 4, 1, "client group1", 3);
-    data3 << SqliteTest3(0, 5, 1, "client group2", 3);
-    data3 << SqliteTest3(0, 1, 3, "func group1", 6);
-    data3 << SqliteTest3(0, 1, 4, "func group2", 7);
+    data3 << SqliteTest3(3, 2, "bob group", 2);
+    data3 << SqliteTest3(4, 1, "client group1", 3);
+    data3 << SqliteTest3(5, 1, "client group2", 3);
+    data3 << SqliteTest3(1, 3, "func group1", 6);
+    data3 << SqliteTest3(1, 4, "func group2", 7);
     dao::_insert<SqliteTest3>().build().insert2(data3);
 }
 
