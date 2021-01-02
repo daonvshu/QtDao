@@ -45,31 +45,32 @@ template<typename... Arg> struct TestRunner;
 template<typename T, typename... Arg>
 struct TestRunner<T, Arg...> : TestRunner<Arg...> {
 #ifdef QT_DAO_TESTCASE
-    static int run(int argc, char *argv[]) {
-        T t;
+    static int run(EngineModel model, int argc, char *argv[]) {
+        T t(model);
         int result = QTest::qExec(&t, argc, argv);
-        result += TestRunner<Arg...>::run(argc, argv);
+        result += TestRunner<Arg...>::run(model, argc, argv);
         return result;
     }
 #else
-    static int run() {
-        T t;
+    static int run(EngineModel model) {
+        T t(model);
         int result = QTest::qExec(&t, QStringList() << "QtDao.exe" << "-o" << "test.txt");
         setColor();
-        result += TestRunner<Arg...>::run();
+        result += TestRunner<Arg...>::run(model);
         return result;
     }
 #endif
 };
 template<> struct TestRunner<> {
 #ifdef QT_DAO_TESTCASE
-    static int run(int argc, char *argv[]) {
+    static int run(EngineModel model, int argc, char *argv[]) {
+        Q_UNUSED(model);
         Q_UNUSED(argc);
         Q_UNUSED(argv);
         return 0;
     }
 #else
-    static int run() { return 0; }
+    static int run(EngineModel model) { Q_UNUSED(model); return 0; }
 #endif
 };
 
@@ -80,23 +81,27 @@ int main(int argc, char *argv[])
 #ifdef QT_DAO_TESTCASE
     QTEST_SET_MAIN_SOURCE_PATH;
 #endif
-    int result = TestRunner<
-        ConnectionPoolTest,
-        BaseQueryTest,
-        DbLoaderTest,
-        ConnectorTest,
-        InsertTest,
-        SelectTest,
-        UpdateTest,
-        DeleteTest,
-        JoinTest,
-        InsertIntoSelectTest
-    >
+    int result = 0;
+    for (int i = 0; i < 2; i++) {
+        result += TestRunner<
+            ConnectionPoolTest,
+            BaseQueryTest,
+            DbLoaderTest,
+            ConnectorTest,
+            InsertTest,
+            SelectTest,
+            UpdateTest,
+            DeleteTest,
+            JoinTest,
+            InsertIntoSelectTest
+        >
 #ifdef QT_DAO_TESTCASE
-            ::run(argc, argv);
+            ::run(EngineModel(i), argc, argv);
+    }
     return result;
 #else
-            ::run();
+            ::run(EngineModel(i));
+    }
     if (result != 0) {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
         std::cout << "Not all tests are successful!" << std::endl;

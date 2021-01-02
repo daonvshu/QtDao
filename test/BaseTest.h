@@ -3,10 +3,11 @@
 #include <qobject.h>
 
 #include "sqliteentity/SqliteConfig.h"
+#include "EngineModelSelector.h"
 
-class BaseTest : public QObject {
+class BaseTest : public QObject , public EngineModelSelector {
 public:
-    BaseTest();
+    BaseTest(EngineModel model);
 
 private:
     static QList<QPair<QString, QVariantList>> cachedSqlLog;

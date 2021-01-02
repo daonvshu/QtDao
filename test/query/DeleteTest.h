@@ -10,6 +10,9 @@
 class DeleteTest : public BaseTest {
     Q_OBJECT
 
+public:
+    using BaseTest::BaseTest;
+
 private slots:
     void initTestCase();
 

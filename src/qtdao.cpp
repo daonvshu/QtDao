@@ -21,7 +21,7 @@ public:
 DbConfig DbLoader::config;
 AbstractClient* DbLoader::sqlClient = nullptr;
 
-DbExceptionHandler* DbExceptionHandler::exceptionHandler = new DefaultExceptionHandler;
+DbExceptionHandler* DbExceptionHandler::exceptionHandler = nullptr;
 
 static QueryLogPrinter queryLogPrinter = nullptr;
 void daoSetQueryLogPrinter(QueryLogPrinter printer) {
@@ -34,7 +34,6 @@ QueryLogPrinter getQueryLogPrinter() {
 
 void DbExceptionHandler::setExceptionHandler(DbExceptionHandler* exceptionHandler) {
     if (exceptionHandler != nullptr) {
-        delete DbExceptionHandler::exceptionHandler; //delete default hander
         DbExceptionHandler::exceptionHandler = exceptionHandler;
     }
 }

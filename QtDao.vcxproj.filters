@@ -125,9 +125,6 @@
     <ClCompile Include="test\loader\DbLoaderTest.cpp">
       <Filter>Source Files\test\loader</Filter>
     </ClCompile>
-    <ClCompile Include="src\dbclients\AbstractClient.cpp">
-      <Filter>Source Files\src\dbclients</Filter>
-    </ClCompile>
     <ClCompile Include="src\condition\EntityCondition.cpp">
       <Filter>Source Files\src\condition</Filter>
     </ClCompile>
@@ -172,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="test\sqliteentity\SqliteEntityInclude.cpp">
       <Filter>Source Files\test\sqliteentity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbclients\AbstractClient.cpp">
+      <Filter>Source Files\src\dbclients</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -301,6 +301,9 @@
     <ClInclude Include="test\mysqlentity\MysqlTest3.h">
       <Filter>Header Files\test\mysqlentity</Filter>
     </ClInclude>
+    <ClInclude Include="test\EngineModelSelector.h">
+      <Filter>Header Files\test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\sqlite_entity.xml">
@@ -363,6 +366,9 @@
     </QtMoc>
     <QtMoc Include="test\sqliteentity\SqliteEntityInclude.h">
       <Filter>Header Files\test\sqliteentity</Filter>
+    </QtMoc>
+    <QtMoc Include="test\mysqlentity\MysqlConfig.h">
+      <Filter>Header Files\test\mysqlentity</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

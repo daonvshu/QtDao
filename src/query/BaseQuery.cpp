@@ -48,12 +48,18 @@ void BaseQuery::printException(const QString& reason) {
     if (queryThrowable) {
         throw DaoException(reason);
     } else {
-        DbExceptionHandler::exceptionHandler->execFail(reason);
+        if (DbExceptionHandler::exceptionHandler) {
+            DbExceptionHandler::exceptionHandler->execFail(reason);
+            Q_ASSERT(DbExceptionHandler::exceptionHandler != nullptr);
+        }
     }
 }
 
 void BaseQuery::printWarning(const QString& info) {
-    DbExceptionHandler::exceptionHandler->execWarning(info);
+    if (DbExceptionHandler::exceptionHandler) {
+        DbExceptionHandler::exceptionHandler->execWarning(info);
+    }
+    Q_ASSERT(DbExceptionHandler::exceptionHandler != nullptr);
 }
 
 void BaseQuery::queryPrimitive(const QString& statement, std::function<void(QSqlQuery& query)> callback, std::function<void(QString)> failCallback) {
@@ -69,10 +75,14 @@ void BaseQuery::queryPrimitive(const QString& statement, const QVariantList& val
             callback(query);
         }
     } else {
+        auto lastErr = query.lastError().text();
         if (failCallback) {
-            failCallback(query.lastError().text());
+            failCallback(lastErr);
         } else {
-            DbExceptionHandler::exceptionHandler->execFail(query.lastError().text());
+            if (DbExceptionHandler::exceptionHandler) {
+                DbExceptionHandler::exceptionHandler->execFail(lastErr);
+            }
+            Q_ASSERT(DbExceptionHandler::exceptionHandler != nullptr);
         }
     }
 }

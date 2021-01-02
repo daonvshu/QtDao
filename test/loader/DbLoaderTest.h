@@ -2,8 +2,13 @@
 
 #include <qobject.h>
 
-class DbLoaderTest : public QObject {
+#include "../EngineModelSelector.h"
+
+class DbLoaderTest : public QObject, public EngineModelSelector {
     Q_OBJECT
+
+public:
+    using EngineModelSelector::EngineModelSelector;
 
 private slots:
     void initTestCase();

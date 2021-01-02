@@ -162,6 +162,8 @@
     <QtMoc Include="test\query\InsertIntoSelectTest.h" />
     <QtMoc Include="test\sqliteentity\SqliteConfig.h" />
     <QtMoc Include="test\mysqlentity\MysqlEntityInclude.h" />
+    <ClInclude Include="test\EngineModelSelector.h" />
+    <QtMoc Include="test\mysqlentity\MysqlConfig.h" />
     <ClInclude Include="test\mysqlentity\MysqlTest1.h" />
     <ClInclude Include="test\mysqlentity\MysqlTest2.h" />
     <ClInclude Include="test\mysqlentity\MysqlTest3.h" />

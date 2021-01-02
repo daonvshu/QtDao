@@ -2,6 +2,12 @@
 
 #include <qobject.h>
 
+enum SqlClientList {
+    ClientSqlite,
+    ClientMysql,
+    ClientSqlServer,
+};
+
 class AbstractClient {
 public:
     virtual void testConnect() = 0;
@@ -9,11 +15,18 @@ public:
     virtual void dropDatabase() = 0;
 
     virtual bool checkTableExist(const QString& tbName) = 0;
+
     virtual void createTableIfNotExist(
         const QString& tbName,
         QStringList fieldsType,
         QStringList primaryKeys
-    ) = 0;
+    );
+    virtual void createTableIfNotExist(
+        const QString& tbName,
+        const QString& engine,
+        QStringList fieldsType,
+        QStringList primaryKeys
+    );
 
     enum IndexType {
         INDEX_NORMAL,
@@ -41,34 +54,46 @@ public:
     virtual void dropAllIndexOnTable(const QString& tbName) = 0;
 
 private:
-    template<typename... E> class Delegate;
-    template<typename T, typename... E>
-    class Delegate<T, E...> : public Delegate<E...> {
+    template<SqlClientList C, typename... E> class Delegate;
+    template<SqlClientList C, typename T, typename... E>
+    class Delegate<C, T, E...> : public Delegate<C, E...> {
     public:
-        using Delegate<E...>::Delegate;
+        using Delegate<C, E...>::Delegate;
 
         void createTable();
         void tableUpgrade();
     };
 
+    template<SqlClientList C>
+    class ClientSelector {
+    public:
+        ClientSelector(AbstractClient* client) : client(client) {}
+
+        template<typename E>
+        void createTableIfNotExist();
+        
+    protected:
+        AbstractClient* client;
+    };
+
 public:
-    template<typename... E>
+    template<SqlClientList C, typename... E>
     void createTables();
 
-    template<typename... E>
+    template<SqlClientList C, typename... E>
     void tablesUpgrade();
 
 private:
-    template<typename E>
+    template<SqlClientList C, typename E>
     void createTable();
 
-    template<typename E>
+    template<SqlClientList C, typename E>
     void tableUpgrade();
 
     void restoreData2NewTable(const QString& tbname, QStringList fields);
 };
 
-template<> class AbstractClient::Delegate<> {
+template<SqlClientList C> class AbstractClient::Delegate<C> {
 public:
     Delegate(AbstractClient* client) : client(client) {}
 
@@ -80,23 +105,23 @@ protected:
 };
 
 /////////////////////////////// delegate //////////////////////////////////
-template<typename ...E>
+template<SqlClientList C, typename ...E>
 inline void AbstractClient::createTables() {
-    Delegate<E...>(this).createTable();
+    Delegate<C, E...>(this).createTable();
 }
 
-template<typename ...E>
+template<SqlClientList C, typename ...E>
 inline void AbstractClient::tablesUpgrade() {
-    Delegate<E...>(this).tableUpgrade();
+    Delegate<C, E...>(this).tableUpgrade();
 }
 
 ////////////////////////////// implement //////////////////////////////////
-template<typename E>
+template<SqlClientList C, typename E>
 inline void AbstractClient::createTable() {
     typename E::Info info;
     if (!checkTableExist(info.getTableName())) {
         //create table
-        createTableIfNotExist(info.getTableName(), info.getFieldsType(), info.getPrimaryKeys());
+        ClientSelector<C>(this).createTableIfNotExist<E>();
         //create normal index
         auto indexFields = info.getIndexFields();
         for (const auto& i : indexFields) {
@@ -110,26 +135,40 @@ inline void AbstractClient::createTable() {
     }
 }
 
-template<typename E>
+template<SqlClientList C, typename E>
 inline void AbstractClient::tableUpgrade() {
     typename E::Info info;
     dropTable("tmp_" + info.getTableName());
     dropAllIndexOnTable(info.getTableName()); //clear indexes!
     renameTable(info.getTableName(), "tmp_" + info.getTableName());
-    createTable<E>();
+    createTable<C, E>();
     restoreData2NewTable(info.getTableName(), info.getFields());
     dropTable("tmp_" + info.getTableName());
 }
 
 /////////////////////////////// delegate //////////////////////////////////
-template<typename T, typename ...E>
-inline void AbstractClient::Delegate<T, E...>::createTable() {
-    AbstractClient::Delegate<>::client->createTable<T>();
-    Delegate<E...>::createTable();
+template<SqlClientList C, typename T, typename ...E>
+inline void AbstractClient::Delegate<C, T, E...>::createTable() {
+    AbstractClient::Delegate<C>::client->createTable<C, T>();
+    Delegate<C, E...>::createTable();
 }
 
-template<typename T, typename ...E>
-inline void AbstractClient::Delegate<T, E...>::tableUpgrade() {
-    AbstractClient::Delegate<>::client->tableUpgrade<T>();
-    Delegate<E...>::tableUpgrade();
+template<SqlClientList C, typename T, typename ...E>
+inline void AbstractClient::Delegate<C, T, E...>::tableUpgrade() {
+    AbstractClient::Delegate<C>::client->tableUpgrade<C, T>();
+    Delegate<C, E...>::tableUpgrade();
+}
+
+template<>
+template<typename E>
+inline void AbstractClient::ClientSelector<ClientSqlite>::createTableIfNotExist() {
+    typename E::Info info;
+    client->createTableIfNotExist(info.getTableName(), info.getFieldsType(), info.getPrimaryKeys());
+}
+
+template<>
+template<typename E>
+inline void AbstractClient::ClientSelector<ClientMysql>::createTableIfNotExist() {
+    typename E::Info info;
+    client->createTableIfNotExist(info.getTableName(), info.getTableEngine(), info.getFieldsType(), info.getPrimaryKeys());
 }

@@ -105,7 +105,10 @@ QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
 		auto db1 = QSqlDatabase::database(connectionName);
 		QSqlQuery query("select 1", db1);
 		if (query.lastError().type() != QSqlError::NoError) {
-			DbExceptionHandler::exceptionHandler->databaseOpenFail(query.lastError().text());
+			if (DbExceptionHandler::exceptionHandler) {
+				DbExceptionHandler::exceptionHandler->databaseOpenFail(query.lastError().text());
+			}
+			Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "ConnectionPool", "open database fail!");
 			return QSqlDatabase();
 		}
 		return db1;
@@ -114,7 +117,10 @@ QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
 	// create new connection
 	auto db = prepareConnect(connectionName, DbLoader::getConfig().dbName);
 	if (!db.open()) {
-		DbExceptionHandler::exceptionHandler->databaseOpenFail(db.lastError().text());
+		if (DbExceptionHandler::exceptionHandler) {
+			DbExceptionHandler::exceptionHandler->databaseOpenFail(db.lastError().text());
+		}
+		Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "ConnectionPool", "open database fail!");
 		return QSqlDatabase();
 	}
 

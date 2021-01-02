@@ -30,7 +30,7 @@ public:
     };
 };
 
-BaseTest::BaseTest() {
+BaseTest::BaseTest(EngineModel model) : EngineModelSelector(model) {
     cachedSqlLog.clear();
     daoSetQueryLogPrinter(SqlLogPrinter);
     DbExceptionHandler::setExceptionHandler(new UnitQueryTestExceptionHandler(this));

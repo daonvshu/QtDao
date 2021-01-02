@@ -50,7 +50,10 @@ void DbLoader::init() {
     try {
         init_priv();
     } catch (DaoException& e) {
-        DbExceptionHandler::exceptionHandler->initDbFail(e.reason);
+        if (DbExceptionHandler::exceptionHandler) {
+            DbExceptionHandler::exceptionHandler->initDbFail(e.reason);
+        }
+        Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "DbLoader", "database init fail!");
     }
 }
 
@@ -72,7 +75,10 @@ void DbLoader::init_priv() {
             invokeTableUpgrade();
             updateLocalVersion();
         } catch (DaoException& e) {
-            DbExceptionHandler::exceptionHandler->upgradeFail(e.reason);
+            if (DbExceptionHandler::exceptionHandler) {
+                DbExceptionHandler::exceptionHandler->upgradeFail(e.reason);
+            }
+            Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "ConnectionPool", "database upgrade fail!");
         }
     }
 }

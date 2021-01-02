@@ -6,11 +6,11 @@
 #include "../../src/DbLoader.h"
 namespace DaoSqlite {
     void SqliteEntityDelegate::createEntityTables() {
-        DbLoader::getClient().createTables<SqliteTest1,SqliteTest2,SqliteTest3>();
+        DbLoader::getClient().createTables<ClientSqlite, SqliteTest1, SqliteTest2, SqliteTest3>();
     }
 
     void SqliteEntityDelegate::entityTablesUpgrade() {
-        DbLoader::getClient().tablesUpgrade<SqliteTest1,SqliteTest2,SqliteTest3>();
+        DbLoader::getClient().tablesUpgrade<ClientSqlite, SqliteTest1, SqliteTest2, SqliteTest3>();
     }
 
     const int entitySqliteDelegateId = qRegisterMetaType<SqliteEntityDelegate*>();

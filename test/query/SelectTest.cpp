@@ -188,7 +188,7 @@ void SelectTest::unionSelectTest() {
             continue;
         expectList << qMakePair(d.getName(), d.getNumber());
     }
-    qSort(expectList);
+    std::sort(expectList.begin(), expectList.end());
     for (const auto& d : expectList) {
         expected << d.first << d.second;
     }

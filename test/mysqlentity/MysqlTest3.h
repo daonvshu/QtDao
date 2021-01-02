@@ -81,6 +81,20 @@ public:
         fFloat = 0;
         fDouble = 0;
         fDecimal = 0;
+        fDate = QDate();
+        fTime = "00:00:00";
+        fDateTime = QDateTime();
+        fTimestamp = QDateTime();
+        fChar = 'a';
+        fVarChar = "a";
+        fTinyBlob = "a";
+        fTinyText = "a";
+        fBlob = "a";
+        fText = "a";
+        fMediumBlob = "a";
+        fMediumText = "a";
+        fLongBlob = "a";
+        fLongText = "a";
     }
 
     MysqlTest3(
@@ -143,37 +157,9 @@ public:
     MysqlTest3(
         const QString& name,
         const int& size,
-        const QDate& fDate,
-        const QString& fTime,
-        const QDateTime& fDateTime,
-        const QDateTime& fTimestamp,
-        const QChar& fChar,
-        const QString& fVarChar,
-        const QByteArray& fTinyBlob,
-        const QString& fTinyText,
-        const QByteArray& fBlob,
-        const QString& fText,
-        const QByteArray& fMediumBlob,
-        const QString& fMediumText,
-        const QByteArray& fLongBlob,
-        const QString& fLongText,
         const QVariant& fVariant
     ) : name(name)
     , size(size)
-    , fDate(fDate)
-    , fTime(fTime)
-    , fDateTime(fDateTime)
-    , fTimestamp(fTimestamp)
-    , fChar(fChar)
-    , fVarChar(fVarChar)
-    , fTinyBlob(fTinyBlob)
-    , fTinyText(fTinyText)
-    , fBlob(fBlob)
-    , fText(fText)
-    , fMediumBlob(fMediumBlob)
-    , fMediumText(fMediumText)
-    , fLongBlob(fLongBlob)
-    , fLongText(fLongText)
     , fVariant(fVariant)
     { }
 
@@ -342,19 +328,19 @@ public:
                 << QStringLiteral("fDouble double default 0 comment 'type double'")
                 << QStringLiteral("fDecimal decimal(6,4) default 0 comment 'type decimal(6,4)'")
                 << QStringLiteral("fDate date comment 'type date'")
-                << QStringLiteral("fTime time comment 'type time'")
+                << QStringLiteral("fTime time default '00:00:00' comment 'type time'")
                 << QStringLiteral("fDateTime datetime comment 'type date time'")
                 << QStringLiteral("fTimestamp timestamp comment 'type timestamp'")
-                << QStringLiteral("fChar char comment 'type char'")
-                << QStringLiteral("fVarChar varchar(12) comment 'type varchar(12)'")
-                << QStringLiteral("fTinyBlob tinyblob comment 'type tiny blob'")
-                << QStringLiteral("fTinyText tinytext comment 'type tiny text'")
-                << QStringLiteral("fBlob blob comment 'type blob'")
-                << QStringLiteral("fText text comment 'type text'")
-                << QStringLiteral("fMediumBlob mediumblob comment 'type medium blob'")
-                << QStringLiteral("fMediumText mediumtext comment 'type medium text'")
-                << QStringLiteral("fLongBlob longblob comment 'type long blob'")
-                << QStringLiteral("fLongText longtext comment 'type long text'")
+                << QStringLiteral("fChar char default 'a' comment 'type char'")
+                << QStringLiteral("fVarChar varchar(12) default 'a' comment 'type varchar(12)'")
+                << QStringLiteral("fTinyBlob tinyblob default 'a' comment 'type tiny blob'")
+                << QStringLiteral("fTinyText tinytext default 'a' comment 'type tiny text'")
+                << QStringLiteral("fBlob blob default 'a' comment 'type blob'")
+                << QStringLiteral("fText text default 'a' comment 'type text'")
+                << QStringLiteral("fMediumBlob mediumblob default 'a' comment 'type medium blob'")
+                << QStringLiteral("fMediumText mediumtext default 'a' comment 'type medium text'")
+                << QStringLiteral("fLongBlob longblob default 'a' comment 'type long blob'")
+                << QStringLiteral("fLongText longtext default 'a' comment 'type long text'")
                 << QStringLiteral("fVariant blob comment 'type variant'");
         }
 

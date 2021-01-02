@@ -2,8 +2,13 @@
 
 #include <qobject.h>
 
-class ConnectionPoolTest : public QObject {
+#include "EngineModelSelector.h"
+
+class ConnectionPoolTest : public QObject, public EngineModelSelector {
     Q_OBJECT
+
+public:
+    using EngineModelSelector::EngineModelSelector;
 
 private slots:
     void initTestCase();

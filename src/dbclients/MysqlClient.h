@@ -11,6 +11,7 @@ public:
     bool checkTableExist(const QString& tbName);
     void createTableIfNotExist(
         const QString& tbName,
+        const QString& engine,
         QStringList fieldsType,
         QStringList primaryKeys
     );
