@@ -78,17 +78,17 @@
     <Filter Include="Header Files\src\macro">
       <UniqueIdentifier>{bbfbfa4d-8ef8-4745-8e00-dffff760df15}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\src\sqliteentity">
-      <UniqueIdentifier>{d3d06d6d-a684-4c50-97a3-a0d3953ddb8f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\src\builder">
       <UniqueIdentifier>{38474b50-e313-438e-b327-b673ea1f09a6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\test\mysqlentity">
       <UniqueIdentifier>{6ce33e4d-4198-4081-a595-10ac37d0ea4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\src\mysqlentity">
-      <UniqueIdentifier>{ccc15394-562c-485f-a672-5d29e0392c1f}</UniqueIdentifier>
+    <Filter Include="Source Files\test\sqliteentity">
+      <UniqueIdentifier>{ebdc0dcb-626c-41c7-b54d-7b4abb4630c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\test\mysqlentity">
+      <UniqueIdentifier>{52c40159-446f-4dec-bb90-32eb4d32f5a5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -164,14 +164,14 @@
     <ClCompile Include="test\query\InsertIntoSelectTest.cpp">
       <Filter>Source Files\test\query</Filter>
     </ClCompile>
-    <ClCompile Include="test\sqliteentity\EntityInclude.cpp">
-      <Filter>Source Files\src\sqliteentity</Filter>
-    </ClCompile>
     <ClCompile Include="src\builder\BaseQueryBuilder.cpp">
       <Filter>Source Files\src\builder</Filter>
     </ClCompile>
-    <ClCompile Include="test\mysqlentity\EntityInclude.cpp">
-      <Filter>Source Files\src\mysqlentity</Filter>
+    <ClCompile Include="test\mysqlentity\MysqlEntityInclude.cpp">
+      <Filter>Source Files\test\mysqlentity</Filter>
+    </ClCompile>
+    <ClCompile Include="test\sqliteentity\SqliteEntityInclude.cpp">
+      <Filter>Source Files\test\sqliteentity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -292,9 +292,6 @@
     <ClInclude Include="src\builder\InsertIntoSelectBuilder.h">
       <Filter>Header Files\src\builder</Filter>
     </ClInclude>
-    <ClInclude Include="test\mysqlentity\EntityInclude.h">
-      <Filter>Header Files\test\mysqlentity</Filter>
-    </ClInclude>
     <ClInclude Include="test\mysqlentity\MysqlTest1.h">
       <Filter>Header Files\test\mysqlentity</Filter>
     </ClInclude>
@@ -337,9 +334,6 @@
     <QtMoc Include="test\loader\DbLoaderTest.h">
       <Filter>Header Files\test\loader</Filter>
     </QtMoc>
-    <QtMoc Include="test\sqliteentity\EntityInclude.h">
-      <Filter>Header Files\test\sqliteentity</Filter>
-    </QtMoc>
     <QtMoc Include="test\condition\ConnectorTest.h">
       <Filter>Header Files\test\condition</Filter>
     </QtMoc>
@@ -362,6 +356,12 @@
       <Filter>Header Files\test\query</Filter>
     </QtMoc>
     <QtMoc Include="test\sqliteentity\SqliteConfig.h">
+      <Filter>Header Files\test\sqliteentity</Filter>
+    </QtMoc>
+    <QtMoc Include="test\mysqlentity\MysqlEntityInclude.h">
+      <Filter>Header Files\test\mysqlentity</Filter>
+    </QtMoc>
+    <QtMoc Include="test\sqliteentity\SqliteEntityInclude.h">
       <Filter>Header Files\test\sqliteentity</Filter>
     </QtMoc>
   </ItemGroup>

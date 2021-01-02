@@ -29,13 +29,20 @@ public:
     }
 
     SqliteTest3(
-        qint64 tbi1,
-        qint64 tbi2,
+        const qint64& tbi1,
+        const qint64& tbi2,
         const QString& name,
-        int size
+        const int& size
     ) : tbi1(tbi1)
     , tbi2(tbi2)
     , name(name)
+    , size(size)
+    { }
+
+    SqliteTest3(
+        const QString& name,
+        const int& size
+    ) : name(name)
     , size(size)
     { }
 
@@ -169,15 +176,15 @@ public:
 
 public:
     //
-    inline void setId(qint64 id) {this->id = id;}
+    inline void setId(const qint64& id) {this->id = id;}
     //
     inline qint64 getId() const {return id;}
     //set 绑定到SqliteTest1 id
-    inline void setTbi1(qint64 tbi1) {this->tbi1 = tbi1;}
+    inline void setTbi1(const qint64& tbi1) {this->tbi1 = tbi1;}
     //get 绑定到SqliteTest1 id
     inline qint64 getTbi1() const {return tbi1;}
     //set 绑定到SqliteTest2 id
-    inline void setTbi2(qint64 tbi2) {this->tbi2 = tbi2;}
+    inline void setTbi2(const qint64& tbi2) {this->tbi2 = tbi2;}
     //get 绑定到SqliteTest2 id
     inline qint64 getTbi2() const {return tbi2;}
     //
@@ -185,7 +192,7 @@ public:
     //
     inline QString getName() const {return name;}
     //
-    inline void setSize(int size) {this->size = size;}
+    inline void setSize(const int& size) {this->size = size;}
     //
     inline int getSize() const {return size;}
     //set temp data

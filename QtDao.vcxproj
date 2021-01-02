@@ -50,14 +50,13 @@
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level3</WarningLevel>
-      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <QtMoc>
       <QtMocDir>$(IntDir)moc\%(RelativeDir)\</QtMocDir>
     </QtMoc>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
-    <QtInstall>msvc2017</QtInstall>
+    <QtInstall>msvc2017_x86</QtInstall>
     <QtModules>core;sql;testlib</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
@@ -114,7 +113,7 @@
     <ClCompile Include="test\condition\ConnectorTest.cpp" />
     <ClCompile Include="test\ConnectionPoolTest.cpp" />
     <ClCompile Include="test\loader\DbLoaderTest.cpp" />
-    <ClCompile Include="test\mysqlentity\EntityInclude.cpp" />
+    <ClCompile Include="test\mysqlentity\MysqlEntityInclude.cpp" />
     <ClCompile Include="test\query\BaseQueryTest.cpp" />
     <ClCompile Include="test\query\DeleteTest.cpp" />
     <ClCompile Include="test\query\InsertIntoSelectTest.cpp" />
@@ -122,7 +121,7 @@
     <ClCompile Include="test\query\JoinTest.cpp" />
     <ClCompile Include="test\query\SelectTest.cpp" />
     <ClCompile Include="test\query\UpdateTest.cpp" />
-    <ClCompile Include="test\sqliteentity\EntityInclude.cpp" />
+    <ClCompile Include="test\sqliteentity\SqliteEntityInclude.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sqlite_entity.h">
@@ -162,10 +161,11 @@
     <ClInclude Include="test\BaseTest.h" />
     <QtMoc Include="test\query\InsertIntoSelectTest.h" />
     <QtMoc Include="test\sqliteentity\SqliteConfig.h" />
-    <ClInclude Include="test\mysqlentity\EntityInclude.h" />
+    <QtMoc Include="test\mysqlentity\MysqlEntityInclude.h" />
     <ClInclude Include="test\mysqlentity\MysqlTest1.h" />
     <ClInclude Include="test\mysqlentity\MysqlTest2.h" />
     <ClInclude Include="test\mysqlentity\MysqlTest3.h" />
+    <QtMoc Include="test\sqliteentity\SqliteEntityInclude.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest3.h" />
     <QtMoc Include="test\condition\ConnectorTest.h" />
     <ClInclude Include="src\query\Delete.h" />
@@ -180,7 +180,6 @@
     <QtMoc Include="test\query\JoinTest.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest1.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest2.h" />
-    <QtMoc Include="test\sqliteentity\EntityInclude.h" />
     <QtMoc Include="test\query\BaseQueryTest.h" />
     <QtMoc Include="test\loader\DbLoaderTest.h" />
     <ClInclude Include="test\RunnableHandler.h" />

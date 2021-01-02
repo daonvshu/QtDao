@@ -33,11 +33,20 @@ public:
 
     MysqlTest2(
         const QString& name,
-        int number,
-        int number2,
+        const int& number,
+        const int& number2,
         const QVariant& varianttype
     ) : name(name)
     , number(number)
+    , number2(number2)
+    , varianttype(varianttype)
+    { }
+
+    MysqlTest2(
+        const QString& name,
+        const int& number2,
+        const QVariant& varianttype
+    ) : name(name)
     , number2(number2)
     , varianttype(varianttype)
     { }
@@ -182,7 +191,7 @@ public:
 
 public:
     //set 自增长主键
-    inline void setId(qint64 id) {this->id = id;}
+    inline void setId(const qint64& id) {this->id = id;}
     //get 自增长主键
     inline qint64 getId() const {return id;}
     //
@@ -190,11 +199,11 @@ public:
     //
     inline QString getName() const {return name;}
     //
-    inline void setNumber(int number) {this->number = number;}
+    inline void setNumber(const int& number) {this->number = number;}
     //
     inline int getNumber() const {return number;}
     //
-    inline void setNumber2(int number2) {this->number2 = number2;}
+    inline void setNumber2(const int& number2) {this->number2 = number2;}
     //
     inline int getNumber2() const {return number2;}
     //set 自定义类型

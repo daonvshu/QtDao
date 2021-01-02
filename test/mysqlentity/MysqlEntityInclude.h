@@ -3,15 +3,15 @@
 #include <qobject.h>
 
 namespace DaoMysql {
-    class EntityDelegate : public QObject {
+    class MysqlEntityDelegate : public QObject {
         Q_OBJECT
 
     public:
-        Q_INVOKABLE explicit EntityDelegate() {}
+        Q_INVOKABLE explicit MysqlEntityDelegate() {}
 
         Q_INVOKABLE void createEntityTables();
 
         Q_INVOKABLE void entityTablesUpgrade();
     };
 }
-Q_DECLARE_METATYPE(DaoMysql::EntityDelegate*);
+Q_DECLARE_METATYPE(DaoMysql::MysqlEntityDelegate*);

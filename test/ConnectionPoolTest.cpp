@@ -1,10 +1,10 @@
 #include "ConnectionPoolTest.h"
 
-#include "../../src/DbLoader.h"
-#include "../../src/ConnectionPool.h"
+#include "../src/DbLoader.h"
+#include "../src/ConnectionPool.h"
 
-#include "../../src/dbclients/SqliteClient.h"
-#include "../../src/dao.h"
+#include "../src/dbclients/SqliteClient.h"
+#include "../src/dao.h"
 
 #include "sqliteentity/SqliteConfig.h"
 

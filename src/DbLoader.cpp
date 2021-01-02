@@ -122,11 +122,11 @@ void DbLoader::invokeTableUpgrade() {
 QByteArray DbLoader::getDelegateStr() {
     QByteArray entityDelegate;
     if (config.isSqlite()) {
-        entityDelegate = "DaoSqlite::EntityDelegate*";
+        entityDelegate = "DaoSqlite::SqliteEntityDelegate*";
     } else if (config.isMysql()) {
-        entityDelegate = "DaoMysql::EntityDelegate*";
+        entityDelegate = "DaoMysql::MysqlEntityDelegate*";
     } else if (config.isSqlServer()) {
-        entityDelegate = "DaoSqlServer::EntityDelegate*";
+        entityDelegate = "DaoSqlServer::SqlServerEntityDelegate*";
     }
     return entityDelegate;
 }
