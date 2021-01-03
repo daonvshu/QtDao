@@ -1,8 +1,27 @@
-********* Start testing of InsertIntoSelectTest *********
+********* Start testing of DbLoaderTest *********
 Config: Using QtTest library 5.14.2, Qt 5.14.2 (i386-little_endian-ilp32 shared (dynamic) debug build; by MSVC 2017)
-PASS   : InsertIntoSelectTest::initTestCase()
-PASS   : InsertIntoSelectTest::testInsertIntoSelect()
-PASS   : InsertIntoSelectTest::testInsertIntoJoin()
-PASS   : InsertIntoSelectTest::cleanupTestCase()
-Totals: 4 passed, 0 failed, 0 skipped, 0 blacklisted, 57ms
-********* Finished testing of InsertIntoSelectTest *********
+PASS   : DbLoaderTest::initTestCase()
+FAIL!  : DbLoaderTest::loadConfigTest() init db fail:open master table 'mysql' fail! 
+E:\c++\QtDao\test\loader\DbLoaderTest.cpp(21) : failure location
+FAIL!  : DbLoaderTest::loadConfigTest() database open fail:Unknown database 'mysqltest' QMYSQL: Unable to connect
+E:\c++\QtDao\test\loader\DbLoaderTest.cpp(25) : failure location
+QWARN  : DbLoaderTest::loadConfigTest() QSqlQuery::prepare: database not open
+FAIL!  : DbLoaderTest::loadConfigTest() query fail:Driver not loaded Driver not loaded
+E:\c++\QtDao\test\loader\DbLoaderTest.cpp(29) : failure location
+FAIL!  : DbLoaderTest::loadConfigTest() 'DbLoader::getClient().checkTableExist(t1info.getTableName())' returned FALSE. ()
+E:\c++\QtDao\test\loader\DbLoaderTest.cpp(51) : failure location
+QWARN  : DbLoaderTest::upgradeTest() QSqlDatabasePrivate::addDatabase: duplicate connection name 'testconnection', old connection removed.
+FAIL!  : DbLoaderTest::upgradeTest() init db fail:open master table 'mysql' fail! 
+E:\c++\QtDao\test\loader\DbLoaderTest.cpp(21) : failure location
+QWARN  : DbLoaderTest::upgradeTest() QSqlDatabasePrivate::database: unable to open database: "Unknown database 'mysqltest' QMYSQL: Unable to connect"
+QWARN  : DbLoaderTest::upgradeTest() QSqlQuery::exec: database not open
+QWARN  : DbLoaderTest::upgradeTest() QSqlQuery::prepare: database not open
+FAIL!  : DbLoaderTest::upgradeTest() query fail:
+E:\c++\QtDao\test\loader\DbLoaderTest.cpp(29) : failure location
+FAIL!  : DbLoaderTest::upgradeTest() 'DbLoader::getClient().checkTableExist(t1info.getTableName())' returned FALSE. ()
+E:\c++\QtDao\test\loader\DbLoaderTest.cpp(73) : failure location
+QWARN  : DbLoaderTest::cleanupTestCase() QSqlQuery::exec: database not open
+FAIL!  : DbLoaderTest::cleanupTestCase() Caught unhandled exception
+qtestcase.cpp(1924) : failure location
+Totals: 1 passed, 8 failed, 0 skipped, 0 blacklisted, 102ms
+********* Finished testing of DbLoaderTest *********

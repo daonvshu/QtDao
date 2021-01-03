@@ -83,10 +83,20 @@ int main(int argc, char *argv[])
 #endif
     int result = 0;
     for (int i = 0; i < 2; i++) {
+#ifndef QT_DAO_TESTCASE
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
+        if (i == 0) {
+            std::cout << "--------------- test sqlite ---------------" << std::endl;
+        } else if (i == 1) {
+            std::cout << "--------------- test mysql ---------------" << std::endl;
+        } else if (i == 2) {
+            std::cout << "--------------- test sqlserver ---------------" << std::endl;
+        }
+#endif
         result += TestRunner<
+            DbLoaderTest,
             ConnectionPoolTest,
             BaseQueryTest,
-            DbLoaderTest,
             ConnectorTest,
             InsertTest,
             SelectTest,

@@ -13,8 +13,8 @@ public:
 private slots:
     void initTestCase();
 
-    void sqliteloadConfigTest();
-    void sqliteUpgradeTest();
+    void loadConfigTest();
+    void upgradeTest();
 
     void cleanup();
 

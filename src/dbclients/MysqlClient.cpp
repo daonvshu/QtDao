@@ -12,7 +12,7 @@
 void MysqlClient::testConnect() {
     auto db = ConnectionPool::prepareConnect("testconnection", "mysql");
     if (!db.isOpen()) {
-        throw DaoException("open master table 'mysql' fail!");
+        throw DaoException("open master table 'mysql' fail! " + db.lastError().text());
     }
     {
         QSqlQuery query("select 1", db);
