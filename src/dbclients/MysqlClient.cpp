@@ -10,43 +10,49 @@
 #include <QSqlError>
 
 void MysqlClient::testConnect() {
-    auto db = ConnectionPool::prepareConnect("testconnection", "mysql");
-    if (!db.isOpen()) {
-        throw DaoException("open master table 'mysql' fail! " + db.lastError().text());
-    }
     {
+        auto db = ConnectionPool::prepareConnect("testconnection", "mysql");
+        if (!db.open()) {
+            throw DaoException("open master table 'mysql' fail! " + db.lastError().text());
+        }
         QSqlQuery query("select 1", db);
         if (query.lastError().type() != QSqlError::NoError) {
             throw DaoException("master table 'mysql' cannot execute query!");
         }
+        db.close();
     }
-    db.close();
     QSqlDatabase::removeDatabase("testconnection");
 }
 
 void MysqlClient::createDatabase() {
-    auto db = ConnectionPool::prepareConnect("createconnection", "mysql");
     {
+        auto db = ConnectionPool::prepareConnect("createconnection", "mysql");
+        if (!db.open()) {
+            throw DaoException("create database open fail! " + db.lastError().text());
+        }
         QString sql = "create database if not exists %1 default character set utf8 COLLATE utf8_general_ci";
         QSqlQuery query(db);
         if (!query.exec(sql.arg(DbLoader::getConfig().dbName))) {
             throw DaoException("create database fail! err = " + db.lastError().text());
         }
+        db.close();
     }
-    db.close();
     QSqlDatabase::removeDatabase("createconnection");
 }
 
 void MysqlClient::dropDatabase() {
-    auto db = ConnectionPool::prepareConnect("dropconnection", "mysql");
     {
+        auto db = ConnectionPool::prepareConnect("dropconnection", "mysql");
+        if (!db.open()) {
+            throw DaoException("drop database open fail! " + db.lastError().text());
+        }
         QString sql = "drop database if exists %1";
         QSqlQuery query(db);
         if (!query.exec(sql.arg(DbLoader::getConfig().dbName))) {
             throw DaoException("drop database fail! err = " + db.lastError().text());
         }
+        db.close();
     }
-    db.close();
     QSqlDatabase::removeDatabase("dropconnection");
 }
 
@@ -83,7 +89,7 @@ void MysqlClient::createTableIfNotExist(const QString& tbName, const QString& en
     if (!engine.isEmpty()) {
         str.append(" engine=").append(engine);
     }
-    str.append("default charset = utf8");
+    str.append(" default charset = utf8");
 
     BaseQuery::queryPrimitiveThrowable(str);
 }
@@ -139,7 +145,7 @@ QStringList MysqlClient::getTagTableFields(const QString& tbName) {
 
 void MysqlClient::dropAllIndexOnTable(const QString& tbName) {
     auto query = BaseQuery::queryPrimitiveThrowable(
-        QString("SELECT index_name FROM information_schema.statistics where TABLE_SCHEMA = '%1' and TABLE_NAME = '%2'")
+        QString("SELECT index_name FROM information_schema.statistics where TABLE_SCHEMA = '%1' and TABLE_NAME = '%2' GROUP BY index_name")
         .arg(DbLoader::getConfig().dbName, tbName)
     );
     QStringList indexNames;

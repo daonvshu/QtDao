@@ -111,7 +111,7 @@ public:
         static QStringList getFieldsType() {
             return QStringList() 
                 << QStringLiteral("id bigint primary key auto_increment comment '自增长主键'")
-                << QStringLiteral("name text not null comment ''")
+                << QStringLiteral("name varchar(100) not null comment ''")
                 << QStringLiteral("number int default 0 comment ''")
                 << QStringLiteral("number2 int comment ''")
                 << QStringLiteral("varianttype blob comment '自定义类型'");
@@ -161,9 +161,6 @@ public:
             }
             if (target == "varianttype") {
                 return entity.varianttype;
-            }
-            if (target == "nametmp") {
-                return entity.nametmp;
             }
             return entity.__extra.value(target);
         }

@@ -56,7 +56,7 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
-    <QtInstall>msvc2017_x86</QtInstall>
+    <QtInstall>msvc2017</QtInstall>
     <QtModules>core;sql;testlib</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
@@ -207,6 +207,7 @@
   <ItemGroup>
     <None Include="readme.md" />
     <None Include="src\condition\FunctionCondition.h" />
+    <None Include="todo\readme.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

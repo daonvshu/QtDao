@@ -84,7 +84,11 @@ void DbLoader::init_priv() {
 }
 
 void DbLoader::updateLocalVersion() {
-    getClient().createTableIfNotExist("dao_version", QStringList() << "ver int", QStringList());
+    if (config.isSqlite()) {
+        getClient().createTableIfNotExist("dao_version", QStringList() << "ver int", QStringList());
+    } else if (config.isMysql()) {
+        getClient().createTableIfNotExist("dao_version", QString(), QStringList() << "ver int", QStringList());
+    }
     auto query = BaseQuery::queryPrimitiveThrowable("select count(*) from dao_version");
     int count = 0;
     if (query.next()) {

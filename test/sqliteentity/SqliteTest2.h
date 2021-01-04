@@ -157,9 +157,6 @@ public:
             if (target == "varianttype") {
                 return entity.varianttype;
             }
-            if (target == "nametmp") {
-                return entity.nametmp;
-            }
             return entity.__extra.value(target);
         }
 

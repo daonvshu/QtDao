@@ -383,5 +383,8 @@
     <None Include="src\condition\FunctionCondition.h">
       <Filter>Header Files\src\condition</Filter>
     </None>
+    <None Include="todo\readme.md">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

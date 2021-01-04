@@ -7,28 +7,28 @@
   - [ ] obfuscate field
 
 - **loader**
-  - [ ] configure loader
+  - [x] configure loader
   - [x] driver loader
-  - [ ] connect test
-  - [ ] auto create database/table (use config)
-  - [ ] truncate/drop table
-  - [ ] drop database
+  - [x] connect test
+  - [x] auto create database/table (use config)
+  - [x] truncate/drop table
+  - [x] drop database
   - [ ] ~~database switch~~
 - **upgrader**
-  - [ ] version check
-  - [ ] table upgrade
+  - [x] version check
+  - [x] table upgrade
 - **log**
   - [x] sql statement print 
   - [x] value list print
 - **entity generator**
-  - [ ] field getter/setter
-  - [ ] table field
-  - [ ] transient field
-  - [ ] default value
-  - [ ] function query result getter
+  - [x] field getter/setter
+  - [x] table field
+  - [x] transient field
+  - [x] default value
+  - [x] function query result getter
 - **query condition**
-  - [ ] operator field <-> value
-  - [ ] operator field <-> field
+  - [x] operator field <-> value
+  - [x] operator field <-> field
   - [ ] ~~operator field <-> function~~
   - [ ] ~~operator function <-> function~~
   - [ ] ~~operator field <-> select results~~(move to function query)
@@ -68,6 +68,7 @@
     - [ ] distinct
     - [ ] having
     - [ ] between date to date
+    - [ ] json type column
 - **connection pool**
   - [ ] connection reuse
   - [ ] work thread connection separate
@@ -75,7 +76,7 @@
 - **auto close connection**
   - [ ] auto close connection when work thread end
 - **exception**
-  - [ ] load configure exception
-  - [ ] upgrade exception
+  - [x] load configure exception
+  - [x] upgrade exception
   - [ ] query exception
-  - [ ] connection pool exception
+  - [x] connection pool exception

@@ -28,7 +28,7 @@ public:
     }
 
     QString getHost() {
-        return "localhost";
+        return "192.168.1.19";
     }
 
     QString getUserName() {
