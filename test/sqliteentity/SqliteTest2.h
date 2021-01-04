@@ -212,3 +212,4 @@ public:
     inline QVariant __getExtra(const QString& key) const {return __extra.value(key);}
 };
 typedef QList<SqliteTest2> SqliteTest2List;
+Q_DECLARE_METATYPE(SqliteTest2);

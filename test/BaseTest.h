@@ -6,6 +6,8 @@
 #include "mysqlentity/MysqlConfig.h"
 #include "EngineModelSelector.h"
 
+#include "../src/dao.h"
+
 class BaseTest : public QObject , public EngineModelSelector {
 public:
     BaseTest(EngineModel model);
@@ -17,4 +19,13 @@ private:
 
 protected:
     void clearCacheAndPrintIfTestFail();
+
+    void configDb() {
+        if (engineModel == Engine_Sqlite) {
+            DbLoader::init(SqliteConfig());
+        } else if (engineModel == Engine_Mysql) {
+            DbLoader::init(MysqlConfig());
+        }
+        clearCacheAndPrintIfTestFail();
+    }
 };

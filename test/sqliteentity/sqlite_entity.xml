@@ -6,7 +6,7 @@
     <item name="number" type="real" note="浮点数字" default="10.0"/>
     <item name="hex" type="blob" note="二进制"/>
   </tb>
-  <tb name="SqliteTest2">
+  <tb name="SqliteTest2" declaremetatype="true">
     <item name="id" type="long" default="-1" constraints="primary key" autoincrement="true" note="自增长主键"/>
     <item name="name" type="text" constraints="not null"/>
     <item name="number" type="int" default="0"/>
@@ -25,7 +25,7 @@
       <field>number2</field>
     </index>
   </tb>
-  <tb name="SqliteTest3">
+  <tb name="SqliteTest3" declaremetatype="true">
     <item name="id" type="long" default="-1" constraints="primary key" autoincrement="true" />
     <item name="tbi1" type="long" default="-1" note="绑定到SqliteTest1 id"/>
     <item name="tbi2" type="long" default="-1" note="绑定到SqliteTest2 id"/>

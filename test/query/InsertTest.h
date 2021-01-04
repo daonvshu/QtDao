@@ -15,12 +15,22 @@ private slots:
 
     void setInsertTest();
     void setInsertBatchTest();
+
+    void insertObjectTest_data();
     void insertObjectTest();
+
+    void insertObjectsTest_data();
     void insertObjectsTest();
+
+    void insertObjects2Test_data();
     void insertObjects2Test();
+
+    void insertOrReplaceTest_data();
     void insertOrReplaceTest();
 
+    void testTranscation_data();
     void testTranscation();
+    void testMysqlMyISAMTranscation();
 
     void cleanup();
 

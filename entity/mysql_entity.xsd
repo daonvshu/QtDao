@@ -36,8 +36,6 @@
                         <xs:enumeration value="mediumtext" />
                         <xs:enumeration value="longblob" />
                         <xs:enumeration value="longtext" />
-                        
-                        <xs:enumeration value="variant" />
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:attribute>

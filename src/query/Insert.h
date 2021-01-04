@@ -4,6 +4,8 @@
 
 #include "../macro/macro.h"
 
+#include "../DbLoader.h"
+
 template<typename E>
 class InsertBuilder;
 
@@ -189,7 +191,13 @@ inline bool Insert<E>::buildInsertBySetSqlStatement() {
     typename E::Info info;
     QString sql = "insert into %1 (";
     if (insertOrRp) {
-        sql = "insert or replace into %1 (";
+        if (DbLoader::getConfig().isSqlite()) {
+            sql = "insert or replace into %1 (";
+        } else if (DbLoader::getConfig().isMysql()) {
+            sql = "replace into %1 (";
+        } else {
+            Q_ASSERT(false);
+        }
     }
     sql = sql.arg(info.getTableName());
 
@@ -222,7 +230,13 @@ inline QString Insert<E>::buildInsertObjectSqlStatement() {
     
     QString sql = "insert into %1 (";
     if (insertOrRp) {
-        sql = "insert or replace into %1 (";
+        if (DbLoader::getConfig().isSqlite()) {
+            sql = "insert or replace into %1 (";
+        } else if (DbLoader::getConfig().isMysql()) {
+            sql = "replace into %1 (";
+        } else {
+            Q_ASSERT(false);
+        }
     }
     sql = sql.arg(info.getTableName());
 
@@ -251,7 +265,13 @@ inline QString Insert<E>::buildInsertObjects2SqlStatement(int valueSize) {
 
     QString sql = "insert into %1 (";
     if (insertOrRp) {
-        sql = "insert or replace into %1 (";
+        if (DbLoader::getConfig().isSqlite()) {
+            sql = "insert or replace into %1 (";
+        } else if (DbLoader::getConfig().isMysql()) {
+            sql = "replace into %1 (";
+        } else {
+            Q_ASSERT(false);
+        }
     }
     sql = sql.arg(info.getTableName());
 

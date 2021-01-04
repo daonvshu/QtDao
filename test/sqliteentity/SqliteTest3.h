@@ -201,3 +201,4 @@ public:
     inline QVariant __getExtra(const QString& key) const {return __extra.value(key);}
 };
 typedef QList<SqliteTest3> SqliteTest3List;
+Q_DECLARE_METATYPE(SqliteTest3);

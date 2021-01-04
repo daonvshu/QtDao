@@ -5,26 +5,27 @@
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
 
-#include "../../src/dao.h"
+#include "../mysqlentity/MysqlTest1.h"
+#include "../mysqlentity/MysqlTest2.h"
 
 void InsertTest::initTestCase() {
-    DbLoader::init(SqliteConfig());
+    configDb();
 }
 
-void InsertTest::setInsertTest() {
-    SqliteTest1::Fields sf1;
-    bool success = dao::_insert<SqliteTest1>()
+template<typename E>
+void runSetInsertTest() {
+    typename E::Fields sf1;
+    bool success = dao::_insert<E>()
         .set(sf1.name = "test", sf1.number = 1)
         .build().insert();
-
     if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1").arg(SqliteTest1::Info::getTableName())
+        BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName())
             , [&](QSqlQuery& query) {
             QVariantList names, numbers;
             while (query.next()) {
                 names << query.value("name");
                 numbers << query.value("number");
-            } 
+            }
             QCOMPARE(names, QVariantList() << "test");
             QCOMPARE(numbers, QVariantList() << 1);
         }
@@ -36,17 +37,27 @@ void InsertTest::setInsertTest() {
     }
 }
 
-void InsertTest::setInsertBatchTest() {
-    SqliteTest2::Fields sf2;
+void InsertTest::setInsertTest() {
+    if (engineModel == Engine_Sqlite) {
+        runSetInsertTest<SqliteTest1>();
+    } else if (engineModel == Engine_Mysql) {
+        runSetInsertTest<MysqlTest1>();
+    }
+}
+
+template<typename E>
+void runSetInsertBatchTest() {
     auto ids = QList<qint64>() << 10 << 11;  //auto increment id set value will not work 
     auto names = QStringList() << "name1" << "name2";
     auto numbers = QList<int>() << 4 << 50;
-    bool success = dao::_insert<SqliteTest2>()
+
+    typename E::Fields sf2;
+    bool success = dao::_insert<E>()
         .set(sf2.id = ids, sf2.number = numbers, sf2.name = names) //set value with sequence independent
         .build().insert();
 
     if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1").arg(SqliteTest2::Info::getTableName())
+        BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName())
             , [&](QSqlQuery& query) {
             QList<qint64> idsRes;
             QStringList namesRes;
@@ -68,22 +79,51 @@ void InsertTest::setInsertBatchTest() {
     }
 }
 
-void InsertTest::insertObjectTest() {
-    SqliteTest1 test1(2, "test", 40, "object");
-    bool success = dao::_insert<SqliteTest1>().build().insert(test1);
+void InsertTest::setInsertBatchTest() {
+    if (engineModel == Engine_Sqlite) {
+        runSetInsertBatchTest<SqliteTest2>();
+    } else if (engineModel == Engine_Mysql) {
+        runSetInsertBatchTest<MysqlTest2>();
+    }
+}
+
+void InsertTest::insertObjectTest_data() {
+    if (engineModel == Engine_Sqlite) {
+        QTest::addColumn<SqliteTest1>("test1");
+        QTest::addColumn<SqliteTest1>("test2");
+        QTest::addColumn<SqliteTest2>("test3");
+        QTest::newRow("sqlite test data")
+            << SqliteTest1(2, "test", 40, "object")
+            << SqliteTest1(2, "test", 20, "abc")
+            << SqliteTest2("testname", 23, 233, QDate(2020, 10, 20));
+    } else if (engineModel == Engine_Mysql) {
+        QTest::addColumn<MysqlTest1>("test1");
+        QTest::addColumn<MysqlTest1>("test2");
+        QTest::addColumn<MysqlTest2>("test3");
+        QTest::newRow("mysql test data")
+            << MysqlTest1(2, "test", 40, "object")
+            << MysqlTest1(2, "test", 20, "abc")
+            << MysqlTest2("testname", 23, 233);
+    }
+}
+
+template<typename E1, typename E2>
+void runInsertObjectTest() {
+    QFETCH(E1, test1);
+    bool success = dao::_insert<E1>().build().insert(test1);
     QVERIFY(success);
     QCOMPARE(test1.getId(), 2);
 
     if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1 where id = 2").arg(SqliteTest1::Info::getTableName())
+        BaseQuery::queryPrimitive(QString("select *from %1 where id = 2").arg(E1::Info::getTableName())
             , [&](QSqlQuery& query) {
             QVariantList data;
             if (query.next()) {
-                for (const auto& f : SqliteTest1::Info::getFieldsWithoutAutoIncrement()) {
+                for (const auto& f : E1::Info::getFieldsWithoutAutoIncrement()) {
                     data << query.value(f);
                 }
             }
-            QCOMPARE(data, SqliteTest1::Tool::getValueWithoutAutoIncrement(test1));
+            QCOMPARE(data, E1::Tool::getValueWithoutAutoIncrement(test1));
         }
             , [&](QString err) {
             QFAIL(("test insert object fail! " + err).toUtf8());
@@ -91,28 +131,28 @@ void InsertTest::insertObjectTest() {
     }
 
     //test multi primary key insert
-    SqliteTest1 test2(2, "test", 20, "abc");
+    QFETCH(E1, test2);
     try {
-        dao::_insert<SqliteTest1>().throwable().build().insert(test2);
+        dao::_insert<E1>().throwable().build().insert(test2);
         QFAIL("insert should be fail!");
     }
     catch (DaoException&) {
     }
 
-    SqliteTest2 test3("testname", 23, 233, QDate(2020, 10, 20));
-    success = dao::_insert<SqliteTest2>().build().insert(test3);
+    QFETCH(E2, test3);
+    success = dao::_insert<E2>().build().insert(test3);
     QVERIFY(success);
     QCOMPARE(test3.getId(), 3);
     if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1 where id = 3").arg(SqliteTest2::Info::getTableName())
+        BaseQuery::queryPrimitive(QString("select *from %1 where id = 3").arg(E2::Info::getTableName())
             , [&](QSqlQuery& query) {
             QVariantList data;
             if (query.next()) {
-                for (const auto& f : SqliteTest2::Info::getFieldsWithoutAutoIncrement()) {
+                for (const auto& f : E2::Info::getFieldsWithoutAutoIncrement()) {
                     data << query.value(f);
                 }
             }
-            QCOMPARE(data, SqliteTest2::Tool::getValueWithoutAutoIncrement(test3));
+            QCOMPARE(data, E2::Tool::getValueWithoutAutoIncrement(test3));
         }
             , [&](QString err) {
             QFAIL(("test insert object fail! " + err).toUtf8());
@@ -120,27 +160,53 @@ void InsertTest::insertObjectTest() {
     }
 }
 
-void InsertTest::insertObjectsTest() {
-    SqliteTest2List test;
-    test << SqliteTest2("name1", 1, 11, 111);
-    test << SqliteTest2("name2", 2, 22, 22.2);
-    test << SqliteTest2("name3", 3, 33, "333");
-    bool success = dao::_insert<SqliteTest2>().build().insert(test);
+void InsertTest::insertObjectTest() {
+    if (engineModel == Engine_Sqlite) {
+        runInsertObjectTest<SqliteTest1, SqliteTest2>();
+    } else if (engineModel == Engine_Mysql) {
+        runInsertObjectTest<MysqlTest1, MysqlTest2>();
+    }
+}
+
+void InsertTest::insertObjectsTest_data() {
+    if (engineModel == Engine_Sqlite) {
+        QList<SqliteTest2> test;
+        test << SqliteTest2("name1", 1, 11, 111);
+        test << SqliteTest2("name2", 2, 22, 22.2);
+        test << SqliteTest2("name3", 3, 33, "333");
+
+        QTest::addColumn<QList<SqliteTest2>>("test");
+        QTest::newRow("sqlite test data") << test;
+    } else if (engineModel == Engine_Mysql) {
+        QList<MysqlTest2> test;
+        test << MysqlTest2("name1", 1, 11);
+        test << MysqlTest2("name2", 2, 22);
+        test << MysqlTest2("name3", 3, 33);
+
+        QTest::addColumn<QList<MysqlTest2>>("test");
+        QTest::newRow("mysql test data") << test;
+    }
+}
+
+template<typename E>
+void runInsertObjectsTest() {
+    QFETCH(QList<E>, test);
+    bool success = dao::_insert<E>().build().insert(test);
     QVERIFY(success);
     if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1 where id in (4, 5, 6)").arg(SqliteTest2::Info::getTableName())
+        BaseQuery::queryPrimitive(QString("select *from %1 where id in (4, 5, 6)").arg(E::Info::getTableName())
             , [&](QSqlQuery& query) {
             QList<QVariantList> data;
             while (query.next()) {
                 QVariantList d;
-                for (const auto& f : SqliteTest2::Info::getFieldsWithoutAutoIncrement()) {
+                for (const auto& f : E::Info::getFieldsWithoutAutoIncrement()) {
                     d << query.value(f);
                 }
                 data << d;
             }
             QList<QVariantList> excepted;
             for (const auto& t : test) {
-                excepted << SqliteTest2::Tool::getValueWithoutAutoIncrement(t);
+                excepted << E::Tool::getValueWithoutAutoIncrement(t);
             }
             QCOMPARE(data, excepted);
         }
@@ -150,27 +216,53 @@ void InsertTest::insertObjectsTest() {
     }
 }
 
-void InsertTest::insertObjects2Test() {
-    SqliteTest2List test;
-    test << SqliteTest2("name4", 4, 44, 444);
-    test << SqliteTest2("name5", 5, 55, 55.2);
-    test << SqliteTest2("name6", 6, 66, "666");
-    bool success = dao::_insert<SqliteTest2>().build().insert2(test);
+void InsertTest::insertObjectsTest() {
+    if (engineModel == Engine_Sqlite) {
+        runInsertObjectsTest<SqliteTest2>();
+    } else if (engineModel == Engine_Mysql) {
+        runInsertObjectsTest<MysqlTest2>();
+    }
+}
+
+void InsertTest::insertObjects2Test_data() {
+    if (engineModel == Engine_Sqlite) {
+        QList<SqliteTest2> test;
+        test << SqliteTest2("name4", 4, 44, 444);
+        test << SqliteTest2("name5", 5, 55, 55.2);
+        test << SqliteTest2("name6", 6, 66, "666");
+
+        QTest::addColumn<QList<SqliteTest2>>("test");
+        QTest::newRow("sqlite test data") << test;
+    } else if (engineModel == Engine_Mysql) {
+        QList<MysqlTest2> test;
+        test << MysqlTest2("name4", 4, 44);
+        test << MysqlTest2("name5", 5, 55);
+        test << MysqlTest2("name6", 6, 66);
+
+        QTest::addColumn<QList<MysqlTest2>>("test");
+        QTest::newRow("mysql test data") << test;
+    }
+}
+
+template<typename E>
+void runInsertObjects2Test() {
+    QFETCH(QList<E>, test);
+    bool success = dao::_insert<E>().build().insert2(test);
     QVERIFY(success);
     if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1 where id in (7, 8, 9)").arg(SqliteTest2::Info::getTableName())
+        BaseQuery::queryPrimitive(QString("select *from %1 where id in (7, 8, 9)").arg(E::Info::getTableName())
             , [&](QSqlQuery& query) {
             QList<QVariantList> data;
             while (query.next()) {
                 QVariantList d;
-                for (const auto& f : SqliteTest2::Info::getFieldsWithoutAutoIncrement()) {
+                for (const auto& f : E::Info::getFieldsWithoutAutoIncrement()) {
                     d << query.value(f);
                 }
                 data << d;
             }
             QList<QVariantList> excepted;
             for (const auto& t : test) {
-                excepted << SqliteTest2::Tool::getValueWithoutAutoIncrement(t);
+                excepted << E::Tool::getValueWithoutAutoIncrement(t);
             }
             QCOMPARE(data, excepted);
         }
@@ -180,15 +272,34 @@ void InsertTest::insertObjects2Test() {
     }
 }
 
-void InsertTest::insertOrReplaceTest() {
-    auto entity = SqliteTest2("testinsertorreplace", -1, -2, "666");
-    bool success = dao::_insert<SqliteTest2>().build().insertOrReplace(entity);
+void InsertTest::insertObjects2Test() {
+    if (engineModel == Engine_Sqlite) {
+        runInsertObjects2Test<SqliteTest2>();
+    } else if (engineModel == Engine_Mysql) {
+        runInsertObjects2Test<MysqlTest2>();
+    }
+}
+
+void InsertTest::insertOrReplaceTest_data() {
+    if (engineModel == Engine_Sqlite) {
+        QTest::addColumn<SqliteTest2>("entity");
+        QTest::addRow("sqlite test data") << SqliteTest2("testinsertorreplace", -1, -2, "666");
+    } else if (engineModel == Engine_Mysql) {
+        QTest::addColumn<MysqlTest2>("entity");
+        QTest::addRow("mysql test data") << MysqlTest2("testinsertorreplace", -1, -2);
+    }
+}
+
+template<typename E>
+void runInsertOrReplaceTest() {
+    QFETCH(E, entity);
+    bool success = dao::_insert<E>().build().insertOrReplace(entity);
     QVERIFY(success);
     if (success) {
         entity.setNumber2(100);
-        success = dao::_insert<SqliteTest2>().build().insertOrReplace(entity);
+        success = dao::_insert<E>().build().insertOrReplace(entity);
         QVERIFY(success);
-        BaseQuery::queryPrimitive(QString("select * from %1 where name = 'testinsertorreplace'").arg(SqliteTest2::Info::getTableName())
+        BaseQuery::queryPrimitive(QString("select * from %1 where name = 'testinsertorreplace'").arg(E::Info::getTableName())
             , [&](QSqlQuery& query) {
             int count = 0;
             int number2 = 0;
@@ -205,20 +316,63 @@ void InsertTest::insertOrReplaceTest() {
     }
 }
 
-void InsertTest::testTranscation() {
+void InsertTest::insertOrReplaceTest() {
+    if (engineModel == Engine_Sqlite) {
+        runInsertOrReplaceTest<SqliteTest2>();
+    } else if (engineModel == Engine_Mysql) {
+        runInsertOrReplaceTest<MysqlTest2>();
+    }
+}
+
+void InsertTest::testTranscation_data() {
+    if (engineModel == Engine_Sqlite) {
+        QTest::addColumn<SqliteTest2>("entity");
+        QTest::addRow("sqlite test data") << SqliteTest2("test transcation", 10000, 10000, "666");
+    } else if (engineModel == Engine_Mysql) {
+        QTest::addColumn<MysqlTest2>("entity");
+        QTest::addRow("mysql test data") << MysqlTest2("test transcation", 10000, 10000);
+    }
+}
+
+template<typename E>
+void runTestTranscation() {
     dao::transcation();
-    auto entity = SqliteTest2("test transcation", 10000, 10000, "666");
-    dao::_insert<SqliteTest2>().build().insert(entity);
+    QFETCH(E, entity);
+    dao::_insert<E>().build().insert(entity);
     try {
-        dao::_insert<SqliteTest2>().throwable().build().insert(entity);
+        dao::_insert<E>().throwable().build().insert(entity);
         dao::commit();
     }
     catch (DaoException&) {
         dao::rollback();
     }
-    SqliteTest2::Fields sf;
-    int count = dao::_count<SqliteTest2>().filter(sf.name == "test transcation").count();
+    typename E::Fields sf;
+    int count = dao::_count<E>().filter(sf.name == "test transcation").count();
     QCOMPARE(count, 0);
+}
+
+void InsertTest::testTranscation() {
+    if (engineModel == Engine_Sqlite) {
+        runTestTranscation<SqliteTest2>();
+    } else if (engineModel == Engine_Mysql) {
+        runTestTranscation<MysqlTest2>();
+    }
+}
+
+void InsertTest::testMysqlMyISAMTranscation() {
+    if (engineModel == Engine_Mysql) {
+        dao::transcation();
+        dao::_insert<MysqlTest1>().build().insert(MysqlTest1(10, "abc", 2, ""));
+        try {
+            dao::_insert<MysqlTest1>().throwable().build().insert(MysqlTest1(10, QString(), 2, "")); //null of name will case error
+            dao::commit();
+        } catch (DaoException&) {
+            dao::rollback();
+        }
+        MysqlTest1::Fields sf;
+        int count = dao::_count<MysqlTest1>().filter(sf.id == 10).count();
+        QCOMPARE(count, 1); //MyISAM engine not support transcation
+    }
 }
 
 void InsertTest::cleanup() {

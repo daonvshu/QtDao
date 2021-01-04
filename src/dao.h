@@ -68,19 +68,28 @@ public:
     }
 
     static void transcation() {
-        auto db = ConnectionPool::getConnection();
-        Q_ASSERT(db.driver()->hasFeature(QSqlDriver::Transactions));
-        db.transaction();
+        //auto db = ConnectionPool::getConnection();
+        //Q_ASSERT(db.driver()->hasFeature(QSqlDriver::Transactions));
+        //db.transaction();
+        BaseQuery::queryPrimitiveThrowable("begin");
     }
 
     static void commit() {
-        auto db = ConnectionPool::getConnection();
-        db.commit();
+        //auto db = ConnectionPool::getConnection();
+        //db.commit();
+        BaseQuery::queryPrimitiveThrowable("commit");
     }
 
-    static void rollback() {
-        auto db = ConnectionPool::getConnection();
-        db.rollback();
+    static void transcation_save(const QString& savePoint) {
+        BaseQuery::queryPrimitiveThrowable(QString("savepoint %1").arg(savePoint));
+    }
+
+    static void rollback(const QString& savePoint = QString()) {
+        //auto db = ConnectionPool::getConnection();
+        //db.rollback();
+        BaseQuery::queryPrimitiveThrowable(
+            savePoint.isEmpty() ? QString("rollback") : QString("rollback to %1").arg(savePoint)
+        );
     }
 
     template<typename E>

@@ -11,7 +11,6 @@
     <item name="name" type="text" constraints="not null"/>
     <item name="number" type="int" default="0"/>
     <item name="number2" type="int"/>
-    <item name="varianttype" type="variant" note="自定义类型"/>
     <item name="nametmp" type="text" transient="true" note="临时类型" />
     <index type="unique index">
       <field seq="asc">name</field>
@@ -56,7 +55,5 @@
     <item name="fMediumText" type="mediumtext" default="a" note="type medium text"/>
     <item name="fLongBlob" type="longblob" default="a" note="type long blob" />
     <item name="fLongText" type="longtext" default="a" note="type long text"/>
-
-    <item name="fVariant" type="variant" default="" note="type variant"/>
   </tb>
 </dao>
