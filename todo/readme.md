@@ -34,10 +34,10 @@
   - [ ] ~~operator field <-> select results~~(move to function query)
 - **query executor**
   - insert operator
-    - [ ] object(s) insert
-    - [ ] part field value insert
-    - [ ] insert in select results
-    - [ ] insert or replace
+    - [x] object(s) insert
+    - [x] part field value insert
+    - [x] insert in select results
+    - [x] insert or replace
   - select operator
     - [ ] unique/list select
     - [ ] ~~multi-table select~~
@@ -63,10 +63,10 @@
     - [ ] ~~delete by select results~~(move to function query)
   - other
     - [ ] function with sub query
-    - [ ] transaction
+    - [x] transaction
     - [ ] glob
     - [ ] distinct
-    - [ ] having
+    - [x] having
     - [ ] between date to date
     - [ ] json type column
 - **connection pool**
@@ -74,9 +74,9 @@
   - [x] work thread connection separate
   - [x] work thread connection reuse
 - **auto close connection**
-  - [ ] auto close connection when work thread end
+  - [x] auto close connection when work thread end
 - **exception**
   - [x] load configure exception
   - [x] upgrade exception
-  - [ ] query exception
+  - [x] query exception
   - [x] connection pool exception
