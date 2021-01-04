@@ -3,6 +3,7 @@
 #include <qobject.h>
 
 #include "sqliteentity/SqliteConfig.h"
+#include "mysqlentity/MysqlConfig.h"
 #include "EngineModelSelector.h"
 
 class BaseTest : public QObject , public EngineModelSelector {

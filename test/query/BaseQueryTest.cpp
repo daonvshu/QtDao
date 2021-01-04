@@ -3,14 +3,16 @@
 #include "../../src/DbLoader.h"
 #include "../../src/ConnectionPool.h"
 
-#include "../../src/dbclients/SqliteClient.h"
-
 #include "../../src/query/BaseQuery.h"
 
 #include <QtTest>
 
 void BaseQueryTest::initTestCase() {
-    DbLoader::loadConfig(SqliteConfig());
+    if (engineModel == Engine_Sqlite) {
+        DbLoader::loadConfig(SqliteConfig());
+    } else if (engineModel == Engine_Mysql) {
+        DbLoader::init(MysqlConfig());
+    }
     DbLoader::getClient().testConnect();
 }
 

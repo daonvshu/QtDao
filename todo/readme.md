@@ -46,7 +46,7 @@
     - [ ] recursive select
     - [ ] select in select
     - [ ] join result <-> select result 
-    - [ ] original query
+    - [x] original query
     - [ ] custom function query
     - [ ] ~~custom statement query~~
   - count operator
