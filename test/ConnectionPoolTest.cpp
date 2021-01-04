@@ -7,6 +7,7 @@
 #include "../src/dao.h"
 
 #include "sqliteentity/SqliteConfig.h"
+#include "mysqlentity/MysqlConfig.h"
 
 #include "RunnableHandler.h"
 
@@ -15,12 +16,14 @@
 #include <QtTest>
 
 void ConnectionPoolTest::initTestCase() {
-    SqliteClient().testConnect();
+    if (engineModel == Engine_Sqlite) {
+        SqliteClient().testConnect();
+    }
     QThreadPool::globalInstance()->setMaxThreadCount(10);
 }
 
-void ConnectionPoolTest::testSqliteConnect() {
-    DbLoader::loadConfig(SqliteConfig());
+void ConnectionPoolTest::testConnect() {
+    loadConfigByEngineModel();
     {
         auto db = ConnectionPool::getConnection();
         QVERIFY(db.isOpen());
@@ -31,7 +34,7 @@ void ConnectionPoolTest::testSqliteConnect() {
 }
 
 void ConnectionPoolTest::testReuseConnection() {
-    DbLoader::loadConfig(SqliteConfig());
+    loadConfigByEngineModel();
     {
         QString savedConnection;
         auto db = ConnectionPool::getConnection();
@@ -47,7 +50,7 @@ void ConnectionPoolTest::testReuseConnection() {
 }
 
 void ConnectionPoolTest::testMultiThreadOpenConnection() {
-    DbLoader::loadConfig(SqliteConfig());
+    loadConfigByEngineModel();
     QEventLoop loop;
 
     QString connection1, connection2;
@@ -79,7 +82,7 @@ void ConnectionPoolTest::testMultiThreadOpenConnection() {
 }
 
 void ConnectionPoolTest::testReuseConnectionInOtherThread() {
-    DbLoader::loadConfig(SqliteConfig());
+    loadConfigByEngineModel();
     QEventLoop loop;
 
     QString connection1, connection2;
@@ -119,7 +122,7 @@ void ConnectionPoolTest::testReuseConnectionInOtherThread() {
 }
 
 void ConnectionPoolTest::testAutoClose() {
-    DbLoader::loadConfig(SqliteConfig());
+    loadConfigByEngineModel();
     QEventLoop loop;
 
     QString connection1, connection2;
@@ -162,6 +165,18 @@ void ConnectionPoolTest::cleanup() {
 }
 
 void ConnectionPoolTest::cleanupTestCase() {
-    SqliteClient().dropDatabase();
+    DbLoader::getClient().dropDatabase();
+}
+
+void ConnectionPoolTest::loadConfigByEngineModel() {
+    switch (engineModel) {
+    case Engine_Sqlite:
+        DbLoader::loadConfig(SqliteConfig());
+        break;
+    case Engine_Mysql:
+        DbLoader::init(MysqlConfig());
+        ConnectionPool::release(); //connection pool used by dbload
+        break;
+    }
 }
 

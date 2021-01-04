@@ -70,9 +70,9 @@
     - [ ] between date to date
     - [ ] json type column
 - **connection pool**
-  - [ ] connection reuse
-  - [ ] work thread connection separate
-  - [ ] work thread connection reuse
+  - [x] connection reuse
+  - [x] work thread connection separate
+  - [x] work thread connection reuse
 - **auto close connection**
   - [ ] auto close connection when work thread end
 - **exception**

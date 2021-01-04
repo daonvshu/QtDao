@@ -13,7 +13,7 @@ public:
 private slots:
     void initTestCase();
 
-    void testSqliteConnect();
+    void testConnect();
     void testReuseConnection();
     void testMultiThreadOpenConnection();
     void testReuseConnectionInOtherThread();
@@ -24,4 +24,6 @@ private slots:
 
     void cleanupTestCase();
 
+private:
+    void loadConfigByEngineModel();
 };
