@@ -42,10 +42,10 @@
     - [x] unique/list select
     - [ ] ~~multi-table select~~
     - [x] union select
-    - [ ] inner/left/right/full join
+    - [x] inner/left/right/full join
     - [ ] recursive select
     - [x] select in select
-    - [ ] join result <-> select result 
+    - [x] join result <-> select result 
     - [x] original query
     - [x] custom function query
     - [ ] ~~custom statement query~~
@@ -62,7 +62,7 @@
     - [x] object(s) delete
     - [ ] ~~delete by select results~~(move to function query)
   - other
-    - [ ] function with sub query
+    - [x] function with sub query
     - [x] transaction
     - [ ] glob
     - [ ] distinct

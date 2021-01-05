@@ -7,6 +7,9 @@
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
 
+#include "../mysqlentity/MysqlTest1.h"
+#include "../mysqlentity/MysqlTest2.h"
+
 class InsertIntoSelectTest : public BaseTest {
     Q_OBJECT
 
@@ -16,7 +19,10 @@ public:
 private slots:
     void initTestCase();
 
+    void testInsertIntoSelect_data();
     void testInsertIntoSelect();
+
+    void testInsertIntoJoin_data();
     void testInsertIntoJoin();
 
     void cleanup();
@@ -24,5 +30,6 @@ private slots:
     void cleanupTestCase();
 
 private:
-    SqliteTest1List data1;
+    SqliteTest1List sqliteData1;
+    MysqlTest1List mysqlData1;
 };
