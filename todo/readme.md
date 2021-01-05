@@ -54,12 +54,12 @@
     - [ ] ~~multi-table count~~
     - [x] count in select result
   - update operator
-    - [ ] set by where update
-    - [ ] object(s) update
+    - [x] set by where update
+    - [x] object(s) update
     - [ ] ~~update with select results~~(move to function query)
   - delete operator
-    - [ ] condition delete
-    - [ ] object(s) delete
+    - [x] condition delete
+    - [x] object(s) delete
     - [ ] ~~delete by select results~~(move to function query)
   - other
     - [ ] function with sub query

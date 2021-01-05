@@ -4,9 +4,6 @@
 
 #include "../BaseTest.h"
 
-#include "../sqliteentity/SqliteTest1.h"
-#include "../sqliteentity/SqliteTest2.h"
-
 class UpdateTest : public BaseTest {
     Q_OBJECT
 
@@ -23,7 +20,4 @@ private slots:
 
     void cleanupTestCase();
 
-private:
-    SqliteTest1List data1;
-    SqliteTest2List data2;
 };
