@@ -55,5 +55,12 @@
     <item name="fMediumText" type="mediumtext" default="a" note="type medium text"/>
     <item name="fLongBlob" type="longblob" default="a" note="type long blob" />
     <item name="fLongText" type="longtext" default="a" note="type long text"/>
+
+    <constructor>
+      <field>tbi1</field>
+      <field>tbi2</field>
+      <field>name</field>
+      <field>size</field>
+    </constructor>
   </tb>
 </dao>

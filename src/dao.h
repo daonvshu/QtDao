@@ -59,6 +59,7 @@ public:
     }
 
     static RecursiveQueryBuilder _recursive(bool unionAll = false) {
+        Q_ASSERT_X(!DbLoader::getConfig().isMysql(), "RecursiveQuery", "not support mysql recursive query!");
         return RecursiveQueryBuilder(unionAll);
     }
 

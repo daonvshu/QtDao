@@ -86,6 +86,19 @@
                   </xs:attribute>
                 </xs:complexType>
               </xs:element>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="constructor">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="field" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string" />
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string" use="required" />
             <xs:attribute name="declaremetatype" type="xs:boolean" use="optional" />

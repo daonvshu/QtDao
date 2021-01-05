@@ -15,3 +15,5 @@ public:
 protected:
     EngineModel engineModel;
 };
+
+#define PASSMYSQL if (engineModel == Engine_Mysql) return

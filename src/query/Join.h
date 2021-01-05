@@ -5,6 +5,8 @@
 #include <QVector>
 #include <QPair>
 
+#include "../DbLoader.h"
+
 template<typename... E>
 class JoinBuilder;
 
@@ -140,18 +142,22 @@ inline void Join<E...>::buildJoinSqlStatement() {
         sql.append(" where ").append(mainData.filter.getConditionStr());
         values.append(mainData.filter.getValues());
     }
-    if (!builder->constraintCondition.isEmpty()) {
-        builder->constraintCondition.connect(prefixGetter);
-        sql.append(' ');
-        sql.append(builder->constraintCondition.getConditionStr());
-        values.append(builder->constraintCondition.getValues());
-    }
-
-    if (!builder->unionSelectStatement.isEmpty()) {
+    bool unionSelect = !builder->unionSelectStatement.isEmpty();
+    if (unionSelect) {
         sql.append(builder->unionAll ? " union all " : " union ");
         sql.append(builder->unionSelectStatement);
         values.append(builder->unionSelectValues);
     }
+
+    if (!builder->constraintCondition.isEmpty()) {
+        builder->constraintCondition.connect(
+            unionSelect && !DbLoader::getConfig().isSqlite() ? std::function<QString(const QString&)>() : prefixGetter
+        );
+        sql.append(' ');
+        sql.append(builder->constraintCondition.getConditionStr());
+        values.append(builder->constraintCondition.getValues());
+    }
+    
     setSqlQueryStatement(sql, values);
 }
 

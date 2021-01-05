@@ -37,14 +37,20 @@ public:
     , tbi2(tbi2)
     , name(name)
     , size(size)
-    { }
+    {
+        id = -1;
+    }
 
     SqliteTest3(
         const QString& name,
         const int& size
     ) : name(name)
     , size(size)
-    { }
+    {
+        id = -1;
+        tbi1 = -1;
+        tbi2 = -1;
+    }
 
 public:
     class Fields {

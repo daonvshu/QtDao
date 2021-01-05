@@ -39,7 +39,9 @@ public:
     , number(number)
     , number2(number2)
     , varianttype(varianttype)
-    { }
+    {
+        id = -1;
+    }
 
     SqliteTest2(
         const QString& name,
@@ -48,7 +50,10 @@ public:
     ) : name(name)
     , number2(number2)
     , varianttype(varianttype)
-    { }
+    {
+        id = -1;
+        number = 0;
+    }
 
 public:
     class Fields {

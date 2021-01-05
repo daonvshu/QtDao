@@ -2,13 +2,13 @@
 <dao prefix="ts_" db="mysql">
   <tb name="MysqlTest1" engine="MyISAM" declaremetatype="true">
     <item name="id" type="bigint" default="-1" constraints="primary key" note="主键"/>
-    <item name="name" type="text" constraints="primary key" default="text" note="复合主键"/>
+    <item name="name" type="varchar" bitsize="100" constraints="primary key" default="text" note="复合主键"/>
     <item name="number" type="double" note="浮点数字" default="10.0"/>
     <item name="hex" type="blob" note="二进制"/>
   </tb>
-  <tb name="MysqlTest2" engine="InnoDB">
+  <tb name="MysqlTest2" engine="InnoDB" declaremetatype="true">
     <item name="id" type="bigint" default="-1" constraints="primary key" autoincrement="true" note="自增长主键"/>
-    <item name="name" type="text" constraints="not null"/>
+    <item name="name" type="varchar" bitsize="100" constraints="not null"/>
     <item name="number" type="int" default="0"/>
     <item name="number2" type="int"/>
     <item name="nametmp" type="text" transient="true" note="临时类型" />
@@ -24,7 +24,7 @@
       <field>number2</field>
     </index>
   </tb>
-  <tb name="MysqlTest3">
+  <tb name="MysqlTest3" declaremetatype="true">
     <item name="id" type="bigint" default="-1" constraints="primary key" autoincrement="true" />
     <item name="tbi1" type="bigint" default="-1" note="绑定到MysqlTest1 id"/>
     <item name="tbi2" type="bigint" default="-1" note="绑定到MysqlTest2 id"/>
@@ -55,5 +55,12 @@
     <item name="fMediumText" type="mediumtext" default="a" note="type medium text"/>
     <item name="fLongBlob" type="longblob" default="a" note="type long blob" />
     <item name="fLongText" type="longtext" default="a" note="type long text"/>
+
+    <constructor>
+      <field>tbi1</field>
+      <field>tbi2</field>
+      <field>name</field>
+      <field>size</field>
+    </constructor>
   </tb>
 </dao>

@@ -69,6 +69,8 @@
     - [x] having
     - [ ] between date to date
     - [ ] json type column
+    - [ ] explain
+    - [ ] sqlite write lock
 - **connection pool**
   - [x] connection reuse
   - [x] work thread connection separate

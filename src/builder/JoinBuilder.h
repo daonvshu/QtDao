@@ -79,7 +79,7 @@ public:
 
 private:
     QString lastTableName, mainTable;
-    JoinType lastType;
+    JoinType lastType = CrossJoin;
     JoinData mainData;
     QHash<QString, JoinData> subJoinData;
 };

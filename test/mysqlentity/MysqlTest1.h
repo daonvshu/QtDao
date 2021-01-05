@@ -36,12 +36,17 @@ public:
     , name(name)
     , number(number)
     , hex(hex)
-    { }
+    {
+    }
 
     MysqlTest1(
         const QByteArray& hex
     ) : hex(hex)
-    { }
+    {
+        id = -1;
+        name = "text";
+        number = 10.0;
+    }
 
 public:
     class Fields {

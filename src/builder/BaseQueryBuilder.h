@@ -16,6 +16,7 @@ public:
         , filterCondition("and")
         , onCondition("and")
         , recursiveQuery(false)
+        , unionAll(false)
     {
     }
 

@@ -8,45 +8,69 @@
 #include "../../src/dao.h"
 
 void JoinTest::initTestCase() {
-    DbLoader::init(SqliteConfig());
+    configDb();
 
-    data1 << SqliteTest1(1, "abc", 10, "");
-    data1 << SqliteTest1(2, "alice", 11, "alice1");
-    data1 << SqliteTest1(3, "bob", 12, "bob boom");
-    data1 << SqliteTest1(4, "client", 14, "1");
-    data1 << SqliteTest1(5, "client", 12, "xxx");
-    dao::_insert<SqliteTest1>().build().insert2(data1);
+    if (engineModel == Engine_Sqlite) {
+        sqliteData1 << SqliteTest1(1, "abc", 10, "");
+        sqliteData1 << SqliteTest1(2, "alice", 11, "alice1");
+        sqliteData1 << SqliteTest1(3, "bob", 12, "bob boom");
+        sqliteData1 << SqliteTest1(4, "client", 14, "1");
+        sqliteData1 << SqliteTest1(5, "client", 12, "xxx");
+        dao::_insert<SqliteTest1>().build().insert2(sqliteData1);
 
-    data2 << SqliteTest2("joker", 9999, -1, 30);
-    data2 << SqliteTest2("bob", 9, 9999, "abc");
-    data2 << SqliteTest2("func", 10, 9, 50);
-    data2 << SqliteTest2("func", 50, 10, 50);
-    dao::_insert<SqliteTest2>().build().insert2(data2);
+        sqliteData2 << SqliteTest2("joker", 9999, -1, 30);
+        sqliteData2 << SqliteTest2("bob", 9, 9999, "abc");
+        sqliteData2 << SqliteTest2("func", 10, 9, 50);
+        sqliteData2 << SqliteTest2("func", 50, 10, 50);
+        dao::_insert<SqliteTest2>().build().insert2(sqliteData2);
 
-    data3 << SqliteTest3(3, 2, "bob group", 2);
-    data3 << SqliteTest3(4, 1, "client group1", 3);
-    data3 << SqliteTest3(5, 1, "client group2", 3);
-    data3 << SqliteTest3(1, 3, "func group1", 6);
-    data3 << SqliteTest3(1, 4, "func group2", 7);
-    dao::_insert<SqliteTest3>().build().insert2(data3);
+        sqliteData3 << SqliteTest3(3, 2, "bob group", 2);
+        sqliteData3 << SqliteTest3(4, 1, "client group1", 3);
+        sqliteData3 << SqliteTest3(5, 1, "client group2", 3);
+        sqliteData3 << SqliteTest3(1, 3, "func group1", 6);
+        sqliteData3 << SqliteTest3(1, 4, "func group2", 7);
+        dao::_insert<SqliteTest3>().build().insert2(sqliteData3);
+    } else if (engineModel == Engine_Mysql) {
+        mysqlData1 << MysqlTest1(1, "abc", 10, "");
+        mysqlData1 << MysqlTest1(2, "alice", 11, "alice1");
+        mysqlData1 << MysqlTest1(3, "bob", 12, "bob boom");
+        mysqlData1 << MysqlTest1(4, "client", 14, "1");
+        mysqlData1 << MysqlTest1(5, "client", 12, "xxx");
+        dao::_insert<MysqlTest1>().build().insert2(mysqlData1);
+
+        mysqlData2 << MysqlTest2("joker", 9999, -1);
+        mysqlData2 << MysqlTest2("bob", 9, 9999);
+        mysqlData2 << MysqlTest2("func", 10, 9);
+        mysqlData2 << MysqlTest2("func", 50, 10);
+        dao::_insert<MysqlTest2>().build().insert2(mysqlData2);
+
+        mysqlData3 << MysqlTest3(3, 2, "bob group", 2);
+        mysqlData3 << MysqlTest3(4, 1, "client group1", 3);
+        mysqlData3 << MysqlTest3(5, 1, "client group2", 3);
+        mysqlData3 << MysqlTest3(1, 3, "func group1", 6);
+        mysqlData3 << MysqlTest3(1, 4, "func group2", 7);
+        dao::_insert<MysqlTest3>().build().insert2(mysqlData3);
+    }
+    clearCacheAndPrintIfTestFail();
 }
 
-void JoinTest::testJoinTable() {
-    SqliteTest1::Fields sf1;
-    SqliteTest2::Fields sf2;
-    SqliteTest3::Fields sf3;
+template<typename E1, typename E2, typename E3>
+void runTestJoinTable() {
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
 
-    auto result = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+    auto result = dao::_join<E1, E3, E2>()
         .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
-        .from<SqliteTest1>()
-        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .from<E1>()
+        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build().list();
     QVariantList data;
     for (const auto& r : result) {
         auto s1 = std::get<0>(r);
-        auto s2 = std::get<1>(r);
-        auto s3 = std::get<2>(r);
+        auto s3 = std::get<1>(r);
+        auto s2 = std::get<2>(r);
         data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
     }
     QCOMPARE(
@@ -57,49 +81,91 @@ void JoinTest::testJoinTable() {
             <<"func" << "abc" << "func group1" << 10 << 10
             <<"func" << "abc" << "func group2" << 10 << 50
     );
+}
 
-    auto result2 = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+void JoinTest::testJoinTable() {
+    if (engineModel == Engine_Sqlite) {
+        runTestJoinTable<SqliteTest1, SqliteTest2, SqliteTest3>();
+    } else if (engineModel == Engine_Mysql) {
+        runTestJoinTable<MysqlTest1, MysqlTest2, MysqlTest3>();
+    }
+}
+
+template<typename E1, typename E2, typename E3>
+void runTestJoinTableUseWith() {
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
+
+    auto result2 = dao::_join<E1, E3, E2>()
         .column(sf2.name, _fun("sum(%1) as sumn").field(sf1.number))
-        .from<SqliteTest1>()
-        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .from<E1>()
+        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .with(_groupBy(sf2.name), _orderBy(sf2.name))
         .build().list();
-    data.clear();
+    QVariantList data;
     for (const auto& r : result2) {
-        data << std::get<1>(r).getName();
+        data << std::get<2>(r).getName();
         data << std::get<0>(r).__getExtra("sumn");
     }
     QCOMPARE(
         data,
         QVariantList() << "bob" << 12 << "func" << 20 << "joker" << 26
     );
+}
 
-    auto result3 = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
-        .from<SqliteTest1>()
-        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id, sf3.name == "func group1")
+void JoinTest::testJoinTableUseWith() {
+    if (engineModel == Engine_Sqlite) {
+        runTestJoinTableUseWith<SqliteTest1, SqliteTest2, SqliteTest3>();
+    } else if (engineModel == Engine_Mysql) {
+        runTestJoinTableUseWith<MysqlTest1, MysqlTest2, MysqlTest3>();
+    }
+}
+
+template<typename E1, typename E2, typename E3>
+void runTestJoinTableFilterOn() {
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
+
+    auto result3 = dao::_join<E1, E3, E2>()
+        .from<E1>()
+        .innerJoin<E3>().on(sf3.tbi1 == sf1.id, sf3.name == "func group1")
+        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build().list();
-    data.clear();
+    QVariantList data;
     for (const auto& r : result3) {
-        data << SqliteTest1::Tool::getValueWithoutAutoIncrement(std::get<0>(r));
-        data << SqliteTest2::Tool::getValueWithoutAutoIncrement(std::get<1>(r));
-        data << SqliteTest3::Tool::getValueWithoutAutoIncrement(std::get<2>(r));
+        data << E1::Tool::getValueWithoutAutoIncrement(std::get<0>(r));
+        auto e1 = std::get<2>(r);
+        data << e1.getName() << e1.getNumber() << e1.getNumber2();
+        auto e2 = std::get<1>(r);
+        data << e2.getTbi1() << e2.getTbi2() << e2.getName() << e2.getSize();
     }
     QCOMPARE(
         data,
-        QVariantList() << 1 << "abc" << 10 << "" << "func" << 10 << 9 << 50 << 1 << 3 << "func group1" << 6
+        QVariantList() << 1 << "abc" << 10 << "" << "func" << 10 << 9 << 1 << 3 << "func group1" << 6
     );
 }
 
-void JoinTest::testJoinSelfTable() {
-    class SqliteTest2Tmp : public dao::self<SqliteTest2> {};
-    SqliteTest2::Fields sf1;
-    SqliteTest2Tmp::Fields sf2;
-    auto result = dao::_join<SqliteTest2, SqliteTest2Tmp>()
+void JoinTest::testJoinTableFilterOn() {
+    if (engineModel == Engine_Sqlite) {
+        runTestJoinTableFilterOn<SqliteTest1, SqliteTest2, SqliteTest3>();
+    } else if (engineModel == Engine_Mysql) {
+        runTestJoinTableFilterOn<MysqlTest1, MysqlTest2, MysqlTest3>();
+    }
+}
+
+template<typename E>
+void runTestJoinSelfTable() {
+    class E2 : public dao::self<E> {};
+    typename E::Fields sf1;
+    typename E2::Fields sf2;
+    auto result = dao::_join<E, E2>()
         .column(sf1.name, sf2.name)
-        .from<SqliteTest2>()
-        .innerJoin<SqliteTest2Tmp>().on(sf2.number2 == sf1.number)
+        .from<E>()
+        .innerJoin<E2>().on(sf2.number2 == sf1.number)
+        .with(_orderBy(sf1.name))
         .build().list();
     QVariantList data;
     for (const auto& r : result) {
@@ -111,14 +177,14 @@ void JoinTest::testJoinSelfTable() {
         QVariantList() << "bob" << "func" << "func" << "func" << "joker" << "bob"
     );
 
-    class SqliteTest2Tmp2 : public dao::self<SqliteTest2Tmp> {};
-    SqliteTest2Tmp2::Fields sf3;
-    auto result2 = dao::_join<SqliteTest2, SqliteTest2Tmp, SqliteTest2Tmp2>()
+    class E3 : public dao::self<E2> {};
+    typename E3::Fields sf3;
+    auto result2 = dao::_join<E, E2, E3>()
         .column(sf1.name, sf2.name, sf3.name)
-        .from<SqliteTest2>()
+        .from<E>()
         .with(_orderBy(sf1.name.desc()))
-        .innerJoin<SqliteTest2Tmp>().on(sf2.number2 == sf1.number)
-        .innerJoin<SqliteTest2Tmp2>().on(sf3.number2 == sf2.number)
+        .innerJoin<E2>().on(sf2.number2 == sf1.number)
+        .innerJoin<E3>().on(sf3.number2 == sf2.number)
         .build().list();
     data.clear();
     for (const auto& r : result2) {
@@ -132,20 +198,29 @@ void JoinTest::testJoinSelfTable() {
     );
 }
 
-void JoinTest::testSelectFromJoin() {
-    SqliteTest1::Fields sf1;
-    SqliteTest2::Fields sf2;
-    SqliteTest3::Fields sf3;
+void JoinTest::testJoinSelfTable() {
+    if (engineModel == Engine_Sqlite) {
+        runTestJoinSelfTable<SqliteTest2>();
+    } else if (engineModel == Engine_Mysql) {
+        runTestJoinSelfTable<MysqlTest2>();
+    }
+}
 
-    auto join1 = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
-        .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
-        .from<SqliteTest1>()
-        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+template<typename E1, typename E2, typename E3>
+void runTestSelectFromJoin() {
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
+
+    auto join1 = dao::_join<E1, E3, E2>()
+        .column(sf3.name, sf1.number)
+        .from<E1>()
+        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build();
 
     try {
-        auto count1 = dao::_count<SqliteTest1>()
+        auto count1 = dao::_count<E1>()
             .from(join1)
             .filter(sf1.number > 10)
             .count();
@@ -156,25 +231,72 @@ void JoinTest::testSelectFromJoin() {
     }
 }
 
-void JoinTest::testJoinFromSelect() {
-    SqliteTest1::Fields sf1;
-    SqliteTest2::Fields sf2;
-    SqliteTest3::Fields sf3;
+void JoinTest::testSelectFromJoin() {
+    if (engineModel == Engine_Sqlite) {
+        runTestSelectFromJoin<SqliteTest1, SqliteTest2, SqliteTest3>();
+    } else if (engineModel == Engine_Mysql) {
+        runTestSelectFromJoin<MysqlTest1, MysqlTest2, MysqlTest3>();
+    }
+}
 
-    auto select = dao::_select<SqliteTest1>().filter(sf1.name == "client").build();
+template<typename E1, typename E2, typename E3>
+void runTestJoinFromSelect() {
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
 
-    auto join = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+    auto select = dao::_select<E1>().filter(sf1.name == "client").build();
+
+    auto join = dao::_join<E1, E3, E2>()
         .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
         .from(select)
-        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build().list();
 
     QVariantList data;
     for (const auto& r : join) {
         auto s1 = std::get<0>(r);
-        auto s2 = std::get<1>(r);
-        auto s3 = std::get<2>(r);
+        auto s2 = std::get<2>(r);
+        auto s3 = std::get<1>(r);
+        data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
+    }
+    QCOMPARE(
+        data,
+        QVariantList()
+        << "joker" << "client" << "client group1" << 14 << 9999
+        << "joker" << "client" << "client group2" << 12 << 9999
+    );
+}
+
+void JoinTest::testJoinFromSelect() {
+    if (engineModel == Engine_Sqlite) {
+        runTestJoinFromSelect<SqliteTest1, SqliteTest2, SqliteTest3>();
+    } else if (engineModel == Engine_Mysql) {
+        runTestJoinFromSelect<MysqlTest1, MysqlTest2, MysqlTest3>();
+    }
+}
+
+template<typename E1, typename E2, typename E3>
+void runTestJoinOnSelect() {
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
+
+    auto select = dao::_select<E2>().filter(sf2.name == "joker").build();
+
+    auto join = dao::_join<E1, E3, E2>()
+        .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
+        .from<E1>()
+        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin(select).on(sf2.id == sf3.tbi2)
+        .build().list();
+
+    QVariantList data;
+    for (const auto& r : join) {
+        auto s1 = std::get<0>(r);
+        auto s2 = std::get<2>(r);
+        auto s3 = std::get<1>(r);
         data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
     }
     QCOMPARE(
@@ -186,47 +308,27 @@ void JoinTest::testJoinFromSelect() {
 }
 
 void JoinTest::testJoinOnSelect() {
-    SqliteTest1::Fields sf1;
-    SqliteTest2::Fields sf2;
-    SqliteTest3::Fields sf3;
-
-    auto select = dao::_select<SqliteTest2>().filter(sf2.name == "joker").build();
-
-    auto join = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
-        .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
-        .from<SqliteTest1>()
-        .innerJoin(select).on(sf2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
-        .build().list();
-
-    QVariantList data;
-    for (const auto& r : join) {
-        auto s1 = std::get<0>(r);
-        auto s2 = std::get<1>(r);
-        auto s3 = std::get<2>(r);
-        data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
+    if (engineModel == Engine_Sqlite) {
+        runTestJoinOnSelect<SqliteTest1, SqliteTest2, SqliteTest3>();
+    } else if (engineModel == Engine_Mysql) {
+        runTestJoinOnSelect<MysqlTest1, MysqlTest2, MysqlTest3>();
     }
-    QCOMPARE(
-        data,
-        QVariantList()
-        << "joker" << "client" << "client group1" << 14 << 9999
-        << "joker" << "client" << "client group2" << 12 << 9999
-    );
 }
 
-void JoinTest::testSelectUnionJoin() {
-    SqliteTest1::Fields sf1;
-    SqliteTest2::Fields sf2;
-    SqliteTest3::Fields sf3;
+template<typename E1, typename E2, typename E3>
+void runTestSelectUnionJoin() {
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
 
-    auto join = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+    auto join = dao::_join<E1, E3, E2>()
         .column(sf1.name, sf2.number)
-        .from<SqliteTest1>()
-        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .from<E1>()
+        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build();
 
-    auto select = dao::_select<SqliteTest1>()
+    auto select = dao::_select<E1>()
         .column(sf1.name, sf1.number)
         .filter(sf1.name == "client")
         .unionSelect(join, true)
@@ -248,30 +350,39 @@ void JoinTest::testSelectUnionJoin() {
     );
 }
 
-void JoinTest::testJoinUnionSelect() {
-    SqliteTest1::Fields sf1;
-    SqliteTest2::Fields sf2;
-    SqliteTest3::Fields sf3;
+void JoinTest::testSelectUnionJoin() {
+    if (engineModel == Engine_Sqlite) {
+        runTestSelectUnionJoin<SqliteTest1, SqliteTest2, SqliteTest3>();
+    } else if (engineModel == Engine_Mysql) {
+        runTestSelectUnionJoin<MysqlTest1, MysqlTest2, MysqlTest3>();
+    }
+}
 
-    auto select = dao::_select<SqliteTest1>()
+template<typename E1, typename E2, typename E3>
+void runTestJoinUnionSelect() {
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
+
+    auto select = dao::_select<E1>()
         .column(sf1.name, sf1.number)
         .filter(sf1.name == "client")
-        .with(_orderBy(sf1.name, sf1.number))
         .build();
 
-    auto join = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+    auto join = dao::_join<E1, E3, E2>()
         .column(sf1.name, sf2.number)
-        .from<SqliteTest1>()
-        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .from<E1>()
+        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .unionSelect(select)
+        .with(_orderBy(sf1.name, sf2.number))
         .build().list();
 
     QVariantList results;
     for (const auto& r : join) {
         auto s1 = std::get<0>(r);
-        auto s2 = std::get<1>(r);
-        auto s3 = std::get<2>(r);
+        auto s2 = std::get<2>(r);
+        auto s3 = std::get<1>(r);
         results << s1.getName() << s2.getNumber();
     }
     QCOMPARE(
@@ -286,45 +397,63 @@ void JoinTest::testJoinUnionSelect() {
     );
 }
 
-void JoinTest::testJoinUnionJoin() {
-    SqliteTest1::Fields sf1;
-    SqliteTest2::Fields sf2;
-    SqliteTest3::Fields sf3;
+void JoinTest::testJoinUnionSelect() {
+    if (engineModel == Engine_Sqlite) {
+        runTestJoinUnionSelect<SqliteTest1, SqliteTest2, SqliteTest3>();
+    } else if (engineModel == Engine_Mysql) {
+        runTestJoinUnionSelect<MysqlTest1, MysqlTest2, MysqlTest3>();
+    }
+}
 
-    auto join1 = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+template<typename E1, typename E2, typename E3>
+void runTestJoinUnionJoin() {
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
+
+    auto join1 = dao::_join<E1, E3, E2>()
         .column(sf1.name, sf2.number)
-        .from<SqliteTest1>()
+        .from<E1>()
         .filter(sf1.name == "client")
-        .with(_orderBy(sf1.name, sf2.number))
-        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build();
 
-    auto join2 = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+    auto join2 = dao::_join<E1, E3, E2>()
         .column(sf1.name, sf2.number)
-        .from<SqliteTest1>()
+        .from<E1>()
         .filter(sf1.number >= 12)
-        .innerJoin<SqliteTest2>().on(sf2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .unionSelect(join1)
+        .with(_orderBy(sf1.name.desc(), sf2.number))
         .build().list();
 
     QVariantList results;
     for (const auto& r : join2) {
         auto s1 = std::get<0>(r);
-        auto s2 = std::get<1>(r);
-        auto s3 = std::get<2>(r);
+        auto s2 = std::get<2>(r);
+        auto s3 = std::get<1>(r);
         results << s1.getName() << s2.getNumber();
     }
     QCOMPARE(
         results,
         QVariantList()
-        << "bob" << 9
         << "client" << 9999
+        << "bob" << 9
     );
 }
 
+void JoinTest::testJoinUnionJoin() {
+    if (engineModel == Engine_Sqlite) {
+        runTestJoinUnionJoin<SqliteTest1, SqliteTest2, SqliteTest3>();
+    } else if (engineModel == Engine_Mysql) {
+        runTestJoinUnionJoin<MysqlTest1, MysqlTest2, MysqlTest3>();
+    }
+}
+
 void JoinTest::recursiveQueryTest() {
+    PASSMYSQL;
     class TmpTest2 : public dao::self<SqliteTest2> {};
 
     SqliteTest1::Fields sf1;
@@ -394,35 +523,55 @@ void JoinTest::recursiveQueryTest() {
     );
 }
 
-void JoinTest::functionSubJoinTest() {
-    SqliteTest1::Fields sf1;
-    SqliteTest2::Fields sf2;
-    SqliteTest3::Fields sf3;
+void JoinTest::functionSubJoinTest_data() {
+    if (engineModel == Engine_Sqlite) {
+        QTest::addColumn<SqliteTest1List>("data1");
+        QTest::newRow("sqlite test data") << sqliteData1;
+    } else if (engineModel == Engine_Mysql) {
+        QTest::addColumn<MysqlTest1List>("data1");
+        QTest::newRow("mysql test data") << mysqlData1;
+    }
+}
 
-    auto select = dao::_select<SqliteTest2>().filter(sf2.name == "joker").build();
+template<typename E1, typename E2, typename E3>
+void runFunctionSubJoinTest() {
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
 
-    auto join = dao::_join<SqliteTest1, SqliteTest2, SqliteTest3>()
+    auto select = dao::_select<E2>().filter(sf2.name == "joker").build();
+
+    auto join = dao::_join<E1, E3, E2>()
         .column(sf1.number)
-        .from<SqliteTest1>()
+        .from<E1>()
+        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
         .innerJoin(select).on(sf2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id)
         .build();
 
-    auto result = dao::_select<SqliteTest1>()
+    auto result = dao::_select<E1>()
         .filter(_fun("%1 in %2").field(sf1.number).from(join))
         .build().list();
 
     QVariantList actual;
     for (const auto& d : result) {
-        actual << SqliteTest1::Tool::getValueWithoutAutoIncrement(d);
+        actual << E1::Tool::getValueWithoutAutoIncrement(d);
     }
     QVariantList expected;
+    QFETCH(QList<E1>, data1);
     for (const auto& d : data1) {
         if (d.getNumber() != 12 && d.getNumber() != 14)
             continue;
-        expected << SqliteTest1::Tool::getValueWithoutAutoIncrement(d);
+        expected << E1::Tool::getValueWithoutAutoIncrement(d);
     }
     QCOMPARE(actual, expected);
+}
+
+void JoinTest::functionSubJoinTest() {
+    if (engineModel == Engine_Sqlite) {
+        runFunctionSubJoinTest<SqliteTest1, SqliteTest2, SqliteTest3>();
+    } else if (engineModel == Engine_Mysql) {
+        runFunctionSubJoinTest<MysqlTest1, MysqlTest2, MysqlTest3>();
+    }
 }
 
 void JoinTest::cleanup() {

@@ -36,14 +36,19 @@ public:
     ) : name(name)
     , number(number)
     , number2(number2)
-    { }
+    {
+        id = -1;
+    }
 
     MysqlTest2(
         const QString& name,
         const int& number2
     ) : name(name)
     , number2(number2)
-    { }
+    {
+        id = -1;
+        number = 0;
+    }
 
 public:
     class Fields {

@@ -148,14 +148,77 @@ public:
     , fMediumText(fMediumText)
     , fLongBlob(fLongBlob)
     , fLongText(fLongText)
-    { }
+    {
+        id = -1;
+    }
 
     MysqlTest3(
         const QString& name,
         const int& size
     ) : name(name)
     , size(size)
-    { }
+    {
+        id = -1;
+        tbi1 = -1;
+        tbi2 = -1;
+        fTinyInt = 0;
+        fSmallInt = 0;
+        fMediumInt = 0;
+        fInt = 0;
+        fBigInt = 0;
+        fFloat = 0;
+        fDouble = 0;
+        fDecimal = 0;
+        fDate = QDate();
+        fTime = "00:00:00";
+        fDateTime = QDateTime();
+        fTimestamp = QDateTime();
+        fChar = 'a';
+        fVarChar = "a";
+        fTinyBlob = "a";
+        fTinyText = "a";
+        fBlob = "a";
+        fText = "a";
+        fMediumBlob = "a";
+        fMediumText = "a";
+        fLongBlob = "a";
+        fLongText = "a";
+    }
+
+    MysqlTest3(
+        const qint64& tbi1,
+        const qint64& tbi2,
+        const QString& name,
+        const int& size
+    ) : tbi1(tbi1)
+    , tbi2(tbi2)
+    , name(name)
+    , size(size)
+    {
+        id = -1;
+        fTinyInt = 0;
+        fSmallInt = 0;
+        fMediumInt = 0;
+        fInt = 0;
+        fBigInt = 0;
+        fFloat = 0;
+        fDouble = 0;
+        fDecimal = 0;
+        fDate = QDate();
+        fTime = "00:00:00";
+        fDateTime = QDateTime();
+        fTimestamp = QDateTime();
+        fChar = 'a';
+        fVarChar = "a";
+        fTinyBlob = "a";
+        fTinyText = "a";
+        fBlob = "a";
+        fText = "a";
+        fMediumBlob = "a";
+        fMediumText = "a";
+        fLongBlob = "a";
+        fLongText = "a";
+    }
 
 public:
     class Fields {
