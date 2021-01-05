@@ -86,11 +86,11 @@ int main(int argc, char *argv[])
 #ifndef QT_DAO_TESTCASE
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
         if (i == 0) {
-            std::cout << "--------------- test sqlite ---------------" << std::endl;
+            std::cout << "------------------------------ Test Sqlite ------------------------------" << std::endl;
         } else if (i == 1) {
-            std::cout << "--------------- test mysql ---------------" << std::endl;
+            std::cout << "------------------------------ Test Mysql ------------------------------" << std::endl;
         } else if (i == 2) {
-            std::cout << "--------------- test sqlserver ---------------" << std::endl;
+            std::cout << "------------------------------ Test SqlServer ------------------------------" << std::endl;
         }
 #endif
         result += TestRunner<
@@ -115,6 +115,9 @@ int main(int argc, char *argv[])
     if (result != 0) {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
         std::cout << "Not all tests are successful!" << std::endl;
+    } else {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN);
+        std::cout << "All tests passed!" << std::endl;
     }
     return a.exec();
 #endif

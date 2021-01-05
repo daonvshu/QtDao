@@ -161,6 +161,7 @@ void ConnectionPoolTest::testAutoClose() {
 }
 
 void ConnectionPoolTest::cleanup() {
+    QThread::msleep(50);
     ConnectionPool::release();
 }
 

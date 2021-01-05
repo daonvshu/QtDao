@@ -7,6 +7,9 @@
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
 
+#include "../mysqlentity/MysqlTest1.h"
+#include "../mysqlentity/MysqlTest2.h"
+
 class SelectTest : public BaseTest {
     Q_OBJECT
 
@@ -16,13 +19,26 @@ public:
 private slots:
     void initTestCase();
 
+    void uniqueSelectTest_data();
     void uniqueSelectTest();
+
+    void listSelectTest_data();
     void listSelectTest();
+
+    void rawSelectTest_data();
     void rawSelectTest();
+
     void funtionSelectTest();
+
     void countSelectTest();
+
+    void selectFromSelectTest_data();
     void selectFromSelectTest();
+
+    void unionSelectTest_data();
     void unionSelectTest();
+
+    void funtionSubSelectTest_data();
     void funtionSubSelectTest();
 
     void cleanup();
@@ -30,6 +46,8 @@ private slots:
     void cleanupTestCase();
 
 private:
-    SqliteTest1List data1;
-    SqliteTest2List data2;
+    SqliteTest1List sqliteData1;
+    SqliteTest2List sqliteData2;
+    MysqlTest1List mysqlData1;
+    MysqlTest2List mysqlData2;
 };

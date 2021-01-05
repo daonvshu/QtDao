@@ -39,20 +39,20 @@
     - [x] insert in select results
     - [x] insert or replace
   - select operator
-    - [ ] unique/list select
+    - [x] unique/list select
     - [ ] ~~multi-table select~~
-    - [ ] union select
+    - [x] union select
     - [ ] inner/left/right/full join
     - [ ] recursive select
-    - [ ] select in select
+    - [x] select in select
     - [ ] join result <-> select result 
     - [x] original query
-    - [ ] custom function query
+    - [x] custom function query
     - [ ] ~~custom statement query~~
   - count operator
-    - [ ] condition count
+    - [x] condition count
     - [ ] ~~multi-table count~~
-    - [ ] count in select result
+    - [x] count in select result
   - update operator
     - [ ] set by where update
     - [ ] object(s) update
