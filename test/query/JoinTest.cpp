@@ -62,9 +62,9 @@ void runTestJoinTable() {
 
     auto result = dao::_join<E1, E3, E2>()
         .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
-        .from<E1>()
-        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
-        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
+        .template from<E1>()
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build().list();
     QVariantList data;
     for (const auto& r : result) {
@@ -99,9 +99,9 @@ void runTestJoinTableUseWith() {
 
     auto result2 = dao::_join<E1, E3, E2>()
         .column(sf2.name, _fun("sum(%1) as sumn").field(sf1.number))
-        .from<E1>()
-        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
-        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
+        .template from<E1>()
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .with(_groupBy(sf2.name), _orderBy(sf2.name))
         .build().list();
     QVariantList data;
@@ -130,9 +130,9 @@ void runTestJoinTableFilterOn() {
     typename E3::Fields sf3;
 
     auto result3 = dao::_join<E1, E3, E2>()
-        .from<E1>()
-        .innerJoin<E3>().on(sf3.tbi1 == sf1.id, sf3.name == "func group1")
-        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
+        .template from<E1>()
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id, sf3.name == "func group1")
+        .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build().list();
     QVariantList data;
     for (const auto& r : result3) {
@@ -163,8 +163,8 @@ void runTestJoinSelfTable() {
     typename E2::Fields sf2;
     auto result = dao::_join<E, E2>()
         .column(sf1.name, sf2.name)
-        .from<E>()
-        .innerJoin<E2>().on(sf2.number2 == sf1.number)
+        .template from<E>()
+        .template innerJoin<E2>().on(sf2.number2 == sf1.number)
         .with(_orderBy(sf1.name))
         .build().list();
     QVariantList data;
@@ -181,10 +181,10 @@ void runTestJoinSelfTable() {
     typename E3::Fields sf3;
     auto result2 = dao::_join<E, E2, E3>()
         .column(sf1.name, sf2.name, sf3.name)
-        .from<E>()
+        .template from<E>()
         .with(_orderBy(sf1.name.desc()))
-        .innerJoin<E2>().on(sf2.number2 == sf1.number)
-        .innerJoin<E3>().on(sf3.number2 == sf2.number)
+        .template innerJoin<E2>().on(sf2.number2 == sf1.number)
+        .template innerJoin<E3>().on(sf3.number2 == sf2.number)
         .build().list();
     data.clear();
     for (const auto& r : result2) {
@@ -214,9 +214,9 @@ void runTestSelectFromJoin() {
 
     auto join1 = dao::_join<E1, E3, E2>()
         .column(sf3.name, sf1.number)
-        .from<E1>()
-        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
-        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
+        .template from<E1>()
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build();
 
     try {
@@ -250,8 +250,8 @@ void runTestJoinFromSelect() {
     auto join = dao::_join<E1, E3, E2>()
         .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
         .from(select)
-        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
-        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build().list();
 
     QVariantList data;
@@ -287,8 +287,8 @@ void runTestJoinOnSelect() {
 
     auto join = dao::_join<E1, E3, E2>()
         .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
-        .from<E1>()
-        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .template from<E1>()
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
         .innerJoin(select).on(sf2.id == sf3.tbi2)
         .build().list();
 
@@ -323,9 +323,9 @@ void runTestSelectUnionJoin() {
 
     auto join = dao::_join<E1, E3, E2>()
         .column(sf1.name, sf2.number)
-        .from<E1>()
-        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
-        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
+        .template from<E1>()
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build();
 
     auto select = dao::_select<E1>()
@@ -371,9 +371,9 @@ void runTestJoinUnionSelect() {
 
     auto join = dao::_join<E1, E3, E2>()
         .column(sf1.name, sf2.number)
-        .from<E1>()
-        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
-        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
+        .template from<E1>()
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .unionSelect(select)
         .with(_orderBy(sf1.name, sf2.number))
         .build().list();
@@ -413,18 +413,18 @@ void runTestJoinUnionJoin() {
 
     auto join1 = dao::_join<E1, E3, E2>()
         .column(sf1.name, sf2.number)
-        .from<E1>()
+        .template from<E1>()
         .filter(sf1.name == "client")
-        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
-        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .build();
 
     auto join2 = dao::_join<E1, E3, E2>()
         .column(sf1.name, sf2.number)
-        .from<E1>()
+        .template from<E1>()
         .filter(sf1.number >= 12)
-        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
-        .innerJoin<E2>().on(sf2.id == sf3.tbi2)
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
         .unionSelect(join1)
         .with(_orderBy(sf1.name.desc(), sf2.number))
         .build().list();
@@ -543,8 +543,8 @@ void runFunctionSubJoinTest() {
 
     auto join = dao::_join<E1, E3, E2>()
         .column(sf1.number)
-        .from<E1>()
-        .innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .template from<E1>()
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
         .innerJoin(select).on(sf2.id == sf3.tbi2)
         .build();
 

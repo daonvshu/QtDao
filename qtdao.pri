@@ -42,6 +42,7 @@ HEADERS += ./src/ConnectionPool.h \
     ./src/builder/UpdateBuilder.h \
     ./src/macro/macro.h \
     ./test/BaseTest.h \
+    ./test/EngineModelSelector.h \
     ./test/RunnableHandler.h \
     ./test/ConnectionPoolTest.h \
     ./test/query/InsertIntoSelectTest.h \
@@ -56,8 +57,13 @@ HEADERS += ./src/ConnectionPool.h \
     ./test/sqliteentity/SqliteTest1.h \
     ./test/sqliteentity/SqliteTest2.h \
     ./test/sqliteentity/SqliteConfig.h \
-    ./test/sqliteentity/EntityInclude.h \
-    ./test/condition/ConnectorTest.h
+    ./test/sqliteentity/SqliteEntityInclude.h \
+    ./test/condition/ConnectorTest.h \
+    ./test/mysqlentity/MysqlTest1.h \
+    ./test/mysqlentity/MysqlTest2.h \
+    ./test/mysqlentity/MysqlTest3.h \
+    ./test/mysqlentity/MysqlEntityInclude.h \
+    ./test/mysqlentity/MysqlConfig.h
 SOURCES += ./main.cpp \
     ./src/ConnectionPool.cpp \
     ./src/DbLoader.cpp \
@@ -71,7 +77,6 @@ SOURCES += ./main.cpp \
     ./src/condition/ConnectorData.cpp \
     ./src/condition/EntityCondition.cpp \
     ./src/condition/FunctionCondition.cpp \
-    ./test/sqliteentity/EntityInclude.cpp \
     ./src/builder/BaseQueryBuilder.cpp \
     ./test/BaseTest.cpp \
     ./test/ConnectionPoolTest.cpp \
@@ -83,4 +88,6 @@ SOURCES += ./main.cpp \
     ./test/query/SelectTest.cpp \
     ./test/query/UpdateTest.cpp \
     ./test/loader/DbLoaderTest.cpp \
-    ./test/condition/ConnectorTest.cpp
+    ./test/condition/ConnectorTest.cpp \
+    ./test/sqliteentity/SqliteEntityInclude.cpp \
+    ./test/mysqlentity/MysqlEntityInclude.cpp

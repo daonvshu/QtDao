@@ -89,8 +89,8 @@ void runTestInsertIntoJoin() {
 
     auto join = dao::_join<E1, E2>()
         .column(sf1.name, _fun("%1 + 10 as number").field(sf1.number))
-        .from<E1>()
-        .innerJoin<E2>().on(sf2.name == sf1.name)
+        .template from<E1>()
+        .template innerJoin<E2>().on(sf2.name == sf1.name)
         .build();
     bool success = dao::_insertIntoSelect<E2>()
         .column(sf2.name, sf2.number)

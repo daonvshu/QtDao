@@ -121,7 +121,7 @@ inline void AbstractClient::createTable() {
     typename E::Info info;
     if (!checkTableExist(info.getTableName())) {
         //create table
-        ClientSelector<C>(this).createTableIfNotExist<E>();
+        ClientSelector<C>(this).template createTableIfNotExist<E>();
         //create normal index
         auto indexFields = info.getIndexFields();
         for (const auto& i : indexFields) {
@@ -149,13 +149,13 @@ inline void AbstractClient::tableUpgrade() {
 /////////////////////////////// delegate //////////////////////////////////
 template<SqlClientList C, typename T, typename ...E>
 inline void AbstractClient::Delegate<C, T, E...>::createTable() {
-    AbstractClient::Delegate<C>::client->createTable<C, T>();
+    AbstractClient::Delegate<C>::client->template createTable<C, T>();
     Delegate<C, E...>::createTable();
 }
 
 template<SqlClientList C, typename T, typename ...E>
 inline void AbstractClient::Delegate<C, T, E...>::tableUpgrade() {
-    AbstractClient::Delegate<C>::client->tableUpgrade<C, T>();
+    AbstractClient::Delegate<C>::client->template tableUpgrade<C, T>();
     Delegate<C, E...>::tableUpgrade();
 }
 

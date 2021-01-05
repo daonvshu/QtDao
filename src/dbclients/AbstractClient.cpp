@@ -27,7 +27,14 @@ void AbstractClient::restoreData2NewTable(const QString& tbname, QStringList fie
 }
 
 void AbstractClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType, QStringList primaryKeys) {
+    Q_UNUSED(tbName);
+    Q_UNUSED(fieldsType);
+    Q_UNUSED(primaryKeys);
 }
 
 void AbstractClient::createTableIfNotExist(const QString& tbName, const QString& engine, QStringList fieldsType, QStringList primaryKeys) {
+    Q_UNUSED(tbName);
+    Q_UNUSED(engine);
+    Q_UNUSED(fieldsType);
+    Q_UNUSED(primaryKeys);
 }

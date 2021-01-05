@@ -30,6 +30,8 @@ private slots:
 
     void testTranscation_data();
     void testTranscation();
+
+    void testMysqlMyISAMTranscation_data();
     void testMysqlMyISAMTranscation();
 
     void cleanup();
