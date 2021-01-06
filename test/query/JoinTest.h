@@ -44,6 +44,8 @@ private slots:
     void functionSubJoinTest_data();
     void functionSubJoinTest();
 
+    void explainTest();
+
     void cleanup();
 
     void cleanupTestCase();

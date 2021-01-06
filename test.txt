@@ -4,5 +4,5 @@ PASS   : InsertIntoSelectTest::initTestCase()
 PASS   : InsertIntoSelectTest::testInsertIntoSelect(mysql test data)
 PASS   : InsertIntoSelectTest::testInsertIntoJoin(mysql test data)
 PASS   : InsertIntoSelectTest::cleanupTestCase()
-Totals: 4 passed, 0 failed, 0 skipped, 0 blacklisted, 1096ms
+Totals: 4 passed, 0 failed, 0 skipped, 0 blacklisted, 623ms
 ********* Finished testing of InsertIntoSelectTest *********

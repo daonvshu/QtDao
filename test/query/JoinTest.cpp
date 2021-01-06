@@ -574,6 +574,41 @@ void JoinTest::functionSubJoinTest() {
     }
 }
 
+template<typename E1, typename E2, typename E3>
+Join<E1, E3, E2> getExplainPrepareSelect() {
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
+
+    auto select = dao::_select<E2>().filter(sf2.name == "joker").build();
+
+    auto join = dao::_join<E1, E3, E2>()
+        .column(sf1.number)
+        .template from<E1>()
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+        .innerJoin(select).on(sf2.id == sf3.tbi2)
+        .filter(sf3.size > 0)
+        .build();
+
+    return join;
+}
+
+void JoinTest::explainTest() {
+    if (engineModel == Engine_Sqlite) {
+        auto d1 = getExplainPrepareSelect<SqliteTest1, SqliteTest2, SqliteTest3>()
+            .explain<SqliteExplainInfo>();
+        QVERIFY(!d1.isEmpty());
+
+        auto d2 = getExplainPrepareSelect<SqliteTest1, SqliteTest2, SqliteTest3>()
+            .explain<SqliteExplainQueryPlanInfo>();
+        QVERIFY(!d2.isEmpty());
+    } else if (engineModel == Engine_Mysql) {
+        auto d = getExplainPrepareSelect<MysqlTest1, MysqlTest2, MysqlTest3>()
+            .explain<MysqlExplainInfo>();
+        QVERIFY(!d.isEmpty());
+    }
+}
+
 void JoinTest::cleanup() {
     clearCacheAndPrintIfTestFail();
 }

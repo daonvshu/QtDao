@@ -10,6 +10,8 @@
 #include "../condition/Connector.h"
 #include "../builder/BaseQueryBuilder.h"
 
+#include "../query/ExplainInfo.h"
+
 class BaseQuery {
 public:
     BaseQuery(bool throwable = false, BaseQueryBuilder* builder = nullptr);
@@ -56,7 +58,42 @@ protected:
     friend class BaseQueryBuilder;
 
 private:
-    QSqlQuery getQuery();
+    QSqlQuery getQuery(bool skipEmptyValue = false);
     void bindQueryValues(QSqlQuery& query);
+    static bool execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executor);
+
+protected:
+    template<typename I>
+    struct ExplainTool {
+        enum {
+            Valid = 0
+        };
+    };
 };
 
+template <>
+struct BaseQuery::ExplainTool<SqliteExplainInfo> {
+    enum {
+        Valid = 1
+    };
+
+    static QList<SqliteExplainInfo> toExplain(const QString& statement);
+};
+
+template <>
+struct BaseQuery::ExplainTool<SqliteExplainQueryPlanInfo> {
+    enum {
+        Valid = 1
+    };
+
+    static QList<SqliteExplainQueryPlanInfo> toExplain(const QString& statement);
+};
+
+template <>
+struct BaseQuery::ExplainTool<MysqlExplainInfo> {
+    enum {
+        Valid = 1
+    };
+
+    static QList<MysqlExplainInfo> toExplain(const QString& statement);
+};

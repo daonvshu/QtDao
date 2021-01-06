@@ -34,7 +34,19 @@ struct JoinData {
 template<typename... E>
 class Join : BaseQuery {
 public:
+    /// <summary>
+    /// get select result list
+    /// </summary>
+    /// <returns></returns>
     QList<std::tuple<E...>> list();
+
+    /// <summary>
+    /// explain query statement
+    /// </summary>
+    /// <typeparam name="I">must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo</typeparam>
+    /// <returns>SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo</returns>
+    template<typename I>
+    QList<I> explain();
 
 private:
     JoinData mainData;
@@ -257,4 +269,15 @@ inline void Join<E...>::resultBind(std::tuple<E...>& result, QSqlQuery& query) {
         resultValues[tbIndex] << qMakePair(usedColumns.at(i).name, query.value(i));
     }
     JoinEUnpackHelper<E...>::template bindTupleValue<0, E...>(result, resultValues);
+}
+
+template<typename ...E>
+template<typename I>
+inline QList<I> Join<E...>::explain() {
+    Q_STATIC_ASSERT_X(ExplainTool<I>::Valid == 1,
+        "template parameter must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo");
+
+    buildJoinSqlStatement();
+    auto newStatement = DbLoader::getClient().translateSqlStatement(statement, values);
+    return ExplainTool<I>::toExplain(newStatement);
 }

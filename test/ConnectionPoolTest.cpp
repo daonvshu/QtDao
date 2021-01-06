@@ -178,6 +178,8 @@ void ConnectionPoolTest::loadConfigByEngineModel() {
         DbLoader::init(MysqlConfig());
         ConnectionPool::release(); //connection pool used by dbload
         break;
+    case Engine_SqlServer:
+        break;
     }
 }
 

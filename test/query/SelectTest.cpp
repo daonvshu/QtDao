@@ -373,6 +373,36 @@ void SelectTest::funtionSubSelectTest() {
     }
 }
 
+void SelectTest::explainTest() {
+    if (engineModel == Engine_Sqlite) {
+        SqliteTest1::Fields sf1;
+        auto d1 = dao::_select<SqliteTest1>()
+            .filter(sf1.name == "client", _or(sf1.number == 12, sf1.name == "bob"))
+            .build().explain<SqliteExplainInfo>();
+        QVERIFY(!d1.isEmpty());
+
+        auto d2 = dao::_select<SqliteTest1>()
+            .filter(sf1.hex == "abcde")
+            .build().explain<SqliteExplainQueryPlanInfo>();
+        QVERIFY(!d2.isEmpty());
+    } else if (engineModel == Engine_Mysql) {
+        MysqlTest3::Fields mf;
+        auto d = dao::_select<MysqlTest3>()
+            .filter(
+                mf.tbi1 == 1,
+                mf.name == "abc",
+                mf.size == 1,
+                mf.fTinyInt == 1,
+                mf.fInt == 1,
+                mf.fFloat == 2.0,
+                mf.fDate == QDate(2020, 12, 20),
+                mf.fDateTime == QDateTime(QDate(2020, 12, 21), QTime(12, 12, 12)),
+                mf.fBlob == "abcdef"
+            ).build().explain<MysqlExplainInfo>();
+        QVERIFY(!d.isEmpty());
+    }
+}
+
 void SelectTest::cleanup() {
     clearCacheAndPrintIfTestFail();
 }

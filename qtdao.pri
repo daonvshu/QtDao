@@ -18,6 +18,7 @@ HEADERS += ./src/ConnectionPool.h \
     ./src/query/Join.h \
     ./src/query/Select.h \
     ./src/query/Update.h \
+    ./src/query/ExplainInfo.h \
     ./src/dbclients/AbstractClient.h \
     ./src/dbclients/MysqlClient.h \
     ./src/dbclients/SqliteClient.h \

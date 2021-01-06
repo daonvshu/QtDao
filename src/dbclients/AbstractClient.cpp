@@ -38,3 +38,27 @@ void AbstractClient::createTableIfNotExist(const QString& tbName, const QString&
     Q_UNUSED(fieldsType);
     Q_UNUSED(primaryKeys);
 }
+
+QString AbstractClient::translateSqlStatement(const QString& statement, const QVariantList& values) {
+    QString tmp = statement;
+    int placeholdIndex;
+    int vi = 0;
+    QList<QVariant::Type> stringType;
+    stringType << QVariant::String;
+    stringType << QVariant::Date;
+    stringType << QVariant::DateTime;
+    stringType << QVariant::Char;
+    while ((placeholdIndex = tmp.indexOf('?')) != -1) {
+        QVariant value = values.at(vi++);
+        QString valueStr;
+        if (stringType.contains(value.type())) {
+            valueStr = " '" + value.toString() + "' ";
+        } else if (value.type() == QVariant::ByteArray) {
+            valueStr = "0x" + value.toByteArray().toHex();
+        } else {
+            valueStr = value.toString();
+        }
+        tmp.replace(placeholdIndex, 1, valueStr);
+    }
+    return tmp;
+}

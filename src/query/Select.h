@@ -4,6 +4,8 @@
 
 #include "../macro/macro.h"
 
+#include "../DbLoader.h"
+
 template<typename E>
 class SelectBuilder;
 
@@ -39,6 +41,14 @@ public:
     /// </summary>
     /// <param name="callback"></param>
     void raw(std::function<void(QSqlQuery&)> callback);
+
+    /// <summary>
+    /// explain query statement
+    /// </summary>
+    /// <typeparam name="I">must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo</typeparam>
+    /// <returns>SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo</returns>
+    template<typename I>
+    QList<I> explain();
 
 protected:
     void buildFilterSqlStatement();
@@ -153,6 +163,7 @@ inline void Select<E>::buildFilterSqlStatement() {
 
     setSqlQueryStatement(sql, values);
 }
+
 template<typename E>
 inline QString Select<E>::getBindColumns(QVariantList& values) {
     if (builder->columnBind.isEmpty()) {
@@ -163,3 +174,13 @@ inline QString Select<E>::getBindColumns(QVariantList& values) {
     return builder->columnBind.getConditionStr();
 }
 
+template<typename E>
+template<typename I>
+inline QList<I> Select<E>::explain() {
+    Q_STATIC_ASSERT_X(ExplainTool<I>::Valid == 1, 
+        "template parameter must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo");
+
+    buildFilterSqlStatement();
+    auto newStatement = DbLoader::getClient().translateSqlStatement(statement, values);
+    return ExplainTool<I>::toExplain(newStatement);
+}

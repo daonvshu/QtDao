@@ -53,6 +53,8 @@ public:
 
     virtual void dropAllIndexOnTable(const QString& tbName) = 0;
 
+    virtual QString translateSqlStatement(const QString& statement, const QVariantList& values);
+
 private:
     template<SqlClientList C, typename... E> class Delegate;
     template<SqlClientList C, typename T, typename... E>

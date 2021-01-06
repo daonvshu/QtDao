@@ -68,7 +68,7 @@
     - [ ] distinct
     - [x] having
     - [ ] between date to date
-    - [ ] json type column
+    - [ ] ~~json type column~~(driver not support)
     - [ ] explain
     - [ ] sqlite write lock
 - **connection pool**

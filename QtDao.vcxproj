@@ -157,6 +157,7 @@
     <ClInclude Include="src\DbLoader.h" />
     <ClInclude Include="src\macro\macro.h" />
     <ClInclude Include="src\query\BaseQuery.h" />
+    <ClInclude Include="src\query\ExplainInfo.h" />
     <ClInclude Include="src\query\InsertIntoSelect.h" />
     <ClInclude Include="test\BaseTest.h" />
     <QtMoc Include="test\query\InsertIntoSelectTest.h" />

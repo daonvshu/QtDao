@@ -9,6 +9,7 @@
 
 #include "../mysqlentity/MysqlTest1.h"
 #include "../mysqlentity/MysqlTest2.h"
+#include "../mysqlentity/MysqlTest3.h"
 
 class SelectTest : public BaseTest {
     Q_OBJECT
@@ -40,6 +41,8 @@ private slots:
 
     void funtionSubSelectTest_data();
     void funtionSubSelectTest();
+
+    void explainTest();
 
     void cleanup();
 
