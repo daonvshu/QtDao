@@ -19,6 +19,7 @@ private:
 
 protected:
     void clearCacheAndPrintIfTestFail();
+    void clearCache();
 
     void configDb() {
         if (engineModel == Engine_Sqlite) {

@@ -120,6 +120,7 @@
     <ClCompile Include="test\query\InsertTest.cpp" />
     <ClCompile Include="test\query\JoinTest.cpp" />
     <ClCompile Include="test\query\SelectTest.cpp" />
+    <ClCompile Include="test\query\SqliteWriteSyncTest.cpp" />
     <ClCompile Include="test\query\UpdateTest.cpp" />
     <ClCompile Include="test\sqliteentity\SqliteEntityInclude.cpp" />
   </ItemGroup>
@@ -169,6 +170,7 @@
     <ClInclude Include="test\mysqlentity\MysqlTest2.h" />
     <ClInclude Include="test\mysqlentity\MysqlTest3.h" />
     <QtMoc Include="test\sqliteentity\SqliteEntityInclude.h" />
+    <QtMoc Include="test\query\SqliteWriteSyncTest.h" />
     <ClInclude Include="test\sqliteentity\SqliteTest3.h" />
     <QtMoc Include="test\condition\ConnectorTest.h" />
     <ClInclude Include="src\query\Delete.h" />

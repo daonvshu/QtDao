@@ -6,11 +6,15 @@
 #include <QtSql/QSqlError>
 
 #include <functional>
+#include <qmutex.h>
+#include <qwaitcondition.h>
 
 #include "../condition/Connector.h"
 #include "../builder/BaseQueryBuilder.h"
 
 #include "../query/ExplainInfo.h"
+
+class dao;
 
 class BaseQuery {
 public:
@@ -49,6 +53,9 @@ protected:
     void printException(const QString& reason);
     void printWarning(const QString& info);
 
+    static void checkAndLockWrite();
+    static void checkAndReleaseWriteLocker();
+
 protected:
     QString statement;
     QVariantList values;
@@ -57,8 +64,15 @@ protected:
 
     friend class BaseQueryBuilder;
 
+    static QMutex writeCheckLocker;
+    static QWaitCondition writeWait;
+    static bool currentIsWriting;
+    static bool sqlWriteLock;
+
+    friend class dao;
+
 private:
-    QSqlQuery getQuery(bool skipEmptyValue = false);
+    QSqlQuery getQuery(bool& prepareOk, bool skipEmptyValue = false);
     void bindQueryValues(QSqlQuery& query);
     static bool execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executor);
 

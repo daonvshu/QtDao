@@ -1,5 +1,6 @@
 ﻿#include "DbLoader.h"
 #include "DbExceptionHandler.h"
+#include "dao.h"
 
 #include <qdebug.h>
 

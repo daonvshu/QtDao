@@ -360,31 +360,31 @@ void InsertTest::testTranscation() {
 }
 
 void InsertTest::testMysqlMyISAMTranscation_data() {
-    if (engineModel == Engine_Mysql) {
-        QTest::addColumn<MysqlTest1>("data1");
-        QTest::addColumn<MysqlTest1>("data2");
-        QTest::newRow("mysql test data")
-            << MysqlTest1(10, "abc", 2, "")
-            << MysqlTest1(10, QString(), 2, "");
-    }
+    PASSSQLITE;
+    PASSSQLSERVER;
+    QTest::addColumn<MysqlTest1>("data1");
+    QTest::addColumn<MysqlTest1>("data2");
+    QTest::newRow("mysql test data")
+        << MysqlTest1(10, "abc", 2, "")
+        << MysqlTest1(10, QString(), 2, "");
 }
 
 void InsertTest::testMysqlMyISAMTranscation() {
-    if (engineModel == Engine_Mysql) {
-        QFETCH(MysqlTest1, data1);
-        QFETCH(MysqlTest1, data2);
-        dao::transcation();
-        dao::_insert<MysqlTest1>().build().insert(data1);
-        try {
-            dao::_insert<MysqlTest1>().throwable().build().insert(data2); //null of name will case error
-            dao::commit();
-        } catch (DaoException&) {
-            dao::rollback();
-        }
-        MysqlTest1::Fields sf;
-        int count = dao::_count<MysqlTest1>().filter(sf.id == 10).count();
-        QCOMPARE(count, 1); //MyISAM engine not support transcation
+    PASSSQLITE;
+    PASSSQLSERVER;
+    QFETCH(MysqlTest1, data1);
+    QFETCH(MysqlTest1, data2);
+    dao::transcation();
+    dao::_insert<MysqlTest1>().build().insert(data1);
+    try {
+        dao::_insert<MysqlTest1>().throwable().build().insert(data2); //null of name will case error
+        dao::commit();
+    } catch (DaoException&) {
+        dao::rollback();
     }
+    MysqlTest1::Fields sf;
+    int count = dao::_count<MysqlTest1>().filter(sf.id == 10).count();
+    QCOMPARE(count, 1); //MyISAM engine not support transcation
 }
 
 void InsertTest::cleanup() {

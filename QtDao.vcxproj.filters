@@ -173,6 +173,9 @@
     <ClCompile Include="src\dbclients\AbstractClient.cpp">
       <Filter>Source Files\src\dbclients</Filter>
     </ClCompile>
+    <ClCompile Include="test\query\SqliteWriteSyncTest.cpp">
+      <Filter>Source Files\test\query</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ConnectionPool.h">
@@ -372,6 +375,9 @@
     </QtMoc>
     <QtMoc Include="test\mysqlentity\MysqlConfig.h">
       <Filter>Header Files\test\mysqlentity</Filter>
+    </QtMoc>
+    <QtMoc Include="test\query\SqliteWriteSyncTest.h">
+      <Filter>Header Files\test\query</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>

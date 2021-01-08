@@ -16,4 +16,6 @@ protected:
     EngineModel engineModel;
 };
 
+#define PASSSQLITE if (engineModel == Engine_Sqlite) return
 #define PASSMYSQL if (engineModel == Engine_Mysql) return
+#define PASSSQLSERVER if (engineModel == Engine_SqlServer) return

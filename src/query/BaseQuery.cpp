@@ -5,6 +5,14 @@
 
 #include "../DbLoader.h"
 
+#include <iostream>
+#include <QThread>
+
+QMutex BaseQuery::writeCheckLocker;
+QWaitCondition BaseQuery::writeWait;
+bool BaseQuery::currentIsWriting = false;
+bool BaseQuery::sqlWriteLock = false;
+
 BaseQuery::BaseQuery(bool throwable, BaseQueryBuilder* builder)
     : builder(builder)
     , queryThrowable(throwable)
@@ -29,19 +37,25 @@ BaseQuery::~BaseQuery() {
 }
 
 void BaseQuery::exec(const std::function<void(QSqlQuery&)>& solveQueryResult) {
-    auto query = getQuery(true);
-    if (execByCheckEmptyValue(query, this)) {
+    bool prepareOk;
+    auto query = getQuery(prepareOk, true);
+    if (prepareOk && execByCheckEmptyValue(query, this)) {
         solveQueryResult(query);
+        checkAndReleaseWriteLocker();
     } else {
+        checkAndReleaseWriteLocker();
         printException(query.lastError().text());
     }
 }
 
 void BaseQuery::execBatch(const std::function<void(QSqlQuery&)>& solveQueryResult) {
-    auto query = getQuery();
-    if (query.execBatch()) {
+    bool prepareOk;
+    auto query = getQuery(prepareOk);
+    if (prepareOk && query.execBatch()) {
         solveQueryResult(query);
+        checkAndReleaseWriteLocker();
     } else {
+        checkAndReleaseWriteLocker();
         printException(query.lastError().text());
     }
 }
@@ -64,6 +78,32 @@ void BaseQuery::printWarning(const QString& info) {
     Q_ASSERT(DbExceptionHandler::exceptionHandler != nullptr);
 }
 
+void BaseQuery::checkAndLockWrite() {
+    if (sqlWriteLock) {
+        std::cout << "prepare check get locker! " << QThread::currentThreadId() << std::endl;
+        QMutexLocker locker(&writeCheckLocker);
+        if (sqlWriteLock) {
+            if (currentIsWriting) {
+                std::cout << "current wait locker! " << QThread::currentThreadId() << std::endl;
+                writeWait.wait(&writeCheckLocker);
+            }
+            std::cout << "current catch locker! to set writing! " << QThread::currentThreadId() << std::endl;
+            currentIsWriting = true;
+        }
+    }
+}
+
+void BaseQuery::checkAndReleaseWriteLocker() {
+    if (sqlWriteLock) {
+        std::cout << "prepare release write lock! " << QThread::currentThreadId() << std::endl;
+        QMutexLocker locker(&writeCheckLocker);
+        if (sqlWriteLock) {
+            currentIsWriting = false;
+            writeWait.notify_one();
+        }
+    }
+}
+
 void BaseQuery::queryPrimitive(const QString& statement, std::function<void(QSqlQuery& query)> callback, std::function<void(QString)> failCallback) {
     queryPrimitive(statement, QVariantList(), callback, failCallback);
 }
@@ -71,8 +111,9 @@ void BaseQuery::queryPrimitive(const QString& statement, std::function<void(QSql
 void BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, std::function<void(QSqlQuery& query)> callback, std::function<void(QString)> failCallback) {
     BaseQuery executor;
     executor.setSqlQueryStatement(statement, values);
-    auto query = executor.getQuery(true);
-    if (execByCheckEmptyValue(query, &executor)) {
+    bool prepareOk;
+    auto query = executor.getQuery(prepareOk, true);
+    if (prepareOk && execByCheckEmptyValue(query, &executor)) {
         if (callback) {
             callback(query);
         }
@@ -87,6 +128,7 @@ void BaseQuery::queryPrimitive(const QString& statement, const QVariantList& val
             Q_ASSERT(DbExceptionHandler::exceptionHandler != nullptr);
         }
     }
+    checkAndReleaseWriteLocker();
 }
 
 QSqlQuery BaseQuery::queryPrimitiveThrowable(const QString& statement) {
@@ -96,10 +138,13 @@ QSqlQuery BaseQuery::queryPrimitiveThrowable(const QString& statement) {
 QSqlQuery BaseQuery::queryPrimitiveThrowable(const QString& statement, const QVariantList& values) {
     BaseQuery executor;
     executor.setSqlQueryStatement(statement, values);
-    auto query = executor.getQuery(true);
-    if (execByCheckEmptyValue(query, &executor)) {
+    bool prepareOk;
+    auto query = executor.getQuery(prepareOk, true);
+    if (prepareOk && execByCheckEmptyValue(query, &executor)) {
+        checkAndReleaseWriteLocker();
         return query;
     } else {
+        checkAndReleaseWriteLocker();
         throw DaoException(query.lastError().text());
     }
 }
@@ -109,16 +154,21 @@ void BaseQuery::setSqlQueryStatement(const QString& statement, const QVariantLis
     this->values = values;
 }
 
-QSqlQuery BaseQuery::getQuery(bool skipEmptyValue) {
+QSqlQuery BaseQuery::getQuery(bool& prepareOk, bool skipEmptyValue) {
+    checkAndLockWrite();
     auto db = ConnectionPool::getConnection();
     QSqlQuery query(db);
     if (!skipEmptyValue || !values.isEmpty()) {
-        query.prepare(statement);
+        if (!query.prepare(statement)) {
+            prepareOk = false;
+            return query;
+        }
         bindQueryValues(query);
     }
     if (getQueryLogPrinter()) {
         getQueryLogPrinter()(statement, values);
     }
+    prepareOk = true;
     return query;
 }
 

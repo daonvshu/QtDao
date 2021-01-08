@@ -69,7 +69,7 @@
     - [x] having
     - [ ] between date to date
     - [ ] ~~json type column~~(driver not support)
-    - [ ] explain
+    - [x] explain
     - [ ] sqlite write lock
 - **connection pool**
   - [x] connection reuse

@@ -49,3 +49,7 @@ void BaseTest::clearCacheAndPrintIfTestFail() {
     }
     cachedSqlLog.clear();
 }
+
+void BaseTest::clearCache() {
+    cachedSqlLog.clear();
+}

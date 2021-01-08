@@ -93,6 +93,15 @@ public:
         );
     }
 
+    static void sqlWriteSync(bool enable = true) {
+        QMutexLocker locker(&BaseQuery::writeCheckLocker);
+        BaseQuery::sqlWriteLock = enable;
+        if (!enable) {
+            BaseQuery::currentIsWriting = false;
+            BaseQuery::writeWait.notify_all();
+        }
+    }
+
     template<typename E>
     class self : public E {
     public:
