@@ -69,16 +69,14 @@ public:
     }
 
     static void transcation() {
-        //auto db = ConnectionPool::getConnection();
-        //Q_ASSERT(db.driver()->hasFeature(QSqlDriver::Transactions));
-        //db.transaction();
+        BaseQuery::sqliteLockControl.trancationStart();
         BaseQuery::queryPrimitiveThrowable("begin");
     }
 
     static void commit() {
-        //auto db = ConnectionPool::getConnection();
-        //db.commit();
+        BaseQuery::sqliteLockControl.trancationPrepareEnd();
         BaseQuery::queryPrimitiveThrowable("commit");
+        BaseQuery::sqliteLockControl.trancationEnd();
     }
 
     static void transcation_save(const QString& savePoint) {
@@ -86,20 +84,19 @@ public:
     }
 
     static void rollback(const QString& savePoint = QString()) {
-        //auto db = ConnectionPool::getConnection();
-        //db.rollback();
+        if (savePoint.isEmpty()) {
+            BaseQuery::sqliteLockControl.trancationPrepareEnd();
+        }
         BaseQuery::queryPrimitiveThrowable(
             savePoint.isEmpty() ? QString("rollback") : QString("rollback to %1").arg(savePoint)
         );
+        if (savePoint.isEmpty()) {
+            BaseQuery::sqliteLockControl.trancationEnd();
+        }
     }
 
     static void sqlWriteSync(bool enable = true) {
-        QMutexLocker locker(&BaseQuery::writeCheckLocker);
-        BaseQuery::sqlWriteLock = enable;
-        if (!enable) {
-            BaseQuery::currentIsWriting = false;
-            BaseQuery::writeWait.notify_all();
-        }
+        BaseQuery::sqliteLockControl.enableSqliteWriteSync(enable);
     }
 
     template<typename E>

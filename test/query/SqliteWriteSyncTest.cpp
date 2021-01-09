@@ -16,9 +16,26 @@ void SqliteWriteSyncTest::initTestCase() {
     clearCache();
 }
 
+/*
+ * thread lock sync before ################
+ * thread1         thread2          state
+ * exclusive                        block
+ *                 pending          wait
+ *                 pending          timeout
+ *
+ * thread lock sync after ################
+ * thread1         thread2          state
+ * global wlock                     block rw
+ *                 global wlock     wait
+ * exclusive                        block
+ * unlock
+ *                 pending
+ *                 unlock
+ */
 void SqliteWriteSyncTest::testInsertWriteLock() {
     PASSMYSQL;
     PASSSQLSERVER;
+    dao::sqlWriteSync(true);
     //allocate 200Mb bytes data
     QByteArray data(200 * 1024 * 1024, 0x01);
     QEventLoop loop;
@@ -39,7 +56,8 @@ void SqliteWriteSyncTest::testInsertWriteLock() {
 
     QByteArray lastErr;
     RunnableHandler<void>::exec([&] {
-        QThread::msleep(100);
+        //wait thread1 get exclusive locker
+        QThread::msleep(200);
         try {
             SqliteTest1::Fields sf;
             dao::_select<SqliteTest1>().throwable().filter(sf.name == "test large data insert").build().one();
@@ -56,17 +74,61 @@ void SqliteWriteSyncTest::testInsertWriteLock() {
     });
     loop.exec();
     QVERIFY2(lastErr.isEmpty(), lastErr);
+    dao::sqlWriteSync(false);
 }
 
+/*
+ * thread lock sync before ################
+ * thread1         thread2         thread3        state
+ * reserved                        shared
+ * exclusive                                      block
+ *                                 shared         wait
+ *                 trancation
+ *                 pending                        wait
+ * unlock
+ *                                 shared
+ *                 reserved
+ * pending                                        wait
+ * pending                                        timeout
+ * 
+ * thread lock sync after ################
+ * thread1         thread2                        state
+ * global wlock                                   block rw
+ *                                 global wlock   wait
+ * tranc wlock                                    block trancation write
+ *                 trancation
+ *                 tranc wlock                    wait
+ * exclusive                                      block
+ * tranc wunlock
+ *                 tranc wlock
+ * global unlock
+ *                                 global wlock   block rw
+ *                                 tranc rlock    tranc block
+ *                                 shared
+ * global wlock                                   wait
+ *                 exclusive                      block
+ *                 unlock                         tranc block
+ *                 tranc rlock                    wait
+ *                                 unlock
+ *                                 tranc runlock
+ *                 tranc rlock
+ *                                 tranc rlock    wait
+ *                 tranc runlock
+ *                                 tranc rlock
+ *                                 shared
+ *                                 global unlock
+ *                 tranc wunlock
+ * global wlock
+ */
 void SqliteWriteSyncTest::testTranscationWriteLock() {
     PASSMYSQL;
     PASSSQLSERVER;
+    dao::sqlWriteSync(true);
     qint64 startPoint = QDateTime::currentMSecsSinceEpoch();
     QEventLoop loop;
     SqliteTest2::Fields sf2;
     bool insertExit = false;
     QMutex locker;
-    dao::sqlWriteSync(true);
     RunnableHandler<void>::exec([&] {
         int number1 = 10000;
         while (true) {
@@ -83,7 +145,8 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
             try {
                 if (number1 % 2) {
                     SqliteTest2 data("test", number1, 0, "aaa");
-                    std::cout << "prepare insert: " << QThread::currentThreadId() << std::endl;
+                    std::cout << "prepare insert thread1: " << QThread::currentThreadId()
+                        << " t -> " << QDateTime::currentMSecsSinceEpoch() << std::endl;
                     dao::_insert<SqliteTest2>().throwable().build().insert(data);
                 }
                 number1++;
@@ -113,7 +176,8 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
                 locker.unlock();
                 if (number2 % 2) {
                     SqliteTest2 data("test", number2, 0, "aaa");
-                    std::cout << "prepare insert: " << QThread::currentThreadId() << std::endl;
+                    std::cout << "prepare insert thread2: " << QThread::currentThreadId()
+                        << " t -> " << QDateTime::currentMSecsSinceEpoch() << std::endl;
                     dao::_insert<SqliteTest2>().throwable().build().insert(data);
                 }
                 number2++;
@@ -130,10 +194,32 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
         QMutexLocker l(&locker);
         thread2Running = false;
     });
+    bool thread3Running = true;
+    RunnableHandler<void>::exec([&] {
+        try {
+            while (QDateTime::currentMSecsSinceEpoch() - startPoint < 4000) {
+                locker.lock();
+                if (insertExit) {
+                    thread3Running = false;
+                    locker.unlock();
+                    return;
+                }
+                locker.unlock();
+                SqliteTest2::Fields sf;
+                std::cout << "prepare select thread3: " << QThread::currentThreadId()
+                    << " t -> " << QDateTime::currentMSecsSinceEpoch() << std::endl;
+                dao::_select<SqliteTest2>().throwable().filter(sf.name == "test").build().list();
+            }
+        } catch (DaoException& e) {
+            QMutexLocker l(&locker);
+            thread3Running = false;
+            QFAIL(("test sqlite write lock fail #3!" + e.reason).toUtf8());
+        }
+    });
     loop.exec();
     while (true) {
         QMutexLocker l(&locker);
-        if (!thread2Running) break;
+        if (!thread2Running && !thread3Running) break;
     }
     dao::sqlWriteSync(false);
 }

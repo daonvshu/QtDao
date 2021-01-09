@@ -176,6 +176,9 @@
     <ClCompile Include="test\query\SqliteWriteSyncTest.cpp">
       <Filter>Source Files\test\query</Filter>
     </ClCompile>
+    <ClCompile Include="src\query\SqliteLockControl.cpp">
+      <Filter>Source Files\src\query</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ConnectionPool.h">
@@ -308,6 +311,9 @@
       <Filter>Header Files\test</Filter>
     </ClInclude>
     <ClInclude Include="src\query\ExplainInfo.h">
+      <Filter>Header Files\src\query</Filter>
+    </ClInclude>
+    <ClInclude Include="src\query\SqliteLockControl.h">
       <Filter>Header Files\src\query</Filter>
     </ClInclude>
   </ItemGroup>

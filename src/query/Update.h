@@ -41,7 +41,7 @@ private:
     void bindUpdateEntitiesCondition(const QList<E>& entities);
 
 private:
-    BASE_QUERY_CONSTRUCTOR_DECLARE(Update)
+    BASE_QUERY_CONSTRUCTOR_DECLARE_W(Update)
 };
 
 template<typename E>

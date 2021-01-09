@@ -8,14 +8,12 @@
 #include <iostream>
 #include <QThread>
 
-QMutex BaseQuery::writeCheckLocker;
-QWaitCondition BaseQuery::writeWait;
-bool BaseQuery::currentIsWriting = false;
-bool BaseQuery::sqlWriteLock = false;
+SqliteLockControl BaseQuery::sqliteLockControl;
 
-BaseQuery::BaseQuery(bool throwable, BaseQueryBuilder* builder)
+BaseQuery::BaseQuery(bool throwable, BaseQueryBuilder* builder, bool writeDb)
     : builder(builder)
     , queryThrowable(throwable)
+    , writeDb(writeDb)
 {
     if (builder != nullptr) {
         this->builder = new BaseQueryBuilder(*builder);
@@ -79,37 +77,37 @@ void BaseQuery::printWarning(const QString& info) {
 }
 
 void BaseQuery::checkAndLockWrite() {
-    if (sqlWriteLock) {
-        std::cout << "prepare check get locker! " << QThread::currentThreadId() << std::endl;
-        QMutexLocker locker(&writeCheckLocker);
-        if (sqlWriteLock) {
-            if (currentIsWriting) {
-                std::cout << "current wait locker! " << QThread::currentThreadId() << std::endl;
-                writeWait.wait(&writeCheckLocker);
-            }
-            std::cout << "current catch locker! to set writing! " << QThread::currentThreadId() << std::endl;
-            currentIsWriting = true;
-        }
+    if (!writeDb) {
+        sqliteLockControl.testRead();
+    } else {
+        sqliteLockControl.testWrite();
     }
 }
 
 void BaseQuery::checkAndReleaseWriteLocker() {
-    if (sqlWriteLock) {
-        std::cout << "prepare release write lock! " << QThread::currentThreadId() << std::endl;
-        QMutexLocker locker(&writeCheckLocker);
-        if (sqlWriteLock) {
-            currentIsWriting = false;
-            writeWait.notify_one();
-        }
+    if (!writeDb) {
+        sqliteLockControl.releaseRead();
+    } else {
+        sqliteLockControl.releaseWrite();
     }
 }
 
-void BaseQuery::queryPrimitive(const QString& statement, std::function<void(QSqlQuery& query)> callback, std::function<void(QString)> failCallback) {
-    queryPrimitive(statement, QVariantList(), callback, failCallback);
+void BaseQuery::queryPrimitive(const QString& statement, 
+    std::function<void(QSqlQuery& query)> callback, 
+    std::function<void(QString)> failCallback,
+    bool writeDb
+) {
+    queryPrimitive(statement, QVariantList(), callback, failCallback, writeDb);
 }
 
-void BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, std::function<void(QSqlQuery& query)> callback, std::function<void(QString)> failCallback) {
+void BaseQuery::queryPrimitive(const QString& statement, 
+    const QVariantList& values, 
+    std::function<void(QSqlQuery& query)> callback, 
+    std::function<void(QString)> failCallback,
+    bool writeDb
+) {
     BaseQuery executor;
+    executor.writeDb = writeDb;
     executor.setSqlQueryStatement(statement, values);
     bool prepareOk;
     auto query = executor.getQuery(prepareOk, true);
@@ -128,23 +126,31 @@ void BaseQuery::queryPrimitive(const QString& statement, const QVariantList& val
             Q_ASSERT(DbExceptionHandler::exceptionHandler != nullptr);
         }
     }
-    checkAndReleaseWriteLocker();
+    executor.checkAndReleaseWriteLocker();
 }
 
-QSqlQuery BaseQuery::queryPrimitiveThrowable(const QString& statement) {
-    return queryPrimitiveThrowable(statement, QVariantList());
+QSqlQuery BaseQuery::queryPrimitiveThrowable(
+    const QString& statement,
+    bool writeDb
+) {
+    return queryPrimitiveThrowable(statement, QVariantList(), writeDb);
 }
 
-QSqlQuery BaseQuery::queryPrimitiveThrowable(const QString& statement, const QVariantList& values) {
+QSqlQuery BaseQuery::queryPrimitiveThrowable(
+    const QString& statement, 
+    const QVariantList& values,
+    bool writeDb
+) {
     BaseQuery executor;
+    executor.writeDb = writeDb;
     executor.setSqlQueryStatement(statement, values);
     bool prepareOk;
     auto query = executor.getQuery(prepareOk, true);
     if (prepareOk && execByCheckEmptyValue(query, &executor)) {
-        checkAndReleaseWriteLocker();
+        executor.checkAndReleaseWriteLocker();
         return query;
     } else {
-        checkAndReleaseWriteLocker();
+        executor.checkAndReleaseWriteLocker();
         throw DaoException(query.lastError().text());
     }
 }

@@ -14,34 +14,44 @@
 
 #include "../query/ExplainInfo.h"
 
+#include "SqliteLockControl.h"
+
 class dao;
 
 class BaseQuery {
 public:
-    BaseQuery(bool throwable = false, BaseQueryBuilder* builder = nullptr);
+    BaseQuery(bool throwable = false
+        , BaseQueryBuilder* builder = nullptr,
+        bool writeDb = false
+    );
+
     BaseQuery(const BaseQuery& other);
     ~BaseQuery();
 
     static void queryPrimitive(
         const QString& statement, 
         std::function<void(QSqlQuery& query)> callback = nullptr,
-        std::function<void(QString)> failCallback = nullptr
+        std::function<void(QString)> failCallback = nullptr,
+        bool writeDb = false
     );
 
     static void queryPrimitive(
         const QString& statement,
         const QVariantList& values,
         std::function<void(QSqlQuery& query)> callback = nullptr,
-        std::function<void(QString)> failCallback = nullptr
-    );
-
-    static QSqlQuery queryPrimitiveThrowable(
-        const QString& statement
+        std::function<void(QString)> failCallback = nullptr,
+        bool writeDb = false
     );
 
     static QSqlQuery queryPrimitiveThrowable(
         const QString& statement,
-        const QVariantList& values
+        bool writeDb = false
+    );
+
+    static QSqlQuery queryPrimitiveThrowable(
+        const QString& statement,
+        const QVariantList& values,
+        bool writeDb = false
     );
 
 protected:
@@ -53,21 +63,19 @@ protected:
     void printException(const QString& reason);
     void printWarning(const QString& info);
 
-    static void checkAndLockWrite();
-    static void checkAndReleaseWriteLocker();
+    void checkAndLockWrite();
+    void checkAndReleaseWriteLocker();
 
 protected:
     QString statement;
     QVariantList values;
     BaseQueryBuilder* builder;
     bool queryThrowable;
+    bool writeDb;
 
     friend class BaseQueryBuilder;
 
-    static QMutex writeCheckLocker;
-    static QWaitCondition writeWait;
-    static bool currentIsWriting;
-    static bool sqlWriteLock;
+    static SqliteLockControl sqliteLockControl;
 
     friend class dao;
 

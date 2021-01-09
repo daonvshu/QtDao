@@ -41,7 +41,7 @@ private:
     void buildDeleteEntitiesCondition(const QList<E>& entities);
 
 private:
-    BASE_QUERY_CONSTRUCTOR_DECLARE(Delete)
+    BASE_QUERY_CONSTRUCTOR_DECLARE_W(Delete)
 };
 
 template<typename E>

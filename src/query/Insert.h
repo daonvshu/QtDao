@@ -97,7 +97,7 @@ private:
 private:
     bool insertOrRp = false;
 
-    BASE_QUERY_CONSTRUCTOR_DECLARE(Insert)
+    BASE_QUERY_CONSTRUCTOR_DECLARE_W(Insert)
 };
 
 template<typename E>

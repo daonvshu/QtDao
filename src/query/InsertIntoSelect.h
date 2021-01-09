@@ -19,7 +19,7 @@ public:
 protected:
     void buildSqlStatement();
 
-    BASE_QUERY_CONSTRUCTOR_DECLARE(InsertIntoSelect)
+    BASE_QUERY_CONSTRUCTOR_DECLARE_W(InsertIntoSelect)
 };
 
 template<typename E>
