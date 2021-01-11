@@ -4,57 +4,57 @@
 
 struct DbConfig {
     /// <summary>
-    /// 目标数据库版本号
+    /// expect database version
     /// </summary>
     int version;
 
     /// <summary>
-    /// 读取本地版本号后设置，为false时需要版本升级
+    /// auto set false if need to upgrade
     /// </summary>
     bool versionValid;
 
     /// <summary>
-    /// 数据库类型，sqlite,mysql,sqlserver其中之一
+    /// database type, one of sqlite,mysql,sqlserver
     /// </summary>
     QString dbType;
 
     /// <summary>
-    /// 数据库驱动，默认QSQLITE,QMYSQL,QODBC其中之一
+    /// database driver, default one of QSQLITE,QMYSQL,QODBC
     /// </summary>
     QString dbDriver;
 
     /// <summary>
-    /// 数据库名称
+    /// database name
     /// </summary>
     QString dbName;
 
     /// <summary>
-    /// 数据库地址
+    /// database address
     /// </summary>
     QString dbHost;
 
     /// <summary>
-    /// 连接用户名
+    /// database connect user name
     /// </summary>
     QString dbUName;
 
     /// <summary>
-    /// 连接密码
+    /// database connect user password
     /// </summary>
     QString dbPcc;
 
     /// <summary>
-    /// 连接端口
+    /// database connect used port
     /// </summary>
     int dbPort;
 
     /// <summary>
-    /// 连接配置参数
+    /// database connect options
     /// </summary>
     QString dbOption;
 
     /// <summary>
-    /// 检查是否是sqlite
+    /// current is sqlite
     /// </summary>
     /// <returns></returns>
     bool isSqlite() {
@@ -62,7 +62,7 @@ struct DbConfig {
     }
 
     /// <summary>
-    /// 检测是否是mysql
+    /// current is mysql
     /// </summary>
     /// <returns></returns>
     bool isMysql() {
@@ -70,7 +70,7 @@ struct DbConfig {
     }
 
     /// <summary>
-    /// 检测是否是SQLServer
+    /// current is SQLServer
     /// </summary>
     /// <returns></returns>
     bool isSqlServer() {

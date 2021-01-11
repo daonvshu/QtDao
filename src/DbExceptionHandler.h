@@ -12,31 +12,31 @@ public:
     static void setExceptionHandler(DbExceptionHandler* exceptionHandler);
 
     /// <summary>
-    /// 初始化数据库失败
+    /// 
     /// </summary>
     /// <param name="reason"></param>
     virtual void initDbFail(const QString& reason) { Q_UNUSED(reason) };
 
     /// <summary>
-    /// 连接到数据库失败
+    /// 
     /// </summary>
     /// <param name="failReason"></param>
     virtual void databaseOpenFail(const QString& failReason) { Q_UNUSED(failReason) };
 
     /// <summary>
-    /// 执行SQL语句失败
+    /// 
     /// </summary>
     /// <param name="lastErr"></param>
     virtual void execFail(const QString& lastErr) { Q_UNUSED(lastErr) };
 
     /// <summary>
-    /// 执行SQL语句警告
+    /// 
     /// </summary>
     /// <param name="info"></param>
     virtual void execWarning(const QString& info) { Q_UNUSED(info) };
 
     /// <summary>
-    /// 版本升级失败
+    /// 
     /// </summary>
     /// <param name="reason"></param>
     virtual void upgradeFail(const QString& reason) { Q_UNUSED(reason) };

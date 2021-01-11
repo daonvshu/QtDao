@@ -11,20 +11,30 @@ public:
     DbLoader() = delete;
 
     /// <summary>
-    /// 加载配置，通过property获取配置数据
+    /// load config, use object's property to get config parameters
     /// </summary>
     /// <param name="config"></param>
     static void loadConfig(const QObject& config);
 
     /// <summary>
-    /// 加载配置并初始化
+    /// load config and init, use object's property to get config parameters
+    /// <para>properties:</para>
+    /// <para>type: database type, one of sqlite,mysql,sqlserver</para>
+    /// <para>driver(optional): database driver, default one of QSQLITE,QMYSQL,QODBC</para>
+    /// <para>version: expect database version</para>
+    /// <para>dbName: database name</para>
+    /// <para>dbHost(optional): database connect address</para>
+    /// <para>dbUName(optional): database connect user name</para>
+    /// <para>dbPcc(optional): database connect user password</para>
+    /// <para>dbPort(optional): database connect used port</para>
+    /// <para>dbOption(optional): database connect options</para>
     /// </summary>
     /// <param name="config"></param>
     /// <param name="exceptionHandler"></param>
     static void init(const QObject& config, DbExceptionHandler* exceptionHandler = nullptr);
 
     /// <summary>
-    /// 获取数据库配置参数引用
+    /// get config ref
     /// </summary>
     /// <returns></returns>
     static DbConfig& getConfig() {
@@ -32,7 +42,7 @@ public:
     }
 
     /// <summary>
-    /// 获取数据库初始化器
+    /// get init client
     /// </summary>
     /// <returns></returns>
     static AbstractClient& getClient() {
@@ -40,7 +50,7 @@ public:
     }
 
     /// <summary>
-    /// 获取当前数据库版本号，不存在返回-1
+    /// get current database version, return -1 if not exist
     /// </summary>
     /// <returns></returns>
     static int getLocalVersion();
