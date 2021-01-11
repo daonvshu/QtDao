@@ -1,8 +1,5 @@
-********* Start testing of SqliteWriteSyncTest *********
+********* Start testing of DbLoaderTest *********
 Config: Using QtTest library 5.12.3, Qt 5.12.3 (i386-little_endian-ilp32 shared (dynamic) debug build; by MSVC 2017)
-PASS   : SqliteWriteSyncTest::initTestCase()
-PASS   : SqliteWriteSyncTest::testInsertWriteLock()
-PASS   : SqliteWriteSyncTest::testTranscationWriteLock()
-PASS   : SqliteWriteSyncTest::cleanupTestCase()
-Totals: 4 passed, 0 failed, 0 skipped, 0 blacklisted, 628ms
-********* Finished testing of SqliteWriteSyncTest *********
+PASS   : DbLoaderTest::initTestCase()
+FAIL!  : DbLoaderTest::loadConfigTest() init db fail:open master table 'mysql' fail! Can't connect to MySQL server on '192.168.1.19' (10060) QMYSQL: Unable to connect
+E:\QT\framwork\QtDao\test\loader\DbLoaderTest.cpp(21) : failure location

@@ -6,6 +6,9 @@
 
 #include "query/BaseQuery.h"
 
+DbConfig DbLoader::config;
+AbstractClient* DbLoader::sqlClient = nullptr;
+
 void DbLoader::init(const QObject& config, DbExceptionHandler* exceptionHandler) {
     DbExceptionHandler::setExceptionHandler(exceptionHandler);
     loadConfig(config);
@@ -36,7 +39,6 @@ void DbLoader::loadConfig(const QObject& cg) {
     }
     
     config.version = cg.property("version").toInt();
-    config.versionValid = true;
 
     config.dbName = cg.property("dbName").toString();
     config.dbHost = cg.property("dbHost").toString();
@@ -59,9 +61,10 @@ void DbLoader::init() {
 
 void DbLoader::init_priv() {
     sqlClient->testConnect();
-    sqlClient->createDatabase();
 
-    invokeCreateTables();
+    if (config.createDbEnabled) {
+        sqlClient->createDatabase();
+    }
 
     int localversion = getLocalVersion();
     if (localversion != -1) {
@@ -70,15 +73,26 @@ void DbLoader::init_priv() {
         updateLocalVersion();
     }
 
-    if (!config.versionValid) {
-        try {
-            invokeTableUpgrade();
-            updateLocalVersion();
-        } catch (DaoException& e) {
-            if (DbExceptionHandler::exceptionHandler) {
-                DbExceptionHandler::exceptionHandler->upgradeFail(e.reason);
+    if (config.createTableEnabled) {
+        invokeCreateTables();
+
+        if (!config.versionValid) {
+            try {
+                invokeTableUpgrade();
+                updateLocalVersion();
             }
-            Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "ConnectionPool", "database upgrade fail!");
+            catch (DaoException& e) {
+                if (DbExceptionHandler::exceptionHandler) {
+                    DbExceptionHandler::exceptionHandler->upgradeFail(e.reason);
+                }
+                Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "ConnectionPool", "database upgrade fail!");
+            }
+        }
+    } else {
+        if (!config.versionValid) {
+            if (DbExceptionHandler::exceptionHandler) {
+                DbExceptionHandler::exceptionHandler->initDbFail("The local version is smaller than the target version!");
+            }
         }
     }
 }
@@ -111,6 +125,14 @@ int DbLoader::getLocalVersion() {
         version = query.value(0).toInt();
     }
     return version;
+}
+
+void DbLoader::disableCreateDatabase() {
+    config.createDbEnabled = false;
+}
+
+void DbLoader::disableCreateTable() {
+    config.createTableEnabled = false;
 }
 
 void DbLoader::invokeCreateTables() {

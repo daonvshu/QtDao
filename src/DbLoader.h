@@ -55,6 +55,16 @@ public:
     /// <returns></returns>
     static int getLocalVersion();
 
+    /// <summary>
+    /// disable auto create database, need call before 'init'
+    /// </summary>
+    static void disableCreateDatabase();
+
+    /// <summary>
+    /// disable auto create tables, need call before 'init'
+    /// </summary>
+    static void disableCreateTable();
+
 private:
     static DbConfig config;
     static AbstractClient* sqlClient;

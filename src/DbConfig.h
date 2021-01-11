@@ -76,4 +76,14 @@ struct DbConfig {
     bool isSqlServer() {
         return dbType == "sqlserver";
     }
+
+    bool createDbEnabled;
+    bool createTableEnabled;
+
+    DbConfig() {
+        versionValid = true;
+
+        createDbEnabled = true;
+        createTableEnabled = true;
+    }
 };
