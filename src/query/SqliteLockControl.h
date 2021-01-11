@@ -2,6 +2,7 @@
 
 #include <qobject.h>
 #include <qmutex.h>
+#include <qwaitcondition.h>
 #include <qhash.h>
 
 class SqliteLockControl {
@@ -24,9 +25,17 @@ private:
     bool writeSync; //open write sync
     QMutex writeSyncChecker;
 
-    QMutex globalWriteLocker; //global write locker
-    QHash<Qt::HANDLE, bool> currentIsTrancation; //current work thread is trancation
-    QMutex startTrancationLocker;
-    QMutex trancationWriteLocker; //trancation write locker
-    QMutex trancationReadLocker; //trancation read locker
+    struct {
+        bool globalLock;
+        QWaitCondition globalWait;
+        bool writeLock;
+        QWaitCondition writeWait;
+        bool readLock;
+        QWaitCondition readWait;
+        bool beginReserved;
+        QWaitCondition beginWait;
+        Qt::HANDLE beginThreadId;
+    } lockCondition;
+
+    QMutex conditionChecker;
 };

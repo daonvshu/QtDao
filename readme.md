@@ -54,3 +54,5 @@ select *from test1 where name='client' and (number=12 or name='bob')
     - 对象（/批量）删除
   - 其他
     - 事务
+    - 解释
+    - sqlite写同步

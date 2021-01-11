@@ -130,7 +130,7 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
     bool insertExit = false;
     QMutex locker;
     RunnableHandler<void>::exec([&] {
-        int number1 = 10000;
+        int number1 = 100000;
         while (true) {
             int diff = QDateTime::currentMSecsSinceEpoch() - startPoint;
             if (diff > 5000) {
@@ -143,12 +143,10 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
                 std::cout << "testing sqlite write lock: " << lastDiff << std::endl;
             }
             try {
-                if (number1 % 2) {
-                    SqliteTest2 data("test", number1, 0, "aaa");
-                    std::cout << "prepare insert thread1: " << QThread::currentThreadId()
-                        << " t -> " << QDateTime::currentMSecsSinceEpoch() << std::endl;
-                    dao::_insert<SqliteTest2>().throwable().build().insert(data);
-                }
+                SqliteTest2 data("test", number1, 0, "aaa");
+                /*std::cout << "prepare insert thread1: " << QThread::currentThreadId()
+                    << " t -> " << QDateTime::currentMSecsSinceEpoch() << std::endl;*/
+                dao::_insert<SqliteTest2>().throwable().build().insert(data);
                 number1++;
             }
             catch (DaoException& e) {
@@ -176,8 +174,8 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
                 locker.unlock();
                 if (number2 % 2) {
                     SqliteTest2 data("test", number2, 0, "aaa");
-                    std::cout << "prepare insert thread2: " << QThread::currentThreadId()
-                        << " t -> " << QDateTime::currentMSecsSinceEpoch() << std::endl;
+                    /*std::cout << "prepare insert thread2: " << QThread::currentThreadId()
+                        << " t -> " << QDateTime::currentMSecsSinceEpoch() << std::endl;*/
                     dao::_insert<SqliteTest2>().throwable().build().insert(data);
                 }
                 number2++;
@@ -193,6 +191,7 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
         }
         QMutexLocker l(&locker);
         thread2Running = false;
+        std::cout << "thread2 commit finished!" << std::endl;
     });
     bool thread3Running = true;
     RunnableHandler<void>::exec([&] {
@@ -206,8 +205,8 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
                 }
                 locker.unlock();
                 SqliteTest2::Fields sf;
-                std::cout << "prepare select thread3: " << QThread::currentThreadId()
-                    << " t -> " << QDateTime::currentMSecsSinceEpoch() << std::endl;
+                /*std::cout << "prepare select thread3: " << QThread::currentThreadId()
+                    << " t -> " << QDateTime::currentMSecsSinceEpoch() << std::endl;*/
                 dao::_select<SqliteTest2>().throwable().filter(sf.name == "test").build().list();
             }
         } catch (DaoException& e) {
@@ -215,6 +214,8 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
             thread3Running = false;
             QFAIL(("test sqlite write lock fail #3!" + e.reason).toUtf8());
         }
+        QMutexLocker l(&locker);
+        thread3Running = false;
     });
     loop.exec();
     while (true) {

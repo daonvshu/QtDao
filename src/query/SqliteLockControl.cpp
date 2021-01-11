@@ -9,166 +9,194 @@
 SqliteLockControl::SqliteLockControl()
     : writeSync(false)
 {
+    //clear lock state
+    lockCondition.globalLock = false;
+    lockCondition.writeLock = false;
+    lockCondition.readLock = false;
+    lockCondition.beginReserved = false;
 }
 
 void print(const char* msg) {
-    std::cout << msg << "  thread:" << QThread::currentThreadId() << std::endl;
+    Q_UNUSED(msg);
+    //std::cout << msg << "  thread:" << QThread::currentThreadId() << std::endl;
 }
+
+#define WRITE_SYNC_BEGIN \
+if (writeSync) { \
+    { \
+        QMutexLocker syncLock(&writeSyncChecker); \
+        if (!writeSync) { \
+            return; \
+        } \
+    }
+
+#define WRITE_SYNC_END }
 
 void SqliteLockControl::enableSqliteWriteSync(bool enable) {
     if (!DbLoader::getConfig().isSqlite()) {
         return;
     }
     print("#1-0");
-    QMutexLocker locker(&writeSyncChecker);
+    QMutexLocker locker(&conditionChecker);
     if (!enable) {
-        print("#1-1");
-        QMutexLocker locker1(&globalWriteLocker);
-        print("#1-2");
-        QMutexLocker locker2(&trancationWriteLocker);
-        print("#1-3");
-        QMutexLocker locker3(&trancationReadLocker);
-        writeSync = enable;
+        lockCondition.globalWait.wakeAll();
+        lockCondition.writeWait.wakeAll();
+        lockCondition.readWait.wakeAll();
+        lockCondition.beginWait.wakeAll();
     }
     writeSync = enable;
     print("#1-4");
 }
 
 void SqliteLockControl::trancationStart() {
-    print("#2-0");
-    if (writeSync) {
-        {
-            QMutexLocker locker1(&writeSyncChecker);
-            if (!writeSync) {
-                return;
-            }
-        }
-        QMutexLocker lock(&startTrancationLocker);
-        currentIsTrancation.insert(QThread::currentThreadId(), true);
-    }
+    WRITE_SYNC_BEGIN
     print("#2-1");
+    conditionChecker.lock();
+    if (lockCondition.beginReserved) {
+        print("#2-2");
+        lockCondition.beginWait.wait(&conditionChecker);
+    }
+    print("#2-3");
+    lockCondition.beginReserved = true;
+    lockCondition.beginThreadId = QThread::currentThreadId();
+
+    if (lockCondition.writeLock) {
+        print("#2-4");
+        lockCondition.writeWait.wait(&conditionChecker);
+    }
+    print("#2-5");
+    lockCondition.writeLock = true;
+
+    conditionChecker.unlock();
+    WRITE_SYNC_END
 }
 
 void SqliteLockControl::trancationPrepareEnd() {
-    if (writeSync) {
-        {
-            QMutexLocker locker1(&writeSyncChecker);
-            if (!writeSync) {
-                return;
-            }
-        }
-        print("#3-0");
-        {
-            QMutexLocker lock(&startTrancationLocker);
-        }
-        currentIsTrancation.insert(QThread::currentThreadId(), false);
+    WRITE_SYNC_BEGIN
+    print("#3-0");
+    conditionChecker.lock();
+    if (lockCondition.readLock) {
         print("#3-1");
-        trancationReadLocker.lock();
-        print("#3-3");
+        lockCondition.readWait.wait(&conditionChecker);
     }
-    print("#3-4");
+    print("#3-2");
+    lockCondition.readLock = true;
+    conditionChecker.unlock();
+    WRITE_SYNC_END
 }
 
 void SqliteLockControl::trancationEnd() {
-    if (writeSync) {
-        {
-            print("#4-0");
-            QMutexLocker locker1(&writeSyncChecker);
-            print("#4-1");
-            if (!writeSync) {
-                return;
-            }
-        }
-        print("#4-2");
-        trancationReadLocker.unlock();
-        trancationWriteLocker.unlock();
-        print("#4-3");
-    }
+    WRITE_SYNC_BEGIN
+    print("#4-2");
+    conditionChecker.lock();
+
+    lockCondition.beginReserved = false;
+    lockCondition.beginWait.wakeOne();
+
+    lockCondition.readLock = false;
+    lockCondition.readWait.wakeAll();
+
+    lockCondition.writeLock = false;
+    lockCondition.writeWait.wakeAll();
+
+    conditionChecker.unlock();
+    print("#4-3");
+    WRITE_SYNC_END
 }
 
 void SqliteLockControl::testWrite() {
-    if (writeSync) {
-        {
-            print("#5-0");
-            QMutexLocker locker1(&writeSyncChecker);
-            print("#5-1");
-            if (!writeSync) {
-                return;
-            }
-        }
-        {
-            QMutexLocker lock2(&startTrancationLocker);
-        }
-        print("#5-2");
-        bool currentTrancate = currentIsTrancation.value(QThread::currentThreadId(), false);
-        if (!currentTrancate) {
+    WRITE_SYNC_BEGIN
+    print("#5-2");
+    conditionChecker.lock();
+    if (lockCondition.beginReserved) {
+        if (lockCondition.beginThreadId == QThread::currentThreadId()) {
+            conditionChecker.unlock();
             print("#5-3");
-            globalWriteLocker.lock();
-            print("#5-4");
+            return;
         }
-        trancationWriteLocker.lock();
-        print("#5-5");
-        print("#5-6");
     }
+    print("#5-4");
+    if (lockCondition.globalLock) {
+        lockCondition.globalWait.wait(&conditionChecker);
+    }
+    lockCondition.globalLock = true;
+    print("#5-5");
+    if (lockCondition.writeLock) {
+        lockCondition.writeWait.wait(&conditionChecker);
+    }
+    lockCondition.writeLock = true;
+    print("#5-6");
+    conditionChecker.unlock();
+    WRITE_SYNC_END
 }
 
 void SqliteLockControl::testRead() {
-    if (writeSync) {
-        {
-            print("#6-0");
-            QMutexLocker locker1(&writeSyncChecker);
-            print("#6-1");
-            if (!writeSync) {
-                return;
-            }
+    WRITE_SYNC_BEGIN
+    print("#6-1");
+    conditionChecker.lock();
+    if (lockCondition.beginReserved) {
+        if (lockCondition.beginThreadId == QThread::currentThreadId()) {
+            conditionChecker.unlock();
+            print("#6-2");
+            return;
         }
-        print("#6-2");
-        {
-            QMutexLocker locker2(&globalWriteLocker);
-        }
-        print("#6-3");
-        trancationReadLocker.lock();
-        print("#6-4");
     }
+    if (lockCondition.globalLock) {
+        print("#6-3");
+        lockCondition.globalWait.wait(&conditionChecker);
+    }
+    lockCondition.globalLock = true;
+    print("#6-4");
+    if (lockCondition.readLock) {
+        print("#6-5");
+        lockCondition.readWait.wait(&conditionChecker);
+    }
+    print("#6-6");
+    lockCondition.readLock = true;
+    conditionChecker.unlock();
+    WRITE_SYNC_END
 }
 
 void SqliteLockControl::releaseWrite() {
-    if (writeSync) {
-        {
-            print("#7-0");
-            QMutexLocker locker1(&writeSyncChecker);
-            print("#7-1");
-            if (!writeSync) {
-                return;
-            }
+    WRITE_SYNC_BEGIN
+    print("#7-1");
+    conditionChecker.lock();
+    if (lockCondition.beginReserved) {
+        if (lockCondition.beginThreadId == QThread::currentThreadId()) {
+            conditionChecker.unlock();
+            print("#7-2");
+            return;
         }
-        {
-            QMutexLocker lock2(&startTrancationLocker);
-        }
-        print("#7-2");
-        bool currentTrancate = currentIsTrancation.value(QThread::currentThreadId(), false);
-        if (!currentTrancate) {
-            print("#7-3");
-            trancationWriteLocker.unlock();
-            print("#7-4");
-            globalWriteLocker.unlock();
-        }
-        print("#7-5");
     }
+    print("#7-3");
+    lockCondition.writeLock = false;
+    lockCondition.writeWait.wakeOne();
+
+    lockCondition.globalLock = false;
+    lockCondition.globalWait.wakeOne();
+
+    conditionChecker.unlock();
+    WRITE_SYNC_END
 }
 
 void SqliteLockControl::releaseRead() {
-    if (writeSync) {
-        {
-            print("#8-0");
-            QMutexLocker locker1(&writeSyncChecker);
-            print("#8-1");
-            if (!writeSync) {
-                return;
-            }
+    WRITE_SYNC_BEGIN
+    conditionChecker.lock();
+    print("#8-1");
+    if (lockCondition.beginReserved) {
+        if (lockCondition.beginThreadId == QThread::currentThreadId()) {
+            conditionChecker.unlock();
+            print("#8-2");
+            return;
         }
-        print("#8-2");
-        trancationReadLocker.unlock();
-        print("#8-3");
     }
+    lockCondition.readLock = false;
+    lockCondition.readWait.wakeOne();
+
+    lockCondition.globalLock = false;
+    lockCondition.globalWait.wakeOne();
+
+    conditionChecker.unlock();
+    print("#8-3");
+    WRITE_SYNC_END
 }

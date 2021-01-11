@@ -70,7 +70,7 @@
     - [ ] between date to date
     - [ ] ~~json type column~~(driver not support)
     - [x] explain
-    - [ ] sqlite write lock
+    - [x] sqlite write lock
 - **connection pool**
   - [x] connection reuse
   - [x] work thread connection separate
