@@ -14,11 +14,11 @@ select *from test1 where name='client' and (number=12 or name='bob')
 
 下面是当前受支持的数据库
 - [x] sqlite
-- [ ] mysql
+- [x] mysql
 - [ ] sqlserver
 
 ## 如何使用
-当前只适配了sqlite，使用[qtdao-2.0-beta1分支下载库](https://github.com/daonvshu/QtDao/tree/qtdao-2.0-beta1)，使用步骤[看这](https://github.com/daonvshu/QtDao/blob/master/doc/setup/setup.md)
+下载后使用[beta分支](https://github.com/daonvshu/QtDao/tree/qtdao-2.0-beta2)，使用步骤[看这](https://github.com/daonvshu/QtDao/blob/master/doc/setup/setup.md)
 
 ## 支持的功能
 

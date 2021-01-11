@@ -19,6 +19,7 @@ HEADERS += ./src/ConnectionPool.h \
     ./src/query/Select.h \
     ./src/query/Update.h \
     ./src/query/ExplainInfo.h \
+    ./src/query/SqliteLockControl.h \
     ./src/dbclients/AbstractClient.h \
     ./src/dbclients/MysqlClient.h \
     ./src/dbclients/SqliteClient.h \
@@ -53,6 +54,7 @@ HEADERS += ./src/ConnectionPool.h \
     ./test/query/DeleteTest.h \
     ./test/query/JoinTest.h \
     ./test/query/BaseQueryTest.h \
+    ./test/query/SqliteWriteSyncTest.h \
     ./test/loader/DbLoaderTest.h \
     ./test/sqliteentity/SqliteTest3.h \
     ./test/sqliteentity/SqliteTest1.h \
@@ -70,6 +72,7 @@ SOURCES += ./main.cpp \
     ./src/DbLoader.cpp \
     ./src/qtdao.cpp \
     ./src/query/BaseQuery.cpp \
+    ./src/query/SqliteLockControl.cpp \
     ./src/dbclients/AbstractClient.cpp \
     ./src/dbclients/MysqlClient.cpp \
     ./src/dbclients/SqliteClient.cpp \
@@ -88,6 +91,7 @@ SOURCES += ./main.cpp \
     ./test/query/JoinTest.cpp \
     ./test/query/SelectTest.cpp \
     ./test/query/UpdateTest.cpp \
+    ./test/query/SqliteWriteSyncTest.cpp \
     ./test/loader/DbLoaderTest.cpp \
     ./test/condition/ConnectorTest.cpp \
     ./test/sqliteentity/SqliteEntityInclude.cpp \

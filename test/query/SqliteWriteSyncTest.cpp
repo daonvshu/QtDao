@@ -42,7 +42,6 @@ void SqliteWriteSyncTest::testInsertWriteLock() {
     QMutex locker;
     bool testQuit = false;
     RunnableHandler<void>::exec([&] {
-        qint64 startT = QDateTime::currentMSecsSinceEpoch();
         SqliteTest1 test(1000L, "test large data insert", 1, data);
         dao::_insert<SqliteTest1>().build().insertOrReplace(test);
         locker.lock();
