@@ -1,6 +1,6 @@
-#include "BaseQueryBuilder.h"
+#include "builder/BaseQueryBuilder.h"
 
-#include "RecursiveQueryBuilder.h"
+#include "builder/RecursiveQueryBuilder.h"
 
 BaseQueryBuilder::~BaseQueryBuilder() {
 }

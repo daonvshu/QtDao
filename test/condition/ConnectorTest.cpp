@@ -2,7 +2,7 @@
 
 #include "../sqliteentity/SqliteTest2.h"
 
-#include "../../src/condition/ConditionOperator.h"
+#include "condition/ConditionOperator.h"
 
 #include <QtTest>
 

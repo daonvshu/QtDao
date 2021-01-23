@@ -1,7 +1,7 @@
 #include "DbLoaderTest.h"
 
-#include "../../src/DbLoader.h"
-#include "../../src/ConnectionPool.h"
+#include "DbLoader.h"
+#include "ConnectionPool.h"
 
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"

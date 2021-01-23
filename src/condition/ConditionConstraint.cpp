@@ -1,4 +1,4 @@
-﻿#include "ConditionConstraint.h"
+﻿#include "condition/ConditionConstraint.h"
 
 ConditionConstraint ConditionConstraint::limit(int a, int b) {
     QVariantList values;

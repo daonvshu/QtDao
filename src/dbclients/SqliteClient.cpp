@@ -1,12 +1,12 @@
-﻿#include "SqliteClient.h"
+﻿#include "dbclients/SqliteClient.h"
 
 #include <qstandardpaths.h>
 #include <qdir.h>
 #include <qfileinfo.h>
 
-#include "../DbLoader.h"
+#include "DbLoader.h"
 
-#include "../query/BaseQuery.h"
+#include "query/BaseQuery.h"
 
 bool createPath(QString path) {
     QDir dir;

@@ -2,17 +2,17 @@
 
 #include <QtTest/QTest>
 
-#include "test/ConnectionPoolTest.h"
-#include "test/query/BaseQueryTest.h"
-#include "test/query/InsertTest.h"
-#include "test/query/SelectTest.h"
-#include "test/query/UpdateTest.h"
-#include "test/query/DeleteTest.h"
-#include "test/query/JoinTest.h"
-#include "test/loader/DbLoaderTest.h"
-#include "test/condition/ConnectorTest.h"
-#include "test/query/InsertIntoSelectTest.h"
-#include "test/query/SqliteWriteSyncTest.h"
+#include "ConnectionPoolTest.h"
+#include "query/BaseQueryTest.h"
+#include "query/InsertTest.h"
+#include "query/SelectTest.h"
+#include "query/UpdateTest.h"
+#include "query/DeleteTest.h"
+#include "query/JoinTest.h"
+#include "loader/DbLoaderTest.h"
+#include "condition/ConnectorTest.h"
+#include "query/InsertIntoSelectTest.h"
+#include "query/SqliteWriteSyncTest.h"
 
 #ifndef QT_DAO_TESTCASE
 #include <qfile.h>

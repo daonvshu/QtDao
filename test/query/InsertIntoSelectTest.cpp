@@ -2,7 +2,7 @@
 
 #include <QtTest>
 
-#include "../../src/dao.h"
+#include "dao.h"
 
 void InsertIntoSelectTest::initTestCase() {
     configDb();

@@ -5,7 +5,7 @@
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
 
-#include "../../src/dao.h"
+#include "dao.h"
 
 void JoinTest::initTestCase() {
     configDb();

@@ -1,6 +1,6 @@
 ﻿#include "BaseTest.h"
 
-#include "../src/DbExceptionHandler.h"
+#include "DbExceptionHandler.h"
 
 #include <QtTest>
 #include <iostream>

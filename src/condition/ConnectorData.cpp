@@ -1,9 +1,9 @@
-﻿#include "ConnectorData.h"
+﻿#include "condition/ConnectorData.h"
 
-#include "Connector.h"
-#include "EntityCondition.h"
-#include "ConditionConstraint.h"
-#include "FunctionCondition.h"
+#include "condition/Connector.h"
+#include "condition/EntityCondition.h"
+#include "condition/ConditionConstraint.h"
+#include "condition/FunctionCondition.h"
 
 class ConnectorItem {
 public:

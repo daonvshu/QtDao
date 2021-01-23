@@ -18,303 +18,192 @@
       <Extensions>qrc;*</Extensions>
       <ParseFiles>false</ParseFiles>
     </Filter>
-    <Filter Include="Source Files\src">
-      <UniqueIdentifier>{2f2a9901-78bf-42f6-b816-2f54c7fdb232}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\src">
-      <UniqueIdentifier>{708e9fbc-1dee-47a5-aa18-85f4f7e15fd4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\entity">
       <UniqueIdentifier>{917d98e0-d0a9-4bcf-9418-b927678f4b83}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\test">
-      <UniqueIdentifier>{061c9037-8f76-492b-8291-fc9aedc4feb8}</UniqueIdentifier>
+    <Filter Include="Header Files\builder">
+      <UniqueIdentifier>{aaff90b4-da78-4437-951e-b8cd4a4b39e5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\test">
-      <UniqueIdentifier>{a29209db-bebc-413a-b062-ad5c1afbe151}</UniqueIdentifier>
+    <Filter Include="Header Files\condition">
+      <UniqueIdentifier>{efa75df7-7665-43e1-b6b9-6c62e8b2bb29}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\src\query">
-      <UniqueIdentifier>{4a699cbb-7fe8-4457-9194-3673dc28003e}</UniqueIdentifier>
+    <Filter Include="Header Files\dbclients">
+      <UniqueIdentifier>{39629c0e-f551-498e-b0e4-95f79fd150c6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\src\query">
-      <UniqueIdentifier>{2c6b792a-64b5-4a88-ba1f-042100865420}</UniqueIdentifier>
+    <Filter Include="Header Files\macro">
+      <UniqueIdentifier>{c413107c-5f67-455f-ad5c-586374201578}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\test\query">
-      <UniqueIdentifier>{50d53be7-4737-4ab7-ae96-7c9a851a7e51}</UniqueIdentifier>
+    <Filter Include="Header Files\query">
+      <UniqueIdentifier>{f771f528-8f30-4425-85d8-89187b8a1c27}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\test\query">
-      <UniqueIdentifier>{c2b9c9b1-c62d-4cc0-afe0-e9b160aa5141}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\src\dbclients">
-      <UniqueIdentifier>{6a046438-015d-430a-94aa-736289efa56c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\dbclients">
-      <UniqueIdentifier>{6f0ecb0b-33e0-410c-94b0-f38361b07d4b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\test\loader">
-      <UniqueIdentifier>{6312f5f9-1787-4547-80c5-facbf609b60b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\test\loader">
-      <UniqueIdentifier>{91a1b60b-752a-40f3-a0dc-269f7a398b1b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\test\sqliteentity">
-      <UniqueIdentifier>{11b59312-025f-4563-860b-638de94940aa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\src\condition">
-      <UniqueIdentifier>{1d24ac95-fe0d-4eb1-a852-0cf74b8354be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\condition">
-      <UniqueIdentifier>{2baf88fa-76aa-4bfa-a5ea-19fdb3aeef08}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\test\condition">
-      <UniqueIdentifier>{6397f782-a6b0-4051-9c85-ec1aad1200b0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\test\condition">
-      <UniqueIdentifier>{e5129d86-3fdb-4205-8969-ab765363d71e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\src\builder">
-      <UniqueIdentifier>{6bf656e7-de92-4d41-bcc0-e6c37bb88fee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\src\macro">
-      <UniqueIdentifier>{bbfbfa4d-8ef8-4745-8e00-dffff760df15}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\src\builder">
+    <Filter Include="Source Files\builder">
       <UniqueIdentifier>{38474b50-e313-438e-b327-b673ea1f09a6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\test\mysqlentity">
-      <UniqueIdentifier>{6ce33e4d-4198-4081-a595-10ac37d0ea4e}</UniqueIdentifier>
+    <Filter Include="Source Files\condition">
+      <UniqueIdentifier>{2baf88fa-76aa-4bfa-a5ea-19fdb3aeef08}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\test\sqliteentity">
-      <UniqueIdentifier>{ebdc0dcb-626c-41c7-b54d-7b4abb4630c6}</UniqueIdentifier>
+    <Filter Include="Source Files\dbclients">
+      <UniqueIdentifier>{6f0ecb0b-33e0-410c-94b0-f38361b07d4b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\test\mysqlentity">
-      <UniqueIdentifier>{52c40159-446f-4dec-bb90-32eb4d32f5a5}</UniqueIdentifier>
+    <Filter Include="Source Files\query">
+      <UniqueIdentifier>{2c6b792a-64b5-4a88-ba1f-042100865420}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\query\BaseQuery.cpp">
+      <Filter>Source Files\query</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbclients\SqliteClient.cpp">
+      <Filter>Source Files\dbclients</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbclients\MysqlClient.cpp">
+      <Filter>Source Files\dbclients</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbclients\SqlServerClient.cpp">
+      <Filter>Source Files\dbclients</Filter>
+    </ClCompile>
+    <ClCompile Include="src\condition\EntityCondition.cpp">
+      <Filter>Source Files\condition</Filter>
+    </ClCompile>
+    <ClCompile Include="src\condition\ConditionConstraint.cpp">
+      <Filter>Source Files\condition</Filter>
+    </ClCompile>
+    <ClCompile Include="src\condition\ConnectorData.cpp">
+      <Filter>Source Files\condition</Filter>
+    </ClCompile>
+    <ClCompile Include="src\condition\FunctionCondition.cpp">
+      <Filter>Source Files\condition</Filter>
+    </ClCompile>
+    <ClCompile Include="src\builder\BaseQueryBuilder.cpp">
+      <Filter>Source Files\builder</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dbclients\AbstractClient.cpp">
+      <Filter>Source Files\dbclients</Filter>
+    </ClCompile>
+    <ClCompile Include="src\query\SqliteLockControl.cpp">
+      <Filter>Source Files\query</Filter>
+    </ClCompile>
+    <ClCompile Include="src\qtdao.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ConnectionPool.cpp">
-      <Filter>Source Files\src</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\DbLoader.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="test\ConnectionPoolTest.cpp">
-      <Filter>Source Files\test</Filter>
-    </ClCompile>
-    <ClCompile Include="src\qtdao.cpp">
-      <Filter>Source Files\src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\query\BaseQuery.cpp">
-      <Filter>Source Files\src\query</Filter>
-    </ClCompile>
-    <ClCompile Include="test\query\BaseQueryTest.cpp">
-      <Filter>Source Files\test\query</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dbclients\SqliteClient.cpp">
-      <Filter>Source Files\src\dbclients</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dbclients\MysqlClient.cpp">
-      <Filter>Source Files\src\dbclients</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dbclients\SqlServerClient.cpp">
-      <Filter>Source Files\src\dbclients</Filter>
-    </ClCompile>
-    <ClCompile Include="test\loader\DbLoaderTest.cpp">
-      <Filter>Source Files\test\loader</Filter>
-    </ClCompile>
-    <ClCompile Include="src\condition\EntityCondition.cpp">
-      <Filter>Source Files\src\condition</Filter>
-    </ClCompile>
-    <ClCompile Include="test\condition\ConnectorTest.cpp">
-      <Filter>Source Files\test\condition</Filter>
-    </ClCompile>
-    <ClCompile Include="src\condition\ConditionConstraint.cpp">
-      <Filter>Source Files\src\condition</Filter>
-    </ClCompile>
-    <ClCompile Include="test\query\InsertTest.cpp">
-      <Filter>Source Files\test\query</Filter>
-    </ClCompile>
-    <ClCompile Include="src\condition\ConnectorData.cpp">
-      <Filter>Source Files\src\condition</Filter>
-    </ClCompile>
-    <ClCompile Include="test\query\SelectTest.cpp">
-      <Filter>Source Files\test\query</Filter>
-    </ClCompile>
-    <ClCompile Include="src\condition\FunctionCondition.cpp">
-      <Filter>Source Files\src\condition</Filter>
-    </ClCompile>
-    <ClCompile Include="test\query\UpdateTest.cpp">
-      <Filter>Source Files\test\query</Filter>
-    </ClCompile>
-    <ClCompile Include="test\query\DeleteTest.cpp">
-      <Filter>Source Files\test\query</Filter>
-    </ClCompile>
-    <ClCompile Include="test\query\JoinTest.cpp">
-      <Filter>Source Files\test\query</Filter>
-    </ClCompile>
-    <ClCompile Include="test\BaseTest.cpp">
-      <Filter>Source Files\test</Filter>
-    </ClCompile>
-    <ClCompile Include="test\query\InsertIntoSelectTest.cpp">
-      <Filter>Source Files\test\query</Filter>
-    </ClCompile>
-    <ClCompile Include="src\builder\BaseQueryBuilder.cpp">
-      <Filter>Source Files\src\builder</Filter>
-    </ClCompile>
-    <ClCompile Include="test\mysqlentity\MysqlEntityInclude.cpp">
-      <Filter>Source Files\test\mysqlentity</Filter>
-    </ClCompile>
-    <ClCompile Include="test\sqliteentity\SqliteEntityInclude.cpp">
-      <Filter>Source Files\test\sqliteentity</Filter>
-    </ClCompile>
-    <ClCompile Include="src\dbclients\AbstractClient.cpp">
-      <Filter>Source Files\src\dbclients</Filter>
-    </ClCompile>
-    <ClCompile Include="test\query\SqliteWriteSyncTest.cpp">
-      <Filter>Source Files\test\query</Filter>
-    </ClCompile>
-    <ClCompile Include="src\query\SqliteLockControl.cpp">
-      <Filter>Source Files\src\query</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ConnectionPool.h">
-      <Filter>Header Files\src</Filter>
+    <ClInclude Include="include\ConnectionPool.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\DbConfig.h">
-      <Filter>Header Files\src</Filter>
+    <ClInclude Include="include\dao.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\DbLoader.h">
-      <Filter>Header Files\src</Filter>
+    <ClInclude Include="include\DbConfig.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\DbExceptionHandler.h">
-      <Filter>Header Files\src</Filter>
+    <ClInclude Include="include\DbExceptionHandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="test\RunnableHandler.h">
-      <Filter>Header Files\test</Filter>
+    <ClInclude Include="include\DbLoader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\query\BaseQuery.h">
-      <Filter>Header Files\src\query</Filter>
+    <ClInclude Include="include\builder\BaseQueryBuilder.h">
+      <Filter>Header Files\builder</Filter>
     </ClInclude>
-    <ClInclude Include="src\dbclients\AbstractClient.h">
-      <Filter>Header Files\src\dbclients</Filter>
+    <ClInclude Include="include\builder\CountBuilder.h">
+      <Filter>Header Files\builder</Filter>
     </ClInclude>
-    <ClInclude Include="src\dbclients\SqliteClient.h">
-      <Filter>Header Files\src\dbclients</Filter>
+    <ClInclude Include="include\builder\DeleteBuilder.h">
+      <Filter>Header Files\builder</Filter>
     </ClInclude>
-    <ClInclude Include="src\dbclients\MysqlClient.h">
-      <Filter>Header Files\src\dbclients</Filter>
+    <ClInclude Include="include\builder\InsertBuilder.h">
+      <Filter>Header Files\builder</Filter>
     </ClInclude>
-    <ClInclude Include="src\dbclients\SqlServerClient.h">
-      <Filter>Header Files\src\dbclients</Filter>
+    <ClInclude Include="include\builder\InsertIntoSelectBuilder.h">
+      <Filter>Header Files\builder</Filter>
     </ClInclude>
-    <ClInclude Include="test\sqliteentity\SqliteTest1.h">
-      <Filter>Header Files\test\sqliteentity</Filter>
+    <ClInclude Include="include\builder\JoinBuilder.h">
+      <Filter>Header Files\builder</Filter>
     </ClInclude>
-    <ClInclude Include="test\sqliteentity\SqliteTest2.h">
-      <Filter>Header Files\test\sqliteentity</Filter>
+    <ClInclude Include="include\builder\RecursiveQueryBuilder.h">
+      <Filter>Header Files\builder</Filter>
     </ClInclude>
-    <ClInclude Include="src\condition\EntityField.h">
-      <Filter>Header Files\src\condition</Filter>
+    <ClInclude Include="include\builder\SelectBuilder.h">
+      <Filter>Header Files\builder</Filter>
     </ClInclude>
-    <ClInclude Include="src\condition\EntityCondition.h">
-      <Filter>Header Files\src\condition</Filter>
+    <ClInclude Include="include\builder\UpdateBuilder.h">
+      <Filter>Header Files\builder</Filter>
     </ClInclude>
-    <ClInclude Include="src\condition\Connector.h">
-      <Filter>Header Files\src\condition</Filter>
+    <ClInclude Include="include\condition\ConditionConstraint.h">
+      <Filter>Header Files\condition</Filter>
     </ClInclude>
-    <ClInclude Include="src\condition\ConditionConstraint.h">
-      <Filter>Header Files\src\condition</Filter>
+    <ClInclude Include="include\condition\ConditionOperator.h">
+      <Filter>Header Files\condition</Filter>
     </ClInclude>
-    <ClInclude Include="src\condition\ConditionOperator.h">
-      <Filter>Header Files\src\condition</Filter>
+    <ClInclude Include="include\condition\Connector.h">
+      <Filter>Header Files\condition</Filter>
     </ClInclude>
-    <ClInclude Include="src\query\Insert.h">
-      <Filter>Header Files\src\query</Filter>
+    <ClInclude Include="include\condition\ConnectorData.h">
+      <Filter>Header Files\condition</Filter>
     </ClInclude>
-    <ClInclude Include="src\dao.h">
-      <Filter>Header Files\src</Filter>
+    <ClInclude Include="include\condition\EntityCondition.h">
+      <Filter>Header Files\condition</Filter>
     </ClInclude>
-    <ClInclude Include="src\condition\EntityConditionData.h">
-      <Filter>Header Files\src\condition</Filter>
+    <ClInclude Include="include\condition\EntityConditionData.h">
+      <Filter>Header Files\condition</Filter>
     </ClInclude>
-    <ClInclude Include="src\condition\ConnectorData.h">
-      <Filter>Header Files\src\condition</Filter>
+    <ClInclude Include="include\condition\EntityField.h">
+      <Filter>Header Files\condition</Filter>
     </ClInclude>
-    <ClInclude Include="src\query\Select.h">
-      <Filter>Header Files\src\query</Filter>
+    <ClInclude Include="include\condition\FunctionCondition.h">
+      <Filter>Header Files\condition</Filter>
     </ClInclude>
-    <ClInclude Include="src\builder\InsertBuilder.h">
-      <Filter>Header Files\src\builder</Filter>
+    <ClInclude Include="include\condition\FunctionConditionData.h">
+      <Filter>Header Files\condition</Filter>
     </ClInclude>
-    <ClInclude Include="src\builder\SelectBuilder.h">
-      <Filter>Header Files\src\builder</Filter>
+    <ClInclude Include="include\dbclients\AbstractClient.h">
+      <Filter>Header Files\dbclients</Filter>
     </ClInclude>
-    <ClInclude Include="src\condition\FunctionConditionData.h">
-      <Filter>Header Files\src\condition</Filter>
+    <ClInclude Include="include\dbclients\MysqlClient.h">
+      <Filter>Header Files\dbclients</Filter>
     </ClInclude>
-    <ClInclude Include="src\builder\CountBuilder.h">
-      <Filter>Header Files\src\builder</Filter>
+    <ClInclude Include="include\dbclients\SqliteClient.h">
+      <Filter>Header Files\dbclients</Filter>
     </ClInclude>
-    <ClInclude Include="src\query\Update.h">
-      <Filter>Header Files\src\query</Filter>
+    <ClInclude Include="include\dbclients\SqlServerClient.h">
+      <Filter>Header Files\dbclients</Filter>
     </ClInclude>
-    <ClInclude Include="src\builder\UpdateBuilder.h">
-      <Filter>Header Files\src\builder</Filter>
+    <ClInclude Include="include\macro\macro.h">
+      <Filter>Header Files\macro</Filter>
     </ClInclude>
-    <ClInclude Include="src\builder\DeleteBuilder.h">
-      <Filter>Header Files\src\builder</Filter>
+    <ClInclude Include="include\query\BaseQuery.h">
+      <Filter>Header Files\query</Filter>
     </ClInclude>
-    <ClInclude Include="src\query\Delete.h">
-      <Filter>Header Files\src\query</Filter>
+    <ClInclude Include="include\query\Delete.h">
+      <Filter>Header Files\query</Filter>
     </ClInclude>
-    <ClInclude Include="src\builder\BaseQueryBuilder.h">
-      <Filter>Header Files\src\builder</Filter>
+    <ClInclude Include="include\query\ExplainInfo.h">
+      <Filter>Header Files\query</Filter>
     </ClInclude>
-    <ClInclude Include="src\builder\JoinBuilder.h">
-      <Filter>Header Files\src\builder</Filter>
+    <ClInclude Include="include\query\Insert.h">
+      <Filter>Header Files\query</Filter>
     </ClInclude>
-    <ClInclude Include="src\query\Join.h">
-      <Filter>Header Files\src\query</Filter>
+    <ClInclude Include="include\query\InsertIntoSelect.h">
+      <Filter>Header Files\query</Filter>
     </ClInclude>
-    <ClInclude Include="test\sqliteentity\SqliteTest3.h">
-      <Filter>Header Files\test\sqliteentity</Filter>
+    <ClInclude Include="include\query\Join.h">
+      <Filter>Header Files\query</Filter>
     </ClInclude>
-    <ClInclude Include="src\macro\macro.h">
-      <Filter>Header Files\src\macro</Filter>
+    <ClInclude Include="include\query\Select.h">
+      <Filter>Header Files\query</Filter>
     </ClInclude>
-    <ClInclude Include="test\BaseTest.h">
-      <Filter>Header Files\test</Filter>
+    <ClInclude Include="include\query\SqliteLockControl.h">
+      <Filter>Header Files\query</Filter>
     </ClInclude>
-    <ClInclude Include="src\builder\RecursiveQueryBuilder.h">
-      <Filter>Header Files\src\builder</Filter>
-    </ClInclude>
-    <ClInclude Include="src\query\InsertIntoSelect.h">
-      <Filter>Header Files\src\query</Filter>
-    </ClInclude>
-    <ClInclude Include="src\builder\InsertIntoSelectBuilder.h">
-      <Filter>Header Files\src\builder</Filter>
-    </ClInclude>
-    <ClInclude Include="test\mysqlentity\MysqlTest1.h">
-      <Filter>Header Files\test\mysqlentity</Filter>
-    </ClInclude>
-    <ClInclude Include="test\mysqlentity\MysqlTest2.h">
-      <Filter>Header Files\test\mysqlentity</Filter>
-    </ClInclude>
-    <ClInclude Include="test\mysqlentity\MysqlTest3.h">
-      <Filter>Header Files\test\mysqlentity</Filter>
-    </ClInclude>
-    <ClInclude Include="test\EngineModelSelector.h">
-      <Filter>Header Files\test</Filter>
-    </ClInclude>
-    <ClInclude Include="src\query\ExplainInfo.h">
-      <Filter>Header Files\src\query</Filter>
-    </ClInclude>
-    <ClInclude Include="src\query\SqliteLockControl.h">
-      <Filter>Header Files\src\query</Filter>
+    <ClInclude Include="include\query\Update.h">
+      <Filter>Header Files\query</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -323,12 +212,6 @@
     </Xml>
     <Xml Include="entity\mysql_entity.xml">
       <Filter>Header Files\entity</Filter>
-    </Xml>
-    <Xml Include="test\sqliteentity\sqlite_entity.xml">
-      <Filter>Header Files\test\sqliteentity</Filter>
-    </Xml>
-    <Xml Include="test\mysqlentity\mysql_entity.xml">
-      <Filter>Header Files\test\mysqlentity</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>
@@ -340,53 +223,6 @@
     </Xsd>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="test\ConnectionPoolTest.h">
-      <Filter>Header Files\test</Filter>
-    </QtMoc>
-    <QtMoc Include="test\query\BaseQueryTest.h">
-      <Filter>Header Files\test\query</Filter>
-    </QtMoc>
-    <QtMoc Include="test\loader\DbLoaderTest.h">
-      <Filter>Header Files\test\loader</Filter>
-    </QtMoc>
-    <QtMoc Include="test\condition\ConnectorTest.h">
-      <Filter>Header Files\test\condition</Filter>
-    </QtMoc>
-    <QtMoc Include="test\query\InsertTest.h">
-      <Filter>Header Files\test\query</Filter>
-    </QtMoc>
-    <QtMoc Include="test\query\SelectTest.h">
-      <Filter>Header Files\test\query</Filter>
-    </QtMoc>
-    <QtMoc Include="test\query\UpdateTest.h">
-      <Filter>Header Files\test\query</Filter>
-    </QtMoc>
-    <QtMoc Include="test\query\DeleteTest.h">
-      <Filter>Header Files\test\query</Filter>
-    </QtMoc>
-    <QtMoc Include="test\query\JoinTest.h">
-      <Filter>Header Files\test\query</Filter>
-    </QtMoc>
-    <QtMoc Include="test\query\InsertIntoSelectTest.h">
-      <Filter>Header Files\test\query</Filter>
-    </QtMoc>
-    <QtMoc Include="test\sqliteentity\SqliteConfig.h">
-      <Filter>Header Files\test\sqliteentity</Filter>
-    </QtMoc>
-    <QtMoc Include="test\mysqlentity\MysqlEntityInclude.h">
-      <Filter>Header Files\test\mysqlentity</Filter>
-    </QtMoc>
-    <QtMoc Include="test\sqliteentity\SqliteEntityInclude.h">
-      <Filter>Header Files\test\sqliteentity</Filter>
-    </QtMoc>
-    <QtMoc Include="test\mysqlentity\MysqlConfig.h">
-      <Filter>Header Files\test\mysqlentity</Filter>
-    </QtMoc>
-    <QtMoc Include="test\query\SqliteWriteSyncTest.h">
-      <Filter>Header Files\test\query</Filter>
-    </QtMoc>
-  </ItemGroup>
-  <ItemGroup>
     <QtRcc Include="resource.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
@@ -394,9 +230,6 @@
   <ItemGroup>
     <None Include="readme.md">
       <Filter>Resource Files</Filter>
-    </None>
-    <None Include="src\condition\FunctionCondition.h">
-      <Filter>Header Files\src\condition</Filter>
     </None>
     <None Include="todo\readme.md">
       <Filter>Resource Files</Filter>

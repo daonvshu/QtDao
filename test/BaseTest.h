@@ -6,7 +6,7 @@
 #include "mysqlentity/MysqlConfig.h"
 #include "EngineModelSelector.h"
 
-#include "../src/dao.h"
+#include "dao.h"
 
 class BaseTest : public QObject , public EngineModelSelector {
 public:

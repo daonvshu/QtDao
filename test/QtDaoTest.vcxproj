@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{12DB7924-B972-4B6A-89F0-6E21960135FB}</ProjectGuid>
+    <ProjectGuid>{41EEDACA-115B-42E6-A7AA-7A852B958A77}</ProjectGuid>
     <Keyword>QtVS_v303</Keyword>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">10.0.18362.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformVersion Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">10.0.18362.0</WindowsTargetPlatformVersion>
@@ -19,7 +19,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="Configuration">
@@ -43,23 +43,21 @@
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'">
-    <TargetName>qtdao_d</TargetName>
-    <OutDir>lib\x86\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'">
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>../include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <QtMoc>
-      <QtMocDir>$(IntDir)moc\%(RelativeDir)\</QtMocDir>
-    </QtMoc>
+    <Link>
+      <AdditionalLibraryDirectories>../lib/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>qtdao_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Win32'" Label="QtSettings">
     <QtInstall>msvc2017</QtInstall>
-    <QtModules>core;sql;</QtModules>
+    <QtModules>core;sql;testlib</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|Win32'" Label="QtSettings">
@@ -97,81 +95,57 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\builder\BaseQueryBuilder.cpp" />
-    <ClCompile Include="src\condition\ConditionConstraint.cpp" />
-    <ClCompile Include="src\condition\ConnectorData.cpp" />
-    <ClCompile Include="src\condition\EntityCondition.cpp" />
-    <ClCompile Include="src\condition\FunctionCondition.cpp" />
-    <ClCompile Include="src\ConnectionPool.cpp" />
-    <ClCompile Include="src\dbclients\AbstractClient.cpp" />
-    <ClCompile Include="src\dbclients\MysqlClient.cpp" />
-    <ClCompile Include="src\dbclients\SqliteClient.cpp" />
-    <ClCompile Include="src\dbclients\SqlServerClient.cpp" />
-    <ClCompile Include="src\DbLoader.cpp" />
-    <ClCompile Include="src\qtdao.cpp" />
-    <ClCompile Include="src\query\BaseQuery.cpp" />
-    <ClCompile Include="src\query\SqliteLockControl.cpp" />
+    <ClCompile Include="BaseTest.cpp" />
+    <ClCompile Include="condition\ConnectorTest.cpp" />
+    <ClCompile Include="ConnectionPoolTest.cpp" />
+    <ClCompile Include="loader\DbLoaderTest.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="mysqlentity\MysqlEntityInclude.cpp" />
+    <ClCompile Include="query\BaseQueryTest.cpp" />
+    <ClCompile Include="query\DeleteTest.cpp" />
+    <ClCompile Include="query\InsertIntoSelectTest.cpp" />
+    <ClCompile Include="query\InsertTest.cpp" />
+    <ClCompile Include="query\JoinTest.cpp" />
+    <ClCompile Include="query\SelectTest.cpp" />
+    <ClCompile Include="query\SqliteWriteSyncTest.cpp" />
+    <ClCompile Include="query\UpdateTest.cpp" />
+    <ClCompile Include="sqliteentity\SqliteEntityInclude.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\builder\BaseQueryBuilder.h" />
-    <ClInclude Include="include\builder\CountBuilder.h" />
-    <ClInclude Include="include\builder\DeleteBuilder.h" />
-    <ClInclude Include="include\builder\InsertBuilder.h" />
-    <ClInclude Include="include\builder\InsertIntoSelectBuilder.h" />
-    <ClInclude Include="include\builder\JoinBuilder.h" />
-    <ClInclude Include="include\builder\RecursiveQueryBuilder.h" />
-    <ClInclude Include="include\builder\SelectBuilder.h" />
-    <ClInclude Include="include\builder\UpdateBuilder.h" />
-    <ClInclude Include="include\condition\ConditionConstraint.h" />
-    <ClInclude Include="include\condition\ConditionOperator.h" />
-    <ClInclude Include="include\condition\Connector.h" />
-    <ClInclude Include="include\condition\ConnectorData.h" />
-    <ClInclude Include="include\condition\EntityCondition.h" />
-    <ClInclude Include="include\condition\EntityConditionData.h" />
-    <ClInclude Include="include\condition\EntityField.h" />
-    <ClInclude Include="include\condition\FunctionCondition.h" />
-    <ClInclude Include="include\condition\FunctionConditionData.h" />
-    <ClInclude Include="include\ConnectionPool.h" />
-    <ClInclude Include="include\dao.h" />
-    <ClInclude Include="include\dbclients\AbstractClient.h" />
-    <ClInclude Include="include\dbclients\MysqlClient.h" />
-    <ClInclude Include="include\dbclients\SqliteClient.h" />
-    <ClInclude Include="include\dbclients\SqlServerClient.h" />
-    <ClInclude Include="include\DbConfig.h" />
-    <ClInclude Include="include\DbExceptionHandler.h" />
-    <ClInclude Include="include\DbLoader.h" />
-    <ClInclude Include="include\macro\macro.h" />
-    <ClInclude Include="include\query\BaseQuery.h" />
-    <ClInclude Include="include\query\Delete.h" />
-    <ClInclude Include="include\query\ExplainInfo.h" />
-    <ClInclude Include="include\query\Insert.h" />
-    <ClInclude Include="include\query\InsertIntoSelect.h" />
-    <ClInclude Include="include\query\Join.h" />
-    <ClInclude Include="include\query\Select.h" />
-    <ClInclude Include="include\query\SqliteLockControl.h" />
-    <ClInclude Include="include\query\Update.h" />
-    <ClInclude Include="sqlite_entity.h">
-      <DependentUpon>entity\sqlite_entity.xsd</DependentUpon>
-    </ClInclude>
+    <QtMoc Include="condition\ConnectorTest.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="entity\mysql_entity.xml" />
-    <Xml Include="entity\sqlite_entity.xml" />
+    <QtMoc Include="loader\DbLoaderTest.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="entity\mysql_entity.xsd">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </Xsd>
-    <Xsd Include="entity\sqlite_entity.xsd">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </Xsd>
+    <Xml Include="mysqlentity\mysql_entity.xml" />
+    <Xml Include="sqliteentity\sqlite_entity.xml" />
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="resource.qrc" />
+    <QtMoc Include="mysqlentity\MysqlConfig.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="readme.md" />
-    <None Include="todo\readme.md" />
+    <QtMoc Include="mysqlentity\MysqlEntityInclude.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BaseTest.h" />
+    <QtMoc Include="ConnectionPoolTest.h" />
+    <ClInclude Include="mysqlentity\MysqlTest1.h" />
+    <ClInclude Include="mysqlentity\MysqlTest2.h" />
+    <ClInclude Include="mysqlentity\MysqlTest3.h" />
+    <ClInclude Include="sqliteentity\SqliteTest1.h" />
+    <ClInclude Include="sqliteentity\SqliteTest2.h" />
+    <ClInclude Include="sqliteentity\SqliteTest3.h" />
+    <QtMoc Include="sqliteentity\SqliteEntityInclude.h" />
+    <QtMoc Include="sqliteentity\SqliteConfig.h" />
+    <QtMoc Include="query\UpdateTest.h" />
+    <QtMoc Include="query\SqliteWriteSyncTest.h" />
+    <QtMoc Include="query\SelectTest.h" />
+    <QtMoc Include="query\JoinTest.h" />
+    <QtMoc Include="query\InsertTest.h" />
+    <QtMoc Include="query\InsertIntoSelectTest.h" />
+    <QtMoc Include="query\DeleteTest.h" />
+    <QtMoc Include="query\BaseQueryTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

@@ -3,7 +3,7 @@
 #include "MysqlTest2.h"
 #include "MysqlTest3.h"
 
-#include "../../src/DbLoader.h"
+#include "DbLoader.h"
 namespace DaoMysql {
     void MysqlEntityDelegate::createEntityTables() {
         DbLoader::getClient().createTables<ClientMysql, MysqlTest1, MysqlTest2, MysqlTest3>();

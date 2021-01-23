@@ -1,8 +1,8 @@
-﻿#include "AbstractClient.h"
+﻿#include "dbclients/AbstractClient.h"
 
-#include "../query/BaseQuery.h"
+#include "query/BaseQuery.h"
 
-#include "../DbExceptionHandler.h"
+#include "DbExceptionHandler.h"
 
 void AbstractClient::restoreData2NewTable(const QString& tbname, QStringList fields) {
     auto oldTbFields = getTagTableFields("tmp_" + tbname);

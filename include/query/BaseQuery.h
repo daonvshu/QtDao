@@ -9,10 +9,10 @@
 #include <qmutex.h>
 #include <qwaitcondition.h>
 
-#include "condition/Connector.h"
-#include "builder/BaseQueryBuilder.h"
+#include "../condition/Connector.h"
+#include "../builder/BaseQueryBuilder.h"
 
-#include "query/ExplainInfo.h"
+#include "../query/ExplainInfo.h"
 
 #include "SqliteLockControl.h"
 

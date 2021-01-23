@@ -3,7 +3,7 @@
 #include "SqliteTest2.h"
 #include "SqliteTest3.h"
 
-#include "../../src/DbLoader.h"
+#include "DbLoader.h"
 namespace DaoSqlite {
     void SqliteEntityDelegate::createEntityTables() {
         DbLoader::getClient().createTables<ClientSqlite, SqliteTest1, SqliteTest2, SqliteTest3>();

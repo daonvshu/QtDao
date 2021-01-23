@@ -1,6 +1,6 @@
-﻿#include "SqliteLockControl.h"
+﻿#include "query/SqliteLockControl.h"
 
-#include "../DbLoader.h"
+#include "DbLoader.h"
 
 #include <qthread.h>
 

@@ -1,9 +1,9 @@
 #include "BaseQueryTest.h"
 
-#include "../../src/DbLoader.h"
-#include "../../src/ConnectionPool.h"
+#include "DbLoader.h"
+#include "ConnectionPool.h"
 
-#include "../../src/query/BaseQuery.h"
+#include "query/BaseQuery.h"
 
 #include <QtTest>
 

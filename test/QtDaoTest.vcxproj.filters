@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Source Files\query">
+      <UniqueIdentifier>{50d53be7-4737-4ab7-ae96-7c9a851a7e51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\query">
+      <UniqueIdentifier>{c2b9c9b1-c62d-4cc0-afe0-e9b160aa5141}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\loader">
+      <UniqueIdentifier>{6312f5f9-1787-4547-80c5-facbf609b60b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\loader">
+      <UniqueIdentifier>{91a1b60b-752a-40f3-a0dc-269f7a398b1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\sqliteentity">
+      <UniqueIdentifier>{11b59312-025f-4563-860b-638de94940aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\condition">
+      <UniqueIdentifier>{6397f782-a6b0-4051-9c85-ec1aad1200b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\condition">
+      <UniqueIdentifier>{e5129d86-3fdb-4205-8969-ab765363d71e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\mysqlentity">
+      <UniqueIdentifier>{6ce33e4d-4198-4081-a595-10ac37d0ea4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sqliteentity">
+      <UniqueIdentifier>{ebdc0dcb-626c-41c7-b54d-7b4abb4630c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mysqlentity">
+      <UniqueIdentifier>{52c40159-446f-4dec-bb90-32eb4d32f5a5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="condition\ConnectorTest.cpp">
+      <Filter>Source Files\condition</Filter>
+    </ClCompile>
+    <ClCompile Include="loader\DbLoaderTest.cpp">
+      <Filter>Source Files\loader</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectionPoolTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sqliteentity\SqliteEntityInclude.cpp">
+      <Filter>Source Files\sqliteentity</Filter>
+    </ClCompile>
+    <ClCompile Include="query\SqliteWriteSyncTest.cpp">
+      <Filter>Source Files\query</Filter>
+    </ClCompile>
+    <ClCompile Include="query\UpdateTest.cpp">
+      <Filter>Source Files\query</Filter>
+    </ClCompile>
+    <ClCompile Include="query\SelectTest.cpp">
+      <Filter>Source Files\query</Filter>
+    </ClCompile>
+    <ClCompile Include="query\JoinTest.cpp">
+      <Filter>Source Files\query</Filter>
+    </ClCompile>
+    <ClCompile Include="query\InsertTest.cpp">
+      <Filter>Source Files\query</Filter>
+    </ClCompile>
+    <ClCompile Include="query\InsertIntoSelectTest.cpp">
+      <Filter>Source Files\query</Filter>
+    </ClCompile>
+    <ClCompile Include="query\DeleteTest.cpp">
+      <Filter>Source Files\query</Filter>
+    </ClCompile>
+    <ClCompile Include="query\BaseQueryTest.cpp">
+      <Filter>Source Files\query</Filter>
+    </ClCompile>
+    <ClCompile Include="mysqlentity\MysqlEntityInclude.cpp">
+      <Filter>Source Files\mysqlentity</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="condition\ConnectorTest.h">
+      <Filter>Header Files\condition</Filter>
+    </QtMoc>
+    <QtMoc Include="loader\DbLoaderTest.h">
+      <Filter>Header Files\loader</Filter>
+    </QtMoc>
+    <QtMoc Include="mysqlentity\MysqlConfig.h">
+      <Filter>Header Files\mysqlentity</Filter>
+    </QtMoc>
+    <QtMoc Include="mysqlentity\MysqlEntityInclude.h">
+      <Filter>Header Files\mysqlentity</Filter>
+    </QtMoc>
+    <QtMoc Include="query\BaseQueryTest.h">
+      <Filter>Header Files\query</Filter>
+    </QtMoc>
+    <QtMoc Include="query\DeleteTest.h">
+      <Filter>Header Files\query</Filter>
+    </QtMoc>
+    <QtMoc Include="query\InsertIntoSelectTest.h">
+      <Filter>Header Files\query</Filter>
+    </QtMoc>
+    <QtMoc Include="query\InsertTest.h">
+      <Filter>Header Files\query</Filter>
+    </QtMoc>
+    <QtMoc Include="query\JoinTest.h">
+      <Filter>Header Files\query</Filter>
+    </QtMoc>
+    <QtMoc Include="query\SelectTest.h">
+      <Filter>Header Files\query</Filter>
+    </QtMoc>
+    <QtMoc Include="query\SqliteWriteSyncTest.h">
+      <Filter>Header Files\query</Filter>
+    </QtMoc>
+    <QtMoc Include="query\UpdateTest.h">
+      <Filter>Header Files\query</Filter>
+    </QtMoc>
+    <QtMoc Include="sqliteentity\SqliteConfig.h">
+      <Filter>Header Files\sqliteentity</Filter>
+    </QtMoc>
+    <QtMoc Include="sqliteentity\SqliteEntityInclude.h">
+      <Filter>Header Files\sqliteentity</Filter>
+    </QtMoc>
+    <QtMoc Include="ConnectionPoolTest.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="mysqlentity\mysql_entity.xml">
+      <Filter>Header Files\mysqlentity</Filter>
+    </Xml>
+    <Xml Include="sqliteentity\sqlite_entity.xml">
+      <Filter>Header Files\sqliteentity</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="mysqlentity\MysqlTest1.h">
+      <Filter>Header Files\mysqlentity</Filter>
+    </ClInclude>
+    <ClInclude Include="mysqlentity\MysqlTest2.h">
+      <Filter>Header Files\mysqlentity</Filter>
+    </ClInclude>
+    <ClInclude Include="mysqlentity\MysqlTest3.h">
+      <Filter>Header Files\mysqlentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqliteentity\SqliteTest1.h">
+      <Filter>Header Files\sqliteentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqliteentity\SqliteTest2.h">
+      <Filter>Header Files\sqliteentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqliteentity\SqliteTest3.h">
+      <Filter>Header Files\sqliteentity</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

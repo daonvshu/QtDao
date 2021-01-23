@@ -1,10 +1,10 @@
-﻿#include "MysqlClient.h"
+﻿#include "dbclients/MysqlClient.h"
 
-#include "../DbLoader.h"
+#include "DbLoader.h"
 
-#include "../ConnectionPool.h"
+#include "ConnectionPool.h"
 
-#include "../query/BaseQuery.h"
+#include "query/BaseQuery.h"
 
 #include <QSqlQuery>
 #include <QSqlError>

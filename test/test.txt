@@ -1,0 +1,8 @@
+********* Start testing of SqliteWriteSyncTest *********
+Config: Using QtTest library 5.12.3, Qt 5.12.3 (i386-little_endian-ilp32 shared (dynamic) debug build; by MSVC 2017)
+PASS   : SqliteWriteSyncTest::initTestCase()
+PASS   : SqliteWriteSyncTest::testInsertWriteLock()
+PASS   : SqliteWriteSyncTest::testTranscationWriteLock()
+PASS   : SqliteWriteSyncTest::cleanupTestCase()
+Totals: 4 passed, 0 failed, 0 skipped, 0 blacklisted, 679ms
+********* Finished testing of SqliteWriteSyncTest *********

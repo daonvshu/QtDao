@@ -5,7 +5,7 @@
 #include <qvariant.h>
 #include <qdatetime.h>
 
-#include "../../src/condition/EntityField.h"
+#include "condition/EntityField.h"
 
 class MysqlTest3 {
 private:

@@ -1,4 +1,4 @@
-#include "EntityCondition.h"
+#include "condition/EntityCondition.h"
 
 QList<FieldInfo> EntityConditionData::getUsedFields() {
     return fields;

@@ -1,9 +1,9 @@
-#include "BaseQuery.h"
+#include "query/BaseQuery.h"
 
-#include "../ConnectionPool.h"
-#include "../DbExceptionHandler.h"
+#include "ConnectionPool.h"
+#include "DbExceptionHandler.h"
 
-#include "../DbLoader.h"
+#include "DbLoader.h"
 
 #include <iostream>
 #include <QThread>

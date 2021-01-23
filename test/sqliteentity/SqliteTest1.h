@@ -4,7 +4,7 @@
 #include <qobject.h>
 #include <qvariant.h>
 
-#include "../../src/condition/EntityField.h"
+#include "condition/EntityField.h"
 
 class SqliteTest1 {
 private:

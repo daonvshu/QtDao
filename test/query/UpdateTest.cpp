@@ -2,7 +2,7 @@
 
 #include <QtTest>
 
-#include "../../src/dao.h"
+#include "dao.h"
 
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
