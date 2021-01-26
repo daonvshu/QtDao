@@ -9,8 +9,8 @@
   <tb name="SqliteTest2">
     <item name="id" type="long" default="-1" constraints="primary key" autoincrement="true" note="自增长主键"/>
     <item name="name" type="text" constraints="not null"/>
-    <item name="number" type="int" default="0"/>
-    <item name="number2" type="int"/>
+    <item name="number" type="int" default="0" jsonkey="json_number"/>
+    <item name="number2" type="int" jsonkey="json_number2"/>
     <item name="varianttype" type="variant" note="自定义类型"/>
     <item name="nametmp" type="text" transient="true" note="临时类型" />
     <index type="unique index">
