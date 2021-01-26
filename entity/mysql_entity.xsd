@@ -55,6 +55,7 @@
                   <xs:attribute name="autoincrement" type="xs:boolean" use="optional"/>
                   <xs:attribute name="transient" type="xs:boolean" use="optional"/>
                   <xs:attribute name="jsonkey" type="xs:string" use="optional" />
+                  <xs:attribute name="jsontimeformat" type="xs:string" use="optional" />
                 </xs:complexType>
               </xs:element>
               <xs:element minOccurs="0" maxOccurs="unbounded" name="index">

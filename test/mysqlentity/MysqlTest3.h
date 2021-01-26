@@ -4,6 +4,7 @@
 #include <qobject.h>
 #include <qvariant.h>
 #include <qdatetime.h>
+#include <qjsonobject.h>
 
 #include "condition/EntityField.h"
 
@@ -228,28 +229,28 @@ public:
         EntityField<qint64> tbi2 = EntityField<qint64>("tbi2", "ts_mysqltest3");
         EntityField<QString> name = EntityField<QString>("name", "ts_mysqltest3");
         EntityField<int> size = EntityField<int>("size", "ts_mysqltest3");
-        EntityField<char> fTinyInt = EntityField<char>("fTinyInt", "ts_mysqltest3");
-        EntityField<short> fSmallInt = EntityField<short>("fSmallInt", "ts_mysqltest3");
-        EntityField<int> fMediumInt = EntityField<int>("fMediumInt", "ts_mysqltest3");
-        EntityField<int> fInt = EntityField<int>("fInt", "ts_mysqltest3");
-        EntityField<qint64> fBigInt = EntityField<qint64>("fBigInt", "ts_mysqltest3");
-        EntityField<double> fFloat = EntityField<double>("fFloat", "ts_mysqltest3");
-        EntityField<double> fDouble = EntityField<double>("fDouble", "ts_mysqltest3");
-        EntityField<double> fDecimal = EntityField<double>("fDecimal", "ts_mysqltest3");
-        EntityField<QDate> fDate = EntityField<QDate>("fDate", "ts_mysqltest3");
-        EntityField<QString> fTime = EntityField<QString>("fTime", "ts_mysqltest3");
-        EntityField<QDateTime> fDateTime = EntityField<QDateTime>("fDateTime", "ts_mysqltest3");
-        EntityField<QDateTime> fTimestamp = EntityField<QDateTime>("fTimestamp", "ts_mysqltest3");
-        EntityField<QChar> fChar = EntityField<QChar>("fChar", "ts_mysqltest3");
-        EntityField<QString> fVarChar = EntityField<QString>("fVarChar", "ts_mysqltest3");
-        EntityField<QByteArray> fTinyBlob = EntityField<QByteArray>("fTinyBlob", "ts_mysqltest3");
-        EntityField<QString> fTinyText = EntityField<QString>("fTinyText", "ts_mysqltest3");
-        EntityField<QByteArray> fBlob = EntityField<QByteArray>("fBlob", "ts_mysqltest3");
-        EntityField<QString> fText = EntityField<QString>("fText", "ts_mysqltest3");
-        EntityField<QByteArray> fMediumBlob = EntityField<QByteArray>("fMediumBlob", "ts_mysqltest3");
-        EntityField<QString> fMediumText = EntityField<QString>("fMediumText", "ts_mysqltest3");
-        EntityField<QByteArray> fLongBlob = EntityField<QByteArray>("fLongBlob", "ts_mysqltest3");
-        EntityField<QString> fLongText = EntityField<QString>("fLongText", "ts_mysqltest3");
+        EntityField<char> f_tiny_int = EntityField<char>("f_tiny_int", "ts_mysqltest3");
+        EntityField<short> f_small_int = EntityField<short>("f_small_int", "ts_mysqltest3");
+        EntityField<int> f_medium_int = EntityField<int>("f_medium_int", "ts_mysqltest3");
+        EntityField<int> f_int = EntityField<int>("f_int", "ts_mysqltest3");
+        EntityField<qint64> f_big_int = EntityField<qint64>("f_big_int", "ts_mysqltest3");
+        EntityField<double> f_float = EntityField<double>("f_float", "ts_mysqltest3");
+        EntityField<double> f_double = EntityField<double>("f_double", "ts_mysqltest3");
+        EntityField<double> f_decimal = EntityField<double>("f_decimal", "ts_mysqltest3");
+        EntityField<QDate> f_date = EntityField<QDate>("f_date", "ts_mysqltest3");
+        EntityField<QString> f_time = EntityField<QString>("f_time", "ts_mysqltest3");
+        EntityField<QDateTime> f_date_time = EntityField<QDateTime>("f_date_time", "ts_mysqltest3");
+        EntityField<QDateTime> f_timestamp = EntityField<QDateTime>("f_timestamp", "ts_mysqltest3");
+        EntityField<QChar> f_char = EntityField<QChar>("f_char", "ts_mysqltest3");
+        EntityField<QString> f_var_char = EntityField<QString>("f_var_char", "ts_mysqltest3");
+        EntityField<QByteArray> f_tiny_blob = EntityField<QByteArray>("f_tiny_blob", "ts_mysqltest3");
+        EntityField<QString> f_tiny_text = EntityField<QString>("f_tiny_text", "ts_mysqltest3");
+        EntityField<QByteArray> f_blob = EntityField<QByteArray>("f_blob", "ts_mysqltest3");
+        EntityField<QString> f_text = EntityField<QString>("f_text", "ts_mysqltest3");
+        EntityField<QByteArray> f_medium_blob = EntityField<QByteArray>("f_medium_blob", "ts_mysqltest3");
+        EntityField<QString> f_medium_text = EntityField<QString>("f_medium_text", "ts_mysqltest3");
+        EntityField<QByteArray> f_long_blob = EntityField<QByteArray>("f_long_blob", "ts_mysqltest3");
+        EntityField<QString> f_long_text = EntityField<QString>("f_long_text", "ts_mysqltest3");
 
     protected:
         void reset(const QString& tbName) {
@@ -258,28 +259,28 @@ public:
             tbi2 = EntityField<qint64>("tbi2", tbName);
             name = EntityField<QString>("name", tbName);
             size = EntityField<int>("size", tbName);
-            fTinyInt = EntityField<char>("fTinyInt", tbName);
-            fSmallInt = EntityField<short>("fSmallInt", tbName);
-            fMediumInt = EntityField<int>("fMediumInt", tbName);
-            fInt = EntityField<int>("fInt", tbName);
-            fBigInt = EntityField<qint64>("fBigInt", tbName);
-            fFloat = EntityField<double>("fFloat", tbName);
-            fDouble = EntityField<double>("fDouble", tbName);
-            fDecimal = EntityField<double>("fDecimal", tbName);
-            fDate = EntityField<QDate>("fDate", tbName);
-            fTime = EntityField<QString>("fTime", tbName);
-            fDateTime = EntityField<QDateTime>("fDateTime", tbName);
-            fTimestamp = EntityField<QDateTime>("fTimestamp", tbName);
-            fChar = EntityField<QChar>("fChar", tbName);
-            fVarChar = EntityField<QString>("fVarChar", tbName);
-            fTinyBlob = EntityField<QByteArray>("fTinyBlob", tbName);
-            fTinyText = EntityField<QString>("fTinyText", tbName);
-            fBlob = EntityField<QByteArray>("fBlob", tbName);
-            fText = EntityField<QString>("fText", tbName);
-            fMediumBlob = EntityField<QByteArray>("fMediumBlob", tbName);
-            fMediumText = EntityField<QString>("fMediumText", tbName);
-            fLongBlob = EntityField<QByteArray>("fLongBlob", tbName);
-            fLongText = EntityField<QString>("fLongText", tbName);
+            f_tiny_int = EntityField<char>("f_tiny_int", tbName);
+            f_small_int = EntityField<short>("f_small_int", tbName);
+            f_medium_int = EntityField<int>("f_medium_int", tbName);
+            f_int = EntityField<int>("f_int", tbName);
+            f_big_int = EntityField<qint64>("f_big_int", tbName);
+            f_float = EntityField<double>("f_float", tbName);
+            f_double = EntityField<double>("f_double", tbName);
+            f_decimal = EntityField<double>("f_decimal", tbName);
+            f_date = EntityField<QDate>("f_date", tbName);
+            f_time = EntityField<QString>("f_time", tbName);
+            f_date_time = EntityField<QDateTime>("f_date_time", tbName);
+            f_timestamp = EntityField<QDateTime>("f_timestamp", tbName);
+            f_char = EntityField<QChar>("f_char", tbName);
+            f_var_char = EntityField<QString>("f_var_char", tbName);
+            f_tiny_blob = EntityField<QByteArray>("f_tiny_blob", tbName);
+            f_tiny_text = EntityField<QString>("f_tiny_text", tbName);
+            f_blob = EntityField<QByteArray>("f_blob", tbName);
+            f_text = EntityField<QString>("f_text", tbName);
+            f_medium_blob = EntityField<QByteArray>("f_medium_blob", tbName);
+            f_medium_text = EntityField<QString>("f_medium_text", tbName);
+            f_long_blob = EntityField<QByteArray>("f_long_blob", tbName);
+            f_long_text = EntityField<QString>("f_long_text", tbName);
         }
     };
 
@@ -311,28 +312,28 @@ public:
                 << "tbi2"
                 << "name"
                 << "size"
-                << "fTinyInt"
-                << "fSmallInt"
-                << "fMediumInt"
-                << "fInt"
-                << "fBigInt"
-                << "fFloat"
-                << "fDouble"
-                << "fDecimal"
-                << "fDate"
-                << "fTime"
-                << "fDateTime"
-                << "fTimestamp"
-                << "fChar"
-                << "fVarChar"
-                << "fTinyBlob"
-                << "fTinyText"
-                << "fBlob"
-                << "fText"
-                << "fMediumBlob"
-                << "fMediumText"
-                << "fLongBlob"
-                << "fLongText";
+                << "f_tiny_int"
+                << "f_small_int"
+                << "f_medium_int"
+                << "f_int"
+                << "f_big_int"
+                << "f_float"
+                << "f_double"
+                << "f_decimal"
+                << "f_date"
+                << "f_time"
+                << "f_date_time"
+                << "f_timestamp"
+                << "f_char"
+                << "f_var_char"
+                << "f_tiny_blob"
+                << "f_tiny_text"
+                << "f_blob"
+                << "f_text"
+                << "f_medium_blob"
+                << "f_medium_text"
+                << "f_long_blob"
+                << "f_long_text";
         }
 
         static QStringList getFieldsWithoutAutoIncrement() {
@@ -341,28 +342,28 @@ public:
                 << "tbi2"
                 << "name"
                 << "size"
-                << "fTinyInt"
-                << "fSmallInt"
-                << "fMediumInt"
-                << "fInt"
-                << "fBigInt"
-                << "fFloat"
-                << "fDouble"
-                << "fDecimal"
-                << "fDate"
-                << "fTime"
-                << "fDateTime"
-                << "fTimestamp"
-                << "fChar"
-                << "fVarChar"
-                << "fTinyBlob"
-                << "fTinyText"
-                << "fBlob"
-                << "fText"
-                << "fMediumBlob"
-                << "fMediumText"
-                << "fLongBlob"
-                << "fLongText";
+                << "f_tiny_int"
+                << "f_small_int"
+                << "f_medium_int"
+                << "f_int"
+                << "f_big_int"
+                << "f_float"
+                << "f_double"
+                << "f_decimal"
+                << "f_date"
+                << "f_time"
+                << "f_date_time"
+                << "f_timestamp"
+                << "f_char"
+                << "f_var_char"
+                << "f_tiny_blob"
+                << "f_tiny_text"
+                << "f_blob"
+                << "f_text"
+                << "f_medium_blob"
+                << "f_medium_text"
+                << "f_long_blob"
+                << "f_long_text";
         }
 
         static QStringList getFieldsType() {
@@ -372,28 +373,28 @@ public:
                 << QStringLiteral("tbi2 bigint default -1 comment '绑定到MysqlTest2 id'")
                 << QStringLiteral("name text comment ''")
                 << QStringLiteral("size int comment ''")
-                << QStringLiteral("fTinyInt tinyint default 0 comment 'type tinyint'")
-                << QStringLiteral("fSmallInt smallint default 0 comment 'type small int'")
-                << QStringLiteral("fMediumInt mediumint default 0 comment 'type medium int'")
-                << QStringLiteral("fInt int(7) default 0 comment 'type int(7)'")
-                << QStringLiteral("fBigInt bigint default 0 comment 'type big int'")
-                << QStringLiteral("fFloat float default 0 comment 'type float'")
-                << QStringLiteral("fDouble double default 0 comment 'type double'")
-                << QStringLiteral("fDecimal decimal(6,4) default 0 comment 'type decimal(6,4)'")
-                << QStringLiteral("fDate date comment 'type date'")
-                << QStringLiteral("fTime time comment 'type time'")
-                << QStringLiteral("fDateTime datetime comment 'type date time'")
-                << QStringLiteral("fTimestamp timestamp comment 'type timestamp'")
-                << QStringLiteral("fChar char default 'a' comment 'type char'")
-                << QStringLiteral("fVarChar varchar(12) default 'a' comment 'type varchar(12)'")
-                << QStringLiteral("fTinyBlob tinyblob comment 'type tiny blob'")
-                << QStringLiteral("fTinyText tinytext comment 'type tiny text'")
-                << QStringLiteral("fBlob blob comment 'type blob'")
-                << QStringLiteral("fText text comment 'type text'")
-                << QStringLiteral("fMediumBlob mediumblob comment 'type medium blob'")
-                << QStringLiteral("fMediumText mediumtext comment 'type medium text'")
-                << QStringLiteral("fLongBlob longblob comment 'type long blob'")
-                << QStringLiteral("fLongText longtext comment 'type long text'");
+                << QStringLiteral("f_tiny_int tinyint default 0 comment 'type tinyint'")
+                << QStringLiteral("f_small_int smallint default 0 comment 'type small int'")
+                << QStringLiteral("f_medium_int mediumint default 0 comment 'type medium int'")
+                << QStringLiteral("f_int int(7) default 0 comment 'type int(7)'")
+                << QStringLiteral("f_big_int bigint default 0 comment 'type big int'")
+                << QStringLiteral("f_float float default 0 comment 'type float'")
+                << QStringLiteral("f_double double default 0 comment 'type double'")
+                << QStringLiteral("f_decimal decimal(6,4) default 0 comment 'type decimal(6,4)'")
+                << QStringLiteral("f_date date comment 'type date'")
+                << QStringLiteral("f_time time comment 'type time'")
+                << QStringLiteral("f_date_time datetime comment 'type date time'")
+                << QStringLiteral("f_timestamp timestamp comment 'type timestamp'")
+                << QStringLiteral("f_char char default 'a' comment 'type char'")
+                << QStringLiteral("f_var_char varchar(12) default 'a' comment 'type varchar(12)'")
+                << QStringLiteral("f_tiny_blob tinyblob comment 'type tiny blob'")
+                << QStringLiteral("f_tiny_text tinytext comment 'type tiny text'")
+                << QStringLiteral("f_blob blob comment 'type blob'")
+                << QStringLiteral("f_text text comment 'type text'")
+                << QStringLiteral("f_medium_blob mediumblob comment 'type medium blob'")
+                << QStringLiteral("f_medium_text mediumtext comment 'type medium text'")
+                << QStringLiteral("f_long_blob longblob comment 'type long blob'")
+                << QStringLiteral("f_long_text longtext comment 'type long text'");
         }
 
         static QStringList getPrimaryKeys() {
@@ -460,70 +461,70 @@ public:
             if (target == "size") {
                 return entity.size;
             }
-            if (target == "fTinyInt") {
+            if (target == "f_tiny_int") {
                 return entity.fTinyInt;
             }
-            if (target == "fSmallInt") {
+            if (target == "f_small_int") {
                 return entity.fSmallInt;
             }
-            if (target == "fMediumInt") {
+            if (target == "f_medium_int") {
                 return entity.fMediumInt;
             }
-            if (target == "fInt") {
+            if (target == "f_int") {
                 return entity.fInt;
             }
-            if (target == "fBigInt") {
+            if (target == "f_big_int") {
                 return entity.fBigInt;
             }
-            if (target == "fFloat") {
+            if (target == "f_float") {
                 return entity.fFloat;
             }
-            if (target == "fDouble") {
+            if (target == "f_double") {
                 return entity.fDouble;
             }
-            if (target == "fDecimal") {
+            if (target == "f_decimal") {
                 return entity.fDecimal;
             }
-            if (target == "fDate") {
+            if (target == "f_date") {
                 return entity.fDate;
             }
-            if (target == "fTime") {
+            if (target == "f_time") {
                 return entity.fTime;
             }
-            if (target == "fDateTime") {
+            if (target == "f_date_time") {
                 return entity.fDateTime;
             }
-            if (target == "fTimestamp") {
+            if (target == "f_timestamp") {
                 return entity.fTimestamp;
             }
-            if (target == "fChar") {
+            if (target == "f_char") {
                 return entity.fChar;
             }
-            if (target == "fVarChar") {
+            if (target == "f_var_char") {
                 return entity.fVarChar;
             }
-            if (target == "fTinyBlob") {
+            if (target == "f_tiny_blob") {
                 return entity.fTinyBlob;
             }
-            if (target == "fTinyText") {
+            if (target == "f_tiny_text") {
                 return entity.fTinyText;
             }
-            if (target == "fBlob") {
+            if (target == "f_blob") {
                 return entity.fBlob;
             }
-            if (target == "fText") {
+            if (target == "f_text") {
                 return entity.fText;
             }
-            if (target == "fMediumBlob") {
+            if (target == "f_medium_blob") {
                 return entity.fMediumBlob;
             }
-            if (target == "fMediumText") {
+            if (target == "f_medium_text") {
                 return entity.fMediumText;
             }
-            if (target == "fLongBlob") {
+            if (target == "f_long_blob") {
                 return entity.fLongBlob;
             }
-            if (target == "fLongText") {
+            if (target == "f_long_text") {
                 return entity.fLongText;
             }
             return entity.__extra.value(target);
@@ -544,53 +545,121 @@ public:
                 entity.name = value.value<QString>();
             } else if (target == "size") {
                 entity.size = value.value<int>();
-            } else if (target == "fTinyInt") {
+            } else if (target == "f_tiny_int") {
                 entity.fTinyInt = value.value<char>();
-            } else if (target == "fSmallInt") {
+            } else if (target == "f_small_int") {
                 entity.fSmallInt = value.value<short>();
-            } else if (target == "fMediumInt") {
+            } else if (target == "f_medium_int") {
                 entity.fMediumInt = value.value<int>();
-            } else if (target == "fInt") {
+            } else if (target == "f_int") {
                 entity.fInt = value.value<int>();
-            } else if (target == "fBigInt") {
+            } else if (target == "f_big_int") {
                 entity.fBigInt = value.value<qint64>();
-            } else if (target == "fFloat") {
+            } else if (target == "f_float") {
                 entity.fFloat = value.value<double>();
-            } else if (target == "fDouble") {
+            } else if (target == "f_double") {
                 entity.fDouble = value.value<double>();
-            } else if (target == "fDecimal") {
+            } else if (target == "f_decimal") {
                 entity.fDecimal = value.value<double>();
-            } else if (target == "fDate") {
+            } else if (target == "f_date") {
                 entity.fDate = value.value<QDate>();
-            } else if (target == "fTime") {
+            } else if (target == "f_time") {
                 entity.fTime = value.value<QString>();
-            } else if (target == "fDateTime") {
+            } else if (target == "f_date_time") {
                 entity.fDateTime = value.value<QDateTime>();
-            } else if (target == "fTimestamp") {
+            } else if (target == "f_timestamp") {
                 entity.fTimestamp = value.value<QDateTime>();
-            } else if (target == "fChar") {
+            } else if (target == "f_char") {
                 entity.fChar = value.value<QChar>();
-            } else if (target == "fVarChar") {
+            } else if (target == "f_var_char") {
                 entity.fVarChar = value.value<QString>();
-            } else if (target == "fTinyBlob") {
+            } else if (target == "f_tiny_blob") {
                 entity.fTinyBlob = value.value<QByteArray>();
-            } else if (target == "fTinyText") {
+            } else if (target == "f_tiny_text") {
                 entity.fTinyText = value.value<QString>();
-            } else if (target == "fBlob") {
+            } else if (target == "f_blob") {
                 entity.fBlob = value.value<QByteArray>();
-            } else if (target == "fText") {
+            } else if (target == "f_text") {
                 entity.fText = value.value<QString>();
-            } else if (target == "fMediumBlob") {
+            } else if (target == "f_medium_blob") {
                 entity.fMediumBlob = value.value<QByteArray>();
-            } else if (target == "fMediumText") {
+            } else if (target == "f_medium_text") {
                 entity.fMediumText = value.value<QString>();
-            } else if (target == "fLongBlob") {
+            } else if (target == "f_long_blob") {
                 entity.fLongBlob = value.value<QByteArray>();
-            } else if (target == "fLongText") {
+            } else if (target == "f_long_text") {
                 entity.fLongText = value.value<QString>();
             } else {
                 entity.__putExtra(target, value);
             }
+        }
+
+        static MysqlTest3 fromJson(const QJsonObject& object) {
+            MysqlTest3 entity;
+            entity.id = object.value("id").toVariant().value<qint64>();
+            entity.tbi1 = object.value("tbi1").toVariant().value<qint64>();
+            entity.tbi2 = object.value("tbi2").toVariant().value<qint64>();
+            entity.name = object.value("name").toVariant().value<QString>();
+            entity.size = object.value("size").toVariant().value<int>();
+            entity.fTinyInt = object.value("f_tiny_int").toVariant().value<char>();
+            entity.fSmallInt = object.value("f_small_int").toVariant().value<short>();
+            entity.fMediumInt = object.value("f_medium_int").toVariant().value<int>();
+            entity.fInt = object.value("f_int").toVariant().value<int>();
+            entity.fBigInt = object.value("f_big_int").toVariant().value<qint64>();
+            entity.fFloat = object.value("f_float").toVariant().value<double>();
+            entity.fDouble = object.value("f_double").toVariant().value<double>();
+            entity.fDecimal = object.value("f_decimal").toVariant().value<double>();
+            entity.fDate = QDate::fromString(object.value("f_date").toString(), "yyyy-MM-dd");
+            entity.fTime = object.value("f_time").toVariant().value<QString>();
+            entity.fDateTime = QDateTime::fromString(object.value("f_date_time").toString(), "yyyy-MM-dd HH:mm:ss");
+            entity.fTimestamp = QDateTime::fromString(object.value("f_timestamp").toString(), "yyyy-MM-dd HH:mm:ss");
+            entity.fChar = object.value("f_char").toVariant().value<QChar>();
+            entity.fVarChar = object.value("f_var_char").toVariant().value<QString>();
+            entity.fTinyBlob = QByteArray::fromBase64(object.value("f_tiny_blob").toString().toLatin1());
+            entity.fTinyText = object.value("f_tiny_text").toVariant().value<QString>();
+            entity.fBlob = QByteArray::fromBase64(object.value("f_blob").toString().toLatin1());
+            entity.fText = object.value("f_text").toVariant().value<QString>();
+            entity.fMediumBlob = QByteArray::fromBase64(object.value("f_medium_blob").toString().toLatin1());
+            entity.fMediumText = object.value("f_medium_text").toVariant().value<QString>();
+            entity.fLongBlob = QByteArray::fromBase64(object.value("f_long_blob").toString().toLatin1());
+            entity.fLongText = object.value("f_long_text").toVariant().value<QString>();
+            return entity;
+        }
+
+        static QJsonObject toJson(const MysqlTest3& entity, QStringList excludeKeys = QStringList()) {
+            QJsonObject object;
+            object.insert("id", entity.id);
+            object.insert("tbi1", entity.tbi1);
+            object.insert("tbi2", entity.tbi2);
+            object.insert("name", entity.name);
+            object.insert("size", entity.size);
+            object.insert("f_tiny_int", entity.fTinyInt);
+            object.insert("f_small_int", entity.fSmallInt);
+            object.insert("f_medium_int", entity.fMediumInt);
+            object.insert("f_int", entity.fInt);
+            object.insert("f_big_int", entity.fBigInt);
+            object.insert("f_float", entity.fFloat);
+            object.insert("f_double", entity.fDouble);
+            object.insert("f_decimal", entity.fDecimal);
+            object.insert("f_date", entity.fDate.toString("yyyy-MM-dd"));
+            object.insert("f_time", entity.fTime);
+            object.insert("f_date_time", entity.fDateTime.toString("yyyy-MM-dd HH:mm:ss"));
+            object.insert("f_timestamp", entity.fTimestamp.toString("yyyy-MM-dd HH:mm:ss"));
+            object.insert("f_char", entity.fChar.toLatin1());
+            object.insert("f_var_char", entity.fVarChar);
+            object.insert("f_tiny_blob", QString::fromLatin1(entity.fTinyBlob.toBase64()));
+            object.insert("f_tiny_text", entity.fTinyText);
+            object.insert("f_blob", QString::fromLatin1(entity.fBlob.toBase64()));
+            object.insert("f_text", entity.fText);
+            object.insert("f_medium_blob", QString::fromLatin1(entity.fMediumBlob.toBase64()));
+            object.insert("f_medium_text", entity.fMediumText);
+            object.insert("f_long_blob", QString::fromLatin1(entity.fLongBlob.toBase64()));
+            object.insert("f_long_text", entity.fLongText);
+
+            for (const auto& key : excludeKeys) {
+                object.remove(key);
+            }
+            return object;
         }
     };
 

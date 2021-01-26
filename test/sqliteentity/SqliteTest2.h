@@ -3,6 +3,7 @@
 
 #include <qobject.h>
 #include <qvariant.h>
+#include <qjsonobject.h>
 
 #include "condition/EntityField.h"
 
@@ -183,6 +184,30 @@ public:
             } else {
                 entity.__putExtra(target, value);
             }
+        }
+
+        static SqliteTest2 fromJson(const QJsonObject& object) {
+            SqliteTest2 entity;
+            entity.id = object.value("id").toVariant().value<qint64>();
+            entity.name = object.value("name").toVariant().value<QString>();
+            entity.number = object.value("number").toVariant().value<int>();
+            entity.number2 = object.value("number2").toVariant().value<int>();
+            entity.varianttype = object.value("varianttype").toVariant().value<QVariant>();
+            return entity;
+        }
+
+        static QJsonObject toJson(const SqliteTest2& entity, QStringList excludeKeys = QStringList()) {
+            QJsonObject object;
+            object.insert("id", entity.id);
+            object.insert("name", entity.name);
+            object.insert("number", entity.number);
+            object.insert("number2", entity.number2);
+            object.insert("varianttype", entity.varianttype);
+
+            for (const auto& key : excludeKeys) {
+                object.remove(key);
+            }
+            return object;
         }
     };
 
