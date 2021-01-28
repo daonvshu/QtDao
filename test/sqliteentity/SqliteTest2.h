@@ -192,7 +192,7 @@ public:
             entity.name = object.value("name").toVariant().value<QString>();
             entity.number = object.value("number").toVariant().value<int>();
             entity.number2 = object.value("number2").toVariant().value<int>();
-            entity.varianttype = object.value("varianttype").toVariant().value<QVariant>();
+            entity.varianttype = object.value("varianttype");
             return entity;
         }
 
@@ -202,7 +202,7 @@ public:
             object.insert("name", entity.name);
             object.insert("number", entity.number);
             object.insert("number2", entity.number2);
-            object.insert("varianttype", entity.varianttype);
+            object.insert("varianttype", QJsonValue::fromVariant(entity.varianttype));
 
             for (const auto& key : excludeKeys) {
                 object.remove(key);
