@@ -9,10 +9,10 @@
 DbConfig DbLoader::config;
 AbstractClient* DbLoader::sqlClient = nullptr;
 
-void DbLoader::init(const QObject& config, DbExceptionHandler* exceptionHandler) {
+bool DbLoader::init(const QObject& config, DbExceptionHandler* exceptionHandler) {
     DbExceptionHandler::setExceptionHandler(exceptionHandler);
     loadConfig(config);
-    init();
+    return init();
 }
 
 void DbLoader::loadConfig(const QObject& cg) {
@@ -48,7 +48,7 @@ void DbLoader::loadConfig(const QObject& cg) {
     config.dbOption = cg.property("dbOption").toString();
 }
 
-void DbLoader::init() {
+bool DbLoader::init() {
     try {
         init_priv();
     } catch (DaoException& e) {
@@ -56,7 +56,9 @@ void DbLoader::init() {
             DbExceptionHandler::exceptionHandler->initDbFail(e.code, e.reason);
         }
         Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "DbLoader", "database init fail!");
+        return false;
     }
+    return true;
 }
 
 void DbLoader::init_priv() {
@@ -77,22 +79,12 @@ void DbLoader::init_priv() {
         invokeCreateTables();
 
         if (!config.versionValid) {
-            try {
-                invokeTableUpgrade();
-                updateLocalVersion();
-            }
-            catch (DaoException& e) {
-                if (DbExceptionHandler::exceptionHandler) {
-                    DbExceptionHandler::exceptionHandler->initDbFail(e.code, e.reason);
-                }
-                Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "ConnectionPool", "database upgrade fail!");
-            }
+            invokeTableUpgrade();
+            updateLocalVersion();
         }
     } else {
         if (!config.versionValid) {
-            if (DbExceptionHandler::exceptionHandler) {
-                DbExceptionHandler::exceptionHandler->initDbFail(DbErrCode::DATABASE_INIT_FAIL, "The local version is smaller than the target version!");
-            }
+            throw DaoException(DbErrCode::DATABASE_INIT_FAIL, "The local version is smaller than the target version!");
         }
     }
 }

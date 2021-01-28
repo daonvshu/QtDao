@@ -31,7 +31,7 @@ public:
     /// </summary>
     /// <param name="config"></param>
     /// <param name="exceptionHandler"></param>
-    static void init(const QObject& config, DbExceptionHandler* exceptionHandler = nullptr);
+    static bool init(const QObject& config, DbExceptionHandler* exceptionHandler = nullptr);
 
     /// <summary>
     /// get config ref
@@ -70,7 +70,7 @@ private:
     static AbstractClient* sqlClient;
 
 private:
-    static void init();
+    static bool init();
     static void init_priv();
 
     static void updateLocalVersion();
