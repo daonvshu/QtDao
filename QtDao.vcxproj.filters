@@ -226,11 +226,6 @@
     </Xsd>
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="resource.qrc">
-      <Filter>Resource Files</Filter>
-    </QtRcc>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="readme.md">
       <Filter>Resource Files</Filter>
     </None>
