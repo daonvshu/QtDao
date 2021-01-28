@@ -17,7 +17,8 @@ class UnitQueryTestExceptionHandler : public DbExceptionHandler {
 public:
     using DbExceptionHandler::DbExceptionHandler;
 
-    void execFail(const QString& lastErr) override {
+    void execFail(DbErrCode errcode, const QString& lastErr) override {
+        Q_UNUSED(errcode)
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
         std::cout << "----TEST EXECUTE ERR: " << lastErr.toStdString() << std::endl;
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);

@@ -17,11 +17,13 @@ class DbLoaderTestExceptionHandler : public DbExceptionHandler {
 public:
     using DbExceptionHandler::DbExceptionHandler;
 
-    void initDbFail(const QString& reason) {
+    void initDbFail(DbErrCode errcode, const QString& reason) {
+        Q_UNUSED(errcode)
         QFAIL(("init db fail:" + reason).toUtf8());
     }
 
-    void databaseOpenFail(const QString& failReason) {
+    void databaseOpenFail(DbErrCode errcode, const QString& failReason) {
+        Q_UNUSED(errcode)
         QFAIL(("database open fail:" + failReason).toUtf8());
     }
 

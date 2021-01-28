@@ -4,6 +4,8 @@
 #include <qstring.h>
 #include <qexception.h>
 
+#include "DbErrCode.h"
+
 class DbExceptionHandler : public QObject {
 public:
     using QObject::QObject;
@@ -15,29 +17,29 @@ public:
     /// 
     /// </summary>
     /// <param name="reason"></param>
-    virtual void initDbFail(const QString& reason) { Q_UNUSED(reason) };
+    virtual void initDbFail(DbErrCode errcode, const QString& reason);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="failReason"></param>
-    virtual void databaseOpenFail(const QString& failReason) { Q_UNUSED(failReason) };
+    virtual void databaseOpenFail(DbErrCode errcode, const QString& failReason);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="lastErr"></param>
-    virtual void execFail(const QString& lastErr) { Q_UNUSED(lastErr) };
+    virtual void execFail(DbErrCode errcode, const QString& lastErr);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="info"></param>
-    virtual void execWarning(const QString& info) { Q_UNUSED(info) };
+    virtual void execWarning(const QString& info);
 };
 
 /// <summary>
-/// 设置query语句和值列表的打印
+/// set query statement and value list printer
 /// </summary>
 typedef void (*QueryLogPrinter)(const QString&, const QVariantList&);
 void daoSetQueryLogPrinter(QueryLogPrinter);
@@ -47,10 +49,11 @@ QueryLogPrinter getQueryLogPrinter();
 
 class DaoException : public QException {
 public:
-    DaoException(const QString& reason) : reason(reason) {}
+    DaoException(DbErrCode code, const QString& reason) : reason(reason), code(code) {}
 
     void raise() const override { throw* this; }
     DaoException* clone() const override { return new DaoException(*this); }
 
     QString reason;
+    DbErrCode code;
 };

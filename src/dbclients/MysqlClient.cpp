@@ -10,50 +10,72 @@
 #include <QSqlError>
 
 void MysqlClient::testConnect() {
-    {
+    QString lastErrStr;
+    [&] {
         auto db = ConnectionPool::prepareConnect("testconnection", "mysql");
         if (!db.open()) {
-            throw DaoException("open master table 'mysql' fail! " + db.lastError().text());
+            lastErrStr = "open master table 'mysql' fail! " + db.lastError().text();
+            return;
         }
         QSqlQuery query("select 1", db);
         if (query.lastError().type() != QSqlError::NoError) {
-            throw DaoException("master table 'mysql' cannot execute query!");
+            lastErrStr = "master table 'mysql' cannot execute query!";
+            db.close();
+            return;
         }
         db.close();
-    }
+    } ();
     QSqlDatabase::removeDatabase("testconnection");
+    if (!lastErrStr.isEmpty()) {
+        throw DaoException(DbErrCode::MYSQL_CONNECT_FAIL, lastErrStr);
+    }
 }
 
 void MysqlClient::createDatabase() {
-    {
+    QString lastErrStr;
+    [&] {
         auto db = ConnectionPool::prepareConnect("createconnection", "mysql");
         if (!db.open()) {
-            throw DaoException("create database open fail! " + db.lastError().text());
+            lastErrStr = "create database open fail! " + db.lastError().text();
+            return;
         }
         QString sql = "create database if not exists %1 default character set utf8 COLLATE utf8_general_ci";
         QSqlQuery query(db);
         if (!query.exec(sql.arg(DbLoader::getConfig().dbName))) {
-            throw DaoException("create database fail! err = " + db.lastError().text());
+            lastErrStr = "create database fail! err = " + db.lastError().text();
+            db.close();
+            return;
         }
         db.close();
-    }
+    } ();
     QSqlDatabase::removeDatabase("createconnection");
+    if (!lastErrStr.isEmpty()) {
+        throw DaoException(DbErrCode::MYSQL_CREATE_DATABASE_FAIL, lastErrStr);
+    }
 }
 
 void MysqlClient::dropDatabase() {
-    {
+    QString lastErrStr;
+    [&] {
         auto db = ConnectionPool::prepareConnect("dropconnection", "mysql");
         if (!db.open()) {
-            throw DaoException("drop database open fail! " + db.lastError().text());
+            lastErrStr = "drop database open fail! " + db.lastError().text();
+            return;
         }
         QString sql = "drop database if exists %1";
         QSqlQuery query(db);
         if (!query.exec(sql.arg(DbLoader::getConfig().dbName))) {
-            throw DaoException("drop database fail! err = " + db.lastError().text());
+            lastErrStr = "drop database fail! err = " + db.lastError().text();
+            db.close();
+            return;
         }
         db.close();
-    }
+    } ();
     QSqlDatabase::removeDatabase("dropconnection");
+    QSqlDatabase::removeDatabase("createconnection");
+    if (!lastErrStr.isEmpty()) {
+        throw DaoException(DbErrCode::SQL_EXEC_FAIL, lastErrStr);
+    }
 }
 
 bool MysqlClient::checkTableExist(const QString& tbName) {
@@ -91,6 +113,7 @@ void MysqlClient::createTableIfNotExist(const QString& tbName, const QString& en
     }
     str.append(" default charset = utf8");
 
+    BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_CREATE_TABLE_FAIL);
     BaseQuery::queryPrimitiveThrowable(str);
 }
 
@@ -112,11 +135,14 @@ void MysqlClient::createIndex(const QString& tbName, QStringList fields, IndexTy
     str = str.chopped(1).arg(typeStr).arg(indexName).arg(tbName);
     str.append(")");
 
+    BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_CREATE_INDEX_FAIL);
     BaseQuery::queryPrimitiveThrowable(str);
 }
 
 void MysqlClient::renameTable(const QString& oldName, const QString& newName) {
     auto str = QString("rename table %1 to %2").arg(oldName, newName);
+
+    BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_CREATE_TMP_TABLE_FAIL);
     BaseQuery::queryPrimitiveThrowable(str);
 }
 
@@ -136,6 +162,8 @@ QStringList MysqlClient::getTagTableFields(const QString& tbName) {
     .arg(tbName, DbLoader::getConfig().dbName);
 
     QStringList fields;
+
+    BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_DUMP_FIELD_FAIL);
     auto query = BaseQuery::queryPrimitiveThrowable(str);
     while (query.next()) {
         fields << query.value(0).toString();
@@ -144,6 +172,7 @@ QStringList MysqlClient::getTagTableFields(const QString& tbName) {
 }
 
 void MysqlClient::dropAllIndexOnTable(const QString& tbName) {
+    BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_DROP_OLD_INDEX_FAIL);
     auto query = BaseQuery::queryPrimitiveThrowable(
         QString("SELECT index_name FROM information_schema.statistics where TABLE_SCHEMA = '%1' and TABLE_NAME = '%2' GROUP BY index_name")
         .arg(DbLoader::getConfig().dbName, tbName)

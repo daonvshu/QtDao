@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtDao", "QtDao.vcxproj", "{12DB7924-B972-4B6A-89F0-6E21960135FB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtDaoTest", "test\QtDaoTest.vcxproj", "{41EEDACA-115B-42E6-A7AA-7A852B958A77}"
+	ProjectSection(ProjectDependencies) = postProject
+		{12DB7924-B972-4B6A-89F0-6E21960135FB} = {12DB7924-B972-4B6A-89F0-6E21960135FB}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

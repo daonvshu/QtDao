@@ -138,6 +138,7 @@
     <ClInclude Include="include\dbclients\SqliteClient.h" />
     <ClInclude Include="include\dbclients\SqlServerClient.h" />
     <ClInclude Include="include\DbConfig.h" />
+    <ClInclude Include="include\DbErrCode.h" />
     <ClInclude Include="include\DbExceptionHandler.h" />
     <ClInclude Include="include\DbLoader.h" />
     <ClInclude Include="include\macro\macro.h" />

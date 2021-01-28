@@ -16,6 +16,8 @@
 
 #include "SqliteLockControl.h"
 
+#include "../DbErrCode.h"
+
 class dao;
 
 class BaseQuery {
@@ -54,6 +56,8 @@ public:
         bool writeDb = false
     );
 
+    static void setErrIfQueryFail(DbErrCode::Code code);
+
 protected:
     void setSqlQueryStatement(const QString& statement, const QVariantList& values);
 
@@ -76,6 +80,7 @@ protected:
     friend class BaseQueryBuilder;
 
     static SqliteLockControl sqliteLockControl;
+    static DbErrCode::Code exceptionLastErr;
 
     friend class dao;
 
@@ -83,6 +88,7 @@ private:
     QSqlQuery getQuery(bool& prepareOk, bool skipEmptyValue = false);
     void bindQueryValues(QSqlQuery& query);
     static bool execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executor);
+    static DbErrCode::Code getLastErrCode();
 
 protected:
     template<typename I>

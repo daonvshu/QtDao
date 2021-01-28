@@ -205,6 +205,9 @@
     <ClInclude Include="include\query\Update.h">
       <Filter>Header Files\query</Filter>
     </ClInclude>
+    <ClInclude Include="include\DbErrCode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="entity\sqlite_entity.xml">

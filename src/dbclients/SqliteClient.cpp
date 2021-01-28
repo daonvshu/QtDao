@@ -29,7 +29,7 @@ void SqliteClient::testConnect() {
     QDir dir;
     if (!dir.exists(appLocal)) {
         if (!createPath(appLocal)) { // create directories recursively
-            throw DaoException("cannot create sqlite store path! applocal = " + appLocal);
+            throw DaoException(DbErrCode::SQLITE_CREATE_DB_PATH_FAIL, "cannot create sqlite store path! applocal = " + appLocal);
         }
     }
 }
@@ -44,7 +44,7 @@ void SqliteClient::dropDatabase() {
     QFile file(dbPath);
     if (file.exists()) {
         if (!file.remove()) {
-            throw DaoException("unable remove database file!");
+            throw DaoException(DbErrCode::SQL_EXEC_FAIL, "unable remove database file!");
         }
     }
     QDir dir(appLocal);
@@ -82,7 +82,8 @@ void SqliteClient::createTableIfNotExist(const QString& tbName, QStringList fiel
         str.append(")");
     }
     str.append(")");
-    
+
+    BaseQuery::setErrIfQueryFail(DbErrCode::SQLITE_CREATE_TABLE_FAIL);
     BaseQuery::queryPrimitiveThrowable(str);
 }
 
@@ -104,11 +105,14 @@ void SqliteClient::createIndex(const QString& tbName, QStringList fields, IndexT
     str = str.chopped(1).arg(typeStr).arg(indexName).arg(tbName);
     str.append(")");
 
+    BaseQuery::setErrIfQueryFail(DbErrCode::SQLITE_CREATE_INDEX_FAIL);
     BaseQuery::queryPrimitiveThrowable(str);
 }
 
 void SqliteClient::renameTable(const QString& oldName, const QString& newName) {
     auto str = QString("alter table %1 rename to %2").arg(oldName, newName);
+
+    BaseQuery::setErrIfQueryFail(DbErrCode::SQLITE_CREATE_TMP_TABLE_FAIL);
     BaseQuery::queryPrimitiveThrowable(str);
 }
 
@@ -126,6 +130,8 @@ void SqliteClient::truncateTable(const QString& tbName) {
 
 QStringList SqliteClient::getTagTableFields(const QString& tbName) {
     QStringList fields;
+
+    BaseQuery::setErrIfQueryFail(DbErrCode::SQLITE_DUMP_FIELD_FAIL);
     auto query = BaseQuery::queryPrimitiveThrowable(QString("pragma table_info('%1')").arg(tbName));
     while (query.next()) {
         fields << query.value(1).toString();
@@ -144,6 +150,8 @@ void SqliteClient::dropAllIndexOnTable(const QString& tbName) {
             continue;
         indexNames << indexName;
     }
+
+    BaseQuery::setErrIfQueryFail(DbErrCode::SQLITE_DROP_OLD_INDEX_FAIL);
     for (const auto& name : indexNames) {
         BaseQuery::queryPrimitiveThrowable(
             QString("drop index %1").arg(name)

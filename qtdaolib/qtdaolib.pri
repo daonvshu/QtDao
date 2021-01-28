@@ -9,6 +9,7 @@
 HEADERS += ../include/ConnectionPool.h \
     ../include/dao.h \
     ../include/DbConfig.h \
+    ../include/DbErrCode.h \
     ../include/DbExceptionHandler.h \
     ../include/DbLoader.h \
     ../include/builder/BaseQueryBuilder.h \

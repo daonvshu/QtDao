@@ -53,7 +53,7 @@ void DbLoader::init() {
         init_priv();
     } catch (DaoException& e) {
         if (DbExceptionHandler::exceptionHandler) {
-            DbExceptionHandler::exceptionHandler->initDbFail(e.reason);
+            DbExceptionHandler::exceptionHandler->initDbFail(e.code, e.reason);
         }
         Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "DbLoader", "database init fail!");
     }
@@ -83,7 +83,7 @@ void DbLoader::init_priv() {
             }
             catch (DaoException& e) {
                 if (DbExceptionHandler::exceptionHandler) {
-                    DbExceptionHandler::exceptionHandler->initDbFail(e.reason);
+                    DbExceptionHandler::exceptionHandler->initDbFail(e.code, e.reason);
                 }
                 Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "ConnectionPool", "database upgrade fail!");
             }
@@ -91,7 +91,7 @@ void DbLoader::init_priv() {
     } else {
         if (!config.versionValid) {
             if (DbExceptionHandler::exceptionHandler) {
-                DbExceptionHandler::exceptionHandler->initDbFail("The local version is smaller than the target version!");
+                DbExceptionHandler::exceptionHandler->initDbFail(DbErrCode::DATABASE_INIT_FAIL, "The local version is smaller than the target version!");
             }
         }
     }

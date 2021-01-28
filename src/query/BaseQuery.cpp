@@ -9,6 +9,7 @@
 #include <QThread>
 
 SqliteLockControl BaseQuery::sqliteLockControl;
+DbErrCode::Code BaseQuery::exceptionLastErr = DbErrCode::ERR_NOT_SET;
 
 BaseQuery::BaseQuery(bool throwable, BaseQueryBuilder* builder, bool writeDb)
     : builder(builder)
@@ -60,10 +61,10 @@ void BaseQuery::execBatch(const std::function<void(QSqlQuery&)>& solveQueryResul
 
 void BaseQuery::printException(const QString& reason) {
     if (queryThrowable) {
-        throw DaoException(reason);
+        throw DaoException(getLastErrCode(), reason);
     } else {
         if (DbExceptionHandler::exceptionHandler) {
-            DbExceptionHandler::exceptionHandler->execFail(reason);
+            DbExceptionHandler::exceptionHandler->execFail(getLastErrCode(), reason);
             Q_ASSERT(DbExceptionHandler::exceptionHandler != nullptr);
         }
     }
@@ -121,7 +122,7 @@ void BaseQuery::queryPrimitive(const QString& statement,
             failCallback(lastErr);
         } else {
             if (DbExceptionHandler::exceptionHandler) {
-                DbExceptionHandler::exceptionHandler->execFail(lastErr);
+                DbExceptionHandler::exceptionHandler->execFail(getLastErrCode(), lastErr);
             }
             Q_ASSERT(DbExceptionHandler::exceptionHandler != nullptr);
         }
@@ -151,8 +152,12 @@ QSqlQuery BaseQuery::queryPrimitiveThrowable(
         return query;
     } else {
         executor.checkAndReleaseWriteLocker();
-        throw DaoException(query.lastError().text());
+        throw DaoException(getLastErrCode(), query.lastError().text());
     }
+}
+
+void BaseQuery::setErrIfQueryFail(DbErrCode::Code code) {
+    exceptionLastErr = code;
 }
 
 void BaseQuery::setSqlQueryStatement(const QString& statement, const QVariantList& values) {
@@ -189,6 +194,15 @@ bool BaseQuery::execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executo
         return query.exec();
     }
     return query.exec(executor->statement);
+}
+
+DbErrCode::Code BaseQuery::getLastErrCode() {
+    auto errcode = exceptionLastErr;
+    if (errcode == DbErrCode::ERR_NOT_SET) {
+        errcode = DbErrCode::SQL_EXEC_FAIL;
+    }
+    exceptionLastErr = DbErrCode::ERR_NOT_SET;
+    return errcode;
 }
 
 QList<SqliteExplainInfo> BaseQuery::ExplainTool<SqliteExplainInfo>::toExplain(const QString& statement) {
