@@ -34,12 +34,6 @@ public:
     /// </summary>
     /// <param name="info"></param>
     virtual void execWarning(const QString& info) { Q_UNUSED(info) };
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="reason"></param>
-    virtual void upgradeFail(const QString& reason) { Q_UNUSED(reason) };
 };
 
 /// <summary>

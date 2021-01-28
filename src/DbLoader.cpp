@@ -83,7 +83,7 @@ void DbLoader::init_priv() {
             }
             catch (DaoException& e) {
                 if (DbExceptionHandler::exceptionHandler) {
-                    DbExceptionHandler::exceptionHandler->upgradeFail(e.reason);
+                    DbExceptionHandler::exceptionHandler->initDbFail(e.reason);
                 }
                 Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "ConnectionPool", "database upgrade fail!");
             }

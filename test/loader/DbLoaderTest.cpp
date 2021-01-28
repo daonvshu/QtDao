@@ -28,10 +28,6 @@ public:
     void execFail(const QString& lastErr) {
         QFAIL(("query fail:" + lastErr).toUtf8());
     }
-
-    void upgradeFail(const QString& reason) {
-        QFAIL(("upgrade fail:" + reason).toUtf8());
-    }
 };
 
 void DbLoaderTest::initTestCase() {
