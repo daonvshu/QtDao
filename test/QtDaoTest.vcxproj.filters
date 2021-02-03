@@ -173,5 +173,8 @@
     <ClInclude Include="BaseTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mysqlentity\MysqlTest4.h">
+      <Filter>Header Files\mysqlentity</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -30,6 +30,8 @@
     <item name="tbi2" type="bigint" default="-1" note="绑定到MysqlTest2 id"/>
     <item name="name" type="text"/>
     <item name="size" type="int"/>
+  </tb>
+  <tb name="MysqlTest4">
     <!--field type test-->
     <item name="fTinyInt" type="tinyint" default="0" note="type tinyint"/>
     <item name="fSmallInt" type="smallint" default="0" note="type small int"/>
@@ -55,12 +57,5 @@
     <item name="fMediumText" type="mediumtext" default="a" note="type medium text"/>
     <item name="fLongBlob" type="longblob" default="a" note="type long blob" />
     <item name="fLongText" type="longtext" default="a" note="type long text"/>
-
-    <constructor>
-      <field>tbi1</field>
-      <field>tbi2</field>
-      <field>name</field>
-      <field>size</field>
-    </constructor>
   </tb>
 </dao>

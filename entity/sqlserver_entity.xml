@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dao prefix="ts_" db="sqlserver">
+  <tb name="SqlServerTest1" declaremetatype="true">
+    <item name="id" type="bigint" default="-1" constraints="primary key" note="主键"/>
+    <item name="name" type="varchar" bitsize="100" constraints="primary key" default="text" note="复合主键"/>
+    <item name="number" type="double" note="浮点数字" default="10.0"/>
+    <item name="hex" type="varbinary" note="二进制"/>
+  </tb>
+  <tb name="SqlServerTest2" declaremetatype="true">
+    <item name="id" type="bigint" default="-1" constraints="primary key" autoincrement="true" note="自增长主键"/>
+    <item name="name" type="varchar" bitsize="100" constraints="not null"/>
+    <item name="number" type="int" default="0" jsonkey="json_number"/>
+    <item name="number2" type="int" jsonkey="json_number2"/>
+    <item name="nametmp" type="text" transient="true" note="临时类型" />
+    <index type="unique index">
+      <field seq="asc">name</field>
+      <field seq="desc">number</field>
+    </index>
+    <index>
+      <field>number2</field>
+    </index>
+    <index>
+      <field>number</field>
+      <field>number2</field>
+    </index>
+  </tb>
+  <tb name="SqlServerTest3" declaremetatype="true">
+    <item name="id" type="bigint" default="-1" constraints="primary key" autoincrement="true" />
+    <item name="tbi1" type="bigint" default="-1" note="绑定到SqlServerTest1 id"/>
+    <item name="tbi2" type="bigint" default="-1" note="绑定到SqlServerTest2 id"/>
+    <item name="name" type="text"/>
+    <item name="size" type="int"/>
+    <!--field type test-->
+    <item name="fTinyInt" type="tinyint" default="0" note="type tinyint"/>
+    <item name="fSmallInt" type="smallint" default="0" note="type small int"/>
+    <item name="fInt" type="int" bitsize="7" default="0" note="type int(7)"/>
+    <item name="fBigInt" type="bigint" default="0" note="type big int"/>
+    <item name="fFloat" type="float" default="0" note="type float"/>
+    <item name="fDouble" type="double" default="0" note="type double"/>
+    <item name="fDecimal" type="decimal" default="0" bitsize="6" decimal-d="4" note="type decimal(6,4)"/>
+    <item name="fNumeric" type="numeric" default="0" bitsize="6" decimal-d="3" note="type numeric(6,3)"/>
+    <item name="fReal" type="real" default="0" note="type real"/>
+
+    <item name="fDate" type="date" default="QDate()" note="type date"/>
+    <item name="fTime" type="time" default="00:00:00" note="type time"/>
+    <item name="fDateTime" type="datetime" default="QDateTime()" note="type datetime"/>
+    <item name="fDateTime2" type="datetime2" default="QDateTime()" note="type datetime2"/>
+    <item name="fDateTimeOffset" type="datetimeoffset" default="QDateTime()" note="type datetimeoffset"/>
+    <item name="fTimestamp" type="timestamp" default="QDateTime()" note="type timestamp"/>
+
+    <item name="fChar" type="char" default="a" note="type char"/>
+    <item name="fVarChar" type="varchar" default="a" bitsize="12" note="type varchar(12)"/>
+    <item name="fVarCharMax" type="varchar(max)" default="a" note="type varchar(max)"/>
+    <item name="fNChar" type="nchar" default="a" note="type unicode char"/>
+    <item name="fNVarChar" type="nvarchar" default="a" note="type unicode varchar"/>
+    <item name="fNVarCharMax" type="nvarchar(max)" default="a" note="type unicode varchar(max)"/>
+    <item name="fText" type="text" default="a" note="type text"/>
+    <item name="fNText" type="ntext" default="a" note="type unicode text"/>
+    <item name="fBit" type="bit" default="a" note="type bit"/>
+    <item name="fBinary" type="binary" default="a" note="type binary"/>
+    <item name="fVarBinary" type="varbinary" default="a" note="type varbinary"/>
+    <item name="fVarBinaryMax" type="varbinary(max)" default="a" note="type varbinary(max)"/>
+
+    <item name="fVariant" type="sql_variant" default="0" note="type variant"/>
+    <item name="fUniqueIdentifier" type="uniqueidentifier" default="QByteArray()" note="type unique identifier"/>
+    <item name="fXml" type="xml" default="QByteArray()" note="type xml"/>
+
+    <constructor>
+      <field>tbi1</field>
+      <field>tbi2</field>
+      <field>name</field>
+      <field>size</field>
+    </constructor>
+  </tb>
+</dao>

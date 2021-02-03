@@ -142,6 +142,7 @@
     <ClInclude Include="mysqlentity\MysqlTest1.h" />
     <ClInclude Include="mysqlentity\MysqlTest2.h" />
     <ClInclude Include="mysqlentity\MysqlTest3.h" />
+    <ClInclude Include="mysqlentity\MysqlTest4.h" />
     <ClInclude Include="sqliteentity\SqliteTest1.h" />
     <ClInclude Include="sqliteentity\SqliteTest2.h" />
     <ClInclude Include="sqliteentity\SqliteTest3.h" />

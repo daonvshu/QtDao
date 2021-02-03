@@ -216,12 +216,18 @@
     <Xml Include="entity\mysql_entity.xml">
       <Filter>Header Files\entity</Filter>
     </Xml>
+    <Xml Include="entity\sqlserver_entity.xml">
+      <Filter>Header Files\entity</Filter>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="entity\mysql_entity.xsd">
       <Filter>Header Files\entity</Filter>
     </Xsd>
     <Xsd Include="entity\sqlite_entity.xsd">
+      <Filter>Header Files\entity</Filter>
+    </Xsd>
+    <Xsd Include="entity\sqlserver_entity.xsd">
       <Filter>Header Files\entity</Filter>
     </Xsd>
   </ItemGroup>

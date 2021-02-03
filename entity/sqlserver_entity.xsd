@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="dao">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="tb">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="item">
+                <xs:complexType>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="type" use="required" >
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="tinyint"/>
+                        <xs:enumeration value="smallint" />
+                        <xs:enumeration value="int" />
+                        <xs:enumeration value="bigint" />
+                        <xs:enumeration value="float" />
+                        <xs:enumeration value="double" />
+                        <xs:enumeration value="decimal" />
+                        <xs:enumeration value="numeric" />
+                        <xs:enumeration value="real" />
+
+                        <xs:enumeration value="date" />
+                        <xs:enumeration value="time" />
+                        <xs:enumeration value="datetime" />
+                        <xs:enumeration value="datetime2" />
+                        <xs:enumeration value="datetimeoffset" />
+                        <xs:enumeration value="timestamp" />
+
+                        <xs:enumeration value="char" />
+                        <xs:enumeration value="varchar" />
+                        <xs:enumeration value="varchar(max)" />
+                        <xs:enumeration value="nchar" />
+                        <xs:enumeration value="nvarchar" />
+                        <xs:enumeration value="nvarchar(max)" />
+                        <xs:enumeration value="text" />
+                        <xs:enumeration value="ntext" />
+                        <xs:enumeration value="bit" />
+                        <xs:enumeration value="binary" />
+                        <xs:enumeration value="varbinary" />
+                        <xs:enumeration value="varbinary(max)" />
+
+                        <xs:enumeration value="sql_variant" />
+                        <xs:enumeration value="uniqueidentifier" />
+                        <xs:enumeration value="xml" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="bitsize" type="xs:int" use="optional" />
+                  <xs:attribute name="decimal-d" type="xs:int" use="optional" />
+                  <xs:attribute name="note" type="xs:string" use="optional" />
+                  <xs:attribute name="constraints" use="optional">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="not null"/>
+                        <xs:enumeration value="unique"/>
+                        <xs:enumeration value="primary key"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="default" type="xs:string" use="optional" />
+                  <xs:attribute name="autoincrement" type="xs:boolean" use="optional"/>
+                  <xs:attribute name="transient" type="xs:boolean" use="optional"/>
+                  <xs:attribute name="jsonkey" type="xs:string" use="optional" />
+                  <xs:attribute name="jsontimeformat" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="index">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="field" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string">
+                            <xs:attribute name="seq" use="optional">
+                              <xs:simpleType>
+                                <xs:restriction base="xs:string">
+                                  <xs:enumeration value="asc" />
+                                  <xs:enumeration value="desc" />
+                                </xs:restriction>
+                              </xs:simpleType>
+                            </xs:attribute>
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="type" default="index" use="optional" >
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="index" />
+                        <xs:enumeration value="unique index" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="constructor">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="field" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:simpleContent>
+                          <xs:extension base="xs:string" />
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" use="required" />
+            <xs:attribute name="declaremetatype" type="xs:boolean" use="optional" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="prefix" type="xs:string" use="required" />
+      <xs:attribute name="db" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="sqlserver"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

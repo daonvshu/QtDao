@@ -391,13 +391,7 @@ void SelectTest::explainTest() {
             .filter(
                 mf.tbi1 == 1,
                 mf.name == "abc",
-                mf.size == 1,
-                mf.fTinyInt == 1,
-                mf.fInt == 1,
-                mf.fFloat == 2.0,
-                mf.fDate == QDate(2020, 12, 20),
-                mf.fDateTime == QDateTime(QDate(2020, 12, 21), QTime(12, 12, 12)),
-                mf.fBlob == "abcdef"
+                mf.size == 1
             ).build().explain<MysqlExplainInfo>();
         QVERIFY(!d.isEmpty());
     }
