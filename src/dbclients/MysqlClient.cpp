@@ -39,7 +39,7 @@ void MysqlClient::createDatabase() {
             lastErrStr = "create database open fail! " + db.lastError().text();
             return;
         }
-        QString sql = "create database if not exists %1 default character set utf8 COLLATE utf8_general_ci";
+        QString sql = "create database if not exists %1 default character set utf8mb4 COLLATE utf8mb4_general_ci";
         QSqlQuery query(db);
         if (!query.exec(sql.arg(DbLoader::getConfig().dbName))) {
             lastErrStr = "create database fail! err = " + db.lastError().text();

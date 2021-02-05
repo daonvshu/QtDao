@@ -42,11 +42,11 @@
     <item name="fReal" type="real" default="0" note="type real"/>
 
     <item name="fDate" type="date" default="QDate()" note="type date"/>
-    <item name="fTime" type="time" default="00:00:00" note="type time"/>
+    <item name="fTime" type="time" default="QTime()" note="type time"/>
     <item name="fDateTime" type="datetime" default="QDateTime()" note="type datetime"/>
     <item name="fDateTime2" type="datetime2" default="QDateTime()" note="type datetime2"/>
     <item name="fDateTimeOffset" type="datetimeoffset" default="QDateTime()" note="type datetimeoffset"/>
-    <item name="fTimestamp" type="timestamp" default="QDateTime()" note="type timestamp"/>
+    <item name="fTimestamp" type="timestamp" default="QByteArray()" note="type timestamp"/>
 
     <item name="fChar" type="char" default="a" note="type char"/>
     <item name="fVarChar" type="varchar" default="a" bitsize="12" note="type varchar(12)"/>
