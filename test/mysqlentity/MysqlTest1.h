@@ -15,13 +15,14 @@ private:
     //复合主键
     QString name;
     //浮点数字
-    double number;
+    qreal number;
     //二进制
     QByteArray hex;
 
     QHash<QString, QVariant> __extra;
 
 public:
+
     MysqlTest1() {
         id = -1;
         name = "text";
@@ -31,7 +32,7 @@ public:
     MysqlTest1(
         const qint64& id,
         const QString& name,
-        const double& number,
+        const qreal& number,
         const QByteArray& hex
     ) : id(id)
     , name(name)
@@ -54,14 +55,14 @@ public:
     public:
         EntityField<qint64> id = EntityField<qint64>("id", "ts_mysqltest1");
         EntityField<QString> name = EntityField<QString>("name", "ts_mysqltest1");
-        EntityField<double> number = EntityField<double>("number", "ts_mysqltest1");
+        EntityField<qreal> number = EntityField<qreal>("number", "ts_mysqltest1");
         EntityField<QByteArray> hex = EntityField<QByteArray>("hex", "ts_mysqltest1");
 
     protected:
         void reset(const QString& tbName) {
             id = EntityField<qint64>("id", tbName);
             name = EntityField<QString>("name", tbName);
-            number = EntityField<double>("number", tbName);
+            number = EntityField<qreal>("number", tbName);
             hex = EntityField<QByteArray>("hex", tbName);
         }
     };
@@ -107,7 +108,7 @@ public:
             return QStringList() 
                 << QStringLiteral("id bigint default -1 comment '主键'")
                 << QStringLiteral("name varchar(100) default 'text' comment '复合主键'")
-                << QStringLiteral("number double default 10.0 comment '浮点数字'")
+                << QStringLiteral("number double null default 10.0 comment '浮点数字'")
                 << QStringLiteral("hex blob comment '二进制'");
         }
 
@@ -165,7 +166,7 @@ public:
             } else if (target == "name") {
                 entity.name = value.value<QString>();
             } else if (target == "number") {
-                entity.number = value.value<double>();
+                entity.number = value.value<qreal>();
             } else if (target == "hex") {
                 entity.hex = value.value<QByteArray>();
             } else {
@@ -177,7 +178,7 @@ public:
             MysqlTest1 entity;
             entity.id = object.value("id").toVariant().value<qint64>();
             entity.name = object.value("name").toVariant().value<QString>();
-            entity.number = object.value("number").toVariant().value<double>();
+            entity.number = object.value("number").toVariant().value<qreal>();
             entity.hex = QByteArray::fromBase64(object.value("hex").toString().toLatin1());
             return entity;
         }
@@ -206,9 +207,9 @@ public:
     //get 复合主键
     inline QString getName() const {return name;}
     //set 浮点数字
-    inline void setNumber(const double& number) {this->number = number;}
+    inline void setNumber(const qreal& number) {this->number = number;}
     //get 浮点数字
-    inline double getNumber() const {return number;}
+    inline qreal getNumber() const {return number;}
     //set 二进制
     inline void setHex(const QByteArray& hex) {this->hex = hex;}
     //get 二进制

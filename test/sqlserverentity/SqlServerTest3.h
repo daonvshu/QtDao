@@ -8,13 +8,13 @@
 
 #include "condition/EntityField.h"
 
-class SqliteTest3 {
+class SqlServerTest3 {
 private:
     //
     qint64 id;
-    //绑定到SqliteTest1 id
+    //绑定到SqlServerTest1 id
     qint64 tbi1;
-    //绑定到SqliteTest2 id
+    //绑定到SqlServerTest2 id
     qint64 tbi2;
     //
     QString name;
@@ -25,13 +25,13 @@ private:
 
 public:
 
-    SqliteTest3() {
+    SqlServerTest3() {
         id = -1;
         tbi1 = -1;
         tbi2 = -1;
     }
 
-    SqliteTest3(
+    SqlServerTest3(
         const qint64& tbi1,
         const qint64& tbi2,
         const QString& name,
@@ -44,7 +44,7 @@ public:
         id = -1;
     }
 
-    SqliteTest3(
+    SqlServerTest3(
         const QString& name,
         const int& size
     ) : name(name)
@@ -55,14 +55,25 @@ public:
         tbi2 = -1;
     }
 
+    SqlServerTest3(
+        const qint64& tbi1,
+        const qint64& tbi2,
+        const QString& name
+    ) : tbi1(tbi1)
+    , tbi2(tbi2)
+    , name(name)
+    {
+        id = -1;
+    }
+
 public:
     class Fields {
     public:
-        EntityField<qint64> id = EntityField<qint64>("id", "ts_sqlitetest3");
-        EntityField<qint64> tbi1 = EntityField<qint64>("tbi1", "ts_sqlitetest3");
-        EntityField<qint64> tbi2 = EntityField<qint64>("tbi2", "ts_sqlitetest3");
-        EntityField<QString> name = EntityField<QString>("name", "ts_sqlitetest3");
-        EntityField<int> size = EntityField<int>("size", "ts_sqlitetest3");
+        EntityField<qint64> id = EntityField<qint64>("id", "ts_sqlservertest3");
+        EntityField<qint64> tbi1 = EntityField<qint64>("tbi1", "ts_sqlservertest3");
+        EntityField<qint64> tbi2 = EntityField<qint64>("tbi2", "ts_sqlservertest3");
+        EntityField<QString> name = EntityField<QString>("name", "ts_sqlservertest3");
+        EntityField<int> size = EntityField<int>("size", "ts_sqlservertest3");
 
     protected:
         void reset(const QString& tbName) {
@@ -84,7 +95,7 @@ public:
         }
 
         static QString getTableName() {
-            return QStringLiteral("ts_sqlitetest3");
+            return QStringLiteral("ts_sqlservertest3");
         }
 
         static QString getSourceName() {
@@ -110,11 +121,11 @@ public:
 
         static QStringList getFieldsType() {
             return QStringList() 
-                << QStringLiteral("id integer primary key autoincrement")
-                << QStringLiteral("tbi1 integer null default -1")
-                << QStringLiteral("tbi2 integer null default -1")
+                << QStringLiteral("id bigint primary key identity(1,1)")
+                << QStringLiteral("tbi1 bigint null default -1")
+                << QStringLiteral("tbi2 bigint null default -1")
                 << QStringLiteral("name text")
-                << QStringLiteral("size integer");
+                << QStringLiteral("size int");
         }
 
         static QStringList getPrimaryKeys() {
@@ -135,7 +146,7 @@ public:
     };
 
     struct Tool {
-        static QVariantList getValueWithoutAutoIncrement(const SqliteTest3& entity) {
+        static QVariantList getValueWithoutAutoIncrement(const SqlServerTest3& entity) {
             return QVariantList()
                 << entity.tbi1
                 << entity.tbi2
@@ -143,7 +154,7 @@ public:
                 << entity.size;
         }
 
-        static QVariant getValueByName(const SqliteTest3& entity, const QString& target) {
+        static QVariant getValueByName(const SqlServerTest3& entity, const QString& target) {
             if (target == "id") {
                 return entity.id;
             }
@@ -162,11 +173,11 @@ public:
             return entity.__extra.value(target);
         }
 
-        static void bindAutoIncrementId(SqliteTest3& entity, const QVariant& id) {
+        static void bindAutoIncrementId(SqlServerTest3& entity, const QVariant& id) {
             entity.id = id.value<qint64>();
         }
 
-        static void bindValue(SqliteTest3& entity, const QString& target, QVariant value) {
+        static void bindValue(SqlServerTest3& entity, const QString& target, QVariant value) {
             if (target == "id") {
                 entity.id = value.value<qint64>();
             } else if (target == "tbi1") {
@@ -182,8 +193,8 @@ public:
             }
         }
 
-        static SqliteTest3 fromJson(const QJsonObject& object) {
-            SqliteTest3 entity;
+        static SqlServerTest3 fromJson(const QJsonObject& object) {
+            SqlServerTest3 entity;
             entity.id = object.value("id").toVariant().value<qint64>();
             entity.tbi1 = object.value("tbi1").toVariant().value<qint64>();
             entity.tbi2 = object.value("tbi2").toVariant().value<qint64>();
@@ -192,7 +203,7 @@ public:
             return entity;
         }
 
-        static QJsonObject toJson(const SqliteTest3& entity, QStringList excludeKeys = QStringList()) {
+        static QJsonObject toJson(const SqlServerTest3& entity, QStringList excludeKeys = QStringList()) {
             QJsonObject object;
             object.insert("id", entity.id);
             object.insert("tbi1", entity.tbi1);
@@ -212,13 +223,13 @@ public:
     inline void setId(const qint64& id) {this->id = id;}
     //
     inline qint64 getId() const {return id;}
-    //set 绑定到SqliteTest1 id
+    //set 绑定到SqlServerTest1 id
     inline void setTbi1(const qint64& tbi1) {this->tbi1 = tbi1;}
-    //get 绑定到SqliteTest1 id
+    //get 绑定到SqlServerTest1 id
     inline qint64 getTbi1() const {return tbi1;}
-    //set 绑定到SqliteTest2 id
+    //set 绑定到SqlServerTest2 id
     inline void setTbi2(const qint64& tbi2) {this->tbi2 = tbi2;}
-    //get 绑定到SqliteTest2 id
+    //get 绑定到SqlServerTest2 id
     inline qint64 getTbi2() const {return tbi2;}
     //
     inline void setName(const QString& name) {this->name = name;}
@@ -233,5 +244,5 @@ public:
     //get function select result, like get "as" field result
     inline QVariant __getExtra(const QString& key) const {return __extra.value(key);}
 };
-typedef QList<SqliteTest3> SqliteTest3List;
-Q_DECLARE_METATYPE(SqliteTest3);
+typedef QList<SqlServerTest3> SqlServerTest3List;
+Q_DECLARE_METATYPE(SqlServerTest3);

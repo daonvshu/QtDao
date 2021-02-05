@@ -174,3 +174,10 @@ inline void AbstractClient::ClientSelector<ClientMysql>::createTableIfNotExist()
     typename E::Info info;
     client->createTableIfNotExist(info.getTableName(), info.getTableEngine(), info.getFieldsType(), info.getPrimaryKeys());
 }
+
+template <>
+template <typename E>
+void AbstractClient::ClientSelector<ClientSqlServer>::createTableIfNotExist() {
+    typename E::Info info;
+    client->createTableIfNotExist(info.getTableName(), info.getFieldsType(), info.getPrimaryKeys());
+}

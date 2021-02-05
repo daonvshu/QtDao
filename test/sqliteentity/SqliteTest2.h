@@ -3,6 +3,7 @@
 
 #include <qobject.h>
 #include <qvariant.h>
+#include <qdatetime.h>
 #include <qjsonobject.h>
 
 #include "condition/EntityField.h"
@@ -26,6 +27,7 @@ private:
     QHash<QString, QVariant> __extra;
 
 public:
+
     SqliteTest2() {
         id = -1;
         number = 0;
@@ -113,7 +115,7 @@ public:
             return QStringList() 
                 << QStringLiteral("id integer primary key autoincrement")
                 << QStringLiteral("name text not null")
-                << QStringLiteral("number integer default 0")
+                << QStringLiteral("number integer null default 0")
                 << QStringLiteral("number2 integer")
                 << QStringLiteral("varianttype blob");
         }

@@ -3,6 +3,7 @@
 
 #include <qobject.h>
 #include <qvariant.h>
+#include <qdatetime.h>
 #include <qjsonobject.h>
 
 #include "condition/EntityField.h"
@@ -21,6 +22,7 @@ private:
     QHash<QString, QVariant> __extra;
 
 public:
+
     SqliteTest1() {
         id = -1;
         name = "text";
@@ -102,7 +104,7 @@ public:
             return QStringList() 
                 << QStringLiteral("id integer default -1")
                 << QStringLiteral("name text default 'text'")
-                << QStringLiteral("number real default 10.0")
+                << QStringLiteral("number real null default 10.0")
                 << QStringLiteral("hex blob");
         }
 

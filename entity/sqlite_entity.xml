@@ -6,11 +6,11 @@
     <item name="number" type="real" note="浮点数字" default="10.0"/>
     <item name="hex" type="blob" note="二进制"/>
   </tb>
-  <tb name="SqliteTest2">
+  <tb name="SqliteTest2" declaremetatype="true">
     <item name="id" type="long" default="-1" constraints="primary key" autoincrement="true" note="自增长主键"/>
     <item name="name" type="text" constraints="not null"/>
-    <item name="number" type="int" default="0" jsonkey="json_number"/>
-    <item name="number2" type="int" jsonkey="json_number2"/>
+    <item name="number" type="int" default="0"/>
+    <item name="number2" type="int"/>
     <item name="varianttype" type="variant" note="自定义类型"/>
     <item name="nametmp" type="text" transient="true" note="临时类型" />
     <index type="unique index">
@@ -25,11 +25,39 @@
       <field>number2</field>
     </index>
   </tb>
-  <tb name="SqliteTest3">
+  <tb name="SqliteTest3" declaremetatype="true">
     <item name="id" type="long" default="-1" constraints="primary key" autoincrement="true" />
     <item name="tbi1" type="long" default="-1" note="绑定到SqliteTest1 id"/>
     <item name="tbi2" type="long" default="-1" note="绑定到SqliteTest2 id"/>
     <item name="name" type="text"/>
     <item name="size" type="int"/>
+  </tb>
+  <tb name="SqliteDefaultTestInt" declaremetatype="true">
+    <!--integer type-->
+    <item name="typeint" type="int" default="-1" />
+    <item name="typeintnull" type="int" default="null"/>
+    <item name="typelong" type="long" default="1"/>
+    <item name="typelongnull" type="long" default="null"/>
+    <item name="typereal" type="real" default="10.0"/>
+    <item name="typerealnull" type="real" default="null"/>
+  </tb>
+  <tb name="SqliteDefaultTestStr" declaremetatype="true">
+    <!--string type-->
+    <item name="typetext" type="text" default="string"/>
+    <item name="typetext2" type="text" default="null"/>
+    <item name="typetext3" type="text" default="empty"/>
+    <item name="typetext4" type="text" default='"null"'/>
+    <item name="typetext5" type="text" default='QString("string")'/>
+    <!--byte array type-->
+    <item name="typeblob" type="blob" default="string"/>
+    <item name="typeblob2" type="blob" default="null"/>
+    <item name="typeblob3" type="blob" default="empty"/>
+    <item name="typeblob4" type="blob" default='"null"'/>
+    <item name="typeblob5" type="blob" default='QByteArray("string")'/>
+    <!--variant type-->
+    <item name="typevariant" type="variant" default="100"/>
+    <item name="typevariant1" type="variant" default='"string"'/>
+    <item name="typevariant2" type="variant" default="QTime::currentTime()"/>
+    <item name="typevariant3" type="variant" default="QDateTime::currentDateTime()"/>
   </tb>
 </dao>

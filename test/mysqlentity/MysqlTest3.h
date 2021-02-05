@@ -24,6 +24,7 @@ private:
     QHash<QString, QVariant> __extra;
 
 public:
+
     MysqlTest3() {
         id = -1;
         tbi1 = -1;
@@ -52,6 +53,17 @@ public:
         id = -1;
         tbi1 = -1;
         tbi2 = -1;
+    }
+
+    MysqlTest3(
+        const qint64& tbi1,
+        const qint64& tbi2,
+        const QString& name
+    ) : tbi1(tbi1)
+    , tbi2(tbi2)
+    , name(name)
+    {
+        id = -1;
     }
 
 public:
@@ -114,8 +126,8 @@ public:
         static QStringList getFieldsType() {
             return QStringList() 
                 << QStringLiteral("id bigint primary key auto_increment comment ''")
-                << QStringLiteral("tbi1 bigint default -1 comment '绑定到MysqlTest1 id'")
-                << QStringLiteral("tbi2 bigint default -1 comment '绑定到MysqlTest2 id'")
+                << QStringLiteral("tbi1 bigint null default -1 comment '绑定到MysqlTest1 id'")
+                << QStringLiteral("tbi2 bigint null default -1 comment '绑定到MysqlTest2 id'")
                 << QStringLiteral("name text comment ''")
                 << QStringLiteral("size int comment ''");
         }

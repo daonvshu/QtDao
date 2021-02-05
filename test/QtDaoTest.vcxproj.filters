@@ -48,6 +48,12 @@
     <Filter Include="Source Files\mysqlentity">
       <UniqueIdentifier>{52c40159-446f-4dec-bb90-32eb4d32f5a5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\sqlserverentity">
+      <UniqueIdentifier>{21b9b6b4-8686-4ea2-bc40-54be91663d49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\sqlserverentity">
+      <UniqueIdentifier>{54238602-de6a-4593-a751-7af30384cd11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -94,6 +100,9 @@
     </ClCompile>
     <ClCompile Include="mysqlentity\MysqlEntityInclude.cpp">
       <Filter>Source Files\mysqlentity</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlserverentity\SqlServerEntityInclude.cpp">
+      <Filter>Source Files\sqlserverentity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +151,9 @@
     <QtMoc Include="ConnectionPoolTest.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="sqlserverentity\SqlServerEntityInclude.h">
+      <Filter>Header Files\sqlserverentity</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="mysqlentity\mysql_entity.xml">
@@ -149,6 +161,9 @@
     </Xml>
     <Xml Include="sqliteentity\sqlite_entity.xml">
       <Filter>Header Files\sqliteentity</Filter>
+    </Xml>
+    <Xml Include="sqlserverentity\sqlserver_entity.xml">
+      <Filter>Header Files\sqlserverentity</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +190,42 @@
     </ClInclude>
     <ClInclude Include="mysqlentity\MysqlTest4.h">
       <Filter>Header Files\mysqlentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlserverentity\SqlServerDefaultTestBytes.h">
+      <Filter>Header Files\sqlserverentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlserverentity\SqlServerDefaultTestInt.h">
+      <Filter>Header Files\sqlserverentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlserverentity\SqlServerDefaultTestStr.h">
+      <Filter>Header Files\sqlserverentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlserverentity\SqlServerDefaultTestTime.h">
+      <Filter>Header Files\sqlserverentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlserverentity\SqlServerTest1.h">
+      <Filter>Header Files\sqlserverentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlserverentity\SqlServerTest2.h">
+      <Filter>Header Files\sqlserverentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlserverentity\SqlServerTest3.h">
+      <Filter>Header Files\sqlserverentity</Filter>
+    </ClInclude>
+    <ClInclude Include="mysqlentity\MysqlDefaultTestInt.h">
+      <Filter>Header Files\mysqlentity</Filter>
+    </ClInclude>
+    <ClInclude Include="mysqlentity\MysqlDefaultTestStr.h">
+      <Filter>Header Files\mysqlentity</Filter>
+    </ClInclude>
+    <ClInclude Include="mysqlentity\MysqlDefaultTestTime.h">
+      <Filter>Header Files\mysqlentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqliteentity\SqliteDefaultTestInt.h">
+      <Filter>Header Files\sqliteentity</Filter>
+    </ClInclude>
+    <ClInclude Include="sqliteentity\SqliteDefaultTestStr.h">
+      <Filter>Header Files\sqliteentity</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

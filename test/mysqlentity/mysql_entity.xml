@@ -30,32 +30,85 @@
     <item name="tbi2" type="bigint" default="-1" note="绑定到MysqlTest2 id"/>
     <item name="name" type="text"/>
     <item name="size" type="int"/>
+
+    <constructor>
+      <field>tbi1</field>
+      <field>tbi2</field>
+      <field>name</field>
+    </constructor>
   </tb>
-  <tb name="MysqlTest4">
-    <!--field type test-->
-    <item name="fTinyInt" type="tinyint" default="0" note="type tinyint"/>
-    <item name="fSmallInt" type="smallint" default="0" note="type small int"/>
-    <item name="fMediumInt" type="mediumint" default="0" note="type medium int"/>
-    <item name="fInt" type="int" bitsize="7" default="0" note="type int(7)"/>
-    <item name="fBigInt" type="bigint" default="0" note="type big int"/>
-    <item name="fFloat" type="float" default="0" note="type float"/>
-    <item name="fDouble" type="double" default="0" note="type double"/>
-    <item name="fDecimal" type="decimal" default="0" bitsize="6" decimal-d="4" note="type decimal(6,4)"/>
 
-    <item name="fDate" type="date" default="QDate()" note="type date"/>
-    <item name="fTime" type="time" default="00:00:00" note="type time"/>
-    <item name="fDateTime" type="datetime" default="QDateTime()" note="type date time"/>
-    <item name="fTimestamp" type="timestamp" default="QDateTime()" note="type timestamp"/>
+  <tb name="MysqlDefaultTestInt" declaremetatype="true">
+    <!--integer type-->
+    <item name="typetinyint" type="tinyint" default="1"/>
+    <item name="typetinyintnull" type="tinyint" default="null"/>
+    <item name="typesmallint" type="smallint" default="2"/>
+    <item name="typesmallintnull" type="smallint" default="null"/>
+    <item name="typemediumint" type="mediumint" default="3"/>
+    <item name="typemediumintnull" type="mediumint" default="null"/>
+    <item name="typeint" type="int" default="4"/>
+    <item name="typeintnull" type="int" default="null"/>
+    <item name="typebigint" type="bigint" default="5"/>
+    <item name="typebigintnull" type="bigint" default="null"/>
+    <item name="typefloat" type="float" default="0.1"/>
+    <item name="typefloatnull" type="float" default="null"/>
+    <item name="typedouble" type="double" default="0.2"/>
+    <item name="typedoublenull" type="double" default="null"/>
+    <item name="typedecimal" type="decimal" bitsize="8" decimal-d="4" default="0.3" />
+    <item name="typedecimalnull" type="decimal" bitsize="9" decimal-d="5" default="null"/>
+  </tb>
+  <tb name="MysqlDefaultTestTime" declaremetatype="true">
+    <!--time type-->
+    <item name="typetime" type="time" default="120:59:59"/>
+    <item name="typetime2" type="time" default='QTime::currentTime().toString("HH:mm:ss")'/>
+    <item name="typetime3" type="time" default="now"/>
+    <item name="typetime4" type="time" default="null"/>
 
-    <item name="fChar" type="char" default="a" note="type char"/>
-    <item name="fVarChar" type="varchar" default="a" bitsize="12" note="type varchar(12)"/>
-    <item name="fTinyBlob" type="tinyblob" default="a" note="type tiny blob"/>
-    <item name="fTinyText" type="tinytext" default="a" note="type tiny text"/>
-    <item name="fBlob" type="blob" default="a" note="type blob"/>
-    <item name="fText" type="text" default="a" note="type text"/>
-    <item name="fMediumBlob" type="mediumblob" default="a" note="type medium blob"/>
-    <item name="fMediumText" type="mediumtext" default="a" note="type medium text"/>
-    <item name="fLongBlob" type="longblob" default="a" note="type long blob" />
-    <item name="fLongText" type="longtext" default="a" note="type long text"/>
+    <item name="typedate" type="date" default="2020-01-01"/>
+    <item name="typedate2" type="date" default="QDate::currentDate()"/>
+    <item name="typedate3" type="date" default="now"/>
+    <item name="typedate4" type="date" default="null"/>
+
+    <item name="typedatetime" type="datetime" default="2020-01-01 12:59:59"/>
+    <item name="typedatetime2" type="datetime" default="QDateTime::currentDateTime()"/>
+    <item name="typedatetime3" type="datetime" default="null"/>
+    <item name="typedatetime4" type="datetime" default="now"/>
+    <item name="typedatetime5" type="datetime" default="CURRENT_TIMESTAMP"/>
+    <item name="typedatetime6" type="datetime" bitsize="3" default="CURRENT_TIMESTAMP(3)"/>
+    <item name="typedatetime7" type="datetime" bitsize="3" default="CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)"/>
+    <item name="typedatetime8" type="datetime" default="null ON UPDATE CURRENT_TIMESTAMP"/>
+
+    <item name="typetimestamp" type="timestamp" default="2020-01-01 12:59:59"/>
+    <item name="typetimestamp2" type="timestamp" default="QDateTime::currentDateTime()"/>
+    <item name="typetimestamp3" type="timestamp" default="null"/>
+    <item name="typetimestamp4" type="timestamp" default="now"/>
+    <item name="typetimestamp5" type="timestamp" default="CURRENT_TIMESTAMP"/>
+    <item name="typetimestamp6" type="timestamp" bitsize="3" default="CURRENT_TIMESTAMP(3)"/>
+    <item name="typetimestamp7" type="timestamp" bitsize="3" default="CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)"/>
+    <item name="typetimestamp8" type="timestamp" default="null ON UPDATE CURRENT_TIMESTAMP"/>
+  </tb>
+  <tb name="MysqlDefaultTestStr" declaremetatype="true">
+    <!--string type-->
+    <item name="typechar" type="char" default="a"/>
+    <item name="typecharnull" type="char" default="null"/>
+
+    <item name="typevarchar" type="varchar" bitsize="255" default="string"/>
+    <item name="typevarchar2" type="varchar" bitsize="255" default="null"/>
+    <item name="typevarchar3" type="varchar" bitsize="255" default="empty"/>
+    <item name="typevarchar4" type="varchar" bitsize="255" default='"null"'/>
+    <item name="typevarchar5" type="varchar" bitsize="255" default='QString("string")'/>
+
+    <item name="typetext" type="tinytext" default="string"/>
+    <item name="typetext2" type="text" default="null"/>
+    <item name="typetext3" type="mediumtext" default="empty"/>
+    <item name="typetext4" type="longtext" default='"null"'/>
+    <item name="typetext5" type="text" default='QString("string")'/>
+
+    <!--byte array type-->
+    <item name="typeblob" type="tinyblob" default="string"/>
+    <item name="typeblob2" type="blob" default="null"/>
+    <item name="typeblob3" type="mediumblob" default="empty"/>
+    <item name="typeblob4" type="longblob" default='"null"'/>
+    <item name="typeblob5" type="blob" default='QByteArray("string")'/>
   </tb>
 </dao>

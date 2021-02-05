@@ -32,4 +32,32 @@
     <item name="name" type="text"/>
     <item name="size" type="int"/>
   </tb>
+  <tb name="SqliteDefaultTestInt" declaremetatype="true">
+    <!--integer type-->
+    <item name="typeint" type="int" default="-1" />
+    <item name="typeintnull" type="int" default="null"/>
+    <item name="typelong" type="long" default="1"/>
+    <item name="typelongnull" type="long" default="null"/>
+    <item name="typereal" type="real" default="10.0"/>
+    <item name="typerealnull" type="real" default="null"/>
+  </tb>
+  <tb name="SqliteDefaultTestStr" declaremetatype="true">
+    <!--string type-->
+    <item name="typetext" type="text" default="string"/>
+    <item name="typetext2" type="text" default="null"/>
+    <item name="typetext3" type="text" default="empty"/>
+    <item name="typetext4" type="text" default='"null"'/>
+    <item name="typetext5" type="text" default='QString("string")'/>
+    <!--byte array type-->
+    <item name="typeblob" type="blob" default="string"/>
+    <item name="typeblob2" type="blob" default="null"/>
+    <item name="typeblob3" type="blob" default="empty"/>
+    <item name="typeblob4" type="blob" default='"null"'/>
+    <item name="typeblob5" type="blob" default='QByteArray("string")'/>
+    <!--variant type-->
+    <item name="typevariant" type="variant" default="100"/>
+    <item name="typevariant1" type="variant" default='"string"'/>
+    <item name="typevariant2" type="variant" default="QTime::currentTime()"/>
+    <item name="typevariant3" type="variant" default="QDateTime::currentDateTime()"/>
+  </tb>
 </dao>

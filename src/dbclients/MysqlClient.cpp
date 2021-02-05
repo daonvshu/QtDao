@@ -111,7 +111,7 @@ void MysqlClient::createTableIfNotExist(const QString& tbName, const QString& en
     if (!engine.isEmpty()) {
         str.append(" engine=").append(engine);
     }
-    str.append(" default charset = utf8");
+    str.append(" default charset = utf8mb4");
 
     BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_CREATE_TABLE_FAIL);
     BaseQuery::queryPrimitiveThrowable(str);

@@ -119,6 +119,7 @@
     <ClCompile Include="query\SqliteWriteSyncTest.cpp" />
     <ClCompile Include="query\UpdateTest.cpp" />
     <ClCompile Include="sqliteentity\SqliteEntityInclude.cpp" />
+    <ClCompile Include="sqlserverentity\SqlServerEntityInclude.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="condition\ConnectorTest.h" />
@@ -129,6 +130,7 @@
   <ItemGroup>
     <Xml Include="mysqlentity\mysql_entity.xml" />
     <Xml Include="sqliteentity\sqlite_entity.xml" />
+    <Xml Include="sqlserverentity\sqlserver_entity.xml" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="mysqlentity\MysqlConfig.h" />
@@ -138,6 +140,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseTest.h" />
+    <ClInclude Include="mysqlentity\MysqlDefaultTestInt.h" />
+    <ClInclude Include="mysqlentity\MysqlDefaultTestStr.h" />
+    <ClInclude Include="mysqlentity\MysqlDefaultTestTime.h" />
+    <ClInclude Include="sqliteentity\SqliteDefaultTestInt.h" />
+    <ClInclude Include="sqliteentity\SqliteDefaultTestStr.h" />
+    <ClInclude Include="sqlserverentity\SqlServerDefaultTestBytes.h" />
+    <ClInclude Include="sqlserverentity\SqlServerDefaultTestInt.h" />
+    <ClInclude Include="sqlserverentity\SqlServerDefaultTestStr.h" />
+    <ClInclude Include="sqlserverentity\SqlServerDefaultTestTime.h" />
+    <ClInclude Include="sqlserverentity\SqlServerTest1.h" />
+    <ClInclude Include="sqlserverentity\SqlServerTest2.h" />
+    <ClInclude Include="sqlserverentity\SqlServerTest3.h" />
+    <QtMoc Include="sqlserverentity\SqlServerEntityInclude.h" />
     <QtMoc Include="ConnectionPoolTest.h" />
     <ClInclude Include="mysqlentity\MysqlTest1.h" />
     <ClInclude Include="mysqlentity\MysqlTest2.h" />
