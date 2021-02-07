@@ -11,6 +11,10 @@
 #include "../mysqlentity/MysqlTest2.h"
 #include "../mysqlentity/MysqlConfig.h"
 
+#include "../sqlserverentity/SqlServerTest1.h"
+#include "../sqlserverentity/SqlServerTest2.h"
+#include "../sqlserverentity/SqlServerConfig.h"
+
 #include <QtTest>
 
 class DbLoaderTestExceptionHandler : public DbExceptionHandler {
@@ -48,6 +52,12 @@ void DbLoaderTest::loadConfigTest() {
         MysqlTest1::Info t1info;
         QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
         MysqlTest2::Info t2info;
+        QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
+    } else if (engineModel == Engine_SqlServer) {
+        DbLoader::init(SqlServerConfig(), new DbLoaderTestExceptionHandler(this));
+        SqlServerTest1::Info t1info;
+        QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
+        SqlServerTest2::Info t2info;
         QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
     }
     QCOMPARE(DbLoader::getLocalVersion(), 1);

@@ -1,9 +1,7 @@
 ﻿#include "dbclients/MysqlClient.h"
 
 #include "DbLoader.h"
-
 #include "ConnectionPool.h"
-
 #include "query/BaseQuery.h"
 
 #include <QSqlQuery>
@@ -42,7 +40,7 @@ void MysqlClient::createDatabase() {
         QString sql = "create database if not exists %1 default character set utf8mb4 COLLATE utf8mb4_general_ci";
         QSqlQuery query(db);
         if (!query.exec(sql.arg(DbLoader::getConfig().dbName))) {
-            lastErrStr = "create database fail! err = " + db.lastError().text();
+            lastErrStr = "create database fail! err = " + query.lastError().text();
             db.close();
             return;
         }
@@ -63,16 +61,16 @@ void MysqlClient::dropDatabase() {
             return;
         }
         QString sql = "drop database if exists %1";
+        sql = sql.arg(DbLoader::getConfig().dbName);
         QSqlQuery query(db);
-        if (!query.exec(sql.arg(DbLoader::getConfig().dbName))) {
-            lastErrStr = "drop database fail! err = " + db.lastError().text();
+        if (!query.exec(sql)) {
+            lastErrStr = "drop database fail! err = " + query.lastError().text();
             db.close();
             return;
         }
         db.close();
     } ();
     QSqlDatabase::removeDatabase("dropconnection");
-    QSqlDatabase::removeDatabase("createconnection");
     if (!lastErrStr.isEmpty()) {
         throw DaoException(DbErrCode::SQL_EXEC_FAIL, lastErrStr);
     }

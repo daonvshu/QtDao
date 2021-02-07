@@ -104,7 +104,7 @@ public:
             return QStringList() 
                 << QStringLiteral("id bigint default -1")
                 << QStringLiteral("name varchar(100) default 'text'")
-                << QStringLiteral("number double null default 10.0")
+                << QStringLiteral("number real null default null")
                 << QStringLiteral("hex varbinary");
         }
 

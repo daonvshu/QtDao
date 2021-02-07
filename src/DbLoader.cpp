@@ -90,7 +90,7 @@ void DbLoader::init_priv() {
 }
 
 void DbLoader::updateLocalVersion() {
-    if (config.isSqlite()) {
+    if (config.isSqlite() || config.isSqlServer()) {
         getClient().createTableIfNotExist("dao_version", QStringList() << "ver int", QStringList());
     } else if (config.isMysql()) {
         getClient().createTableIfNotExist("dao_version", QString(), QStringList() << "ver int", QStringList());

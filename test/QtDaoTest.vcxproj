@@ -145,6 +145,7 @@
     <ClInclude Include="mysqlentity\MysqlDefaultTestTime.h" />
     <ClInclude Include="sqliteentity\SqliteDefaultTestInt.h" />
     <ClInclude Include="sqliteentity\SqliteDefaultTestStr.h" />
+    <QtMoc Include="sqlserverentity\SqlServerConfig.h" />
     <ClInclude Include="sqlserverentity\SqlServerDefaultTestBytes.h" />
     <ClInclude Include="sqlserverentity\SqlServerDefaultTestInt.h" />
     <ClInclude Include="sqlserverentity\SqlServerDefaultTestStr.h" />

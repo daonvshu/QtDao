@@ -31,10 +31,6 @@ private:
     //
     qreal typefloatnull;
     //
-    qreal typedouble;
-    //
-    qreal typedoublenull;
-    //
     qreal typedecimal;
     //
     qreal typedecimalnull;
@@ -62,8 +58,6 @@ public:
         typebigintnull = qint64();
         typefloat = 0.1;
         typefloatnull = qreal();
-        typedouble = 0.2;
-        typedoublenull = qreal();
         typedecimal = 0.3;
         typedecimalnull = qreal();
         typenumeric = 0.4;
@@ -83,8 +77,6 @@ public:
         const qint64& typebigintnull,
         const qreal& typefloat,
         const qreal& typefloatnull,
-        const qreal& typedouble,
-        const qreal& typedoublenull,
         const qreal& typedecimal,
         const qreal& typedecimalnull,
         const qreal& typenumeric,
@@ -101,8 +93,6 @@ public:
     , typebigintnull(typebigintnull)
     , typefloat(typefloat)
     , typefloatnull(typefloatnull)
-    , typedouble(typedouble)
-    , typedoublenull(typedoublenull)
     , typedecimal(typedecimal)
     , typedecimalnull(typedecimalnull)
     , typenumeric(typenumeric)
@@ -125,8 +115,6 @@ public:
         EntityField<qint64> typebigintnull = EntityField<qint64>("typebigintnull", "ts_sqlserverdefaulttestint");
         EntityField<qreal> typefloat = EntityField<qreal>("typefloat", "ts_sqlserverdefaulttestint");
         EntityField<qreal> typefloatnull = EntityField<qreal>("typefloatnull", "ts_sqlserverdefaulttestint");
-        EntityField<qreal> typedouble = EntityField<qreal>("typedouble", "ts_sqlserverdefaulttestint");
-        EntityField<qreal> typedoublenull = EntityField<qreal>("typedoublenull", "ts_sqlserverdefaulttestint");
         EntityField<qreal> typedecimal = EntityField<qreal>("typedecimal", "ts_sqlserverdefaulttestint");
         EntityField<qreal> typedecimalnull = EntityField<qreal>("typedecimalnull", "ts_sqlserverdefaulttestint");
         EntityField<qreal> typenumeric = EntityField<qreal>("typenumeric", "ts_sqlserverdefaulttestint");
@@ -146,8 +134,6 @@ public:
             typebigintnull = EntityField<qint64>("typebigintnull", tbName);
             typefloat = EntityField<qreal>("typefloat", tbName);
             typefloatnull = EntityField<qreal>("typefloatnull", tbName);
-            typedouble = EntityField<qreal>("typedouble", tbName);
-            typedoublenull = EntityField<qreal>("typedoublenull", tbName);
             typedecimal = EntityField<qreal>("typedecimal", tbName);
             typedecimalnull = EntityField<qreal>("typedecimalnull", tbName);
             typenumeric = EntityField<qreal>("typenumeric", tbName);
@@ -163,7 +149,7 @@ public:
         };
 
         static int fieldSize() {
-            return 18;
+            return 16;
         }
 
         static QString getTableName() {
@@ -186,8 +172,6 @@ public:
                 << "typebigintnull"
                 << "typefloat"
                 << "typefloatnull"
-                << "typedouble"
-                << "typedoublenull"
                 << "typedecimal"
                 << "typedecimalnull"
                 << "typenumeric"
@@ -208,8 +192,6 @@ public:
                 << "typebigintnull"
                 << "typefloat"
                 << "typefloatnull"
-                << "typedouble"
-                << "typedoublenull"
                 << "typedecimal"
                 << "typedecimalnull"
                 << "typenumeric"
@@ -230,8 +212,6 @@ public:
                 << QStringLiteral("typebigintnull bigint null default null")
                 << QStringLiteral("typefloat float null default 0.1")
                 << QStringLiteral("typefloatnull float null default null")
-                << QStringLiteral("typedouble double null default 0.2")
-                << QStringLiteral("typedoublenull double null default null")
                 << QStringLiteral("typedecimal decimal(8,4) null default 0.3")
                 << QStringLiteral("typedecimalnull decimal(9,5) null default null")
                 << QStringLiteral("typenumeric numeric(8) null default 0.4")
@@ -271,8 +251,6 @@ public:
                 << entity.typebigintnull
                 << entity.typefloat
                 << entity.typefloatnull
-                << entity.typedouble
-                << entity.typedoublenull
                 << entity.typedecimal
                 << entity.typedecimalnull
                 << entity.typenumeric
@@ -311,12 +289,6 @@ public:
             }
             if (target == "typefloatnull") {
                 return entity.typefloatnull;
-            }
-            if (target == "typedouble") {
-                return entity.typedouble;
-            }
-            if (target == "typedoublenull") {
-                return entity.typedoublenull;
             }
             if (target == "typedecimal") {
                 return entity.typedecimal;
@@ -365,10 +337,6 @@ public:
                 entity.typefloat = value.value<qreal>();
             } else if (target == "typefloatnull") {
                 entity.typefloatnull = value.value<qreal>();
-            } else if (target == "typedouble") {
-                entity.typedouble = value.value<qreal>();
-            } else if (target == "typedoublenull") {
-                entity.typedoublenull = value.value<qreal>();
             } else if (target == "typedecimal") {
                 entity.typedecimal = value.value<qreal>();
             } else if (target == "typedecimalnull") {
@@ -398,8 +366,6 @@ public:
             entity.typebigintnull = object.value("typebigintnull").toVariant().value<qint64>();
             entity.typefloat = object.value("typefloat").toVariant().value<qreal>();
             entity.typefloatnull = object.value("typefloatnull").toVariant().value<qreal>();
-            entity.typedouble = object.value("typedouble").toVariant().value<qreal>();
-            entity.typedoublenull = object.value("typedoublenull").toVariant().value<qreal>();
             entity.typedecimal = object.value("typedecimal").toVariant().value<qreal>();
             entity.typedecimalnull = object.value("typedecimalnull").toVariant().value<qreal>();
             entity.typenumeric = object.value("typenumeric").toVariant().value<qreal>();
@@ -421,8 +387,6 @@ public:
             object.insert("typebigintnull", entity.typebigintnull);
             object.insert("typefloat", entity.typefloat);
             object.insert("typefloatnull", entity.typefloatnull);
-            object.insert("typedouble", entity.typedouble);
-            object.insert("typedoublenull", entity.typedoublenull);
             object.insert("typedecimal", entity.typedecimal);
             object.insert("typedecimalnull", entity.typedecimalnull);
             object.insert("typenumeric", entity.typenumeric);
@@ -478,14 +442,6 @@ public:
     inline void setTypefloatnull(const qreal& typefloatnull) {this->typefloatnull = typefloatnull;}
     //
     inline qreal getTypefloatnull() const {return typefloatnull;}
-    //
-    inline void setTypedouble(const qreal& typedouble) {this->typedouble = typedouble;}
-    //
-    inline qreal getTypedouble() const {return typedouble;}
-    //
-    inline void setTypedoublenull(const qreal& typedoublenull) {this->typedoublenull = typedoublenull;}
-    //
-    inline qreal getTypedoublenull() const {return typedoublenull;}
     //
     inline void setTypedecimal(const qreal& typedecimal) {this->typedecimal = typedecimal;}
     //

@@ -87,11 +87,48 @@
                       </xs:complexType>
                     </xs:element>
                   </xs:sequence>
-                  <xs:attribute name="type" default="index" use="optional" >
+                  <xs:attribute name="type" default="nonclustered" use="optional" >
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
-                        <xs:enumeration value="index" />
-                        <xs:enumeration value="unique index" />
+                        <xs:enumeration value="clustered" />
+                        <xs:enumeration value="unique clustered" />
+                        <xs:enumeration value="nonclustered" />
+                        <xs:enumeration value="unique nonclustered" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="ignore_dup_key" use="optional">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="on" />
+                        <xs:enumeration value="off" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="allow_row_locks" use="optional">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="on" />
+                        <xs:enumeration value="off" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="allow_page_locks" use="optional">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="on" />
+                        <xs:enumeration value="off" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="data_compression" use="optional">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="none" />
+                        <xs:enumeration value="row" />
+                        <xs:enumeration value="page" />
+                        <xs:enumeration value="columnstore" />
+                        <xs:enumeration value="columnstore_archive" />
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:attribute>

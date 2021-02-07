@@ -154,6 +154,9 @@
     <QtMoc Include="sqlserverentity\SqlServerEntityInclude.h">
       <Filter>Header Files\sqlserverentity</Filter>
     </QtMoc>
+    <QtMoc Include="sqlserverentity\SqlServerConfig.h">
+      <Filter>Header Files\sqlserverentity</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="mysqlentity\mysql_entity.xml">
