@@ -8,6 +8,7 @@
 
 #include "sqliteentity/SqliteConfig.h"
 #include "mysqlentity/MysqlConfig.h"
+#include "sqlserverentity/SqlServerConfig.h"
 
 #include "RunnableHandler.h"
 
@@ -179,6 +180,8 @@ void ConnectionPoolTest::loadConfigByEngineModel() {
         ConnectionPool::release(); //connection pool used by dbload
         break;
     case Engine_SqlServer:
+        DbLoader::init(SqlServerConfig());
+        ConnectionPool::release();
         break;
     }
 }

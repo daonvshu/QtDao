@@ -9,7 +9,7 @@
 - **loader**
   - [x] configure loader
   - [x] driver loader
-  - [ ] connect test
+  - [x] connect test
   - [x] auto create database/table (use config)
   - [x] truncate/drop table
   - [x] drop database
@@ -72,11 +72,11 @@
     - [ ] explain
     - [ ] sqlite write lock
 - **connection pool**
-  - [ ] connection reuse
-  - [ ] work thread connection separate
-  - [ ] work thread connection reuse
+  - [x] connection reuse
+  - [x] work thread connection separate
+  - [x] work thread connection reuse
 - **auto close connection**
-  - [ ] auto close connection when work thread end
+  - [x] auto close connection when work thread end
 - **exception**
   - [x] load configure exception
   - [x] upgrade exception

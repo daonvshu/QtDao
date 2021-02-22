@@ -8,11 +8,7 @@
 #include <QtTest>
 
 void BaseQueryTest::initTestCase() {
-    if (engineModel == Engine_Sqlite) {
-        DbLoader::loadConfig(SqliteConfig());
-    } else if (engineModel == Engine_Mysql) {
-        DbLoader::init(MysqlConfig());
-    }
+    configDb();
     DbLoader::getClient().testConnect();
 }
 

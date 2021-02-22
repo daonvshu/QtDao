@@ -20,13 +20,13 @@ public:
     void execFail(DbErrCode errcode, const QString& lastErr) override {
         Q_UNUSED(errcode)
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
-        std::cout << "----TEST EXECUTE ERR: " << lastErr.toStdString() << std::endl;
+        std::cout << "----TEST EXECUTE ERR: " << lastErr.toLocal8Bit().toStdString() << std::endl;
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
     };
 
     void execWarning(const QString& info) override {
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
-        std::cout << "----TEST EXECUTE WARNING: " << info.toStdString() << std::endl;
+        std::cout << "----TEST EXECUTE WARNING: " << info.toLocal8Bit().toStdString() << std::endl;
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
     };
 };

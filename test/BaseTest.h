@@ -4,6 +4,7 @@
 
 #include "sqliteentity/SqliteConfig.h"
 #include "mysqlentity/MysqlConfig.h"
+#include "sqlserverentity/SqlServerConfig.h"
 #include "EngineModelSelector.h"
 
 #include "dao.h"
@@ -26,6 +27,8 @@ protected:
             DbLoader::init(SqliteConfig());
         } else if (engineModel == Engine_Mysql) {
             DbLoader::init(MysqlConfig());
+        } else if (engineModel == Engine_SqlServer) {
+            DbLoader::init(SqlServerConfig());
         }
         clearCacheAndPrintIfTestFail();
     }
