@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qobject.h>
+#include <functional>
 
 enum SqlClientList {
     ClientSqlite,
@@ -29,15 +30,28 @@ public:
     );
 
     enum IndexType {
+        //sqlite mysql
         INDEX_NORMAL,
         INDEX_UNIQUE,
+        //sql server
+        INDEX_CLUSTERED,
+        INDEX_UNIQUE_CLUSTERED,
+        INDEX_NONCLUSTERED,
+        INDEX_UNIQUE_NONCLUSTERED,
     };
 
     virtual void createIndex(
         const QString& tbName,
         QStringList fields,
         IndexType type = INDEX_NORMAL
-    ) = 0;
+    );
+
+    virtual void createIndex(
+        const QString& tbName,
+        QStringList fields,
+        IndexType type,
+        const std::function<QString(const QString&)>& optionGet
+    );
 
     virtual void renameTable(const QString& oldName, const QString& newName) = 0;
 
@@ -47,9 +61,9 @@ public:
 
     virtual QStringList getTagTableFields(const QString& tbName) = 0;
 
-    virtual void restoreDataBefore(const QString& tbName)  { Q_UNUSED(tbName) }
+    virtual void restoreDataBefore(const QString& tbName);
 
-    virtual void restoreDataAfter(const QString& tbName) { Q_UNUSED(tbName) }
+    virtual void restoreDataAfter(const QString& tbName);
 
     virtual void dropAllIndexOnTable(const QString& tbName) = 0;
 
@@ -73,6 +87,12 @@ private:
 
         template<typename E>
         void createTableIfNotExist();
+
+        template<typename E>
+        void createIndex();
+
+        template<typename E>
+        void restoreData();
         
     protected:
         AbstractClient* client;
@@ -124,16 +144,8 @@ inline void AbstractClient::createTable() {
     if (!checkTableExist(info.getTableName())) {
         //create table
         ClientSelector<C>(this).template createTableIfNotExist<E>();
-        //create normal index
-        auto indexFields = info.getIndexFields();
-        for (const auto& i : indexFields) {
-            createIndex(info.getTableName(), i);
-        }
-        //create unique index
-        auto uniqueIndexFields = info.getUniqueIndexFields();
-        for (const auto& i : uniqueIndexFields) {
-            createIndex(info.getTableName(), i, INDEX_UNIQUE);
-        }
+        //create index
+        ClientSelector<C>(this).template createIndex<E>();
     }
 }
 
@@ -144,7 +156,7 @@ inline void AbstractClient::tableUpgrade() {
     dropAllIndexOnTable(info.getTableName()); //clear indexes!
     renameTable(info.getTableName(), "tmp_" + info.getTableName());
     createTable<C, E>();
-    restoreData2NewTable(info.getTableName(), info.getFields());
+    ClientSelector<C>(this).template restoreData<E>();
     dropTable("tmp_" + info.getTableName());
 }
 
@@ -161,9 +173,9 @@ inline void AbstractClient::Delegate<C, T, E...>::tableUpgrade() {
     Delegate<C, E...>::tableUpgrade();
 }
 
-template<>
+template<SqlClientList C>
 template<typename E>
-inline void AbstractClient::ClientSelector<ClientSqlite>::createTableIfNotExist() {
+inline void AbstractClient::ClientSelector<C>::createTableIfNotExist() {
     typename E::Info info;
     client->createTableIfNotExist(info.getTableName(), info.getFieldsType(), info.getPrimaryKeys());
 }
@@ -175,9 +187,61 @@ inline void AbstractClient::ClientSelector<ClientMysql>::createTableIfNotExist()
     client->createTableIfNotExist(info.getTableName(), info.getTableEngine(), info.getFieldsType(), info.getPrimaryKeys());
 }
 
-template <>
-template <typename E>
-void AbstractClient::ClientSelector<ClientSqlServer>::createTableIfNotExist() {
+template<SqlClientList C>
+template<typename E>
+inline void AbstractClient::ClientSelector<C>::createIndex() {
     typename E::Info info;
-    client->createTableIfNotExist(info.getTableName(), info.getFieldsType(), info.getPrimaryKeys());
+    //create normal index
+    auto indexFields = info.getIndexFields();
+    for (const auto& i : indexFields) {
+        client->createIndex(info.getTableName(), i);
+    }
+    //create unique index
+    auto uniqueIndexFields = info.getUniqueIndexFields();
+    for (const auto& i : uniqueIndexFields) {
+        client->createIndex(info.getTableName(), i, INDEX_UNIQUE);
+    }
+}
+
+template<>
+template<typename E>
+inline void AbstractClient::ClientSelector<ClientSqlServer>::createIndex() {
+    typename E::Info info;
+    auto optionGetter = [&](const QString& indexName) {
+        return info.getIndexOption(indexName);
+    };
+    //create clustered index
+    auto clusteredIndexFields = info.getClusteredIndexFields();
+    for (const auto& i : clusteredIndexFields) {
+        client->createIndex(info.getTableName(), i, INDEX_CLUSTERED, optionGetter);
+    }
+    //create unique clustered index
+    auto uniqueClusteredIndexFields = info.getUniqueClusteredIndexFields();
+    for (const auto& i : uniqueClusteredIndexFields) {
+        client->createIndex(info.getTableName(), i, INDEX_UNIQUE_CLUSTERED, optionGetter);
+    }
+    //create non-clustered index
+    auto nonclusteredIndexFields = info.getNonClusteredIndexFields();
+    for (const auto& i : nonclusteredIndexFields) {
+        client->createIndex(info.getTableName(), i, INDEX_NONCLUSTERED, optionGetter);
+    }
+    //create unique non-clustered index
+    auto uniqueNonclusteredIndexFields = info.getUniqueNonClusteredIndexFields();
+    for (const auto& i : uniqueNonclusteredIndexFields) {
+        client->createIndex(info.getTableName(), i, INDEX_UNIQUE_NONCLUSTERED, optionGetter);
+    }
+}
+
+template<SqlClientList C>
+template<typename E>
+inline void AbstractClient::ClientSelector<C>::restoreData() {
+    typename E::Info info;
+    client->restoreData2NewTable(info.getTableName(), info.getFields());
+}
+
+template<>
+template<typename E>
+inline void AbstractClient::ClientSelector<ClientSqlServer>::restoreData() {
+    typename E::Info info;
+    client->restoreData2NewTable(info.getTableName(), info.getFieldsWithoutTimestamp());
 }

@@ -227,7 +227,7 @@ void runTestSelectFromJoin() {
         QCOMPARE(count1, 3);
     }
     catch (DaoException& e) {
-        QFAIL(("test join in select fail: " + e.reason).toUtf8());
+        QFAIL(("test join in select fail: " + e.reason).toLocal8Bit());
     }
 }
 

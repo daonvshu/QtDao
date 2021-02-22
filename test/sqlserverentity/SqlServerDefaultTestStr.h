@@ -236,6 +236,30 @@ public:
                 << "typetext5";
         }
 
+        static QStringList getFieldsWithoutTimestamp() {
+            return QStringList()
+                << "typechar"
+                << "typechar2"
+                << "typechar3"
+                << "typechar4"
+                << "typechar5"
+                << "typevarchar"
+                << "typevarchar2"
+                << "typevarchar3"
+                << "typevarchar4"
+                << "typevarchar5"
+                << "typevarcharmax"
+                << "typevarcharmax2"
+                << "typevarcharmax3"
+                << "typevarcharmax4"
+                << "typevarcharmax5"
+                << "typetext"
+                << "typetext2"
+                << "typetext3"
+                << "typetext4"
+                << "typetext5";
+        }
+
         static QStringList getFieldsType() {
             return QStringList() 
                 << QStringLiteral("typechar char null default 'string'")
@@ -264,12 +288,24 @@ public:
             return QStringList();
         }
 
-        static QList<QStringList> getIndexFields() {
+        static QList<QStringList> getClusteredIndexFields() {
             return QList<QStringList>();
         }
 
-        static QList<QStringList> getUniqueIndexFields() {
+        static QList<QStringList> getUniqueClusteredIndexFields() {
             return QList<QStringList>();
+        }
+
+        static QList<QStringList> getNonClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QList<QStringList> getUniqueNonClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QString getIndexOption(const QString& name) {
+            return QString();
         }
 
         static bool isAutoIncrement(const QString& name) {

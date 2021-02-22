@@ -200,6 +200,26 @@ public:
                 << "typerealnull";
         }
 
+        static QStringList getFieldsWithoutTimestamp() {
+            return QStringList()
+                << "typetinyint"
+                << "typetinyintnull"
+                << "typesmallint"
+                << "typesmallintnull"
+                << "typeint"
+                << "typeintnull"
+                << "typebigint"
+                << "typebigintnull"
+                << "typefloat"
+                << "typefloatnull"
+                << "typedecimal"
+                << "typedecimalnull"
+                << "typenumeric"
+                << "typenumericnull"
+                << "typereal"
+                << "typerealnull";
+        }
+
         static QStringList getFieldsType() {
             return QStringList() 
                 << QStringLiteral("typetinyint tinyint null default 1")
@@ -224,12 +244,24 @@ public:
             return QStringList();
         }
 
-        static QList<QStringList> getIndexFields() {
+        static QList<QStringList> getClusteredIndexFields() {
             return QList<QStringList>();
         }
 
-        static QList<QStringList> getUniqueIndexFields() {
+        static QList<QStringList> getUniqueClusteredIndexFields() {
             return QList<QStringList>();
+        }
+
+        static QList<QStringList> getNonClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QList<QStringList> getUniqueNonClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QString getIndexOption(const QString& name) {
+            return QString();
         }
 
         static bool isAutoIncrement(const QString& name) {

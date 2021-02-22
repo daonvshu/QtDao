@@ -236,6 +236,30 @@ public:
                 << "typexml";
         }
 
+        static QStringList getFieldsWithoutTimestamp() {
+            return QStringList()
+                << "typebit"
+                << "typebitnull"
+                << "typebinary"
+                << "typebinary2"
+                << "typebinary3"
+                << "typebinary4"
+                << "typebinary5"
+                << "typevarbinary"
+                << "typevarbinary2"
+                << "typevarbinary3"
+                << "typevarbinary4"
+                << "typevarbinary5"
+                << "typevarbinarymax"
+                << "typevarbinarymax2"
+                << "typevarbinarymax3"
+                << "typevarbinarymax4"
+                << "typevarbinarymax5"
+                << "typevariant"
+                << "typeuniqueidentifier"
+                << "typexml";
+        }
+
         static QStringList getFieldsType() {
             return QStringList() 
                 << QStringLiteral("typebit bit null default 0")
@@ -264,12 +288,24 @@ public:
             return QStringList();
         }
 
-        static QList<QStringList> getIndexFields() {
+        static QList<QStringList> getClusteredIndexFields() {
             return QList<QStringList>();
         }
 
-        static QList<QStringList> getUniqueIndexFields() {
+        static QList<QStringList> getUniqueClusteredIndexFields() {
             return QList<QStringList>();
+        }
+
+        static QList<QStringList> getNonClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QList<QStringList> getUniqueNonClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QString getIndexOption(const QString& name) {
+            return QString();
         }
 
         static bool isAutoIncrement(const QString& name) {

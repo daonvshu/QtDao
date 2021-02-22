@@ -54,7 +54,6 @@ public:
         typedatetime2 = QDateTime::currentDateTime();
         typedatetime3 = QDateTime::currentDateTime();
         typedatetime4 = QDateTime();
-        typetimestamp = QByteArray();
     }
 
     SqlServerDefaultTestTime(
@@ -85,6 +84,24 @@ public:
     , typedatetime4(typedatetime4)
     , typetimestamp(typetimestamp)
     {
+    }
+
+    SqlServerDefaultTestTime(
+        const QByteArray& typetimestamp
+    ) : typetimestamp(typetimestamp)
+    {
+        typetime = QTime::fromString("12:59:59.678");
+        typetime2 = QTime::currentTime();
+        typetime3 = QTime::currentTime();
+        typetime4 = QTime();
+        typedate = QDate::fromString("2020-01-01");
+        typedate2 = QDate::currentDate();
+        typedate3 = QDate::currentDate();
+        typedate4 = QDate();
+        typedatetime = QDateTime::fromString("2020-01-01 12:59:59.678");
+        typedatetime2 = QDateTime::currentDateTime();
+        typedatetime3 = QDateTime::currentDateTime();
+        typedatetime4 = QDateTime();
     }
 
 public:
@@ -173,6 +190,22 @@ public:
                 << "typetimestamp";
         }
 
+        static QStringList getFieldsWithoutTimestamp() {
+            return QStringList()
+                << "typetime"
+                << "typetime2"
+                << "typetime3"
+                << "typetime4"
+                << "typedate"
+                << "typedate2"
+                << "typedate3"
+                << "typedate4"
+                << "typedatetime"
+                << "typedatetime2"
+                << "typedatetime3"
+                << "typedatetime4";
+        }
+
         static QStringList getFieldsType() {
             return QStringList() 
                 << QStringLiteral("typetime time(3) null default '12:59:59.678'")
@@ -183,23 +216,35 @@ public:
                 << QStringLiteral("typedate2 date null default null")
                 << QStringLiteral("typedate3 date null default getdate()")
                 << QStringLiteral("typedate4 date null default null")
-                << QStringLiteral("typedatetime datetime(3) null default '2020-01-01 12:59:59.678'")
+                << QStringLiteral("typedatetime datetime null default '2020-01-01 12:59:59.678'")
                 << QStringLiteral("typedatetime2 datetime2 null default null")
                 << QStringLiteral("typedatetime3 datetimeoffset null default getdate()")
                 << QStringLiteral("typedatetime4 datetime null default null")
-                << QStringLiteral("typetimestamp timestamp null default null");
+                << QStringLiteral("typetimestamp timestamp");
         }
 
         static QStringList getPrimaryKeys() {
             return QStringList();
         }
 
-        static QList<QStringList> getIndexFields() {
+        static QList<QStringList> getClusteredIndexFields() {
             return QList<QStringList>();
         }
 
-        static QList<QStringList> getUniqueIndexFields() {
+        static QList<QStringList> getUniqueClusteredIndexFields() {
             return QList<QStringList>();
+        }
+
+        static QList<QStringList> getNonClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QList<QStringList> getUniqueNonClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QString getIndexOption(const QString& name) {
+            return QString();
         }
 
         static bool isAutoIncrement(const QString& name) {

@@ -7,28 +7,28 @@
   - [ ] obfuscate field
 
 - **loader**
-  - [ ] configure loader
-  - [ ] driver loader
+  - [x] configure loader
+  - [x] driver loader
   - [ ] connect test
-  - [ ] auto create database/table (use config)
-  - [ ] truncate/drop table
-  - [ ] drop database
+  - [x] auto create database/table (use config)
+  - [x] truncate/drop table
+  - [x] drop database
   - [ ] ~~database switch~~
 - **upgrader**
-  - [ ] version check
-  - [ ] table upgrade
+  - [x] version check
+  - [x] table upgrade
 - **log**
   - [x] sql statement print 
   - [x] value list print
 - **entity generator**
-  - [ ] field getter/setter
-  - [ ] table field
-  - [ ] transient field
-  - [ ] default value
-  - [ ] function query result getter
+  - [x] field getter/setter
+  - [x] table field
+  - [x] transient field
+  - [x] default value
+  - [x] function query result getter
 - **query condition**
-  - [ ] operator field <-> value
-  - [ ] operator field <-> field
+  - [x] operator field <-> value
+  - [x] operator field <-> field
   - [ ] ~~operator field <-> function~~
   - [ ] ~~operator function <-> function~~
   - [ ] ~~operator field <-> select results~~(move to function query)

@@ -12,14 +12,14 @@
     <item name="number" type="int" default="0" jsonkey="json_number"/>
     <item name="number2" type="int" jsonkey="json_number2"/>
     <item name="nametmp" type="text" transient="true" note="临时类型" />
-    <index type="unique index">
+    <index type="unique nonclustered">
       <field seq="asc">name</field>
       <field seq="desc">number</field>
     </index>
     <index>
       <field>number2</field>
     </index>
-    <index>
+    <index allow_row_locks="on" allow_page_locks="off" data_compression="none">
       <field>number</field>
       <field>number2</field>
     </index>
@@ -69,12 +69,12 @@
     <item name="typedate3" type="date" default="now"/>
     <item name="typedate4" type="date" default="null"/>
 
-    <item name="typedatetime" type="datetime" bitsize="3" default="2020-01-01 12:59:59.678"/>
+    <item name="typedatetime" type="datetime" default="2020-01-01 12:59:59.678"/>
     <item name="typedatetime2" type="datetime2" default='QDateTime::currentDateTime()'/>
     <item name="typedatetime3" type="datetimeoffset" default="now"/>
     <item name="typedatetime4" type="datetime" default="null"/>
 
-    <item name="typetimestamp" type="timestamp" default="null"/>
+    <item name="typetimestamp" type="timestamp"/>
   </tb>
   <tb name="SqlServerDefaultTestStr" declaremetatype="true">
     <!--string type-->

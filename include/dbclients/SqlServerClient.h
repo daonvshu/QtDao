@@ -18,7 +18,8 @@ public:
     void createIndex(
         const QString& tbName,
         QStringList fields,
-        IndexType type = INDEX_NORMAL
+        IndexType type,
+        const std::function<QString(const QString&)>& optionGet
     );
 
     void renameTable(const QString& oldName, const QString& newName);
@@ -28,6 +29,10 @@ public:
     void truncateTable(const QString& tbName);
 
     QStringList getTagTableFields(const QString& tbName);
+
+    void restoreDataBefore(const QString& tbName);
+
+    void restoreDataAfter(const QString& tbName);
 
     void dropAllIndexOnTable(const QString& tbName);
 };

@@ -257,7 +257,7 @@ void runSelectFromSelectTest() {
         QCOMPARE(count, 1);
     }
     catch (DaoException& e) {
-        QFAIL(("test select from select fail!" + e.reason).toUtf8());
+        QFAIL(("test select from select fail!" + e.reason).toLocal8Bit());
     }
 }
 

@@ -129,7 +129,7 @@ void SqlServerClient::createTableIfNotExist(const QString& tbName, QStringList f
     BaseQuery::queryPrimitiveThrowable(str);
 }
 
-void SqlServerClient::createIndex(const QString& tbName, QStringList fields, IndexType type) {
+void SqlServerClient::createIndex(const QString& tbName, QStringList fields, IndexType type, const std::function<QString(const QString&)>& optionGet) {
     QString str = "create %1 index %2 on %3 (";
     QString indexName = "index";
     for (const auto& field : fields) {
@@ -138,14 +138,27 @@ void SqlServerClient::createIndex(const QString& tbName, QStringList fields, Ind
     }
     QString typeStr = "nonclustered";
     switch (type) {
-    case AbstractClient::INDEX_UNIQUE:
-        typeStr = "unique";
+    case AbstractClient::INDEX_CLUSTERED:
+        typeStr = "clustered";
+        break;
+    case AbstractClient::INDEX_UNIQUE_CLUSTERED:
+        typeStr = "unique clustered";
+        break;
+    case AbstractClient::INDEX_NONCLUSTERED:
+        typeStr = "nonclustered";
+        break;
+    case AbstractClient::INDEX_UNIQUE_NONCLUSTERED:
+        typeStr = "unique nonclustered";
         break;
     default:
         break;
     }
     str = str.chopped(1).arg(typeStr).arg(indexName).arg(tbName);
-    str.append(") with (ignore_dup_key=on,drop_existing=on)");
+    str.append(")");
+    auto option = optionGet(indexName);
+    if (!option.isEmpty()) {
+        str.append(" with (").append(option).append(")");
+    }
 
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLSERVER_CREATE_INDEX_FAIL);
     BaseQuery::queryPrimitiveThrowable(str);
@@ -180,6 +193,24 @@ QStringList SqlServerClient::getTagTableFields(const QString& tbName) {
         fields << query.value(0).toString();
     }
     return fields;
+}
+
+void SqlServerClient::restoreDataBefore(const QString& tbName) {
+    QSqlQuery query = BaseQuery::queryPrimitiveThrowable(QString("select objectproperty(object_id('%1'),'TableHasIdentity')").arg(tbName));
+    if (query.next()) {
+        if (query.value(0).toInt() == 1) {
+            BaseQuery::queryPrimitiveThrowable(QString("set identity_insert %1 on").arg(tbName));
+        }
+    }
+}
+
+void SqlServerClient::restoreDataAfter(const QString& tbName) {
+    QSqlQuery query = BaseQuery::queryPrimitiveThrowable(QString("select objectproperty(object_id('%1'),'TableHasIdentity')").arg(tbName));
+    if (query.next()) {
+        if (query.value(0).toInt() == 1) {
+            BaseQuery::queryPrimitiveThrowable(QString("set identity_insert %1 off").arg(tbName));
+        }
+    }
 }
 
 void SqlServerClient::dropAllIndexOnTable(const QString& tbName) {

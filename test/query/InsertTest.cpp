@@ -30,7 +30,7 @@ void runSetInsertTest() {
             QCOMPARE(numbers, QVariantList() << 1);
         }
             , [&](QString err) {
-            QFAIL(("test set insert fail! " + err).toUtf8());
+            QFAIL(("test set insert fail! " + err).toLocal8Bit());
         });
     } else {
         QFAIL("set insert fail!");
@@ -72,7 +72,7 @@ void runSetInsertBatchTest() {
             QCOMPARE(numbersRes, numbers);
         }
             , [&](QString err) {
-            QFAIL(("test set insert batch fail! " + err).toUtf8());
+            QFAIL(("test set insert batch fail! " + err).toLocal8Bit());
         });
     } else {
         QFAIL("set insert batch fail!");
@@ -126,7 +126,7 @@ void runInsertObjectTest() {
             QCOMPARE(data, E1::Tool::getValueWithoutAutoIncrement(test1));
         }
             , [&](QString err) {
-            QFAIL(("test insert object fail! " + err).toUtf8());
+            QFAIL(("test insert object fail! " + err).toLocal8Bit());
         });
     }
 
@@ -155,7 +155,7 @@ void runInsertObjectTest() {
             QCOMPARE(data, E2::Tool::getValueWithoutAutoIncrement(test3));
         }
             , [&](QString err) {
-            QFAIL(("test insert object fail! " + err).toUtf8());
+            QFAIL(("test insert object fail! " + err).toLocal8Bit());
         });
     }
 }
@@ -211,7 +211,7 @@ void runInsertObjectsTest() {
             QCOMPARE(data, excepted);
         }
             , [&](QString err) {
-            QFAIL(("test insert objects fail! " + err).toUtf8());
+            QFAIL(("test insert objects fail! " + err).toLocal8Bit());
         });
     }
 }
@@ -267,7 +267,7 @@ void runInsertObjects2Test() {
             QCOMPARE(data, excepted);
         }
             , [&](QString err) {
-            QFAIL(("test insert objects 2 fail! " + err).toUtf8());
+            QFAIL(("test insert objects 2 fail! " + err).toLocal8Bit());
         });
     }
 }
@@ -311,7 +311,7 @@ void runInsertOrReplaceTest() {
             QCOMPARE(number2, 100);
         }
             , [&](QString err) {
-            QFAIL(("test insert or update fail! " + err).toUtf8());
+            QFAIL(("test insert or update fail! " + err).toLocal8Bit());
         });
     }
 }

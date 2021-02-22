@@ -119,6 +119,15 @@ public:
                 << "size";
         }
 
+        static QStringList getFieldsWithoutTimestamp() {
+            return QStringList()
+                << "id"
+                << "tbi1"
+                << "tbi2"
+                << "name"
+                << "size";
+        }
+
         static QStringList getFieldsType() {
             return QStringList() 
                 << QStringLiteral("id bigint primary key identity(1,1)")
@@ -132,12 +141,24 @@ public:
             return QStringList() << "id";
         }
 
-        static QList<QStringList> getIndexFields() {
+        static QList<QStringList> getClusteredIndexFields() {
             return QList<QStringList>();
         }
 
-        static QList<QStringList> getUniqueIndexFields() {
+        static QList<QStringList> getUniqueClusteredIndexFields() {
             return QList<QStringList>();
+        }
+
+        static QList<QStringList> getNonClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QList<QStringList> getUniqueNonClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QString getIndexOption(const QString& name) {
+            return QString();
         }
 
         static bool isAutoIncrement(const QString& name) {

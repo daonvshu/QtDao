@@ -23,16 +23,16 @@ public:
 
     void initDbFail(DbErrCode errcode, const QString& reason) {
         Q_UNUSED(errcode)
-        QFAIL(("init db fail:" + reason).toUtf8());
+        QFAIL(("init db fail:" + reason).toLocal8Bit());
     }
 
     void databaseOpenFail(DbErrCode errcode, const QString& failReason) {
         Q_UNUSED(errcode)
-        QFAIL(("database open fail:" + failReason).toUtf8());
+        QFAIL(("database open fail:" + failReason).toLocal8Bit());
     }
 
     void execFail(const QString& lastErr) {
-        QFAIL(("query fail:" + lastErr).toUtf8());
+        QFAIL(("query fail:" + lastErr).toLocal8Bit());
     }
 };
 
@@ -80,6 +80,14 @@ void DbLoaderTest::upgradeTest() {
         MysqlTest1::Info t1info;
         QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
         MysqlTest2::Info t2info;
+        QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
+    } else if (engineModel == Engine_SqlServer) {
+        SqlServerConfig cfg;
+        cfg.ver = 3;
+        DbLoader::init(cfg);
+        SqlServerTest1::Info t1info;
+        QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
+        SqlServerTest2::Info t2info;
         QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
     }
     //test version

@@ -20,6 +20,7 @@ void AbstractClient::restoreData2NewTable(const QString& tbname, QStringList fie
         fieldsStr.chop(1);
         auto sql = QString("insert into %1(%2) select %2 from %3")
             .arg(tbname, fieldsStr, "tmp_" + tbname);
+        BaseQuery::setErrIfQueryFail(DbErrCode::DATABASE_INIT_FAIL);
         restoreDataBefore(tbname);
         BaseQuery::queryPrimitiveThrowable(sql);
         restoreDataAfter(tbname);
@@ -38,6 +39,23 @@ void AbstractClient::createTableIfNotExist(const QString& tbName, const QString&
     Q_UNUSED(fieldsType);
     Q_UNUSED(primaryKeys);
 }
+
+void AbstractClient::createIndex(const QString& tbName, QStringList fields, IndexType type) {
+    Q_UNUSED(tbName);
+    Q_UNUSED(fields);
+    Q_UNUSED(type);
+}
+
+void AbstractClient::createIndex(const QString& tbName, QStringList fields, IndexType type, const std::function<QString(const QString&)>& optionGet) {
+    Q_UNUSED(tbName);
+    Q_UNUSED(fields);
+    Q_UNUSED(type);
+    Q_UNUSED(optionGet);
+}
+
+void AbstractClient::restoreDataBefore(const QString& tbName) { Q_UNUSED(tbName) }
+
+void AbstractClient::restoreDataAfter(const QString& tbName) { Q_UNUSED(tbName) }
 
 QString AbstractClient::translateSqlStatement(const QString& statement, const QVariantList& values) {
     QString tmp = statement;
@@ -62,3 +80,4 @@ QString AbstractClient::translateSqlStatement(const QString& statement, const QV
     }
     return tmp;
 }
+

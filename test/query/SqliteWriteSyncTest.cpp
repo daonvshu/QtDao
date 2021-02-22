@@ -61,7 +61,7 @@ void SqliteWriteSyncTest::testInsertWriteLock() {
             SqliteTest1::Fields sf;
             dao::_select<SqliteTest1>().throwable().filter(sf.name == "test large data insert").build().one();
         } catch (DaoException& e) {
-            lastErr = e.reason.toUtf8();
+            lastErr = e.reason.toLocal8Bit();
         }
         locker.lock();
         if (testQuit) {
@@ -153,7 +153,7 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
                 QMutexLocker l(&locker);
                 insertExit = true;
                 loop.quit();
-                QFAIL(("test sqlite write lock fail #1!" + e.reason).toUtf8());
+                QFAIL(("test sqlite write lock fail #1!" + e.reason).toLocal8Bit());
             }
         }
         loop.quit();
@@ -186,7 +186,7 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
             dao::rollback();
             QMutexLocker l(&locker);
             thread2Running = false;
-            QFAIL(("test sqlite write lock fail #2!" + e.reason).toUtf8());
+            QFAIL(("test sqlite write lock fail #2!" + e.reason).toLocal8Bit());
         }
         QMutexLocker l(&locker);
         thread2Running = false;
@@ -211,7 +211,7 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
         } catch (DaoException& e) {
             QMutexLocker l(&locker);
             thread3Running = false;
-            QFAIL(("test sqlite write lock fail #3!" + e.reason).toUtf8());
+            QFAIL(("test sqlite write lock fail #3!" + e.reason).toLocal8Bit());
         }
         QMutexLocker l(&locker);
         thread3Running = false;

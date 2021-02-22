@@ -101,6 +101,14 @@ public:
                 << "number2";
         }
 
+        static QStringList getFieldsWithoutTimestamp() {
+            return QStringList()
+                << "id"
+                << "name"
+                << "number"
+                << "number2";
+        }
+
         static QStringList getFieldsType() {
             return QStringList() 
                 << QStringLiteral("id bigint primary key identity(1,1)")
@@ -113,15 +121,30 @@ public:
             return QStringList() << "id";
         }
 
-        static QList<QStringList> getIndexFields() {
+        static QList<QStringList> getClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QList<QStringList> getUniqueClusteredIndexFields() {
+            return QList<QStringList>();
+        }
+
+        static QList<QStringList> getNonClusteredIndexFields() {
             return QList<QStringList>()
                 << (QStringList() << "number2")
                 << (QStringList() << "number" << "number2");
         }
 
-        static QList<QStringList> getUniqueIndexFields() {
+        static QList<QStringList> getUniqueNonClusteredIndexFields() {
             return QList<QStringList>()
                 << (QStringList() << "name asc" << "number desc");
+        }
+
+        static QString getIndexOption(const QString& name) {
+            if(name == "index_number_number2") {
+                return "ALLOW_ROW_LOCKS=on,ALLOW_PAGE_LOCKS=off,DATA_COMPRESSION=none";
+            }
+            return QString();
         }
 
         static bool isAutoIncrement(const QString& name) {
