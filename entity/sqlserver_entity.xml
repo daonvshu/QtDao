@@ -4,7 +4,7 @@
     <item name="id" type="bigint" default="-1" constraints="primary key" note="主键"/>
     <item name="name" type="varchar" bitsize="100" constraints="primary key" default="text" note="复合主键"/>
     <item name="number" type="real" note="浮点数字" default="10.0"/>
-    <item name="hex" type="varbinary" note="二进制"/>
+    <item name="hex" type="varbinary" bitsize="1000" note="二进制"/>
   </tb>
   <tb name="SqlServerTest2" declaremetatype="true">
     <item name="id" type="bigint" default="-1" constraints="primary key" autoincrement="true" note="自增长主键"/>

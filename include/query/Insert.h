@@ -196,7 +196,7 @@ inline bool Insert<E>::buildInsertBySetSqlStatement() {
         } else if (DbLoader::getConfig().isMysql()) {
             sql = "replace into %1 (";
         } else {
-            Q_ASSERT(false);
+            Q_ASSERT_X(false, "insert", "not support!");
         }
     }
     sql = sql.arg(info.getTableName());
@@ -235,7 +235,7 @@ inline QString Insert<E>::buildInsertObjectSqlStatement() {
         } else if (DbLoader::getConfig().isMysql()) {
             sql = "replace into %1 (";
         } else {
-            Q_ASSERT(false);
+            Q_ASSERT_X(false, "insert", "not support!");
         }
     }
     sql = sql.arg(info.getTableName());
@@ -270,7 +270,7 @@ inline QString Insert<E>::buildInsertObjects2SqlStatement(int valueSize) {
         } else if (DbLoader::getConfig().isMysql()) {
             sql = "replace into %1 (";
         } else {
-            Q_ASSERT(false);
+            Q_ASSERT_X(false, "insert", "not support!");
         }
     }
     sql = sql.arg(info.getTableName());

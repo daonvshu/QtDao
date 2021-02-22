@@ -34,10 +34,10 @@
   - [ ] ~~operator field <-> select results~~(move to function query)
 - **query executor**
   - insert operator
-    - [ ] object(s) insert
-    - [ ] part field value insert
-    - [ ] insert in select results
-    - [ ] insert or replace
+    - [x] object(s) insert
+    - [x] part field value insert
+    - [x] insert in select results
+    - [ ] ~~insert or replace~~(not support for sqlserver)
   - select operator
     - [ ] unique/list select
     - [ ] ~~multi-table select~~

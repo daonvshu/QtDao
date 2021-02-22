@@ -113,7 +113,7 @@ public:
                 << QStringLiteral("id bigint default -1")
                 << QStringLiteral("name varchar(100) default 'text'")
                 << QStringLiteral("number real null default null")
-                << QStringLiteral("hex varbinary");
+                << QStringLiteral("hex varbinary(1000)");
         }
 
         static QStringList getPrimaryKeys() {

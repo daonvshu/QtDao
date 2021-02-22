@@ -8,6 +8,9 @@
 #include "../mysqlentity/MysqlTest1.h"
 #include "../mysqlentity/MysqlTest2.h"
 
+#include "../sqlserverentity/SqlServerTest1.h"
+#include "../sqlserverentity/SqlServerTest2.h"
+
 void InsertTest::initTestCase() {
     configDb();
 }
@@ -42,6 +45,8 @@ void InsertTest::setInsertTest() {
         runSetInsertTest<SqliteTest1>();
     } else if (engineModel == Engine_Mysql) {
         runSetInsertTest<MysqlTest1>();
+    } else if (engineModel == Engine_SqlServer) {
+        runSetInsertTest<SqlServerTest1>();
     }
 }
 
@@ -84,6 +89,8 @@ void InsertTest::setInsertBatchTest() {
         runSetInsertBatchTest<SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runSetInsertBatchTest<MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runSetInsertBatchTest<SqlServerTest2>();
     }
 }
 
@@ -104,6 +111,14 @@ void InsertTest::insertObjectTest_data() {
             << MysqlTest1(2, "test", 40, "object")
             << MysqlTest1(2, "test", 20, "abc")
             << MysqlTest2("testname", 23, 233);
+    } else if (engineModel == Engine_SqlServer) {
+        QTest::addColumn<SqlServerTest1>("test1");
+        QTest::addColumn<SqlServerTest1>("test2");
+        QTest::addColumn<SqlServerTest2>("test3");
+        QTest::newRow("sqlserver test data")
+            << SqlServerTest1(2, "test", 40, "object")
+            << SqlServerTest1(2, "test", 20, "abc")
+            << SqlServerTest2("testname", 23, 233);
     }
 }
 
@@ -165,6 +180,8 @@ void InsertTest::insertObjectTest() {
         runInsertObjectTest<SqliteTest1, SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runInsertObjectTest<MysqlTest1, MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runInsertObjectTest<SqlServerTest1, SqlServerTest2>();
     }
 }
 
@@ -185,6 +202,14 @@ void InsertTest::insertObjectsTest_data() {
 
         QTest::addColumn<QList<MysqlTest2>>("test");
         QTest::newRow("mysql test data") << test;
+    } else if (engineModel == Engine_SqlServer) {
+        QList<SqlServerTest2> test;
+        test << SqlServerTest2("name1", 1, 11);
+        test << SqlServerTest2("name2", 2, 22);
+        test << SqlServerTest2("name3", 3, 33);
+
+        QTest::addColumn<QList<SqlServerTest2>>("test");
+        QTest::newRow("sqlserver test data") << test;
     }
 }
 
@@ -221,6 +246,8 @@ void InsertTest::insertObjectsTest() {
         runInsertObjectsTest<SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runInsertObjectsTest<MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runInsertObjectsTest<SqlServerTest2>();
     }
 }
 
@@ -241,6 +268,14 @@ void InsertTest::insertObjects2Test_data() {
 
         QTest::addColumn<QList<MysqlTest2>>("test");
         QTest::newRow("mysql test data") << test;
+    } else if (engineModel == Engine_SqlServer) {
+        QList<SqlServerTest2> test;
+        test << SqlServerTest2("name4", 4, 44);
+        test << SqlServerTest2("name5", 5, 55);
+        test << SqlServerTest2("name6", 6, 66);
+
+        QTest::addColumn<QList<SqlServerTest2>>("test");
+        QTest::newRow("sqlserver test data") << test;
     }
 }
 
@@ -277,6 +312,8 @@ void InsertTest::insertObjects2Test() {
         runInsertObjects2Test<SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runInsertObjects2Test<MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runInsertObjects2Test<SqlServerTest2>();
     }
 }
 
@@ -317,6 +354,7 @@ void runInsertOrReplaceTest() {
 }
 
 void InsertTest::insertOrReplaceTest() {
+    PASSSQLSERVER;
     if (engineModel == Engine_Sqlite) {
         runInsertOrReplaceTest<SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
@@ -331,6 +369,9 @@ void InsertTest::testTranscation_data() {
     } else if (engineModel == Engine_Mysql) {
         QTest::addColumn<MysqlTest2>("entity");
         QTest::addRow("mysql test data") << MysqlTest2("test transcation", 10000, 10000);
+    } else if (engineModel == Engine_SqlServer) {
+        QTest::addColumn<SqlServerTest2>("entity");
+        QTest::addRow("sqlserver test data") << SqlServerTest2("test transcation", 10000, 10000);
     }
 }
 
@@ -356,6 +397,8 @@ void InsertTest::testTranscation() {
         runTestTranscation<SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runTestTranscation<MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestTranscation<SqlServerTest2>();
     }
 }
 
