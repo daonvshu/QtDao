@@ -263,3 +263,20 @@ QList<MysqlExplainInfo> BaseQuery::ExplainTool<MysqlExplainInfo>::toExplain(cons
     }
     return result;
 }
+
+//TODO
+QList<SqlServerExplainInfo> BaseQuery::ExplainTool<SqlServerExplainInfo>::toExplain(const QString& statement) {
+    Q_ASSERT_X(DbLoader::getConfig().isSqlServer(), "ExplainTool<SqlServerExplainInfo>", "need config sqlserver");
+    BaseQuery::queryPrimitiveThrowable("set statistics profile on");
+    QSqlQuery query = BaseQuery::queryPrimitiveThrowable(statement);
+    QList<SqlServerExplainInfo> result;
+    while (query.next()) {
+        SqlServerExplainInfo info;
+        auto record = query.record();
+        auto d = record.value(0);
+        auto d2 = record.value(1);
+        result << info;
+    }
+    BaseQuery::queryPrimitiveThrowable("set statistics profile off");
+    return result;
+}

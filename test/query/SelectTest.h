@@ -11,6 +11,10 @@
 #include "../mysqlentity/MysqlTest2.h"
 #include "../mysqlentity/MysqlTest3.h"
 
+#include "../sqlserverentity/SqlServerTest1.h"
+#include "../sqlserverentity/SqlServerTest2.h"
+#include "../sqlserverentity/SqlServerTest3.h"
+
 class SelectTest : public BaseTest {
     Q_OBJECT
 
@@ -53,4 +57,6 @@ private:
     SqliteTest2List sqliteData2;
     MysqlTest1List mysqlData1;
     MysqlTest2List mysqlData2;
+    SqlServerTest1List sqlserverData1;
+    SqlServerTest2List sqlserverData2;
 };

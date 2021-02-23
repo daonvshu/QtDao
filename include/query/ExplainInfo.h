@@ -31,3 +31,7 @@ struct MysqlExplainInfo {
     qreal filtered;
     QString extra;
 };
+
+struct SqlServerExplainInfo {
+    
+};

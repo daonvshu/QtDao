@@ -33,6 +33,19 @@ void SelectTest::initTestCase() {
         mysqlData2 << MysqlTest2("func", 10, -2);
         mysqlData2 << MysqlTest2("func", 50, 0);
         dao::_insert<MysqlTest2>().build().insert2(mysqlData2);
+    } else if (engineModel == Engine_SqlServer) {
+        sqlserverData1 << SqlServerTest1(1, "abc", 10, "");
+        sqlserverData1 << SqlServerTest1(2, "alice", 11, "alice1");
+        sqlserverData1 << SqlServerTest1(3, "bob", 12, "bob boom");
+        sqlserverData1 << SqlServerTest1(4, "client", 14, "1");
+        sqlserverData1 << SqlServerTest1(5, "client", 12, "xxx");
+        dao::_insert<SqlServerTest1>().build().insert2(sqlserverData1);
+
+        sqlserverData2 << SqlServerTest2("joker", 9999, -1);
+        sqlserverData2 << SqlServerTest2("bob", 12, 0);
+        sqlserverData2 << SqlServerTest2("func", 10, -2);
+        sqlserverData2 << SqlServerTest2("func", 50, 0);
+        dao::_insert<SqlServerTest2>().build().insert2(sqlserverData2);
     }
 }
 
@@ -43,11 +56,14 @@ void SelectTest::uniqueSelectTest_data() {
     } else if (engineModel == Engine_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data1") << mysqlData1;
+    } else if (engineModel == Engine_SqlServer) {
+        QTest::addColumn<SqlServerTest1List>("data1");
+        QTest::newRow("sqlserver test data1") << sqlserverData1;
     }
 }
 
 template<typename E>
-void runUniqueSelectTest() {
+void runUniqueSelectTest(EngineModel model) {
     QFETCH(QList<E>, data1);
     typename E::Fields sf1;
     typename E::Tool sft1;
@@ -57,10 +73,18 @@ void runUniqueSelectTest() {
     QVERIFY(d1.getId() != -1);
     QCOMPARE(sft1.getValueWithoutAutoIncrement(data1.at(4)), sft1.getValueWithoutAutoIncrement(d1));
 
-    auto d2 = dao::_select<E>()
-        .filter(sf1.id <= 3)
-        .with(_orderBy(sf1.name.desc()), _limit(1))
-        .build().unique();
+    E d2;
+    if (model == Engine_SqlServer) {
+        d2 = dao::_select<E>()
+            .filter(sf1.id <= 3)
+            .with(_orderBy(sf1.name.desc()))
+            .build().top(1).unique();
+    } else {
+        d2 = dao::_select<E>()
+            .filter(sf1.id <= 3)
+            .with(_orderBy(sf1.name.desc()), _limit(1))
+            .build().unique();
+    }
     QVERIFY(d2.getId() != -1);
     QCOMPARE(sft1.getValueWithoutAutoIncrement(data1.at(2)), sft1.getValueWithoutAutoIncrement(d2));
 
@@ -81,9 +105,11 @@ void runUniqueSelectTest() {
 
 void SelectTest::uniqueSelectTest() {
     if (engineModel == Engine_Sqlite) {
-        runUniqueSelectTest<SqliteTest1>();
+        runUniqueSelectTest<SqliteTest1>(engineModel);
     } else if (engineModel == Engine_Mysql) {
-        runUniqueSelectTest<MysqlTest1>();
+        runUniqueSelectTest<MysqlTest1>(engineModel);
+    } else if (engineModel == Engine_SqlServer) {
+        runUniqueSelectTest<SqlServerTest1>(engineModel);
     }
 }
 
@@ -94,6 +120,9 @@ void SelectTest::listSelectTest_data() {
     } else if (engineModel == Engine_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data1") << mysqlData1;
+    } else if (engineModel == Engine_SqlServer) {
+        QTest::addColumn<SqlServerTest1List>("data1");
+        QTest::newRow("sqlserver test data1") << sqlserverData1;
     }
 }
 
@@ -138,6 +167,8 @@ void SelectTest::listSelectTest() {
         runListSelectTest<SqliteTest1>();
     } else if (engineModel == Engine_Mysql) {
         runListSelectTest<MysqlTest1>();
+    } else if (engineModel == Engine_SqlServer) {
+        runListSelectTest<SqlServerTest1>();
     }
 }
 
@@ -148,6 +179,9 @@ void SelectTest::rawSelectTest_data() {
     } else if (engineModel == Engine_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data1") << mysqlData1;
+    } else if (engineModel == Engine_SqlServer) {
+        QTest::addColumn<SqlServerTest1List>("data1");
+        QTest::newRow("sqlserver test data1") << sqlserverData1;
     }
 }
 
@@ -175,6 +209,8 @@ void SelectTest::rawSelectTest() {
         runRawSelectTest<SqliteTest1>();
     } else if (engineModel == Engine_Mysql) {
         runRawSelectTest<MysqlTest1>();
+    } else if (engineModel == Engine_SqlServer) {
+        runRawSelectTest<SqlServerTest1>();
     }
 }
 
@@ -182,7 +218,7 @@ template<typename E>
 void runFuntionSelectTest() {
     typename E::Fields sf1;
     auto data = dao::_select<E>()
-        .column(sf1.id, _fun("sum(%1) + ? as sumnumber").field(sf1.number).value(5), sf1.name)
+        .column(_fun("sum(%1) + ? as sumnumber").field(sf1.number).value(5))
         .filter(_or(sf1.name.like("a%"), _fun("%1 > case when %2 = ? then ? else ? end").field(sf1.number, sf1.name).value("client", 12, 10)))
         .build().one();
     QCOMPARE(data.__getExtra("sumnumber").toInt(), 52);
@@ -193,6 +229,8 @@ void SelectTest::funtionSelectTest() {
         runFuntionSelectTest<SqliteTest1>();
     } else if (engineModel == Engine_Mysql) {
         runFuntionSelectTest<MysqlTest1>();
+    } else if (engineModel == Engine_SqlServer) {
+        runFuntionSelectTest<SqlServerTest1>();
     }
 }
 
@@ -218,6 +256,8 @@ void SelectTest::countSelectTest() {
         runCountSelectTest<SqliteTest1>();
     } else if (engineModel == Engine_Mysql) {
         runCountSelectTest<MysqlTest1>();
+    } else if (engineModel == Engine_SqlServer) {
+        runCountSelectTest<SqlServerTest1>();
     }
 }
 
@@ -228,6 +268,9 @@ void SelectTest::selectFromSelectTest_data() {
     } else if (engineModel == Engine_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data1") << mysqlData1;
+    } else if (engineModel == Engine_SqlServer) {
+        QTest::addColumn<SqlServerTest1List>("data1");
+        QTest::newRow("sqlserver test data1") << sqlserverData1;
     }
 }
 
@@ -266,6 +309,8 @@ void SelectTest::selectFromSelectTest() {
         runSelectFromSelectTest<SqliteTest1>();
     } else if (engineModel == Engine_Mysql) {
         runSelectFromSelectTest<MysqlTest1>();
+    } else if (engineModel == Engine_SqlServer) {
+        runSelectFromSelectTest<SqlServerTest1>();
     }
 }
 
@@ -278,6 +323,10 @@ void SelectTest::unionSelectTest_data() {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::addColumn<MysqlTest2List>("data2");
         QTest::newRow("mysql test data1") << mysqlData1 << mysqlData2;
+    } else if (engineModel == Engine_SqlServer) {
+        QTest::addColumn<SqlServerTest1List>("data1");
+        QTest::addColumn<SqlServerTest2List>("data2");
+        QTest::newRow("sqlserver test data1") << sqlserverData1 << sqlserverData2;
     }
 }
 
@@ -329,6 +378,8 @@ void SelectTest::unionSelectTest() {
         runUnionSelectTest<SqliteTest1, SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runUnionSelectTest<MysqlTest1, MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runUnionSelectTest<SqlServerTest1, SqlServerTest2>();
     }
 }
 
@@ -339,6 +390,9 @@ void SelectTest::funtionSubSelectTest_data() {
     } else if (engineModel == Engine_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data1") << mysqlData1;
+    } else if (engineModel == Engine_SqlServer) {
+        QTest::addColumn<SqlServerTest1List>("data1");
+        QTest::newRow("sqlserver test data1") << sqlserverData1;
     }
 }
 
@@ -370,6 +424,8 @@ void SelectTest::funtionSubSelectTest() {
         runFuntionSubSelectTest<SqliteTest1, SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runFuntionSubSelectTest<MysqlTest1, MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runFuntionSubSelectTest<SqlServerTest1, SqlServerTest2>();
     }
 }
 
@@ -394,6 +450,14 @@ void SelectTest::explainTest() {
                 mf.size == 1
             ).build().explain<MysqlExplainInfo>();
         QVERIFY(!d.isEmpty());
+    } else if (engineModel == Engine_SqlServer) {
+        SqlServerTest2::Fields sf;
+        auto d = dao::_select<SqlServerTest2>()
+            .filter(
+                sf.id >= 1,
+                sf.name == "func",
+                sf.number != 0
+            ).build().explain<SqlServerExplainInfo>();
     }
 }
 

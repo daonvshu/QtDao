@@ -16,6 +16,18 @@ template<typename E>
 class Select : BaseQuery {
 public:
     /// <summary>
+    /// select top for sqlserver query
+    /// </summary>
+    /// <param name="size">top size</param>
+    /// <param name="percent">top percent</param>
+    /// <returns></returns>
+    Select<E>& top(int size, bool percent = false) {
+        topSize = size;
+        topPercent = percent;
+        return *this;
+    }
+
+    /// <summary>
     /// select a record, report errors when multiple results 
     /// if there are no results, return use default value
     /// </summary>
@@ -61,6 +73,10 @@ protected:
     friend class BaseQueryBuilder;
     friend class RecursiveQueryBuilder;
     friend class FunctionCondition;
+
+private:
+    int topSize = 0;
+    bool topPercent;
 };
 
 template<typename E>
@@ -126,10 +142,15 @@ inline void Select<E>::raw(std::function<void(QSqlQuery&)> callback) {
 
 template<typename E>
 inline void Select<E>::buildFilterSqlStatement() {
-    QString sql = "select %1 from %2";
+    QString sql = "select %1%2 from %3";
     typename E::Info info;
     QVariantList values;
 
+    if (topSize != 0 && DbLoader::getConfig().isSqlServer()) {
+        sql = sql.arg("top " + QString::number(topSize) + (topPercent ? " percent " : " "));
+    } else {
+        sql = sql.arg("");
+    }
     sql = sql.arg(getBindColumns(values));
     if (builder->fromSelectStatement.isEmpty()) {
         sql = sql.arg(info.getTableName());
@@ -178,7 +199,7 @@ template<typename E>
 template<typename I>
 inline QList<I> Select<E>::explain() {
     Q_STATIC_ASSERT_X(ExplainTool<I>::Valid == 1, 
-        "template parameter must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo");
+        "template parameter must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo/SqlServerExplainInfo");
 
     buildFilterSqlStatement();
     auto newStatement = DbLoader::getClient().translateSqlStatement(statement, values);

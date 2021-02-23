@@ -125,3 +125,12 @@ struct BaseQuery::ExplainTool<MysqlExplainInfo> {
 
     static QList<MysqlExplainInfo> toExplain(const QString& statement);
 };
+
+template<>
+struct BaseQuery::ExplainTool<SqlServerExplainInfo> {
+    enum {
+        Valid = 1
+    };
+
+    static QList<SqlServerExplainInfo> toExplain(const QString& statement);
+};

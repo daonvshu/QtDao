@@ -28,7 +28,7 @@
     <item name="id" type="bigint" default="-1" constraints="primary key" autoincrement="true" />
     <item name="tbi1" type="bigint" default="-1" note="绑定到SqlServerTest1 id"/>
     <item name="tbi2" type="bigint" default="-1" note="绑定到SqlServerTest2 id"/>
-    <item name="name" type="text"/>
+    <item name="name" type="varchar(max)"/>
     <item name="size" type="int"/>
 
     <constructor>

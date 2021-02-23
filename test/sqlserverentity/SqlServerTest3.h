@@ -133,7 +133,7 @@ public:
                 << QStringLiteral("id bigint primary key identity(1,1)")
                 << QStringLiteral("tbi1 bigint null default -1")
                 << QStringLiteral("tbi2 bigint null default -1")
-                << QStringLiteral("name text")
+                << QStringLiteral("name varchar(max)")
                 << QStringLiteral("size int");
         }
 
