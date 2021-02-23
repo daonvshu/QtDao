@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     QTEST_SET_MAIN_SOURCE_PATH;
 #endif
     int result = 0;
-    for (int i = 2; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
 #ifndef QT_DAO_TESTCASE
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
         if (i == 0) {

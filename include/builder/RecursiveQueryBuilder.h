@@ -42,6 +42,7 @@ inline RecursiveQueryBuilder& RecursiveQueryBuilder::initialSelect(Select<E>& se
 
 template<typename ...E>
 inline RecursiveQueryBuilder& RecursiveQueryBuilder::initialSelect(Join<E...>& join) {
+    join.insideRecursiveQuery = true;
     join.buildJoinSqlStatement();
     initialQueryStatement = join.statement;
     initialQueryValue = join.values;
@@ -58,6 +59,7 @@ inline RecursiveQueryBuilder& RecursiveQueryBuilder::recursiveSelect(Select<E>& 
 
 template<typename ...E>
 inline RecursiveQueryBuilder& RecursiveQueryBuilder::recursiveSelect(Join<E...>& join) {
+    join.insideRecursiveQuery = true;
     join.buildJoinSqlStatement();
     recursiveQueryStatement = join.statement;
     recursiveQueryValue = join.values;

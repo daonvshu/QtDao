@@ -12,6 +12,10 @@
 #include "../mysqlentity/MysqlTest2.h"
 #include "../mysqlentity/MysqlTest3.h"
 
+#include "../sqlserverentity/SqlServerTest1.h"
+#include "../sqlserverentity/SqlServerTest2.h"
+#include "../sqlserverentity/SqlServerTest3.h"
+
 class JoinTest : public BaseTest {
     Q_OBJECT
 
@@ -58,4 +62,8 @@ private:
     MysqlTest1List mysqlData1;
     MysqlTest2List mysqlData2;
     MysqlTest3List mysqlData3;
+
+    SqlServerTest1List sqlserverData1;
+    SqlServerTest2List sqlserverData2;
+    SqlServerTest3List sqlserverData3;
 };

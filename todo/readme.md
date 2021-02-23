@@ -39,38 +39,39 @@
     - [x] insert in select results
     - [ ] ~~insert or replace~~(not support for sqlserver)
   - select operator
-    - [ ] unique/list select
+    - [x] unique/list select
     - [ ] ~~multi-table select~~
-    - [ ] union select
-    - [ ] inner/left/right/full join
-    - [ ] recursive select
-    - [ ] select in select
-    - [ ] join result <-> select result 
-    - [ ] original query
-    - [ ] custom function query
+    - [x] union select
+    - [x] inner/left/right/full join
+    - [x] recursive select
+    - [x] select in select
+    - [x] join result <-> select result 
+    - [x] original query
+    - [x] custom function query
     - [ ] ~~custom statement query~~
   - count operator
-    - [ ] condition count
+    - [x] condition count
     - [ ] ~~multi-table count~~
-    - [ ] count in select result
+    - [x] count in select result
   - update operator
-    - [ ] set by where update
-    - [ ] object(s) update
+    - [x] set by where update
+    - [x] object(s) update
     - [ ] ~~update with select results~~(move to function query)
   - delete operator
-    - [ ] condition delete
-    - [ ] object(s) delete
+    - [x] condition delete
+    - [x] object(s) delete
     - [ ] ~~delete by select results~~(move to function query)
   - other
-    - [ ] function with sub query
-    - [ ] transaction
-    - [ ] glob
-    - [ ] distinct
-    - [ ] having
+    - [x] function with sub query
+    - [x] transaction
+    - [x] top
+    - [ ] ~~glob~~
+    - [ ] ~~distinct~~
+    - [x] having
     - [ ] between date to date
     - [ ] ~~json type column~~(driver not support)
     - [ ] explain
-    - [ ] sqlite write lock
+    - [ ] ~~sqlite write lock~~
 - **connection pool**
   - [x] connection reuse
   - [x] work thread connection separate

@@ -10,6 +10,9 @@
 #include "../mysqlentity/MysqlTest1.h"
 #include "../mysqlentity/MysqlTest2.h"
 
+#include "../sqlserverentity/SqlServerTest1.h"
+#include "../sqlserverentity/SqlServerTest2.h"
+
 class InsertIntoSelectTest : public BaseTest {
     Q_OBJECT
 
@@ -32,4 +35,5 @@ private slots:
 private:
     SqliteTest1List sqliteData1;
     MysqlTest1List mysqlData1;
+    SqlServerTest1List sqlserverData1;
 };

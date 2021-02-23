@@ -10,6 +10,9 @@
 #include "../mysqlentity/MysqlTest1.h"
 #include "../mysqlentity/MysqlTest2.h"
 
+#include "../sqlserverentity/SqlServerTest1.h"
+#include "../sqlserverentity/SqlServerTest2.h"
+
 void UpdateTest::initTestCase() {
     configDb();
 
@@ -45,6 +48,22 @@ void UpdateTest::initTestCase() {
         data2 << MysqlTest2("func", 10, -2);
         data2 << MysqlTest2("func", 50, 0);
         dao::_insert<MysqlTest2>().build().insert2(data2);
+    } else if (engineModel == Engine_SqlServer) {
+        SqlServerTest1List data1;
+        SqlServerTest2List data2;
+
+        data1 << SqlServerTest1(1, "abc", 10, "");
+        data1 << SqlServerTest1(2, "alice", 11, "alice1");
+        data1 << SqlServerTest1(3, "bob", 12, "bob boom");
+        data1 << SqlServerTest1(4, "client", 14, "1");
+        data1 << SqlServerTest1(5, "client", 12, "xxx");
+        dao::_insert<SqlServerTest1>().build().insert2(data1);
+
+        data2 << SqlServerTest2("joker", 9999, -1);
+        data2 << SqlServerTest2("bob", 10, 0);
+        data2 << SqlServerTest2("func", 10, -2);
+        data2 << SqlServerTest2("func", 50, 0);
+        dao::_insert<SqlServerTest2>().build().insert2(data2);
     }
 }
 
@@ -91,6 +110,8 @@ void UpdateTest::setUpdateTest() {
         runSetUpdateTest<SqliteTest1>();
     } else if (engineModel == Engine_Mysql) {
         runSetUpdateTest<MysqlTest1>();
+    } else if (engineModel == Engine_SqlServer) {
+        runSetUpdateTest<SqlServerTest1>();
     }
 }
 
@@ -130,6 +151,8 @@ void UpdateTest::objectUpdateTest() {
         runObjectUpdateTest<SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runObjectUpdateTest<MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runObjectUpdateTest<SqlServerTest2>();
     }
 }
 

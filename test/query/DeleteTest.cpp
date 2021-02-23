@@ -10,6 +10,9 @@
 #include "../mysqlentity/MysqlTest1.h"
 #include "../mysqlentity/MysqlTest2.h"
 
+#include "../sqlserverentity/SqlServerTest1.h"
+#include "../sqlserverentity/SqlServerTest2.h"
+
 void DeleteTest::initTestCase() {
     configDb();
 
@@ -45,6 +48,22 @@ void DeleteTest::initTestCase() {
         data2 << MysqlTest2("func", 10, -2);
         data2 << MysqlTest2("func", 50, 0);
         dao::_insert<MysqlTest2>().build().insert2(data2);
+    } else if (engineModel == Engine_SqlServer) {
+        SqlServerTest1List data1;
+        SqlServerTest2List data2;
+
+        data1 << SqlServerTest1(1, "abc", 10, "");
+        data1 << SqlServerTest1(2, "alice", 11, "alice1");
+        data1 << SqlServerTest1(3, "bob", 12, "bob boom");
+        data1 << SqlServerTest1(4, "client", 14, "1");
+        data1 << SqlServerTest1(5, "client", 12, "xxx");
+        dao::_insert<SqlServerTest1>().build().insert2(data1);
+
+        data2 << SqlServerTest2("joker", 9999, -1);
+        data2 << SqlServerTest2("bob", 10, 0);
+        data2 << SqlServerTest2("func", 10, -2);
+        data2 << SqlServerTest2("func", 50, 0);
+        dao::_insert<SqlServerTest2>().build().insert2(data2);
     }
 }
 
@@ -69,6 +88,8 @@ void DeleteTest::filterDeleteTest() {
         runFilterDeleteTest<SqliteTest1>();
     } else if (engineModel == Engine_Mysql) {
         runFilterDeleteTest<MysqlTest1>();
+    } else if (engineModel == Engine_SqlServer) {
+        runFilterDeleteTest<SqlServerTest1>();
     }
 }
 
@@ -93,6 +114,8 @@ void DeleteTest::objectDeleteTest() {
         runObjectDeleteTest<SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runObjectDeleteTest<MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runObjectDeleteTest<SqlServerTest2>();
     }
 }
 
@@ -119,6 +142,17 @@ void DeleteTest::truncateTest_data() {
         QTest::addColumn<MysqlTest2>("entity");
         QTest::newRow("mysql test data") << data2 << entity;
 
+    } else if (engineModel == Engine_SqlServer) {
+        SqlServerTest2List data2;
+        data2 << SqlServerTest2("func2", 10, -2);
+        data2 << SqlServerTest2("func2", 50, 0);
+
+        auto entity = SqlServerTest2("func2", 50, 0);
+
+        QTest::addColumn<SqlServerTest2List>("data2");
+        QTest::addColumn<SqlServerTest2>("entity");
+        QTest::newRow("mysql test data") << data2 << entity;
+
     }
 }
 
@@ -141,6 +175,8 @@ void DeleteTest::truncateTest() {
         runTruncateTest<SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runTruncateTest<MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTruncateTest<SqlServerTest2>();
     }
 }
 

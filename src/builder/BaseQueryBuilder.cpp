@@ -26,7 +26,7 @@ void BaseQueryBuilder::from(RecursiveQueryBuilder& builder) {
     Q_ASSERT(!builder.tmpTableName.isEmpty());
 
     fromSelectAs = builder.tmpTableName;
-    fromSelectStatement = QString("with recursive %1 as (%2 %3 %4) ")
+    fromSelectStatement = QString("with %1 as (%2 %3 %4) ")
         .arg(fromSelectAs)
         .arg(builder.initialQueryStatement)
         .arg(builder.unionAll ? "union all" : "union")

@@ -107,7 +107,7 @@ inline void JoinBuilder<E...>::on() {
 template<typename ...E>
 template<typename E2>
 inline JoinBuilder<E...>& JoinBuilder<E...>::from() {
-    mainTable = E2::Info::getSourceName();
+    mainTable = E2::Info::getTableName();
     return *this;
 }
 
@@ -115,7 +115,7 @@ template<typename ...E>
 template<typename E2>
 inline JoinBuilder<E...>& JoinBuilder<E...>::from(Select<E2>& select) {
     BaseQueryBuilder::from(select);
-    mainTable = E2::Info::getSourceName();
+    mainTable = E2::Info::getTableName();
     mainData.fromSelectStatement = fromSelectStatement;
     mainData.fromSelectValues = fromSelectValues;
     mainData.fromSelectAs = fromSelectAs;

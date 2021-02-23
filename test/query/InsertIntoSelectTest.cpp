@@ -21,6 +21,13 @@ void InsertIntoSelectTest::initTestCase() {
         mysqlData1 << MysqlTest1(4, "client", 14, "1");
         mysqlData1 << MysqlTest1(5, "client", 12, "xxx");
         dao::_insert<MysqlTest1>().build().insert2(mysqlData1);
+    } else if (engineModel == Engine_SqlServer) {
+        sqlserverData1 << SqlServerTest1(1, "abc", 10, "");
+        sqlserverData1 << SqlServerTest1(2, "alice", 11, "alice1");
+        sqlserverData1 << SqlServerTest1(3, "bob", 12, "bob boom");
+        sqlserverData1 << SqlServerTest1(4, "client", 14, "1");
+        sqlserverData1 << SqlServerTest1(5, "client", 12, "xxx");
+        dao::_insert<SqlServerTest1>().build().insert2(sqlserverData1);
     }
 
     clearCacheAndPrintIfTestFail();
@@ -33,6 +40,9 @@ void InsertIntoSelectTest::testInsertIntoSelect_data() {
     } else if (engineModel == Engine_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data") << mysqlData1;
+    } else if (engineModel == Engine_SqlServer) {
+        QTest::addColumn<SqlServerTest1List>("data1");
+        QTest::newRow("sqlserver test data") << sqlserverData1;
     }
 }
 
@@ -69,6 +79,8 @@ void InsertIntoSelectTest::testInsertIntoSelect() {
         runTestInsertIntoSelect<SqliteTest1, SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runTestInsertIntoSelect<MysqlTest1, MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestInsertIntoSelect<SqlServerTest1, SqlServerTest2>();
     }
 }
 
@@ -79,6 +91,9 @@ void InsertIntoSelectTest::testInsertIntoJoin_data() {
     } else if (engineModel == Engine_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data") << mysqlData1;
+    } else if (engineModel == Engine_SqlServer) {
+        QTest::addColumn<SqlServerTest1List>("data1");
+        QTest::newRow("sqlserver test data") << sqlserverData1;
     }
 }
 
@@ -122,6 +137,8 @@ void InsertIntoSelectTest::testInsertIntoJoin() {
         runTestInsertIntoJoin<SqliteTest1, SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runTestInsertIntoJoin<MysqlTest1, MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestInsertIntoJoin<SqlServerTest1, SqlServerTest2>();
     }
 }
 

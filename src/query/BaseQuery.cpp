@@ -185,7 +185,6 @@ QSqlQuery BaseQuery::getQuery(bool& prepareOk, bool skipEmptyValue) {
 
 void BaseQuery::bindQueryValues(QSqlQuery& query) {
     for (const auto& d : values) {
-        auto dtype = d.type();
         query.addBindValue(d, d.type() == QVariant::ByteArray ? QSql::Binary : QSql::In);
     }
 }

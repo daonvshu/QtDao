@@ -2,9 +2,6 @@
 
 #include <QtTest>
 
-#include "../sqliteentity/SqliteTest1.h"
-#include "../sqliteentity/SqliteTest2.h"
-
 #include "dao.h"
 
 void JoinTest::initTestCase() {
@@ -50,6 +47,26 @@ void JoinTest::initTestCase() {
         mysqlData3 << MysqlTest3(1, 3, "func group1", 6);
         mysqlData3 << MysqlTest3(1, 4, "func group2", 7);
         dao::_insert<MysqlTest3>().build().insert2(mysqlData3);
+    } else if (engineModel == Engine_SqlServer) {
+        sqlserverData1 << SqlServerTest1(1, "abc", 10, "");
+        sqlserverData1 << SqlServerTest1(2, "alice", 11, "alice1");
+        sqlserverData1 << SqlServerTest1(3, "bob", 12, "bob boom");
+        sqlserverData1 << SqlServerTest1(4, "client", 14, "1");
+        sqlserverData1 << SqlServerTest1(5, "client", 12, "xxx");
+        dao::_insert<SqlServerTest1>().build().insert2(sqlserverData1);
+
+        sqlserverData2 << SqlServerTest2("joker", 9999, -1);
+        sqlserverData2 << SqlServerTest2("bob", 9, 9999);
+        sqlserverData2 << SqlServerTest2("func", 10, 9);
+        sqlserverData2 << SqlServerTest2("func", 50, 10);
+        dao::_insert<SqlServerTest2>().build().insert2(sqlserverData2);
+
+        sqlserverData3 << SqlServerTest3(3, 2, "bob group", 2);
+        sqlserverData3 << SqlServerTest3(4, 1, "client group1", 3);
+        sqlserverData3 << SqlServerTest3(5, 1, "client group2", 3);
+        sqlserverData3 << SqlServerTest3(1, 3, "func group1", 6);
+        sqlserverData3 << SqlServerTest3(1, 4, "func group2", 7);
+        dao::_insert<SqlServerTest3>().build().insert2(sqlserverData3);
     }
     clearCacheAndPrintIfTestFail();
 }
@@ -88,6 +105,8 @@ void JoinTest::testJoinTable() {
         runTestJoinTable<SqliteTest1, SqliteTest2, SqliteTest3>();
     } else if (engineModel == Engine_Mysql) {
         runTestJoinTable<MysqlTest1, MysqlTest2, MysqlTest3>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestJoinTable<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
 
@@ -120,6 +139,8 @@ void JoinTest::testJoinTableUseWith() {
         runTestJoinTableUseWith<SqliteTest1, SqliteTest2, SqliteTest3>();
     } else if (engineModel == Engine_Mysql) {
         runTestJoinTableUseWith<MysqlTest1, MysqlTest2, MysqlTest3>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestJoinTableUseWith<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
 
@@ -153,6 +174,8 @@ void JoinTest::testJoinTableFilterOn() {
         runTestJoinTableFilterOn<SqliteTest1, SqliteTest2, SqliteTest3>();
     } else if (engineModel == Engine_Mysql) {
         runTestJoinTableFilterOn<MysqlTest1, MysqlTest2, MysqlTest3>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestJoinTableFilterOn<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
 
@@ -203,6 +226,8 @@ void JoinTest::testJoinSelfTable() {
         runTestJoinSelfTable<SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
         runTestJoinSelfTable<MysqlTest2>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestJoinSelfTable<SqlServerTest2>();
     }
 }
 
@@ -236,6 +261,8 @@ void JoinTest::testSelectFromJoin() {
         runTestSelectFromJoin<SqliteTest1, SqliteTest2, SqliteTest3>();
     } else if (engineModel == Engine_Mysql) {
         runTestSelectFromJoin<MysqlTest1, MysqlTest2, MysqlTest3>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestSelectFromJoin<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
 
@@ -274,6 +301,8 @@ void JoinTest::testJoinFromSelect() {
         runTestJoinFromSelect<SqliteTest1, SqliteTest2, SqliteTest3>();
     } else if (engineModel == Engine_Mysql) {
         runTestJoinFromSelect<MysqlTest1, MysqlTest2, MysqlTest3>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestJoinFromSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
 
@@ -312,6 +341,8 @@ void JoinTest::testJoinOnSelect() {
         runTestJoinOnSelect<SqliteTest1, SqliteTest2, SqliteTest3>();
     } else if (engineModel == Engine_Mysql) {
         runTestJoinOnSelect<MysqlTest1, MysqlTest2, MysqlTest3>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestJoinOnSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
 
@@ -355,6 +386,8 @@ void JoinTest::testSelectUnionJoin() {
         runTestSelectUnionJoin<SqliteTest1, SqliteTest2, SqliteTest3>();
     } else if (engineModel == Engine_Mysql) {
         runTestSelectUnionJoin<MysqlTest1, MysqlTest2, MysqlTest3>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestSelectUnionJoin<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
 
@@ -402,6 +435,8 @@ void JoinTest::testJoinUnionSelect() {
         runTestJoinUnionSelect<SqliteTest1, SqliteTest2, SqliteTest3>();
     } else if (engineModel == Engine_Mysql) {
         runTestJoinUnionSelect<MysqlTest1, MysqlTest2, MysqlTest3>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestJoinUnionSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
 
@@ -449,25 +484,27 @@ void JoinTest::testJoinUnionJoin() {
         runTestJoinUnionJoin<SqliteTest1, SqliteTest2, SqliteTest3>();
     } else if (engineModel == Engine_Mysql) {
         runTestJoinUnionJoin<MysqlTest1, MysqlTest2, MysqlTest3>();
+    } else if (engineModel == Engine_SqlServer) {
+        runTestJoinUnionJoin<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
 
-void JoinTest::recursiveQueryTest() {
-    PASSMYSQL;
-    class TmpTest2 : public dao::self<SqliteTest2> {};
+template<typename E1, typename E2, typename E3>
+void runRecursiveQueryTest() {
+    class TmpTest2 : public dao::self<E2> {};
 
-    SqliteTest1::Fields sf1;
-    SqliteTest2::Fields sf2;
-    SqliteTest3::Fields sf3;
+    typename E1::Fields sf1;
+    typename E2::Fields sf2;
+    typename E3::Fields sf3;
     TmpTest2::Fields sfs2;
 
-    auto init = dao::_select<SqliteTest2>().filter(sf2.number == 50).build();
-    auto recur = dao::_join<SqliteTest2, TmpTest2>()
-            .columnAll<SqliteTest2>()
-            .from<SqliteTest2>()
-            .innerJoin<TmpTest2>().on(sfs2.number2 == sf2.number)
-            .build();
-    auto recursive = dao::_recursive()
+    auto init = dao::_select<E2>().filter(sf2.number == 50).build();
+    auto recur = dao::_join<E2, TmpTest2>()
+        .template columnAll<E2>()
+        .template from<E2>()
+        .innerJoin<TmpTest2>().on(sf2.number == sfs2.number2)
+        .build();
+    auto recursive = dao::_recursive(true)
         .tmp<TmpTest2>()
         .initialSelect(init)
         .recursiveSelect(recur);
@@ -480,18 +517,18 @@ void JoinTest::recursiveQueryTest() {
     }
     QCOMPARE(numbers, QVariantList() << 9 << 10 << 50 << 9999);
 
-    auto join1 = dao::_join<TmpTest2, SqliteTest1, SqliteTest3>()
+    auto join1 = dao::_join<TmpTest2, E3, E1>()
         .column(sfs2.name, sf1.name, sf3.name, sf1.number, sfs2.number)
         .from(recursive)
-        .innerJoin<SqliteTest1>().on(sf1.id == sf3.tbi1)
-        .innerJoin<SqliteTest3>().on(sf3.tbi2 == sfs2.id, sf3.name.like("client%"))
+        .template innerJoin<E3>().on(sf3.tbi2 == sfs2.id, sf3.name.like("client%"))
+        .template innerJoin<E1>().on(sf1.id == sf3.tbi1)
         .build().list();
 
     QVariantList data;
     for (const auto& r : join1) {
         auto s2 = std::get<0>(r);
-        auto s1 = std::get<1>(r);
-        auto s3 = std::get<2>(r);
+        auto s3 = std::get<1>(r);
+        auto s1 = std::get<2>(r);
         data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
     }
     QCOMPARE(
@@ -501,18 +538,18 @@ void JoinTest::recursiveQueryTest() {
         << "joker" << "client" << "client group2" << 12 << 9999
     );
 
-    auto join2 = dao::_join<SqliteTest1, TmpTest2, SqliteTest3>()
+    auto join2 = dao::_join<E1, E3, TmpTest2>()
         .column(sfs2.name, sf1.name, sf3.name, sf1.number, sfs2.number)
-        .from<SqliteTest1>()
+        .template from<E1>()
+        .template innerJoin<E3>().on(sf3.tbi1 == sf1.id, sf3.name.like("client%"))
         .innerJoin(recursive).on(sfs2.id == sf3.tbi2)
-        .innerJoin<SqliteTest3>().on(sf3.tbi1 == sf1.id, sf3.name.like("client%"))
         .build().list();
 
     data.clear();
     for (const auto& r : join2) {
         auto s1 = std::get<0>(r);
-        auto s2 = std::get<1>(r);
-        auto s3 = std::get<2>(r);
+        auto s3 = std::get<1>(r);
+        auto s2 = std::get<2>(r);
         data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
     }
     QCOMPARE(
@@ -523,6 +560,15 @@ void JoinTest::recursiveQueryTest() {
     );
 }
 
+void JoinTest::recursiveQueryTest() {
+    PASSMYSQL;
+    if (engineModel == Engine_Sqlite) {
+        runRecursiveQueryTest<SqliteTest1, SqliteTest2, SqliteTest3>();
+    } else if (engineModel == Engine_SqlServer) {
+        runRecursiveQueryTest<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
+    }
+}
+
 void JoinTest::functionSubJoinTest_data() {
     if (engineModel == Engine_Sqlite) {
         QTest::addColumn<SqliteTest1List>("data1");
@@ -530,6 +576,9 @@ void JoinTest::functionSubJoinTest_data() {
     } else if (engineModel == Engine_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data") << mysqlData1;
+    } else if (engineModel == Engine_SqlServer) {
+        QTest::addColumn<SqlServerTest1List>("data1");
+        QTest::newRow("sqlserver test data") << sqlserverData1;
     }
 }
 
@@ -571,6 +620,8 @@ void JoinTest::functionSubJoinTest() {
         runFunctionSubJoinTest<SqliteTest1, SqliteTest2, SqliteTest3>();
     } else if (engineModel == Engine_Mysql) {
         runFunctionSubJoinTest<MysqlTest1, MysqlTest2, MysqlTest3>();
+    } else if (engineModel == Engine_SqlServer) {
+        runFunctionSubJoinTest<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
 
@@ -606,6 +657,9 @@ void JoinTest::explainTest() {
         auto d = getExplainPrepareSelect<MysqlTest1, MysqlTest2, MysqlTest3>()
             .explain<MysqlExplainInfo>();
         QVERIFY(!d.isEmpty());
+    } else if (engineModel == Engine_SqlServer) {
+        auto d = getExplainPrepareSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>()
+            .explain<SqlServerExplainInfo>();
     }
 }
 

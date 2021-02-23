@@ -43,7 +43,7 @@ public:
     /// <summary>
     /// explain query statement
     /// </summary>
-    /// <typeparam name="I">must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo</typeparam>
+    /// <typeparam name="I">must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo/SqlServerExplainInfo</typeparam>
     /// <returns>SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo</returns>
     template<typename I>
     QList<I> explain();
@@ -56,6 +56,8 @@ private:
 
     QHash<QString, QString> tableOrder;
     QList<QPair<QString, QString>> sequenceTableNames;
+
+    bool insideRecursiveQuery = false;
 
     friend class JoinBuilder<E...>;
     Join(bool throwable, JoinBuilder<E...>* builder) : BaseQuery(throwable, builder) {}
@@ -132,14 +134,16 @@ inline void Join<E...>::buildJoinSqlStatement() {
         sql.append(getJoinTypeName(joinData.joinType));
         sql.append(' ');
         if (joinData.fromSelectStatement.isEmpty()) {
-            sql.append(tb.second);
+            sql.append(insideRecursiveQuery ? tb.first : tb.second);
         } else {
             if (joinData.recursiveQuery) {
                 sql.prepend(joinData.fromSelectStatement).append(joinData.fromSelectAs);
+                joinData.fromSelectValues.append(values);
+                joinData.fromSelectValues.swap(values);
             } else {
                 sql.append("(").append(joinData.fromSelectStatement).append(")");
+                values.append(joinData.fromSelectValues);
             }
-            values.append(joinData.fromSelectValues);
         }
         sql.append(' ').append(prefixGetter(tb.first));
         sql.chop(1);
@@ -275,7 +279,7 @@ template<typename ...E>
 template<typename I>
 inline QList<I> Join<E...>::explain() {
     Q_STATIC_ASSERT_X(ExplainTool<I>::Valid == 1,
-        "template parameter must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo");
+        "template parameter must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo/SqlServerExplainInfo");
 
     buildJoinSqlStatement();
     auto newStatement = DbLoader::getClient().translateSqlStatement(statement, values);

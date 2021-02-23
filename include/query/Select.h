@@ -57,7 +57,7 @@ public:
     /// <summary>
     /// explain query statement
     /// </summary>
-    /// <typeparam name="I">must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo</typeparam>
+    /// <typeparam name="I">must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo/SqlServerExplainInfo</typeparam>
     /// <returns>SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo</returns>
     template<typename I>
     QList<I> explain();
@@ -158,10 +158,12 @@ inline void Select<E>::buildFilterSqlStatement() {
         if (builder->recursiveQuery) {
             sql = sql.arg(builder->fromSelectAs);
             sql = builder->fromSelectStatement + sql;
+            builder->fromSelectValues.append(values);
+            builder->fromSelectValues.swap(values);
         } else {
             sql = sql.arg('(' + builder->fromSelectStatement + ") as " + builder->fromSelectAs);
+            values.append(builder->fromSelectValues);
         }
-        values.append(builder->fromSelectValues);
     }
 
     if (!builder->filterCondition.isEmpty()) {
