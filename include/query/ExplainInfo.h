@@ -33,5 +33,24 @@ struct MysqlExplainInfo {
 };
 
 struct SqlServerExplainInfo {
-    
+    qint64 Rows;
+    qint64 Executes;
+    QString StmtText;
+    int StmtId;
+    int NodeId;
+    int Parent;
+    QString PhysicalOp;
+    QString LogicalOp;
+    QString Argument;
+    QString DefinedValues;
+    qreal EstimateRows;
+    qreal EstimateIO;
+    qreal EstimateCPU;
+    int AvgRowSize;
+    qreal TotalSubtreeCost;
+    QString OutputList;
+    QString Warnings;
+    QString Type;
+    uint Parallel;
+    qreal EstimateExecutions;
 };

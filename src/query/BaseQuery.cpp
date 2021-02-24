@@ -266,16 +266,36 @@ QList<MysqlExplainInfo> BaseQuery::ExplainTool<MysqlExplainInfo>::toExplain(cons
 //TODO
 QList<SqlServerExplainInfo> BaseQuery::ExplainTool<SqlServerExplainInfo>::toExplain(const QString& statement) {
     Q_ASSERT_X(DbLoader::getConfig().isSqlServer(), "ExplainTool<SqlServerExplainInfo>", "need config sqlserver");
-    BaseQuery::queryPrimitiveThrowable("set statistics profile on");
-    QSqlQuery query = BaseQuery::queryPrimitiveThrowable(statement);
     QList<SqlServerExplainInfo> result;
-    while (query.next()) {
-        SqlServerExplainInfo info;
-        auto record = query.record();
-        auto d = record.value(0);
-        auto d2 = record.value(1);
-        result << info;
+    try {
+        QSqlQuery query = BaseQuery::queryPrimitiveThrowable("SET STATISTICS PROFILE ON;" + statement + ";SET STATISTICS PROFILE OFF");
+        if (query.nextResult()) {
+            while (query.next()) {
+                SqlServerExplainInfo info;
+                info.Rows = query.value("Rows").toLongLong();
+                info.Executes = query.value("Executes").toLongLong();
+                info.StmtText = query.value("StmtText").toString();
+                info.StmtId = query.value("StmtId").toInt();
+                info.NodeId = query.value("NodeId").toInt();
+                info.Parent = query.value("Parent").toInt();
+                info.PhysicalOp = query.value("PhysicalOp").toString();
+                info.LogicalOp = query.value("LogicalOp").toString();
+                info.Argument = query.value("Argument").toString();
+                info.DefinedValues = query.value("DefinedValues").toString();
+                info.EstimateRows = query.value("EstimateRows").toDouble();
+                info.EstimateIO = query.value("EstimateIO").toDouble();
+                info.EstimateCPU = query.value("EstimateCPU").toDouble();
+                info.AvgRowSize = query.value("AvgRowSize").toInt();
+                info.TotalSubtreeCost = query.value("TotalSubtreeCost").toDouble();
+                info.OutputList = query.value("OutputList").toString();
+                info.Warnings = query.value("Warnings").toString();
+                info.Type = query.value("Type").toString();
+                info.Parallel = query.value("Parallel").toUInt();
+                info.EstimateExecutions = query.value("EstimateExecutions").toDouble();
+                result << info;
+            }
+        }
+    } catch (DaoException&) {
     }
-    BaseQuery::queryPrimitiveThrowable("set statistics profile off");
     return result;
 }

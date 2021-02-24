@@ -660,6 +660,7 @@ void JoinTest::explainTest() {
     } else if (engineModel == Engine_SqlServer) {
         auto d = getExplainPrepareSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>()
             .explain<SqlServerExplainInfo>();
+        QVERIFY(!d.isEmpty());
     }
 }
 

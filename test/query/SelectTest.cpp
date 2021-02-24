@@ -458,6 +458,7 @@ void SelectTest::explainTest() {
                 sf.name == "func",
                 sf.number != 0
             ).build().explain<SqlServerExplainInfo>();
+        QVERIFY(!d.isEmpty());
     }
 }
 
