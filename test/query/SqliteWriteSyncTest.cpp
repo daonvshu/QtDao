@@ -142,7 +142,7 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
                 std::cout << "testing sqlite write lock: " << lastDiff << std::endl;
             }
             try {
-                SqliteTest2 data("test", number1, 0, "aaa");
+                SqliteTest2 data("test1", number1, 0, "aaa");
                 /*std::cout << "prepare insert thread1: " << QThread::currentThreadId()
                     << " t -> " << QDateTime::currentMSecsSinceEpoch() << std::endl;*/
                 dao::_insert<SqliteTest2>().throwable().build().insert(data);
@@ -172,7 +172,7 @@ void SqliteWriteSyncTest::testTranscationWriteLock() {
                 }
                 locker.unlock();
                 if (number2 % 2) {
-                    SqliteTest2 data("test", number2, 0, "aaa");
+                    SqliteTest2 data("test2", number2, 0, "aaa");
                     /*std::cout << "prepare insert thread2: " << QThread::currentThreadId()
                         << " t -> " << QDateTime::currentMSecsSinceEpoch() << std::endl;*/
                     dao::_insert<SqliteTest2>().throwable().build().insert(data);

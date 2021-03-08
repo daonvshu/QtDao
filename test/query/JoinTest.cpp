@@ -496,13 +496,13 @@ void runRecursiveQueryTest() {
     typename E1::Fields sf1;
     typename E2::Fields sf2;
     typename E3::Fields sf3;
-    TmpTest2::Fields sfs2;
+    typename TmpTest2::Fields sfs2;
 
     auto init = dao::_select<E2>().filter(sf2.number == 50).build();
     auto recur = dao::_join<E2, TmpTest2>()
         .template columnAll<E2>()
         .template from<E2>()
-        .innerJoin<TmpTest2>().on(sf2.number == sfs2.number2)
+        .template innerJoin<TmpTest2>().on(sf2.number == sfs2.number2)
         .build();
     auto recursive = dao::_recursive(true)
         .tmp<TmpTest2>()

@@ -34,7 +34,7 @@ void SqlServerClient::testConnect() {
 
 void SqlServerClient::createDatabase() {
     QString lastErrStr;
-    DbErrCode::Code code;
+    DbErrCode::Code code = DbErrCode::ERR_NOT_SET;
     [&] {
         auto db = ConnectionPool::prepareConnect("createconnection", "master");
         if (!db.open()) {

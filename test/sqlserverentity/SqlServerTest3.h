@@ -158,6 +158,7 @@ public:
         }
 
         static QString getIndexOption(const QString& name) {
+            Q_UNUSED(name);
             return QString();
         }
 
