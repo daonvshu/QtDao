@@ -15,7 +15,7 @@ select *from test1 where name='client' and (number=12 or name='bob')
 下面是当前受支持的数据库
 - [x] sqlite
 - [x] mysql
-- [ ] sqlserver
+- [x] sqlserver
 
 ## 如何使用
 下载后使用[beta分支](https://github.com/daonvshu/QtDao/tree/qtdao-2.0-beta2)，使用步骤[看这](https://github.com/daonvshu/QtDao/blob/master/doc/setup/setup.md)
@@ -43,7 +43,7 @@ select *from test1 where name='client' and (number=12 or name='bob')
     - 联合(union)
     - join
     - 递归查询(recursive)
-    - 子查询（嵌套查询）
+    - 子查询（嵌套查询）(~~mysql~~)
     - 自定义语句查询
     - 计数(count)
   - update([demo](https://github.com/daonvshu/QtDao/blob/master/doc/api/update.md))
