@@ -42,8 +42,8 @@ select *from test1 where name='client' and (number=12 or name='bob')
     - 对象查询
     - 联合(union)
     - join
-    - 递归查询(recursive)
-    - 子查询（嵌套查询）(~~mysql~~)
+    - 递归查询(recursive)(~~mysql~~)
+    - 子查询（嵌套查询）
     - 自定义语句查询
     - 计数(count)
   - update([demo](https://github.com/daonvshu/QtDao/blob/master/doc/api/update.md))
