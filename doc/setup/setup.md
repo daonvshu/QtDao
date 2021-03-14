@@ -35,21 +35,19 @@ public:
     int ver = 1;
 };
 ```
-其中`version`,`type`,`dbName`属性必不可少，类名无关紧要，qtdao将通过property读取配置参数。接下来在main函数中（或适当的时机）执行以下的初始化
+其中`version`,`type`,`dbName`属性必不可少，类名无关紧要，qtdao将通过property读取配置参数（各个数据库配置参考[configdemo](https://github.com/daonvshu/QtDao/tree/master/doc/configdemo)）。接下来在main函数中（或适当的时机）执行以下的初始化
 ```c++
 class CustomDbExceptionHandler : public DbExceptionHandler {
 public:
     using DbExceptionHandler::DbExceptionHandler;
 
-    void initDbFail(const QString& reason) override {};
+    void initDbFail(DbErrCode errcode, const QString& reason) override {};
 
-    void databaseOpenFail(const QString& failReason) override {};
+    void databaseOpenFail(DbErrCode errcode, const QString& failReason) override {};
 
-    void execFail(const QString& lastErr) override {};
+    void execFail(DbErrCode errcode, const QString& lastErr) {};
 
     void execWarning(const QString& info) override {};
-
-    void upgradeFail(const QString& reason) override {};
 };
 
 void SqlLogPrinter(const QString& sql, const QVariantList& values) {
@@ -66,14 +64,14 @@ int main(int argc, char *argv[])
 ```
 这里`CustomDbExceptionHandler`类不是必要的，它用于处理数据库操作时的错误或警告。`SqlLogPrinter`也不是必要的，它用于打印sql执行时的sql语句和值列表，执行init后将自动执行以下操作：
 - 检查数据库连接
-- 创建数据库
-- 创建数据表
-- 检查数据库版本并升级
+- 创建数据库（可选）
+- 创建数据表（可选）
+- 检查数据库版本并升级（可选）
 
 ### 4.注意
 到这里你可以开始使用qtdao进行数据库操作了，使用时只需包含src/dao.h头文件即可，在使用过程中需要注意以下问题：
 
-- qtdao查询是支持在不同线程中进行的，当在工作线程中进行查询时注意在线程结束前关闭当前线程占用的数据库连接，调用下面的函数关闭当前线程的连接
+- qtdao查询是支持在不同线程中进行的，当在工作线程中进行查询时注意在线程结束前关闭当前线程占用的数据库连接，调用下面的函数关闭当前线程的连接（如果使用线程池管理线程，可不用关闭当前线程的连接）
 ```
 ConnectionPool::closeConnection();
 ```
@@ -83,7 +81,24 @@ dao::LocalQuery local;
 ```
 当local实例离开当前作用域被释放后，会自动调用ConnectionPool::closeConnection函数
 
-- 程序结束时手动释放所有数据库连接
+- 程序结束时需手动释放所有数据库连接
 ```
 ConnectionPool::release();
+```
+
+- 由于数据库创建表时使用的是反射机制，因此，如果EntityDelegate类（由DBEntityGenerator生成）用于编译成静态/动态库，在数据库初始化之前需要手动实例化一个EntityDelegate以加入到qt元对象系统，如下：
+```c++
+int main(int argc, char *argv[])
+{
+    ...
+    DaoSqlite::SqliteEntityDelegate del;
+    DbLoader::init(SqliteConfig(), new CustomDbExceptionHandler(parent));
+    ...
+}
+```
+
+- 创建数据库和创建表是可选的，调用以下函数关闭功能：
+```c++
+DbLoader::disableCreateDatabase();//不创建数据库
+DbLoader::disableCreateTable();//不创建数据表
 ```

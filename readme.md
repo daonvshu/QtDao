@@ -18,7 +18,7 @@ select *from test1 where name='client' and (number=12 or name='bob')
 - [x] sqlserver
 
 ## 如何使用
-下载后使用[beta分支](https://github.com/daonvshu/QtDao/tree/qtdao-2.0-beta2)，使用步骤[看这](https://github.com/daonvshu/QtDao/blob/master/doc/setup/setup.md)
+下载[master分支](https://github.com/daonvshu/QtDao)，打开工程（QtDao.sln/qtdao.pro）使用当前qt5库编译生成静态库（qtdao.lib），使用步骤[看这](https://github.com/daonvshu/QtDao/blob/master/doc/setup/setup.md)
 
 ## 支持的功能
 
