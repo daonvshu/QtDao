@@ -26,7 +26,7 @@ public:
     }
 
     QString getHost() {
-        return "192.168.1.19\\sqlexpress";
+        return "192.168.1.19";
     }
 
     QString getUserName() {

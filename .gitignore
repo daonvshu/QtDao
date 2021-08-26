@@ -341,3 +341,5 @@ ASALocalRun/
 healthchecksdb
 
 test.txt
+
+out/
