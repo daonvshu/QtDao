@@ -25,7 +25,7 @@ bool createPath(QString path) {
 }
 
 void SqliteClient::testConnect() {
-    auto appLocal = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    auto appLocal = DbLoader::getConfig().getDbStoreDirectory();
     QDir dir;
     if (!dir.exists(appLocal)) {
         if (!createPath(appLocal)) { // create directories recursively
@@ -39,9 +39,8 @@ void SqliteClient::createDatabase() {
 }
 
 void SqliteClient::dropDatabase() {
-    auto appLocal = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    auto dbPath = appLocal + "/" + DbLoader::getConfig().dbName + ".db";
-    QFile file(dbPath);
+    auto appLocal = DbLoader::getConfig().getDbStoreDirectory();
+    QFile file(DbLoader::getConfig().getDbStorePath());
     if (file.exists()) {
         if (!file.remove()) {
             throw DaoException(DbErrCode::SQL_EXEC_FAIL, "unable remove database file!");

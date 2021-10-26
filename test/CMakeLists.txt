@@ -32,9 +32,9 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Sql Qt5::Test qtdao::lib)
 
-add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/DbEntityGenerator.exe ${CMAKE_CURRENT_SOURCE_DIR}/sqliteentity/sqlite_entity.xml
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/DbEntityGenerator.exe ${CMAKE_CURRENT_SOURCE_DIR}/mysqlentity/mysql_entity.xml
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/DbEntityGenerator.exe ${CMAKE_CURRENT_SOURCE_DIR}/sqlserverentity/sqlserver_entity.xml
-    VERBATIM
-)
+#add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+#    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/DbEntityGenerator.exe ${CMAKE_CURRENT_SOURCE_DIR}/sqliteentity/sqlite_entity.xml
+#    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/DbEntityGenerator.exe ${CMAKE_CURRENT_SOURCE_DIR}/mysqlentity/mysql_entity.xml
+#    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/DbEntityGenerator.exe ${CMAKE_CURRENT_SOURCE_DIR}/sqlserverentity/sqlserver_entity.xml
+#    VERBATIM
+#)

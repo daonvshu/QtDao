@@ -130,7 +130,7 @@ QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
 QSqlDatabase ConnectionPool::prepareConnect(const QString& connectName, const QString& dbName) {
 	QSqlDatabase db = QSqlDatabase::addDatabase(DbLoader::getConfig().dbDriver, connectName);
 	if (DbLoader::getConfig().isSqlite()) {
-		db.setDatabaseName(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "\\" + dbName + ".db");
+		db.setDatabaseName(DbLoader::getConfig().getDbStorePath());
 		if (!DbLoader::getConfig().dbPcc.isEmpty()) {
 			db.setPassword(DbLoader::getConfig().dbPcc);
 		}

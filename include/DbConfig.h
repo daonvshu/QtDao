@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <qobject.h>
+#include <qstandardpaths.h>
 
 struct DbConfig {
     /// <summary>
@@ -52,6 +53,23 @@ struct DbConfig {
     /// database connect options
     /// </summary>
     QString dbOption;
+
+    /// <summary>
+    /// db file store directory, only support for sqlite
+    /// </summary>
+    QString saveDirectory;
+
+    QString getDbStoreDirectory() const {
+        auto savePath = saveDirectory;
+        if (savePath.isEmpty()) {
+            savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        }
+        return savePath;
+    }
+
+    QString getDbStorePath() const {
+        return getDbStoreDirectory() + "/" + dbName + ".db";
+    }
 
     /// <summary>
     /// current is sqlite
