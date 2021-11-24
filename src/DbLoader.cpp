@@ -46,6 +46,7 @@ void DbLoader::loadConfig(const QObject& cg) {
     config.dbPcc = cg.property("dbPcc").toString();
     config.dbPort = cg.property("dbPort").toInt();
     config.dbOption = cg.property("dbOption").toString();
+    config.saveDirectory = cg.property("saveDirectory").toString();
 }
 
 bool DbLoader::init() {
