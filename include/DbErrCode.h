@@ -41,7 +41,7 @@ public:
 
     DbErrCode(Code code) : code(code) {}
 
-    constexpr bool operator==(Code target) {
+    bool operator==(Code target) {
         return code & target;
     }
 
