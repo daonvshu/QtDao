@@ -20,6 +20,7 @@
 - **log**
   - [x] sql statement print 
   - [x] value list print
+  - [ ] detail information print
 - **entity generator**
   - [x] field getter/setter
   - [x] table field
@@ -83,3 +84,5 @@
   - [x] upgrade exception
   - [x] query exception
   - [x] connection pool exception
+- **bug**
+  - [ ] recreate a new connection when the previous connection dies
