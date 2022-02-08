@@ -1,15 +1,8 @@
 ## 使用步骤
-### 1.编译生成器
-下载[DbEntityGenerator](https://github.com/daonvshu/DbEntityGenerator)代码生成器，使用你本地的Qt库编译出生成器程序
+### 1.编辑数据库结构文件
+在你的工程目录下新建一个文件夹用于存放数据库实体类比如entity，将库中对应的[数据库结构实例文件](https://github.com/daonvshu/QtDao/tree/master/entity)拷贝到entity文件夹中，参照实例文件xml编辑数据库结构并遵循xsd文件约束避免出错。在vscode中下载插件`QtDao`打开xml文件，编辑器右键点击'create entity for qtdao'生成对应的c++代码。
 
-### 2.编辑数据库结构文件
-在你的工程目录下新建一个文件夹用于存放数据库实体类比如entity，将库中对应的[数据库结构实例文件](https://github.com/daonvshu/QtDao/tree/master/entity)拷贝到entity文件夹中，参照实例文件xml编辑数据库结构并遵循xsd文件约束避免出错。接下来使用生成器生成对应实体类，将预先编译好的DbEntityGenerator拷贝到当前entity文件夹中并在当前目录下使用命名行执行以下命令：
-```
-DbEntityGenerator.exe sqlite_entity.xml ../qtdao/src
-```
-其中第一个参数为当前使用的数据库结构配置文件，第二个参数为库目录src的相对路径。生成成功后将生成的文件包含至项目中。
-
-### 3.初始化
+### 2.初始化
 新建一个数据库连接配置类如下：
 ```c++
 class SqliteConfig : public QObject {
@@ -68,7 +61,7 @@ int main(int argc, char *argv[])
 - 创建数据表（可选）
 - 检查数据库版本并升级（可选）
 
-### 4.注意
+### 3.注意
 到这里你可以开始使用qtdao进行数据库操作了，使用时只需包含src/dao.h头文件即可，在使用过程中需要注意以下问题：
 
 - qtdao查询是支持在不同线程中进行的，当在工作线程中进行查询时注意在线程结束前关闭当前线程占用的数据库连接，调用下面的函数关闭当前线程的连接（如果使用线程池管理线程，可不用关闭当前线程的连接）
