@@ -123,8 +123,11 @@ void SqliteClient::dropTable(const QString& tbName) {
 void SqliteClient::truncateTable(const QString& tbName) {
     auto str = QString("delete from %1").arg(tbName);
     BaseQuery::queryPrimitive(str);
-    str = QString("delete from sqlite_sequence where name = \"%1\"").arg(tbName);
-    BaseQuery::queryPrimitive(str);
+
+    if (checkTableExist("sqlite_sequence")) {
+        str = QString("delete from sqlite_sequence where name = \"%1\"").arg(tbName);
+        BaseQuery::queryPrimitive(str);
+    }
 }
 
 QStringList SqliteClient::getTagTableFields(const QString& tbName) {

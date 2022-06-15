@@ -101,23 +101,15 @@ int ConnectionPool::getUsedConnectionSize() {
 
 QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
 	// check connection name in QSqlDatabase
-	bool currentConnectionErrOccur = false;
 	if (QSqlDatabase::contains(connectionName)) {
-		auto db1 = QSqlDatabase::database(connectionName);
-		QSqlQuery query("select 1", db1);
-		if (query.lastError().type() != QSqlError::NoError) {
-			currentConnectionErrOccur = true; //wait for db1 release connection
-		} else {
-			return db1;
+		{
+			auto db1 = QSqlDatabase::database(connectionName);
+			QSqlQuery query("select 1", db1);
+			if (query.lastError().type() == QSqlError::NoError) {
+				return db1;
+			}
 		}
-	}
-	if (currentConnectionErrOccur) {
 		//remove error connection, and try to create new connection
-		auto currentThreadId = QThread::currentThreadId();
-		if (keepConnections.contains(currentThreadId)) {
-			keepConnections.remove(currentThreadId);
-			unusedConnectionNames.enqueue(connectionName);
-		}
 		QSqlDatabase::removeDatabase(connectionName);
 	}
 
