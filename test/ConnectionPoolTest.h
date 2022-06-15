@@ -20,6 +20,8 @@ private slots:
 
     void testAutoClose();
 
+    void testGoneAway();
+
     void cleanup();
 
     void cleanupTestCase();

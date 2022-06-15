@@ -84,5 +84,3 @@
   - [x] upgrade exception
   - [x] query exception
   - [x] connection pool exception
-- **bug**
-  - [ ] recreate a new connection when the previous connection dies

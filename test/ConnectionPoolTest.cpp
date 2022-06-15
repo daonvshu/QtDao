@@ -161,6 +161,35 @@ void ConnectionPoolTest::testAutoClose() {
     QCOMPARE(ConnectionPool::getUsedConnectionSize(), 1);
 }
 
+void ConnectionPoolTest::testGoneAway() {
+    PASSSQLITE;
+    PASSSQLSERVER;
+
+    loadConfigByEngineModel();
+    QEventLoop loop;
+
+    BaseQuery::queryPrimitive("set global wait_timeout=10");
+
+    RunnableHandler<void>::exec([&] {
+        {
+            auto db = ConnectionPool::getConnection();
+            QSqlQuery query(db);
+            query.exec("select 1");
+        }
+        QThread::sleep(12);
+        {
+            auto db = ConnectionPool::getConnection();
+            QSqlQuery query(db);
+            query.exec("select 1");
+        }
+
+        loop.quit();
+    });
+    loop.exec();
+
+    BaseQuery::queryPrimitive("set global wait_timeout=28800");
+}
+
 void ConnectionPoolTest::cleanup() {
     QThread::msleep(50);
     ConnectionPool::release();
