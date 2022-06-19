@@ -1,15 +1,15 @@
 # Configurations
-title:            Jekyll Gitbook
-longtitle:        Jekyll Gitbook
-author:           HE Tao
-email:            sighingnow@gmail.com
+title:            QtDao
+longtitle:        QtDao
+author:           daonvshu
+email:            daonvshu@gmail.com
 description: >
-  Build Jekyll site with the GitBook style.
+  A small database to object tool for qt.
 
-version:          1.0
+version:          2.0
 gitbook_version:  3.2.3
 
-url:              'https://sighingnow.github.io'
+url:              'https://daonvshu.github.io'
 baseurl:          '/QtDao'
 rss:              RSS
 

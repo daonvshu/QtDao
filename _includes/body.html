@@ -15,7 +15,13 @@
                     {% if page.title %}
                         <h1 id="{{ page.id }}">{{ page.title | escape }}</h1>
                     {% else %}
-                        <h1 id="{{ page.id }}">{{ site.title | escape }}</h1>
+                        <h1 id="{{ page.id }}">
+                            <img src="https://raw.githubusercontent.com/daonvshu/vscode-qtdao/main/icon.png"
+                                width="58px" height="58px"
+                                style="vertical-align: middle"
+                            />
+                            {{ site.title | escape }}
+                        </h1>
                     {% endif %}
 
                     {{ content }}
