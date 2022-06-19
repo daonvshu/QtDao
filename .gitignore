@@ -1,0 +1,5 @@
+_site/
+_draft/
+.jekyll-cache/
+Gemfile.lock
+README.md
