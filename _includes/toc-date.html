@@ -22,9 +22,7 @@
             {% for collection in site.collections %}
                 <!-- <p>{{ collection.label }}</p> -->
                 {% if collection.output %}
-                    {% assign reversed_posts = site[collection.label] | reverse %}
-
-                    {% for post in reversed_posts %}
+                    {% for post in site[collection.label] %}
                         {% if page.url == post.url %}
                         <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{post.url}}">
                         {% else %}
