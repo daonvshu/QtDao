@@ -1,6 +1,6 @@
 ---
 title: 环境配置
-category: Jekyll
+category: config
 layout: post
 ---
 

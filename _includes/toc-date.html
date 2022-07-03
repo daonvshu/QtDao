@@ -22,7 +22,15 @@
             {% for collection in site.collections %}
                 <!-- <p>{{ collection.label }}</p> -->
                 {% if collection.output %}
+                    {% assign lastCategory = '' %}
                     {% for post in site[collection.label] %}
+                        {% if lastCategory != '' %}
+                            {% if lastCategory != post.category %}
+                            <li class="divider"></li>
+                            {% endif %}
+                        {% endif %}
+                        {% assign lastCategory = post.category %}
+                        <!-- <p>{{ post.category }}</p> -->
                         {% if page.url == post.url %}
                         <li class="chapter active" data-level="1.2" data-path="{{site.baseurl}}{{post.url}}">
                         {% else %}
@@ -39,15 +47,11 @@
                         </li>
                     {% endfor %}
 
-                    <li class="divider"></li>
+                    <!-- <li class="divider"></li> -->
                 {% endif %}
             {% endfor %}
-
-            <li>
-                <a href="https://github.com/sighingnow/jekyll-gitbook/fork" target="blank" class="gitbook-link">
-                    Fork it Now!
-                </a>
-            </li>
+            
+            <li class="divider"></li>
         </ul>
     </nav>
 </div>

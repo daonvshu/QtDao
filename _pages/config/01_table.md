@@ -1,6 +1,6 @@
 ---
 title: 数据表配置
-category: Jekyll
+category: config
 layout: post
 ---
 

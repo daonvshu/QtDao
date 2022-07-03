@@ -1,6 +1,6 @@
 ---
 title: 代码初始化
-category: Jekyll
+category: config
 layout: post
 ---
 
