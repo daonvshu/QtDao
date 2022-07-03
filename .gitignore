@@ -343,3 +343,5 @@ healthchecksdb
 test.txt
 
 out/
+
+.vscode
