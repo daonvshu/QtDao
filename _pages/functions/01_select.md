@@ -4,7 +4,7 @@ category: functions
 layout: post
 ---
 
-QtDao的查询以实体类（生成器插件根据配置xml文件生成的模型类）查询为主，使用函数`_select<E>`返回一个`SelectBuild<E>`对象：
+QtDao的查询以实体类（生成器插件根据配置xml文件生成的模型类）查询为主，使用函数`_select<E>`返回一个`SelectBuild<E>`对象，通过传入模板参数指定需要查询的表：
 
 ```cpp
 template<typename E>
@@ -26,7 +26,7 @@ column()
 ```cpp
 template<typename E>
 template<typename T>
-SelectBuilder<E> dao::_select<E>().column(const EntityField<T>& field);
+SelectBuilder<E> dao::_select<E>().column(const EntityField<T>& field, ...);
 ```
 
 `column()`函数用于设置查询的实体类字段，通常，查询结果为实体的一个实例或列表，只有被设置到`column()`函数中字段的值才会被设置到实例对于字段中，其他字段将被设置为默认值（若配置）或随机值，相当于使用 `'select field from Table'` 而不是 `'select * from Table'`。
@@ -36,7 +36,7 @@ SelectBuilder<E> dao::_select<E>().column(const EntityField<T>& field);
 
 ```cpp
 User::Fields field;
-UserList user = dao::_select<User>.column(field.name, field.age).build().list()
+UserList user = dao::_select<User>.column(field.name, field.age).build().list();
 ```
 
 等同于sql语句：
@@ -51,7 +51,7 @@ select name, age from User
 
 ```cpp
 template<typename E>
-SelectBuilder<E> dao::_select<E>().column(const FunctionCondition& field);
+SelectBuilder<E> dao::_select<E>().column(const FunctionCondition& field, ...);
 ```
 
 `column()`函数还可以用于读取`函数`的返回结果，如下计算所有用户分数`score`的总和：
@@ -60,7 +60,7 @@ SelectBuilder<E> dao::_select<E>().column(const FunctionCondition& field);
 User::Fields field;
 User user = dao::_select<User>
     .column(_fun("sum(%1) as sumscore").field(field.score))
-    .build().unique()
+    .build().unique();
 ```
 
 等同于sql语句：
@@ -85,18 +85,129 @@ User::Fields field;
 //字段函数混合使用
 User user = dao::_select<User>
     .column(field.name, _fun("max(%1) as maxscore").field(field.score))
-    .build().unique()
+    .build().unique();
 
 //联级调用
 User user = dao::_select<User>
     .column(field.name)
     .column(field.age)
     .column(_fun("max(%1) as maxscore").field(field.score))
-    .build().unique()
+    .build().unique();
 
 //所有字段与函数
 User user = dao::_select<User>
     .columnAll()
     .column(_fun("max(%1) as maxscore").field(field.score))
-    .build().unique()
+    .build().unique();
 ```
+
+filter()
+-------------
+
+- #### 查询条件设置
+
+```cpp
+template<typename E>
+SelectBuilder<E> dao::_select<E>().filter(const EntityCondition& condition, ...);
+```
+
+`filter()`函数用于设置查询条件，传入的参数为字段与值运算的`EntityCondition`类型结果。在设置条件时，应该使用生成器生成的模型类中`E::Fields`成员表示的字段，其中每个成员都是`EntityField<T>`类型，该类型重载了部分运算符如：`=`, `!=`, `>`, `>=`, `<`, `<=` 。
+
+> 注意：重载后的运算符与值运算时严格使用与字段一致的参数类型，字段声明为`QString`类型，则运算对象必须是`QString`类型。
+
+如下，查询分数`score`大于100的用户：
+
+```cpp
+User::Fields field;
+UserList user = dao::_select<User>
+    .filter(field.score > 100)
+    .build().list();
+```
+
+- #### 查询条件的组合
+
+filter函数传入的条件可以连续设置多个，多个之间用逗号连接等同于sql中 `and` 连接符，显式使用 `_and()` 和 `_or()` 函数可以组合多个条件。另外，filter也可以联级调用，等同于使用 `and` 连接符。
+
+> 注意：`_and()` 和 `_or()` 函数连接时是对函数各个参数条件之间使用对应的连接符进行连接，并且连接后会自动添加括号运算符。
+
+```cpp
+User::Fields field;
+UserList user = dao::_select<User>
+    .filter(field.name.like("Alice%"))
+    .filter(field.age >= 18, _or(field.score > 200, _and(field.score > 50, field.score <= 100)))
+    .build().list();
+```
+
+等同于sql语句：
+
+```sql
+select *from User where name like 'Alice%' and age >= 18 and (score > 200 or (score > 50 and score <= 100))
+```
+
+`EntityField<T>`类型还支持以下预设的条件函数：
+
+- like/glob
+
+同sql语句中的`like/glob`，用于模糊查找条件，通常情况下，仅QString类型才会使用它，如下所示：
+
+```cpp
+User::Fields field;
+UserList user = dao::_select<User>
+    .filter(field.name.like("%Alice%"))
+    .build().list();
+```
+
+- in
+
+同sql语句中的`in`字句，用于范围查找。传入类型为`QList<T>`，其中`T`与字段类型相匹配。如下所示：
+
+```cpp
+auto scores = QList<int>() << 50 << 100 << 150;
+
+User::Fields field;
+UserList user = dao::_select<User>
+    .filter(field.score.in(scores))
+    .build().list();
+```
+
+- between
+
+同sql语句中的`between`字句，用于范围查找。传入字段相匹配类型参数，如下所示：
+
+```cpp
+User::Fields field;
+UserList user = dao::_select<User>
+    .filter(field.score.between(50, 100))
+    .build().list();
+```
+
+- lsNull/notNull
+
+判断null的条件：
+
+```cpp
+User::Fields field;
+UserList user = dao::_select<User>
+    .filter(field.name.notNull())
+    .build().list();
+```
+
+- #### 自定义条件
+
+```cpp
+template<typename E>
+SelectBuilder<E> dao::_select<E>().filter(const FunctionCondition& function, ...);
+```
+
+当需要使用自定义的条件时，使用`函数`创建自定义查询条件，如下所示：
+
+```cpp
+User::Fields field;
+UserList user = dao::_select<User>
+    .filter(field.name == "Alice"))
+    .filter(_fun("sum(%1) as sumscore").field(field.score))
+    .build().one();
+```
+
+with()
+-------------
