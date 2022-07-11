@@ -36,7 +36,7 @@ SelectBuilder<E> dao::_select<E>().column(const EntityField<T>& field, ...);
 
 ```cpp
 User::Fields field;
-UserList user = dao::_select<User>.column(field.name, field.age).build().list();
+UserList user = dao::_select<User>().column(field.name, field.age).build().list();
 ```
 
 等同于sql语句：
@@ -54,11 +54,11 @@ template<typename E>
 SelectBuilder<E> dao::_select<E>().column(const FunctionCondition& field, ...);
 ```
 
-`column()`函数还可以用于读取`函数`的返回结果，如下计算所有用户分数`score`的总和：
+`column()`函数还可以用于读取`_fun()`的返回结果，如下计算所有用户分数`score`的总和：
 
 ```cpp
 User::Fields field;
-User user = dao::_select<User>
+User user = dao::_select<User>()
     .column(_fun("sum(%1) as sumscore").field(field.score))
     .build().unique();
 ```
@@ -69,7 +69,7 @@ User user = dao::_select<User>
 select sum(score) as sumscore from User
 ```
 
-函数的使用后面将做详细说明，在这里，函数作为字段设置时，其`as`别名将设置到实例的`__extra`变量中，如下读取上述的总分数：
+`_fun()`的使用后面将做详细说明，在这里，函数作为字段设置时，其`as`别名将设置到实例的`__extra`变量中，如下读取上述的总分数：
 
 ```cpp
 int score = user.__getExtra("sumscore").toInt();
@@ -83,19 +83,19 @@ int score = user.__getExtra("sumscore").toInt();
 User::Fields field;
 
 //字段函数混合使用
-User user = dao::_select<User>
+User user = dao::_select<User>()
     .column(field.name, _fun("max(%1) as maxscore").field(field.score))
     .build().unique();
 
 //联级调用
-User user = dao::_select<User>
+User user = dao::_select<User>()
     .column(field.name)
     .column(field.age)
     .column(_fun("max(%1) as maxscore").field(field.score))
     .build().unique();
 
 //所有字段与函数
-User user = dao::_select<User>
+User user = dao::_select<User>()
     .columnAll()
     .column(_fun("max(%1) as maxscore").field(field.score))
     .build().unique();
@@ -119,7 +119,7 @@ SelectBuilder<E> dao::_select<E>().filter(const EntityCondition& condition, ...)
 
 ```cpp
 User::Fields field;
-UserList user = dao::_select<User>
+UserList user = dao::_select<User>()
     .filter(field.score > 100)
     .build().list();
 ```
@@ -132,7 +132,7 @@ filter函数传入的条件可以连续设置多个，多个之间用逗号连�
 
 ```cpp
 User::Fields field;
-UserList user = dao::_select<User>
+UserList user = dao::_select<User>()
     .filter(field.name.like("Alice%"))
     .filter(field.age >= 18, _or(field.score > 200, _and(field.score > 50, field.score <= 100)))
     .build().list();
@@ -144,6 +144,22 @@ UserList user = dao::_select<User>
 select *from User where name like 'Alice%' and age >= 18 and (score > 200 or (score > 50 and score <= 100))
 ```
 
+`_and()` 和 `_or()` 函数还可以用于临时条件的存储：
+
+```cpp
+UserList findPassingUsers(QString keywords) {
+    User::Fields field;
+
+    auto condition = _and(field.age >= 18, _or(field.score > 200, _and(field.score > 50, field.score <= 100)));
+    if (!keywords.isEmpty()) {
+        condition = _and(field.name.like("Alice%"), condition);
+    }
+
+    return dao::_select<User>().filter(condition).build().list();
+}
+
+```
+
 `EntityField<T>`类型还支持以下预设的条件函数：
 
 - like/glob
@@ -152,7 +168,7 @@ select *from User where name like 'Alice%' and age >= 18 and (score > 200 or (sc
 
 ```cpp
 User::Fields field;
-UserList user = dao::_select<User>
+UserList user = dao::_select<User>()
     .filter(field.name.like("%Alice%"))
     .build().list();
 ```
@@ -165,7 +181,7 @@ UserList user = dao::_select<User>
 auto scores = QList<int>() << 50 << 100 << 150;
 
 User::Fields field;
-UserList user = dao::_select<User>
+UserList user = dao::_select<User>()
     .filter(field.score.in(scores))
     .build().list();
 ```
@@ -176,7 +192,7 @@ UserList user = dao::_select<User>
 
 ```cpp
 User::Fields field;
-UserList user = dao::_select<User>
+UserList user = dao::_select<User>()
     .filter(field.score.between(50, 100))
     .build().list();
 ```
@@ -187,7 +203,7 @@ UserList user = dao::_select<User>
 
 ```cpp
 User::Fields field;
-UserList user = dao::_select<User>
+UserList user = dao::_select<User>()
     .filter(field.name.notNull())
     .build().list();
 ```
@@ -199,11 +215,11 @@ template<typename E>
 SelectBuilder<E> dao::_select<E>().filter(const FunctionCondition& function, ...);
 ```
 
-当需要使用自定义的条件时，使用`函数`创建自定义查询条件，如下所示：
+当需要使用自定义的条件时，使用`_fun()`创建自定义查询条件，如下所示：
 
 ```cpp
 User::Fields field;
-UserList user = dao::_select<User>
+UserList user = dao::_select<User>()
     .filter(field.name == "Alice"))
     .filter(_fun("sum(%1) as sumscore").field(field.score))
     .build().one();
@@ -211,3 +227,85 @@ UserList user = dao::_select<User>
 
 with()
 -------------
+
+```cpp
+template<typename E>
+SelectBuilder<E> dao::_select<E>().with(const ConditionConstraint& constaint, ...);
+```
+
+`with()`函数用于对查询结果的限制，如sql原语中的`'limit'`、`'order by'`、`'group by'`、`'having'`子句等。
+
+- limit
+
+`_limit()`函数用于限制返回结果数量，同sql语句`limit`，如下：
+
+```cpp
+//输出20条结果
+User::Fields field;
+UserList user = dao::_select<User>()
+    .filter(field.score > 100)
+    .with(_limit(20))
+    .build().list();
+
+//从第5个结果开始，输出20条结果
+User::Fields field;
+UserList user = dao::_select<User>()
+    .filter(field.score > 100)
+    .with(_limit(5, 20))
+    .build().list();
+```
+
+- order by
+
+`_orderBy()`函数用于排序，同sql语句`order by`，如下：
+
+```cpp
+User::Fields field;
+UserList user = dao::_select<User>()
+    .filter(field.score > 100)
+    .with(_orderBy(field.name, field.age))
+    .build().list();
+```
+
+- group by / having
+
+`_groupBy()`函数用于对查询结果进行分组，`_having()`函数用于设置分组结果的过滤条件，如下：
+
+```cpp
+User::Fields field;
+UserList user = dao::_select<User>()
+    .with(_groupBy(field.name, field.age), _having(field.score > 100))
+    .build().list();
+
+User::Fields field;
+UserList user = dao::_select<User>()
+    .with(_groupBy(field.name))
+    .with(_having(_fun("count(%1) > 2").field(field.id)))
+    .build().list();
+```
+
+- _constraint()
+
+`_constraint()`函数用于连接结果限制函数。通常情况下，多个结果限制函数可以连续使用：
+
+```cpp
+User::Fields field;
+UserList user = dao::_select<User>()
+    .with(_groupBy(field.name), _limit(5))
+    .build().list();
+```
+
+在需要临时存储限制条件时，使用`_constraint()`函数组合：
+
+```cpp
+UserList getUserNames(int limitSize) {
+    User::Fields field;
+
+    auto condition = _groupBy(field.name);
+    if (limitSize > 0) {
+        condition = _constraint(condition, _limit(limitSize));
+    }
+
+    return dao::_select<User>().with(condition).build().list();
+}
+```
