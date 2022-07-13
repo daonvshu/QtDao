@@ -18,6 +18,8 @@ toc:
   h_min: 1
   h_max: 3
 
+highlighter: none
+
 # markdown render engine.
 markdown:         kramdown
 kramdown:
@@ -28,7 +30,8 @@ kramdown:
   toc_levels:             1..6
   syntax_highlighter:     rouge
   syntax_highlighter_opts:
-    guess_lang:           true
+    #guess_lang:           true
+    disable: true
 
 syntax_highlighter_style: colorful
 
