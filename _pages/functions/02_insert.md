@@ -77,7 +77,7 @@ dao::_insert<User>().build().insert2(users);
 与`insert()`不同的地方是，`insert2()`不会使用批处理执行，而是使用以下类似语句：
 
 ```sql
-insert into user (name, age, score) values ('Alice', 18, 100),("Bob", 19, 120)
+insert into user (name, age, score) values ('Alice', 18, 100),('Bob', 19, 120)
 ```
 
 使用快速插入方法时，需要注意对应数据库sql语句长度的限制。
@@ -113,7 +113,10 @@ User2::Fields field2;
 dao::_insertIntoSelect<User2>()
     .column(field2.name, field2.age)
     .from(
-        dao::_select<User1>().column(field1.name, field1.age).filter(field1.score < 12).build()
+        dao::_select<User1>()
+            .column(field1.name, field1.age)
+            .filter(field1.score < 12)
+            .build()
     )
     .build().insert();
 ```

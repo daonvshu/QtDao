@@ -134,7 +134,10 @@ filter函数传入的条件可以连续设置多个，多个之间用逗号连�
 User::Fields field;
 UserList user = dao::_select<User>()
     .filter(field.name.like("Alice%"))
-    .filter(field.age >= 18, _or(field.score > 200, _and(field.score > 50, field.score <= 100)))
+    .filter(
+        field.age >= 18, 
+        _or(field.score > 200, _and(field.score > 50, field.score <= 100))
+    )
     .build().list();
 ```
 
@@ -150,7 +153,10 @@ select *from User where name like 'Alice%' and age >= 18 and (score > 200 or (sc
 UserList findPassingUsers(QString keywords) {
     User::Fields field;
 
-    auto condition = _and(field.age >= 18, _or(field.score > 200, _and(field.score > 50, field.score <= 100)));
+    auto condition = _and(
+        field.age >= 18, 
+        _or(field.score > 200, _and(field.score > 50, field.score <= 100))
+    );
     if (!keywords.isEmpty()) {
         condition = _and(field.name.like("Alice%"), condition);
     }
