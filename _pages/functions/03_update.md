@@ -4,7 +4,7 @@ category: functions
 layout: post
 ---
 
-QtDao更新数据可以按条件更新，也可以按实例更新。使用函数`_update<E>`返回一个`UpdateBuilder<E>`对象，再调用`build()`函数创建`Update<E>`对象进行更新数据操作：
+QtDao更新数据可以按条件更新，也可以按实体对象更新。使用函数`_update<E>`返回一个`UpdateBuilder<E>`对象，再调用`build()`函数创建`Update<E>`对象进行更新数据操作：
 
 ```cpp
 template<typename E>
@@ -30,10 +30,10 @@ bool success = dao::_update<User>()
 update User set age = 19, score = 120 where name = 'Alice'
 ```
 
-实例更新
+实体对象更新
 -------------
 
-按实例更新记录时，不能使用`set`与`filter`函数，直接将实例传入`update`函数即可：
+按实体对象更新记录时，不能使用`set`与`filter`函数，直接将对象传入`update`函数即可：
 
 ```cpp
 User::Fields field;
@@ -44,7 +44,7 @@ user.setScore(120);
 bool success = dao::_update<User>().build().update(user);
 ```
 
-按实例更新采用的方法和条件更新一致，不同的是，按实例更新时内部将自动提取表`primary key`字段作为更新条件，其他字段作为更新的字段，因此，使用实例更新方法时，必须确保操作的表设置了`primary key`字段。
+> 注意：按实体对象更新采用的方法和条件更新一致，不同的是，按实体对象更新时内部将自动提取表`primary key`字段作为更新条件，其他字段作为更新的字段，因此，使用实体对象更新方法时，必须确保操作的表设置了`primary key`字段。
 
 批量更新
 -------------
@@ -64,7 +64,7 @@ bool success = dao::_update<User>()
     .build().updateBatch();
 ```
 
-对于使用实例更新，传入对象列表即可：
+对于使用实体对象更新，传入对象列表即可：
 
 ```cpp
 UserList users;

@@ -29,7 +29,7 @@ template<typename T>
 SelectBuilder<E> dao::_select<E>().column(const EntityField<T>& field, ...);
 ```
 
-`column()`函数用于设置查询的实体类字段，通常，查询结果为实体的一个实例或列表，只有被设置到`column()`函数中字段的值才会被设置到实例对于字段中，其他字段将被设置为默认值（若配置）或随机值，相当于使用 `'select field from Table'` 而不是 `'select * from Table'`。
+`column()`函数用于设置查询的实体类字段，通常，查询结果为实体的一个对象或列表，只有被设置到`column()`函数中字段的值才会被设置到实体对象对应字段中，其他字段将被设置为默认值（若配置）或随机值，相当于使用 `'select field from Table'` 而不是 `'select * from Table'`。
 > 注意：默认情况下，忽略调用`column()`函数将导致所有字段被查询并设置。
 
 如下，查询所有用户的姓名`name`和年龄`age`：
@@ -69,7 +69,7 @@ User user = dao::_select<User>()
 select sum(score) as sumscore from User
 ```
 
-`_fun()`的使用后面将做详细说明，在这里，函数作为字段设置时，其`as`别名将设置到实例的`__extra`变量中，如下读取上述的总分数：
+`_fun()`的使用后面将做详细说明，在这里，函数作为字段设置时，其`as`别名将设置到实体对象的`__extra`变量中，如下读取上述的总分数：
 
 ```cpp
 int score = user.__getExtra("sumscore").toInt();
@@ -314,4 +314,13 @@ UserList getUserNames(int limitSize) {
 
     return dao::_select<User>().with(condition).build().list();
 }
+```
+
+读取表所有数据
+-------------
+
+使用以下代码可以将表所有数据读出：
+
+```cpp
+UserList users = dao::_selectAll<User>();
 ```
