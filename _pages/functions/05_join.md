@@ -8,7 +8,7 @@ join联表提供5种连接方式（`cross`、`inner`、`left`、`right`、`full`
 
 ```cpp
 template<typename... E>
-JoinBuilder<E...> dao::_join();
+JoinBuilder<E...> dao::_join<E...>();
 ```
 
 模板参数列表传入参与join联表的所有表，其顺序决定了结果数据输出的顺序。通常，一个join查询具有以下基本形式：
