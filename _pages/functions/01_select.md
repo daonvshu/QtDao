@@ -325,6 +325,18 @@ UserList getUserNames(int limitSize) {
 UserList users = dao::_selectAll<User>();
 ```
 
+count
+-------------
+
+使用`dao::_count<T>()`函数对查询结果计数，查询条件的使用与`dao::_select<T>()`函数一致。对于`_count`函数，其返回类型为`CountBuilder<E>`，直接调用`count()`函数读取结果记数：
+
+```cpp
+User::Fields field;
+int count = dao::_count<User>()
+    .filter(field.score > 100)
+    .count();
+```
+
 自定义结果处理
 -------------
 

@@ -8,7 +8,7 @@ layout: post
 
 ```cpp
 template<typename E>
-unionSelect(Select<E>& select, bool unionAll = false)
+unionSelect(Select<E>& select, bool unionAll = false);
 
 template<typename... E>
 unionSelect(Join<E...>& join, bool unionAll = false);
