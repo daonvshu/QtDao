@@ -336,26 +336,3 @@ int count = dao::_count<User>()
     .filter(field.score > 100)
     .count();
 ```
-
-自定义结果处理
--------------
-
-`QtDao`可以方便的将查询结果直接转换为实体对象列表，但对于查询结果数据量太大时，大量的时间会被花费在对象转换操作上。对于这种情况下，使用`column()`函数明确指定查询部分字段将大幅减少查询时间，即便如此，有时其转换效率也不尽如意。当不需要转换为对象，自主处理查询结果时，可以极大的减少查询时间。
-
-```cpp
-template<typename E>
-Select<E> dao::_select<E>().build().raw(std::function<void(QSqlQuery&)> callback);
-```
-
-使用`raw()`函数，不经过对象转换，直接读取结果：
-
-```cpp
-User::Fields field;
-dao::_select<User>()
-    .filter(field.age < 18)
-    .build().raw([&](QSqlQuery& query) {
-        while (query.next()) {
-            //...
-        }
-    });
-```
