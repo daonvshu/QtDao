@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+QTDAO_BEGIN_NAMESPACE
+
 SqliteLockControl::SqliteLockControl()
     : writeSync(false)
 {
@@ -200,3 +202,5 @@ void SqliteLockControl::releaseRead() {
     print("#8-3");
     WRITE_SYNC_END
 }
+
+QTDAO_END_NAMESPACE

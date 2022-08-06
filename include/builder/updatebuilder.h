@@ -6,6 +6,8 @@
 
 #include "../query/update.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename E>
 class UpdateBuilder : public BaseQueryBuilder {
 public:
@@ -15,3 +17,5 @@ public:
 
     QUERY_BUILDER_BUILDER_DECLARE(Update)
 };
+
+QTDAO_END_NAMESPACE

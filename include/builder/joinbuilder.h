@@ -6,6 +6,8 @@
 
 #include "../query/join.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename... E>
 class JoinBuilder : public BaseQueryBuilder {
 public:
@@ -264,3 +266,5 @@ inline Join<E...> JoinBuilder<E...>::build() {
     query.subJoinData = subJoinData;
     return query;
 }
+
+QTDAO_END_NAMESPACE

@@ -4,6 +4,8 @@
 
 #include "../macro/macro.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename E>
 class UpdateBuilder;
 
@@ -129,3 +131,5 @@ inline void Update<E>::bindUpdateEntitiesCondition(const QList<E>& entities) {
         }
     }
 }
+
+QTDAO_END_NAMESPACE

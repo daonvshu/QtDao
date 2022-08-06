@@ -6,6 +6,8 @@
 
 #include "../query/insert.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename E>
 class InsertBuilder : public BaseQueryBuilder {
 public:
@@ -14,3 +16,5 @@ public:
 
     QUERY_BUILDER_BUILDER_DECLARE(Insert)
 };
+
+QTDAO_END_NAMESPACE

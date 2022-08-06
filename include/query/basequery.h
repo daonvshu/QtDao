@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../global.h"
+
 #include <qvariant.h>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlRecord>
@@ -18,7 +20,7 @@
 
 #include "../dberrcode.h"
 
-class dao;
+QTDAO_BEGIN_NAMESPACE
 
 class BaseQuery {
 public:
@@ -82,7 +84,10 @@ protected:
     static SqliteLockControl sqliteLockControl;
     static DbErrCode::Code exceptionLastErr;
 
-    friend class dao;
+    friend static void transcation();
+    friend static void commit();
+    friend static void rollback(const QString&);
+    friend static void sqlWriteSync(bool);
 
 private:
     QSqlQuery getQuery(bool& prepareOk, bool skipEmptyValue = false);
@@ -134,3 +139,5 @@ struct BaseQuery::ExplainTool<SqlServerExplainInfo> {
 
     static QList<SqlServerExplainInfo> toExplain(const QString& statement);
 };
+
+QTDAO_END_NAMESPACE

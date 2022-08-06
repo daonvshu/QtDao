@@ -4,6 +4,8 @@
 
 #include "../macro/macro.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename E>
 class DeleteBuilder;
 
@@ -110,3 +112,5 @@ inline void Delete<E>::buildDeleteEntitiesCondition(const QList<E>& entities) {
         builder->filterCondition.append(condition);
     }
 }
+
+QTDAO_END_NAMESPACE

@@ -1,8 +1,12 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include "../condition/entitycondition.h"
 #include "../condition/connector.h"
 #include "../condition/functioncondition.h"
+
+QTDAO_BEGIN_NAMESPACE
 
 class RecursiveQueryBuilder;
 
@@ -203,3 +207,5 @@ inline void BaseQueryBuilder::unionSelect(Join<E...>& join, bool unionAll) {
     unionSelectValues = join.values;
     this->unionAll = unionAll;
 }
+
+QTDAO_END_NAMESPACE

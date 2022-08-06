@@ -17,6 +17,8 @@
 
 #include <QtTest>
 
+QTDAO_USING_NAMESPACE
+
 class DbLoaderTestExceptionHandler : public DbExceptionHandler {
 public:
     using DbExceptionHandler::DbExceptionHandler;

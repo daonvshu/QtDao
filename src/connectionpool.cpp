@@ -8,6 +8,8 @@
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
 
+QTDAO_USING_NAMESPACE
+
 #define MAX_CONNECTION_SIZE	200
 
 QMutex ConnectionPool::mutex;

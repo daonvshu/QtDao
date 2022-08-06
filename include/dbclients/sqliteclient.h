@@ -1,6 +1,10 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include "abstractclient.h"
+
+QTDAO_BEGIN_NAMESPACE
 
 class SqliteClient : public AbstractClient {
 public:
@@ -31,3 +35,5 @@ public:
 
     void dropAllIndexOnTable(const QString& tbName);
 };
+
+QTDAO_END_NAMESPACE

@@ -1,7 +1,11 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include "entityfield.h"
 #include "functionconditiondata.h"
+
+QTDAO_BEGIN_NAMESPACE
 
 template<typename E>
 class Select;
@@ -78,3 +82,5 @@ inline FunctionCondition& FunctionCondition::from(Join<E...>& join) {
 	d->values << join.values;
 	return *this;
 }
+
+QTDAO_END_NAMESPACE

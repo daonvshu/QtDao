@@ -1,5 +1,7 @@
 #include "condition/entitycondition.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 QList<FieldInfo> EntityConditionData::getUsedFields() {
     return fields;
 }
@@ -114,3 +116,5 @@ void EntityCondition::combineIs() {
 QVariantList EntityCondition::getValues() {
     return d->values;
 }
+
+QTDAO_END_NAMESPACE

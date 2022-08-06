@@ -6,6 +6,8 @@
 
 #include "../dbloader.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename E>
 class InsertBuilder;
 
@@ -291,3 +293,5 @@ inline QString Insert<E>::buildInsertObjects2SqlStatement(int valueSize) {
     sql.chop(1);
     return sql;
 }
+
+QTDAO_END_NAMESPACE

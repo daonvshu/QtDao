@@ -1,10 +1,14 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include <qsharedpointer.h>
 #include <qstring.h>
 #include <qvariant.h>
 
 #include "entityconditiondata.h"
+
+QTDAO_BEGIN_NAMESPACE
 
 struct FunctionConditionData : public EntityConditionData {
     QString expressions;
@@ -28,3 +32,5 @@ struct FunctionConditionData : public EntityConditionData {
         return QList<FieldInfo>() << FieldInfo{ str, fields.at(0).bindTable }; //use first bind table
     }
 };
+
+QTDAO_END_NAMESPACE

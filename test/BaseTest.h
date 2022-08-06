@@ -9,6 +9,8 @@
 
 #include "dao.h"
 
+QTDAO_USING_NAMESPACE
+
 class BaseTest : public QObject , public EngineModelSelector {
 public:
     BaseTest(EngineModel model);

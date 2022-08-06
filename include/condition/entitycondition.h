@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../global.h"
+
 #include <qobject.h>
 #include <qvariant.h>
 #include <functional>
@@ -7,6 +9,8 @@
 #include <qsharedpointer.h>
 
 #include "entityconditiondata.h"
+
+QTDAO_BEGIN_NAMESPACE
 
 template<typename T>
 class EntityField;
@@ -138,3 +142,5 @@ inline EntityCondition EntityCondition::conditionIs(
         TypeIs
     );
 }
+
+QTDAO_END_NAMESPACE

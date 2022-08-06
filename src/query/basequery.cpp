@@ -8,6 +8,8 @@
 #include <iostream>
 #include <QThread>
 
+QTDAO_BEGIN_NAMESPACE
+
 SqliteLockControl BaseQuery::sqliteLockControl;
 DbErrCode::Code BaseQuery::exceptionLastErr = DbErrCode::ERR_NOT_SET;
 
@@ -299,3 +301,5 @@ QList<SqlServerExplainInfo> BaseQuery::ExplainTool<SqlServerExplainInfo>::toExpl
     }
     return result;
 }
+
+QTDAO_END_NAMESPACE

@@ -1,8 +1,12 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include <qsharedpointer.h>
 #include <qstring.h>
 #include <qvariant.h>
+
+QTDAO_BEGIN_NAMESPACE
 
 enum ConnectorItemType {
     TypeConnector,
@@ -39,3 +43,5 @@ public:
     void append(const FunctionCondition& function);
     void append(const FieldInfo& field);
 };
+
+QTDAO_END_NAMESPACE

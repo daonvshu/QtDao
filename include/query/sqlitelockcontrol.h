@@ -1,9 +1,13 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include <qobject.h>
 #include <qmutex.h>
 #include <qwaitcondition.h>
 #include <qhash.h>
+
+QTDAO_BEGIN_NAMESPACE
 
 class SqliteLockControl {
 
@@ -39,3 +43,5 @@ private:
 
     QMutex conditionChecker;
 };
+
+QTDAO_END_NAMESPACE

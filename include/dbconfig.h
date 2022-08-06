@@ -1,7 +1,11 @@
 ﻿#pragma once
 
+#include "global.h"
+
 #include <qobject.h>
 #include <qstandardpaths.h>
+
+QTDAO_BEGIN_NAMESPACE
 
 struct DbConfig {
     /// <summary>
@@ -105,3 +109,5 @@ struct DbConfig {
         createTableEnabled = true;
     }
 };
+
+QTDAO_END_NAMESPACE

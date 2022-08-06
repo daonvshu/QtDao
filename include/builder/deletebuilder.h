@@ -6,6 +6,8 @@
 
 #include "../query/delete.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename E>
 class DeleteBuilder : public BaseQueryBuilder {
 public:
@@ -14,3 +16,5 @@ public:
 
     QUERY_BUILDER_BUILDER_DECLARE(Delete)
 };
+
+QTDAO_END_NAMESPACE

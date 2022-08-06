@@ -8,6 +8,8 @@
 
 #include "query/basequery.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 bool createPath(QString path) {
     QDir dir;
     QFileInfo info(path);
@@ -160,3 +162,5 @@ void SqliteClient::dropAllIndexOnTable(const QString& tbName) {
         );
     }
 }
+
+QTDAO_END_NAMESPACE

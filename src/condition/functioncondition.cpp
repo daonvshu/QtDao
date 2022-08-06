@@ -1,5 +1,7 @@
 ﻿#include "condition/functioncondition.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 FunctionCondition::FunctionCondition() {
 }
 
@@ -24,3 +26,5 @@ void FunctionCondition::combine() {
     }
     d->combineStr = str;
 }
+
+QTDAO_END_NAMESPACE

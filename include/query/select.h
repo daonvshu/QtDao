@@ -6,6 +6,8 @@
 
 #include "../dbloader.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename E>
 class SelectBuilder;
 
@@ -207,3 +209,5 @@ inline QList<I> Select<E>::explain() {
     auto newStatement = DbLoader::getClient().translateSqlStatement(statement, values);
     return ExplainTool<I>::toExplain(newStatement);
 }
+
+QTDAO_END_NAMESPACE

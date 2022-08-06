@@ -7,6 +7,8 @@
 
 #include "../dbloader.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename... E>
 class JoinBuilder;
 
@@ -285,3 +287,5 @@ inline QList<I> Join<E...>::explain() {
     auto newStatement = DbLoader::getClient().translateSqlStatement(statement, values);
     return ExplainTool<I>::toExplain(newStatement);
 }
+
+QTDAO_END_NAMESPACE

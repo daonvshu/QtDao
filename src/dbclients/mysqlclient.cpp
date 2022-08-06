@@ -7,6 +7,8 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+QTDAO_BEGIN_NAMESPACE
+
 void MysqlClient::testConnect() {
     QString lastErrStr;
     [&] {
@@ -188,3 +190,5 @@ void MysqlClient::dropAllIndexOnTable(const QString& tbName) {
         );
     }
 }
+
+QTDAO_END_NAMESPACE

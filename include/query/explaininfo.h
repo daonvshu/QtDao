@@ -1,6 +1,10 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include <qobject.h>
+
+QTDAO_BEGIN_NAMESPACE
 
 struct SqliteExplainInfo {
     qint64 addr;
@@ -54,3 +58,5 @@ struct SqlServerExplainInfo {
     uint Parallel;
     qreal EstimateExecutions;
 };
+
+QTDAO_END_NAMESPACE

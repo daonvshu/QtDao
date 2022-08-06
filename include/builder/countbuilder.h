@@ -4,6 +4,8 @@
 
 #include "../macro/macro.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename E>
 class CountBuilder : SelectBuilder<E> {
 public:
@@ -26,3 +28,5 @@ public:
         return data[0].__getExtra("__selectcount").toInt();
     }
 };
+
+QTDAO_END_NAMESPACE

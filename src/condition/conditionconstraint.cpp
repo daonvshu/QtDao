@@ -1,5 +1,7 @@
 ﻿#include "condition/conditionconstraint.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 ConditionConstraint ConditionConstraint::limit(int a, int b) {
     QVariantList values;
     values << a << b;
@@ -122,3 +124,5 @@ ConditionConstraint& ConditionConstraint::groupBySave(const QString& fieldName, 
     d->fields << FieldInfo { fieldName, tbName };
     return *this;
 }
+
+QTDAO_END_NAMESPACE

@@ -1,10 +1,14 @@
 ﻿#pragma once
 
+#include "global.h"
+
 #include <qvariant.h>
 #include <qstring.h>
 #include <qexception.h>
 
 #include "dberrcode.h"
+
+QTDAO_BEGIN_NAMESPACE
 
 class DbExceptionHandler : public QObject {
 public:
@@ -57,3 +61,5 @@ public:
     QString reason;
     DbErrCode code;
 };
+
+QTDAO_END_NAMESPACE

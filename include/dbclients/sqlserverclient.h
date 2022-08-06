@@ -1,6 +1,10 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include "abstractclient.h"
+
+QTDAO_BEGIN_NAMESPACE
 
 class SqlServerClient : public AbstractClient {
 public:
@@ -36,3 +40,5 @@ public:
 
     void dropAllIndexOnTable(const QString& tbName);
 };
+
+QTDAO_END_NAMESPACE

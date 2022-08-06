@@ -10,6 +10,8 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+QTDAO_BEGIN_NAMESPACE
+
 void SqlServerClient::testConnect() {
     QString lastErrStr;
     [&] {
@@ -230,3 +232,4 @@ void SqlServerClient::dropAllIndexOnTable(const QString& tbName) {
     }
 }
 
+QTDAO_END_NAMESPACE

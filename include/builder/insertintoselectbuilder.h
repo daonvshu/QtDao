@@ -6,6 +6,8 @@
 
 #include "../query/insertintoselect.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename E>
 class InsertIntoSelectBuilder : public BaseQueryBuilder {
 public:
@@ -17,3 +19,5 @@ public:
 
     QUERY_BUILDER_BUILDER_DECLARE(InsertIntoSelect)
 };
+
+QTDAO_END_NAMESPACE

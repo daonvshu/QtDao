@@ -16,6 +16,8 @@
 
 #include <QtTest>
 
+QTDAO_USING_NAMESPACE
+
 void ConnectionPoolTest::initTestCase() {
     if (engineModel == Engine_Sqlite) {
         SqliteClient().testConnect();

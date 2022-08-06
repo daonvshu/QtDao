@@ -4,6 +4,8 @@
 
 #include "../macro/macro.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename E>
 class InsertIntoSelectBuilder;
 
@@ -51,3 +53,5 @@ inline void InsertIntoSelect<E>::buildSqlStatement() {
 
     setSqlQueryStatement(sql, values);
 }
+
+QTDAO_END_NAMESPACE

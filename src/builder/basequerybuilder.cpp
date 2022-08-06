@@ -2,6 +2,8 @@
 
 #include "builder/recursivequerybuilder.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 BaseQueryBuilder::~BaseQueryBuilder() {
 }
 
@@ -37,4 +39,4 @@ void BaseQueryBuilder::from(RecursiveQueryBuilder& builder) {
     recursiveQuery = true;
 }
 
-
+QTDAO_END_NAMESPACE

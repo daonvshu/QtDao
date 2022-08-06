@@ -1,9 +1,13 @@
 #pragma once
 
+#include "../global.h"
+
 #include <qobject.h>
 #include <qvariant.h>
 
 #include "entitycondition.h"
+
+QTDAO_BEGIN_NAMESPACE
 
 class ConditionConstraint;
 class FunctionCondition;
@@ -223,3 +227,4 @@ public:
     }
 };
 
+QTDAO_END_NAMESPACE

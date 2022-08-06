@@ -2,6 +2,8 @@
 
 #include "../query/select.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 class BaseQueryBuilder;
 
 class RecursiveQueryBuilder {
@@ -71,3 +73,5 @@ inline RecursiveQueryBuilder& RecursiveQueryBuilder::tmp() {
     tmpTableName = E::Info::getTableName();
     return *this;
 }
+
+QTDAO_END_NAMESPACE

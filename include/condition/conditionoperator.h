@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include "connector.h"
 #include "entityfield.h"
 #include "entitycondition.h"
@@ -7,46 +9,46 @@
 #include "functioncondition.h"
 
 template<typename... T>
-inline Connector _and(const T&... t) {
-    return Connector("and").append(t...);
+inline dao::Connector _and(const T&... t) {
+    return dao::Connector("and").append(t...);
 }
 
 template<typename... T>
-inline Connector _or(const T&... t) {
-    return Connector("or").append(t...);
+inline dao::Connector _or(const T&... t) {
+    return dao::Connector("or").append(t...);
 }
 
 template<typename... T>
-inline Connector _constraint(const T&... t) {
-    return Connector("").append(t...);
+inline dao::Connector _constraint(const T&... t) {
+    return dao::Connector("").append(t...);
 }
 
-inline ConditionConstraint _limit(int a, int b) {
-    return ConditionConstraint::limit(a, b);
+inline dao::ConditionConstraint _limit(int a, int b) {
+    return dao::ConditionConstraint::limit(a, b);
 }
 
-inline ConditionConstraint _limit(int a) {
-    return ConditionConstraint::limit(a);
+inline dao::ConditionConstraint _limit(int a) {
+    return dao::ConditionConstraint::limit(a);
 }
 
 template<typename... E>
-inline ConditionConstraint _orderBy(const EntityField<E>&... n) {
-    return ConditionConstraint::orderBy(n...);
+inline dao::ConditionConstraint _orderBy(const dao::EntityField<E>&... n) {
+    return dao::ConditionConstraint::orderBy(n...);
 }
 
 template<typename... N>
-inline ConditionConstraint _groupBy(const EntityField<N>&... n) {
-    return ConditionConstraint::groupBy(n...);
+inline dao::ConditionConstraint _groupBy(const dao::EntityField<N>&... n) {
+    return dao::ConditionConstraint::groupBy(n...);
 }
 
-inline ConditionConstraint _having(const EntityCondition& condition) {
-    return ConditionConstraint::having(condition);
+inline dao::ConditionConstraint _having(const dao::EntityCondition& condition) {
+    return dao::ConditionConstraint::having(condition);
 }
 
-inline ConditionConstraint _having(const FunctionCondition& condition) {
-    return ConditionConstraint::having(condition);
+inline dao::ConditionConstraint _having(const dao::FunctionCondition& condition) {
+    return dao::ConditionConstraint::having(condition);
 }
 
-inline FunctionCondition _fun(const QString& expressions) {
-    return FunctionCondition(expressions);
+inline dao::FunctionCondition _fun(const QString& expressions) {
+    return { expressions };
 }

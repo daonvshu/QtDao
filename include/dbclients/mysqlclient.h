@@ -1,6 +1,10 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include "abstractclient.h"
+
+QTDAO_BEGIN_NAMESPACE
 
 class MysqlClient : public AbstractClient {
 public:
@@ -32,3 +36,5 @@ public:
 
     void dropAllIndexOnTable(const QString& tbName);
 };
+
+QTDAO_END_NAMESPACE

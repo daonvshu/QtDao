@@ -6,6 +6,8 @@
 
 #include "query/basequery.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 DbConfig DbLoader::config;
 AbstractClient* DbLoader::sqlClient = nullptr;
 
@@ -155,3 +157,5 @@ QByteArray DbLoader::getDelegateStr() {
     }
     return entityDelegate;
 }
+
+QTDAO_END_NAMESPACE

@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+#include "global.h"
+
+QTDAO_BEGIN_NAMESPACE
+
 class DbErrCode {
 public:
     enum Code {
@@ -47,3 +51,5 @@ public:
 
     Code code;
 };
+
+QTDAO_END_NAMESPACE

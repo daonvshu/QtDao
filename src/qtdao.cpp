@@ -2,6 +2,8 @@
 #include "dbexceptionhandler.h"
 #include "dao.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 DbExceptionHandler* DbExceptionHandler::exceptionHandler = nullptr;
 
 static QueryLogPrinter queryLogPrinter = nullptr;
@@ -37,3 +39,5 @@ void DbExceptionHandler::execFail(DbErrCode errcode, const QString& lastErr) {
 void DbExceptionHandler::execWarning(const QString& info) {
     Q_UNUSED(info)
 }
+
+QTDAO_END_NAMESPACE

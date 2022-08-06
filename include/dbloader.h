@@ -1,10 +1,14 @@
 ﻿#pragma once
 
+#include "global.h"
+
 #include <qobject.h>
 
 #include "dbconfig.h"
 #include "dbexceptionhandler.h"
 #include "dbclients/abstractclient.h"
+
+QTDAO_BEGIN_NAMESPACE
 
 class DbLoader {
 public:
@@ -80,3 +84,5 @@ private:
 
     static QByteArray getDelegateStr();
 };
+
+QTDAO_END_NAMESPACE

@@ -1,8 +1,12 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include "connectordata.h"
 #include "entityfield.h"
 #include <functional>
+
+QTDAO_BEGIN_NAMESPACE
 
 class BaseQueryBuilder;
 class FunctionCondition;
@@ -72,3 +76,5 @@ private:
 private:
     QSharedDataPointer<ConnectorData> d;
 };
+
+QTDAO_END_NAMESPACE

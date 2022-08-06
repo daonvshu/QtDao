@@ -1,8 +1,12 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include "entitycondition.h"
 #include "entityfield.h"
 #include "functioncondition.h"
+
+QTDAO_BEGIN_NAMESPACE
 
 class Connector;
 class ConditionConstraint : public EntityCondition {
@@ -90,3 +94,5 @@ template<typename E, typename ...N>
 inline ConditionConstraint& ConditionConstraint::groupByNext(const EntityField<E>& field, const N & ...n) {
     return groupBySave(field.name, field.bindTable).groupByNext(n...);
 }
+
+QTDAO_END_NAMESPACE

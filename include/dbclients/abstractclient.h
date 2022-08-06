@@ -1,7 +1,11 @@
 #pragma once
 
+#include "../global.h"
+
 #include <qobject.h>
 #include <functional>
+
+QTDAO_BEGIN_NAMESPACE
 
 enum SqlClientList {
     ClientSqlite,
@@ -245,3 +249,5 @@ inline void AbstractClient::ClientSelector<ClientSqlServer>::restoreData() {
     typename E::Info info;
     client->restoreData2NewTable(info.getTableName(), info.getFieldsWithoutTimestamp());
 }
+
+QTDAO_END_NAMESPACE

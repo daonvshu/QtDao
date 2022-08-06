@@ -5,6 +5,8 @@
 #include "condition/conditionconstraint.h"
 #include "condition/functioncondition.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 class ConnectorItem {
 public:
     Connector connector;
@@ -204,3 +206,5 @@ void Connector::connect(std::function<QString(const QString&)> prefixGetter) {
 void Connector::clear() {
     d->conditions.clear();
 }
+
+QTDAO_END_NAMESPACE

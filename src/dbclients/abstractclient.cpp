@@ -4,6 +4,8 @@
 
 #include "dbexceptionhandler.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 void AbstractClient::restoreData2NewTable(const QString& tbname, QStringList fields) {
     auto oldTbFields = getTagTableFields("tmp_" + tbname);
     if (oldTbFields.isEmpty()) {
@@ -81,3 +83,4 @@ QString AbstractClient::translateSqlStatement(const QString& statement, const QV
     return tmp;
 }
 
+QTDAO_END_NAMESPACE

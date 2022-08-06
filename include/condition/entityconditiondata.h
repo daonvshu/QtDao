@@ -1,9 +1,13 @@
 ﻿#pragma once
 
+#include "../global.h"
+
 #include <qsharedpointer.h>
 #include <qstring.h>
 #include <qvariant.h>
 #include <functional>
+
+QTDAO_BEGIN_NAMESPACE
 
 enum ConditionType {
     TypeNormal,
@@ -52,3 +56,5 @@ struct EntityConditionData : public QSharedData {
 
     virtual QList<FieldInfo> getUsedFields();
 };
+
+QTDAO_END_NAMESPACE

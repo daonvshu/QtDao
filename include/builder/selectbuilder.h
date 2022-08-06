@@ -6,6 +6,8 @@
 
 #include "../query/select.h"
 
+QTDAO_BEGIN_NAMESPACE
+
 template<typename E>
 class SelectBuilder : public BaseQueryBuilder {
 public:
@@ -24,3 +26,5 @@ public:
 
     QUERY_BUILDER_BUILDER_DECLARE(Select)
 };
+
+QTDAO_END_NAMESPACE
