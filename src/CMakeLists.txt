@@ -10,23 +10,23 @@ find_package(Qt5 COMPONENTS Core Sql REQUIRED)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 add_library(${PROJECT_NAME}
-    builder/BaseQueryBuilder.cpp
+    builder/basequerybuilder.cpp
 
-    condition/ConditionConstraint.cpp
-    condition/ConnectorData.cpp
-    condition/EntityCondition.cpp
-    condition/FunctionCondition.cpp
+    condition/conditionconstraint.cpp
+    condition/connectordata.cpp
+    condition/entitycondition.cpp
+    condition/functioncondition.cpp
 
-    dbclients/AbstractClient.cpp
-    dbclients/MysqlClient.cpp
-    dbclients/SqliteClient.cpp
-    dbclients/SqlServerClient.cpp
+    dbclients/abstractclient.cpp
+    dbclients/mysqlclient.cpp
+    dbclients/sqliteclient.cpp
+    dbclients/sqlserverclient.cpp
 
-    query/BaseQuery.cpp
-    query/SqliteLockControl.cpp
+    query/basequery.cpp
+    query/sqlitelockcontrol.cpp
 
-    ConnectionPool.cpp
-    DbLoader.cpp
+    connectionpool.cpp
+    dbloader.cpp
     qtdao.cpp
 )
 

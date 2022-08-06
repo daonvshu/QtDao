@@ -1,18 +1,18 @@
 #pragma once
 
-#include "ConnectionPool.h"
-#include "DbLoader.h"
+#include "connectionpool.h"
+#include "dbloader.h"
 
-#include "builder/InsertBuilder.h"
-#include "builder/SelectBuilder.h"
-#include "builder/CountBuilder.h"
-#include "builder/UpdateBuilder.h"
-#include "builder/DeleteBuilder.h"
-#include "builder/JoinBuilder.h"
-#include "builder/RecursiveQueryBuilder.h"
-#include "builder/InsertIntoSelectBuilder.h"
+#include "builder/insertbuilder.h"
+#include "builder/selectbuilder.h"
+#include "builder/countbuilder.h"
+#include "builder/updatebuilder.h"
+#include "builder/deletebuilder.h"
+#include "builder/joinbuilder.h"
+#include "builder/recursivequerybuilder.h"
+#include "builder/insertintoselectbuilder.h"
 
-#include "condition/ConditionOperator.h"
+#include "condition/conditionoperator.h"
 
 #include <QtSql/QSqlDriver>
 

@@ -1,5 +1,5 @@
-﻿#include "DbLoader.h"
-#include "DbExceptionHandler.h"
+﻿#include "dbloader.h"
+#include "dbexceptionhandler.h"
 #include "dao.h"
 
 DbExceptionHandler* DbExceptionHandler::exceptionHandler = nullptr;
