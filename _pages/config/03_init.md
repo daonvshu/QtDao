@@ -249,6 +249,8 @@ public:
 
 #include "dao.h"
 
+QTDAO_USING_NAMESPACE
+
 void SqlLogPrinter(const QString& sql, const QVariantList& values) {
 #ifdef QT_DEBUG
     qDebug() << "sql:" << sql << " values:" << values;

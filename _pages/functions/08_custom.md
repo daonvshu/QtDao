@@ -123,7 +123,7 @@ static void BaseQuery::queryPrimitive(
 `statement`传入sql语句，如果sql语句中使用占位符`'?'`，则使用`values`传入值列表。`callback`回调用于处理查询结果，`failCallback`用于处理失败情况，若省略则交给统一异常处理回调：
 
 ```cpp
-BaseQuery::queryPrimitive("select 10 + 20", [&](QSqlQuery& query) {
+dao::BaseQuery::queryPrimitive("select 10 + 20", [&](QSqlQuery& query) {
     if (query.next()) {
         int result = query.value(0).toInt();
     }
