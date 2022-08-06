@@ -7,6 +7,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt5 COMPONENTS Core Sql REQUIRED)
 
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
 add_library(${PROJECT_NAME}
     builder/BaseQueryBuilder.cpp
 
