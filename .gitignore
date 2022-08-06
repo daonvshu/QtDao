@@ -345,3 +345,4 @@ test.txt
 out/
 
 .vscode
+CMakeSettings.json
