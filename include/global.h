@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #define QTDAO_BEGIN_NAMESPACE namespace dao {
 

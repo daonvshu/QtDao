@@ -1,4 +1,4 @@
-#include "query/basequery.h"
+﻿#include "query/basequery.h"
 
 #include "connectionpool.h"
 #include "dbexceptionhandler.h"

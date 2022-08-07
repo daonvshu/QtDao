@@ -1,4 +1,4 @@
-#include "condition/entitycondition.h"
+﻿#include "condition/entitycondition.h"
 
 QTDAO_BEGIN_NAMESPACE
 

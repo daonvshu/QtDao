@@ -20,67 +20,67 @@ class FunctionCondition {
 public:
     FunctionCondition();
 
-	FunctionCondition(const QString& expressions);
+    FunctionCondition(const QString& expressions);
 
-	template<typename T, typename... E>
-	FunctionCondition& field(const EntityField<T>& field, const EntityField<E>&... n);
+    template<typename T, typename... E>
+    FunctionCondition& field(const EntityField<T>& field, const EntityField<E>&... n);
 
-	template<typename T>
-	FunctionCondition& field(const EntityField<T>& field);
+    template<typename T>
+    FunctionCondition& field(const EntityField<T>& field);
 
-	template<typename... Args>
-	FunctionCondition& value(QVariant v, Args... args);
+    template<typename... Args>
+    FunctionCondition& value(QVariant v, Args... args);
 
-	FunctionCondition& value(QVariant v);
+    FunctionCondition& value(QVariant v);
 
-	template<typename E>
-	FunctionCondition& from(Select<E>& select);
+    template<typename E>
+    FunctionCondition& from(Select<E>& select);
 
-	template<typename... E>
-	FunctionCondition& from(Join<E...>& join);
-
-private:
-	QSharedDataPointer<FunctionConditionData> d;
+    template<typename... E>
+    FunctionCondition& from(Join<E...>& join);
 
 private:
-	void setFieldPrefixGetter(std::function<QString(const QString&)> prefixGetter);
+    QSharedDataPointer<FunctionConditionData> d;
 
-	void combine();
+private:
+    void setFieldPrefixGetter(std::function<QString(const QString&)> prefixGetter);
 
-	friend class Connector;
-	friend class ConditionConstraint;
+    void combine();
+
+    friend class Connector;
+    friend class ConditionConstraint;
 };
 
 template<typename T, typename ...E>
 inline FunctionCondition& FunctionCondition::field(const EntityField<T>& f, const EntityField<E>& ...n) {
-	return field(f).field(n...);
+    return field(f).field(n...);
 }
 
 template<typename T>
 inline FunctionCondition& FunctionCondition::field(const EntityField<T>& f) {
-	d->fields << FieldInfo{f.name, f.bindTable};
-	return *this;
+    d->fields << FieldInfo{f.name, f.bindTable};
+    return *this;
 }
 
 template<typename ...Args>
 inline FunctionCondition& FunctionCondition::value(QVariant v, Args ...args) {
-	return value(v).value(args...);
+    return value(v).value(args...);
 }
 
 template<typename E>
 inline FunctionCondition& FunctionCondition::from(Select<E>& select) {
-	select.buildFilterSqlStatement();
-	d->fields << FieldInfo{ select.statement.prepend("(").append(")"), "" };
-	d->values << select.values;
-	return *this;
+    select.buildFilterSqlStatement();
+    d->fields << FieldInfo{ select.statement.prepend("(").append(")"), "" };
+    d->values << select.values;
+    return *this;
 }
 
 template<typename ...E>
 inline FunctionCondition& FunctionCondition::from(Join<E...>& join) {
-	join.buildJoinSqlStatement();
-	d->fields << FieldInfo{ join.statement.prepend("(").append(")"), "" };
-	d->values << join.values;
-	return *this;
+    join.buildJoinSqlStatement();
+    d->fields << FieldInfo{ join.statement.prepend("(").append(")"), "" };
+    d->values << join.values;
+    return *this;
 }
 
 QTDAO_END_NAMESPACE

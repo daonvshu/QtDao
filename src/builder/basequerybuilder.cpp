@@ -1,4 +1,4 @@
-#include "builder/basequerybuilder.h"
+﻿#include "builder/basequerybuilder.h"
 
 #include "builder/recursivequerybuilder.h"
 

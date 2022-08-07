@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "connectionpool.h"
 #include "dbloader.h"

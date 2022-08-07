@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #define QUERY_BUILDER_USE(Builder, name) \
 template<typename... Args>\

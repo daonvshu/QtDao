@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../global.h"
 
@@ -11,7 +11,6 @@
 #include <qmutex.h>
 #include <qwaitcondition.h>
 
-#include "../condition/Connector.h"
 #include "../builder/basequerybuilder.h"
 
 #include "../query/explaininfo.h"
