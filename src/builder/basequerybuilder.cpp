@@ -7,19 +7,67 @@ QTDAO_BEGIN_NAMESPACE
 BaseQueryBuilder::~BaseQueryBuilder() {
 }
 
+void BaseQueryBuilder::set(bool enabled, const EntityCondition &condition) {
+    if (enabled) {
+        setCondition.append(condition);
+    }
+}
+
 void BaseQueryBuilder::set() {
 }
 
+void BaseQueryBuilder::filter(bool enabled, const EntityCondition &condition) {
+    if (enabled) {
+        filterCondition.append(condition);
+    }
+}
+
+void BaseQueryBuilder::filter(bool enabled, const Connector &condition) {
+    if (enabled) {
+        filterCondition.append(condition);
+    }
+}
+
+void BaseQueryBuilder::filter(bool enabled, const FunctionCondition &condition) {
+    if (enabled) {
+        filterCondition.append(condition);
+    }
+}
+
 void BaseQueryBuilder::filter() {
+}
+
+void BaseQueryBuilder::on(bool enabled, const EntityCondition &condition) {
+    if (enabled) {
+        onCondition.append(condition);
+    }
+}
+
+void BaseQueryBuilder::on(bool enabled, const Connector &condition) {
+    if (enabled) {
+        onCondition.append(condition);
+    }
+}
+
+void BaseQueryBuilder::on(bool enabled, const FunctionCondition &condition) {
+    if (enabled) {
+        onCondition.append(condition);
+    }
+}
+
+void BaseQueryBuilder::on() {
+}
+
+void BaseQueryBuilder::with(bool enabled, const dao::ConditionConstraint &constraint) {
+    if (enabled) {
+        constraintCondition.append(constraint);
+    }
 }
 
 void BaseQueryBuilder::with() {
 }
 
 void BaseQueryBuilder::column() {
-}
-
-void BaseQueryBuilder::on() {
 }
 
 void BaseQueryBuilder::from(RecursiveQueryBuilder& builder) {
