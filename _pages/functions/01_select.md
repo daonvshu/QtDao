@@ -316,6 +316,17 @@ UserList getUserNames(int limitSize) {
 }
 ```
 
+可选择的
+-------------
+对于以下条件设置函数，提供了可选择的设置方法：`column`、`set`(update)、`filter`、`on`(join)、`with`。如下例子所示，设置like条件的前提是keywords不能为空：
+```cpp
+QString keywords = "Alice";
+User::Fields field;
+UserList user = dao::_select<User>()
+    .filter(!keywords.isEmpty(), field.name.like("%" + keywords + "%"))
+    .build().list();
+```
+
 读取表所有数据
 -------------
 
