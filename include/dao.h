@@ -68,50 +68,15 @@ static void _truncate() {
     DbLoader::getClient().truncateTable(E::Info::getTableName());
 }
 
-static void transcation() {
-    BaseQuery::sqliteLockControl.trancationStart();
-    if (DbLoader::getConfig().isSqlServer()) {
-        BaseQuery::queryPrimitiveThrowable("begin tran");
-    } else {
-        BaseQuery::queryPrimitiveThrowable("begin");
-    }
-}
+extern void transcation();
 
-static void commit() {
-    BaseQuery::sqliteLockControl.trancationPrepareEnd();
-    BaseQuery::queryPrimitiveThrowable("commit");
-    BaseQuery::sqliteLockControl.trancationEnd();
-}
+extern void commit();
 
-static void transcation_save(const QString& savePoint) {
-    if (DbLoader::getConfig().isSqlServer()) {
-        BaseQuery::queryPrimitiveThrowable(QString("save tran %1").arg(savePoint));
-    } else {
-        BaseQuery::queryPrimitiveThrowable(QString("savepoint %1").arg(savePoint));
-    }
-}
+extern void transcation_save(const QString& savePoint);
 
-static void rollback(const QString& savePoint = QString()) {
-    if (savePoint.isEmpty()) {
-        BaseQuery::sqliteLockControl.trancationPrepareEnd();
-    }
-    if (DbLoader::getConfig().isSqlServer()) {
-        BaseQuery::queryPrimitiveThrowable(
-            savePoint.isEmpty() ? QString("rollback tran") : QString("rollback tran %1").arg(savePoint)
-        );
-    } else {
-        BaseQuery::queryPrimitiveThrowable(
-            savePoint.isEmpty() ? QString("rollback") : QString("rollback to %1").arg(savePoint)
-        );
-    }
-    if (savePoint.isEmpty()) {
-        BaseQuery::sqliteLockControl.trancationEnd();
-    }
-}
+extern void rollback(const QString& savePoint = QString());
 
-static void sqlWriteSync(bool enable = true) {
-    BaseQuery::sqliteLockControl.enableSqliteWriteSync(enable);
-}
+extern void sqlWriteSync(bool enable = true);
 
 template<typename E>
 class self : public E {
