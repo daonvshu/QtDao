@@ -83,10 +83,10 @@ protected:
     static SqliteLockControl sqliteLockControl;
     static DbErrCode::Code exceptionLastErr;
 
-    friend static void transcation();
-    friend static void commit();
-    friend static void rollback(const QString&);
-    friend static void sqlWriteSync(bool);
+    friend void transcation();
+    friend void commit();
+    friend void rollback(const QString&);
+    friend void sqlWriteSync(bool);
 
 private:
     QSqlQuery getQuery(bool& prepareOk, bool skipEmptyValue = false);

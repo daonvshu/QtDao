@@ -29,38 +29,57 @@ protected:
     template<typename... Args>
     void set(const EntityCondition& condition, const Args&... args);
 
+    void set(bool enabled, const EntityCondition& condition);
+
     template<typename... Args>
     void filter(const EntityCondition& condition, const Args&... args);
+
+    void filter(bool enabled, const EntityCondition& condition);
 
     template<typename... Args>
     void filter(const Connector& condition, const Args&... args);
 
+    void filter(bool enabled, const Connector& condition);
+
     template<typename... Args>
     void filter(const FunctionCondition& condition, const Args&... args);
+
+    void filter(bool enabled, const FunctionCondition& condition);
 
     template<typename... Args>
     void on(const EntityCondition& condition, const Args&... args);
 
+    void on(bool enabled, const EntityCondition& condition);
+
     template<typename... Args>
     void on(const Connector& condition, const Args&... args);
+
+    void on(bool enabled, const Connector& condition);
 
     template<typename... Args>
     void on(const FunctionCondition& condition, const Args&... args);
 
+    void on(bool enabled, const FunctionCondition& condition);
+
     template<typename... Args>
-    void with(const ConditionConstraint& constaint, const Args&... args);
+    void with(const ConditionConstraint& constraint, const Args&... args);
+
+    void with(bool enabled, const ConditionConstraint& constraint);
 
     template<typename Col, typename... Args>
     void column(const Col& function, const Args&... args);
+
+    template<typename Col>
+    void column(bool enabled, const Col& function);
 
     template<typename E>
     void columnAll();
 
     virtual void set();
     virtual void filter();
+    virtual void on();
     virtual void with();
     virtual void column();
-    virtual void on();
 
     template<typename E>
     void from(Select<E>& select);
@@ -142,8 +161,8 @@ inline void BaseQueryBuilder::on(const FunctionCondition& condition, const Args 
 }
 
 template<typename ...Args>
-inline void BaseQueryBuilder::with(const ConditionConstraint& constaint, const Args & ...args) {
-    constraintCondition.append(constaint);
+inline void BaseQueryBuilder::with(const ConditionConstraint& constraint, const Args & ...args) {
+    constraintCondition.append(constraint);
     with(args...);
 }
 
@@ -151,6 +170,13 @@ template<typename Col, typename ...Args>
 inline void BaseQueryBuilder::column(const Col& function, const Args & ...args) {
     columnBind.appendCol(function);
     column(args...);
+}
+
+template<typename Col>
+void BaseQueryBuilder::column(bool enabled, const Col& function) {
+    if (enabled) {
+        columnBind.appendCol(function);
+    }
 }
 
 template<typename E>

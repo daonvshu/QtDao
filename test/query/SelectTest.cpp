@@ -242,6 +242,7 @@ void runCountSelectTest() {
     QCOMPARE(count, 5);
     
     count = dao::_count<E>()
+        .filter(false, sf1.name.like("%a%"))
         .filter(sf1.name.like("%l%")).count();
     QCOMPARE(count, 3);
 
