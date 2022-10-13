@@ -98,8 +98,8 @@ protected:
     template<typename E>
     friend class Update;
 
-    template<typename E>
-    friend class Delete;
+    friend class UpdateImpl;
+    friend class DeleteImpl;
 };
 
 template<typename T>

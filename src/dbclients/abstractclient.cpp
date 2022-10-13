@@ -13,7 +13,7 @@ void AbstractClient::restoreData2NewTable(const QString& tbname, QStringList fie
     }
     QString fieldsStr;
     for (int i = 0; i < oldTbFields.size(); i++) {
-        auto field = oldTbFields.at(i);
+        const auto& field = oldTbFields.at(i);
         if (fields.contains(field)) {
             fieldsStr.append(field).append(",");
         }
@@ -69,7 +69,7 @@ QString AbstractClient::translateSqlStatement(const QString& statement, const QV
     stringType << QVariant::DateTime;
     stringType << QVariant::Char;
     while ((placeholdIndex = tmp.indexOf('?')) != -1) {
-        QVariant value = values.at(vi++);
+        const QVariant& value = values.at(vi++);
         QString valueStr;
         if (stringType.contains(value.type())) {
             valueStr = " '" + value.toString() + "' ";

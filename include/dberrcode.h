@@ -43,9 +43,9 @@ public:
         SQL_EXEC_FAIL = 0x0200,
     };
 
-    DbErrCode(Code code) : code(code) {}
+    explicit DbErrCode(Code code) : code(code) {}
 
-    bool operator==(Code target) {
+    bool operator==(Code target) const {
         return code & target;
     }
 

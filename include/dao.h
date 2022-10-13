@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "connectionpool.h"
-#include "dbloader.h"
 
 #include "builder/insertbuilder.h"
 #include "builder/selectbuilder.h"
@@ -14,9 +13,38 @@
 
 #include "condition/conditionoperator.h"
 
+#include "config/configsqlite.h"
+#include "config/configmysql.h"
+#include "config/configsqlserver.h"
+
 #include <QtSql/QSqlDriver>
+#include <qscopedpointer.h>
 
 QTDAO_BEGIN_NAMESPACE
+
+template<typename T>
+struct TypeIdentify {
+    typedef T type;
+};
+
+static ConfigSqliteBuilder _config(TypeIdentify<ConfigSqliteBuilder>) {
+    return ConfigSqliteBuilder();
+}
+
+static ConfigMysqlBuilder _config(TypeIdentify<ConfigMysqlBuilder>) {
+    return ConfigMysqlBuilder();
+}
+
+static ConfigSqlServerBuilder _config(TypeIdentify<ConfigSqlServerBuilder>) {
+    return ConfigSqlServerBuilder();
+}
+
+template<typename T>
+static T _config() {
+    return _config(TypeIdentify<T>());
+}
+
+extern QScopedPointer<ConfigBuilder> globalConfig;
 
 template<typename T>
 static InsertBuilder<T> _insert() {
@@ -59,59 +87,24 @@ static JoinBuilder<T...> _join() {
 }
 
 static RecursiveQueryBuilder _recursive(bool unionAll = false) {
-    Q_ASSERT_X(!DbLoader::getConfig().isMysql(), "RecursiveQuery", "not support mysql recursive query!");
-    return RecursiveQueryBuilder(unionAll);
+    Q_ASSERT_X(!globalConfig->isMysql(), "RecursiveQuery", "mysql recursive query unsupported!");
+    return {unionAll};
 }
 
 template<typename E>
 static void _truncate() {
-    DbLoader::getClient().truncateTable(E::Info::getTableName());
+    globalConfig->getClient()->truncateTable(E::Info::getTableName());
 }
 
-static void transcation() {
-    BaseQuery::sqliteLockControl.trancationStart();
-    if (DbLoader::getConfig().isSqlServer()) {
-        BaseQuery::queryPrimitiveThrowable("begin tran");
-    } else {
-        BaseQuery::queryPrimitiveThrowable("begin");
-    }
-}
+extern void transcation();
 
-static void commit() {
-    BaseQuery::sqliteLockControl.trancationPrepareEnd();
-    BaseQuery::queryPrimitiveThrowable("commit");
-    BaseQuery::sqliteLockControl.trancationEnd();
-}
+extern void commit();
 
-static void transcation_save(const QString& savePoint) {
-    if (DbLoader::getConfig().isSqlServer()) {
-        BaseQuery::queryPrimitiveThrowable(QString("save tran %1").arg(savePoint));
-    } else {
-        BaseQuery::queryPrimitiveThrowable(QString("savepoint %1").arg(savePoint));
-    }
-}
+extern void transcation_save(const QString& savePoint);
 
-static void rollback(const QString& savePoint = QString()) {
-    if (savePoint.isEmpty()) {
-        BaseQuery::sqliteLockControl.trancationPrepareEnd();
-    }
-    if (DbLoader::getConfig().isSqlServer()) {
-        BaseQuery::queryPrimitiveThrowable(
-            savePoint.isEmpty() ? QString("rollback tran") : QString("rollback tran %1").arg(savePoint)
-        );
-    } else {
-        BaseQuery::queryPrimitiveThrowable(
-            savePoint.isEmpty() ? QString("rollback") : QString("rollback to %1").arg(savePoint)
-        );
-    }
-    if (savePoint.isEmpty()) {
-        BaseQuery::sqliteLockControl.trancationEnd();
-    }
-}
+extern void rollback(const QString& savePoint = QString());
 
-static void sqlWriteSync(bool enable = true) {
-    BaseQuery::sqliteLockControl.enableSqliteWriteSync(enable);
-}
+extern void sqlWriteSync(bool enable = true);
 
 template<typename E>
 class self : public E {
@@ -138,11 +131,5 @@ public:
     };
 };
 
-class LocalQuery {
-public:
-    ~LocalQuery() {
-        ConnectionPool::closeConnection();
-    }
-};
-
 QTDAO_END_NAMESPACE
+

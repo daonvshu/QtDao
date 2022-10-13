@@ -1,9 +1,8 @@
 ﻿#include "connectionpool.h"
-#include <qstandardpaths.h>
 #include <qthread.h>
 
-#include "dbloader.h"
 #include "dbexceptionhandler.h"
+#include "dao.h"
 
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
@@ -113,45 +112,19 @@ QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
         }
         //remove error connection, and try to create new connection
         QSqlDatabase::removeDatabase(connectionName);
+        //TODO:check retry 3 times fail
     }
 
     // create new connection
-    auto db = prepareConnect(connectionName, DbLoader::getConfig().dbName);
+    auto db = prepareConnect(connectionName, globalConfig->mDatabaseName);
     if (!db.open()) {
-        if (DbExceptionHandler::exceptionHandler) {
-            DbExceptionHandler::exceptionHandler->databaseOpenFail(DbErrCode::CREATE_CONNECTION_FAIL, db.lastError().text());
-        }
-        Q_ASSERT_X(DbExceptionHandler::exceptionHandler != nullptr, "ConnectionPool", "open database fail!");
-        return QSqlDatabase();
+        throw DaoException(DbErrCode::CREATE_CONNECTION_FAIL, db.lastError().text());
     }
 
     return db;
 }
 
 QSqlDatabase ConnectionPool::prepareConnect(const QString& connectName, const QString& dbName) {
-    QSqlDatabase db = QSqlDatabase::addDatabase(DbLoader::getConfig().dbDriver, connectName);
-    if (DbLoader::getConfig().isSqlite()) {
-        db.setDatabaseName(DbLoader::getConfig().getDbStorePath());
-        if (!DbLoader::getConfig().dbPcc.isEmpty()) {
-            db.setPassword(DbLoader::getConfig().dbPcc);
-        }
-    } 
-    else if (DbLoader::getConfig().isMysql()) {
-        db.setDatabaseName(dbName);
-        db.setUserName(DbLoader::getConfig().dbUName);
-        db.setPassword(DbLoader::getConfig().dbPcc);
-        db.setHostName(DbLoader::getConfig().dbHost);
-        db.setPort(DbLoader::getConfig().dbPort);
-    }
-    else if (DbLoader::getConfig().isSqlServer()) {
-        db.setDatabaseName(QString("DRIVER={SQL SERVER};SERVER=%1;DATABASE=%2").arg(DbLoader::getConfig().dbHost).arg(dbName));
-        db.setUserName(DbLoader::getConfig().dbUName);
-        db.setPassword(DbLoader::getConfig().dbPcc);
-    }
-
-    if (!DbLoader::getConfig().dbOption.isEmpty()) {
-        db.setConnectOptions(DbLoader::getConfig().dbOption);
-    }
-    return db;
+    return globalConfig->getConnection(connectName, dbName);
 }
 

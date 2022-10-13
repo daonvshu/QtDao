@@ -11,7 +11,6 @@ QTDAO_BEGIN_NAMESPACE
 template<typename E>
 class UpdateBuilder : public BaseQueryBuilder {
 public:
-    QUERY_BUILDER_USE_THROWABLE(UpdateBuilder)
     QUERY_BUILDER_USE_SET(UpdateBuilder)
     QUERY_BUILDER_USE_FILTER(UpdateBuilder)
 

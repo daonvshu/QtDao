@@ -11,7 +11,6 @@ QTDAO_BEGIN_NAMESPACE
 template<typename E>
 class InsertIntoSelectBuilder : public BaseQueryBuilder {
 public:
-    QUERY_BUILDER_USE_THROWABLE(InsertIntoSelectBuilder)
     QUERY_BUILDER_USE_COLUMN(InsertIntoSelectBuilder)
 
     QUERY_BUILDER_USE_QUERY_FROM_SELECT2(InsertIntoSelectBuilder)

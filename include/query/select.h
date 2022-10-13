@@ -1,10 +1,8 @@
 ﻿#pragma once
 
-#include "basequery.h"
+#include "selectimpl.h"
 
 #include "../macro/macro.h"
-
-#include "../dbloader.h"
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -15,7 +13,7 @@ class FunctionCondition;
 class RecursiveQueryBuilder;
 
 template<typename E>
-class Select : BaseQuery {
+class Select : EntityReaderProvider<E>, SelectImpl {
 public:
     /// <summary>
     /// select top for sqlserver query
@@ -54,7 +52,7 @@ public:
     /// skips the object transformation and reads the query result directly
     /// </summary>
     /// <param name="callback"></param>
-    void raw(std::function<void(QSqlQuery&)> callback);
+    void raw(const std::function<void(QSqlQuery&)>& callback);
 
     /// <summary>
     /// explain query statement
@@ -64,139 +62,55 @@ public:
     template<typename I>
     QList<I> explain();
 
-protected:
-    void buildFilterSqlStatement();
-
-protected:
-    QString getBindColumns(QVariantList& values);
-
+private:
     BASE_QUERY_CONSTRUCTOR_DECLARE(Select)
 
     friend class BaseQueryBuilder;
     friend class RecursiveQueryBuilder;
     friend class FunctionCondition;
-
-private:
-    int topSize = 0;
-    bool topPercent;
 };
 
 template<typename E>
 inline E Select<E>::unique() {
-    buildFilterSqlStatement();
+
     E entity;
-    exec([&](QSqlQuery& query) {
-        int resultSize = 0;
-        while (query.next()) {
-            typename E::Tool tool;
-            QSqlRecord record = query.record();
-            for (int i = 0; i < record.count(); i++) {
-                tool.bindValue(entity, record.fieldName(i), record.value(i));
-            }
-            resultSize++;
-        }
-        if (resultSize > 1) {
-            printException("unique result size > 1, actual is " + QString::number(resultSize));
-        }
+    uniqueExec([&](const QString& fieldName, const QVariant& value){
+        bindValue(entity, fieldName, value);
     });
+
     return entity;
 }
 
 template<typename E>
 inline E Select<E>::one() {
-    buildFilterSqlStatement();
+
     E entity;
-    exec([&](QSqlQuery& query) {
-        if (query.next()) {
-            typename E::Tool tool;
-            QSqlRecord record = query.record();
-            for (int i = 0; i < record.count(); i++) {
-                tool.bindValue(entity, record.fieldName(i), record.value(i));
-            }
-        }
+    oneExec([&](const QString& fieldName, const QVariant& value){
+        bindValue(entity, fieldName, value);
     });
+
     return entity;
 }
 
 template<typename E>
 inline QList<E> Select<E>::list() {
-    buildFilterSqlStatement();
+
     QList<E> data;
-    exec([&](QSqlQuery& query) {
-        typename E::Tool tool;
-        while (query.next()) {
-            E entity;
-            QSqlRecord record = query.record();
-            for (int i = 0; i < record.count(); i++) {
-                tool.bindValue(entity, record.fieldName(i), record.value(i));
-            }
-            data << entity;
-        }
+    listExec([&](const QSqlRecord& record){
+        E entity;
+        recordBind(record, [&](const QString& fieldName, const QVariant& value){
+            bindValue(entity, fieldName, value);
+        });
+        data << entity;
     });
+
     return data;
 }
 
 template<typename E>
-inline void Select<E>::raw(std::function<void(QSqlQuery&)> callback) {
+inline void Select<E>::raw(const std::function<void(QSqlQuery&)>& callback) {
     buildFilterSqlStatement();
-    exec(callback);
-}
-
-template<typename E>
-inline void Select<E>::buildFilterSqlStatement() {
-    QString sql = "select %1%2 from %3";
-    typename E::Info info;
-    QVariantList values;
-
-    if (topSize != 0 && DbLoader::getConfig().isSqlServer()) {
-        sql = sql.arg("top " + QString::number(topSize) + (topPercent ? " percent " : " "));
-    } else {
-        sql = sql.arg("");
-    }
-    sql = sql.arg(getBindColumns(values));
-    if (builder->fromSelectStatement.isEmpty()) {
-        sql = sql.arg(info.getTableName());
-    } else {
-        if (builder->recursiveQuery) {
-            sql = sql.arg(builder->fromSelectAs);
-            sql = builder->fromSelectStatement + sql;
-            builder->fromSelectValues.append(values);
-            builder->fromSelectValues.swap(values);
-        } else {
-            sql = sql.arg('(' + builder->fromSelectStatement + ") as " + builder->fromSelectAs);
-            values.append(builder->fromSelectValues);
-        }
-    }
-
-    if (!builder->filterCondition.isEmpty()) {
-        builder->filterCondition.connect();
-        sql.append(" where ").append(builder->filterCondition.getConditionStr());
-        values.append(builder->filterCondition.getValues());
-    }
-
-    if (!builder->constraintCondition.isEmpty()) {
-        builder->constraintCondition.connect();
-        sql.append(" ").append(builder->constraintCondition.getConditionStr());
-        values.append(builder->constraintCondition.getValues());
-    }
-
-    if (!builder->unionSelectStatement.isEmpty()) {
-        sql.append(builder->unionAll ? " union all " : " union ");
-        sql.append(builder->unionSelectStatement);
-        values.append(builder->unionSelectValues);
-    }
-
-    setSqlQueryStatement(sql, values);
-}
-
-template<typename E>
-inline QString Select<E>::getBindColumns(QVariantList& values) {
-    if (builder->columnBind.isEmpty()) {
-        return "*";
-    }
-    builder->columnBind.connect();
-    values << builder->columnBind.getValues();
-    return builder->columnBind.getConditionStr();
+    callback(exec());
 }
 
 template<typename E>
@@ -205,9 +119,7 @@ inline QList<I> Select<E>::explain() {
     Q_STATIC_ASSERT_X(ExplainTool<I>::Valid == 1, 
         "template parameter must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo/SqlServerExplainInfo");
 
-    buildFilterSqlStatement();
-    auto newStatement = DbLoader::getClient().translateSqlStatement(statement, values);
-    return ExplainTool<I>::toExplain(newStatement);
+    return ExplainTool<I>::toExplain(readExplainStatement());
 }
 
 QTDAO_END_NAMESPACE

@@ -11,7 +11,6 @@ QTDAO_BEGIN_NAMESPACE
 template<typename... E>
 class JoinBuilder : public BaseQueryBuilder {
 public:
-    QUERY_BUILDER_USE_THROWABLE(JoinBuilder)
     QUERY_BUILDER_USE_FILTER(JoinBuilder)
     QUERY_BUILDER_USE_WITH(JoinBuilder)
     QUERY_BUILDER_USE_COLUMN(JoinBuilder)

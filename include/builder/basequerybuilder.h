@@ -97,6 +97,13 @@ protected:
     template<typename E> friend class Delete;
     template<typename... E> friend class Join;
     template<typename E> friend class InsertIntoSelect;
+
+    friend class InsertImpl;
+    friend class InsertIntoSelectImpl;
+    friend class UpdateImpl;
+    friend class DeleteImpl;
+    friend class SelectImpl;
+    friend class JoinImpl;
 };
 
 template<typename ...Args>

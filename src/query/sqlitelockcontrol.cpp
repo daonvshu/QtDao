@@ -1,6 +1,6 @@
 ﻿#include "query/sqlitelockcontrol.h"
 
-#include "dbloader.h"
+#include "dao.h"
 
 #include <qthread.h>
 
@@ -35,7 +35,7 @@ if (writeSync) { \
 #define WRITE_SYNC_END }
 
 void SqliteLockControl::enableSqliteWriteSync(bool enable) {
-    if (!DbLoader::getConfig().isSqlite()) {
+    if (!globalConfig->isSqlite()) {
         return;
     }
     print("#1-0");

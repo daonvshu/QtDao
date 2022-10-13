@@ -1,14 +1,14 @@
 ﻿#include "dbclients/sqlserverclient.h"
 
 #include "connectionpool.h"
-#include "dbloader.h"
+#include "dbexceptionhandler.h"
 #include "query/basequery.h"
+#include "dao.h"
 
-#include <qdir.h>
 #include <QCoreApplication>
-#include <qstandardpaths.h>
-#include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlQuery>
+#include <qstandardpaths.h>
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -57,7 +57,7 @@ void SqlServerClient::createDatabase() {
 UgPSBOJyUxJywKCQlGSUxFTkFNRSA9IE4nJTJcJTEubmRmJywKCQlTSVpFID0gOE1CLAoJCU1BWFNJWkUgPSBVTkxJTUlURUQsCgkJRklM\
 RUdST1dUSCA9IDY0TUIKCSkKCUxPRyBPTgoJKAoJCU5BTUUgPSBOJyUxX2xvZycsCgkJRklMRU5BTUUgPSBOJyUyXCUxX2xvZy5sZGYnLA\
 oJCVNJWkUgPSA4TUIsCgkJTUFYU0laRSA9IFVOTElNSVRFRCwKCQlGSUxFR1JPV1RIID0gNjRNQgoJKQ==");
-        sql = sql.arg(DbLoader::getConfig().dbName, storePath);
+        sql = sql.arg(globalConfig->mDatabaseName, storePath);
         if (!query.exec(sql)) {
             code = DbErrCode::SQLSERVER_CREATE_DATABASE_FAIL;
             lastErrStr = "create database fail! err = " + query.lastError().text();
@@ -81,7 +81,7 @@ void SqlServerClient::dropDatabase() {
             return;
         }
         QString sql = "if exists (select* from sysdatabases where name ='%1') drop database %1";
-        sql = sql.arg(DbLoader::getConfig().dbName);
+        sql = sql.arg(globalConfig->mDatabaseName);
         QSqlQuery query(db);
         if (!query.exec(sql)) {
             lastErrStr = "drop database fail! err = " + query.lastError().text();
@@ -155,7 +155,7 @@ void SqlServerClient::createIndex(const QString& tbName, QStringList fields, Ind
     default:
         break;
     }
-    str = str.chopped(1).arg(typeStr).arg(indexName).arg(tbName);
+    str = str.chopped(1).arg(typeStr,indexName,tbName);
     str.append(")");
     auto option = optionGet(indexName);
     if (!option.isEmpty()) {

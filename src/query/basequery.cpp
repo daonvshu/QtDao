@@ -2,8 +2,7 @@
 
 #include "connectionpool.h"
 #include "dbexceptionhandler.h"
-
-#include "dbloader.h"
+#include "dao.h"
 
 #include <iostream>
 #include <QThread>
@@ -15,7 +14,6 @@ DbErrCode::Code BaseQuery::exceptionLastErr = DbErrCode::ERR_NOT_SET;
 
 BaseQuery::BaseQuery(bool throwable, BaseQueryBuilder* builder, bool writeDb)
     : builder(builder)
-    , queryThrowable(throwable)
     , writeDb(writeDb)
 {
     if (builder != nullptr) {
@@ -27,7 +25,6 @@ BaseQuery::BaseQuery(const BaseQuery& other) {
     this->statement = other.statement;
     this->values = other.values;
     this->builder = new BaseQueryBuilder(*other.builder);
-    this->queryThrowable = other.queryThrowable;
 }
 
 BaseQuery::~BaseQuery() {
@@ -37,46 +34,28 @@ BaseQuery::~BaseQuery() {
     }
 }
 
-void BaseQuery::exec(const std::function<void(QSqlQuery&)>& solveQueryResult) {
+QSqlQuery BaseQuery::exec() {
     bool prepareOk;
     auto query = getQuery(prepareOk, true);
     if (prepareOk && execByCheckEmptyValue(query, this)) {
-        solveQueryResult(query);
         checkAndReleaseWriteLocker();
     } else {
         checkAndReleaseWriteLocker();
-        printException(query.lastError().text());
+        throw DaoException(getLastErrCode(), query.lastError().text());
     }
+    return query;
 }
 
-void BaseQuery::execBatch(const std::function<void(QSqlQuery&)>& solveQueryResult) {
+QSqlQuery BaseQuery::execBatch() {
     bool prepareOk;
     auto query = getQuery(prepareOk);
     if (prepareOk && query.execBatch()) {
-        solveQueryResult(query);
         checkAndReleaseWriteLocker();
     } else {
         checkAndReleaseWriteLocker();
-        printException(query.lastError().text());
+        throw DaoException(getLastErrCode(), query.lastError().text());
     }
-}
-
-void BaseQuery::printException(const QString& reason) {
-    if (queryThrowable) {
-        throw DaoException(getLastErrCode(), reason);
-    } else {
-        if (DbExceptionHandler::exceptionHandler) {
-            DbExceptionHandler::exceptionHandler->execFail(getLastErrCode(), reason);
-            Q_ASSERT(DbExceptionHandler::exceptionHandler != nullptr);
-        }
-    }
-}
-
-void BaseQuery::printWarning(const QString& info) {
-    if (DbExceptionHandler::exceptionHandler) {
-        DbExceptionHandler::exceptionHandler->execWarning(info);
-    }
-    Q_ASSERT(DbExceptionHandler::exceptionHandler != nullptr);
+    return query;
 }
 
 void BaseQuery::checkAndLockWrite() {
@@ -123,10 +102,7 @@ void BaseQuery::queryPrimitive(const QString& statement,
         if (failCallback) {
             failCallback(lastErr);
         } else {
-            if (DbExceptionHandler::exceptionHandler) {
-                DbExceptionHandler::exceptionHandler->execFail(getLastErrCode(), lastErr);
-            }
-            Q_ASSERT(DbExceptionHandler::exceptionHandler != nullptr);
+            throw DaoException(getLastErrCode(), query.lastError().text());
         }
     }
     executor.checkAndReleaseWriteLocker();
@@ -208,7 +184,7 @@ DbErrCode::Code BaseQuery::getLastErrCode() {
 }
 
 QList<SqliteExplainInfo> BaseQuery::ExplainTool<SqliteExplainInfo>::toExplain(const QString& statement) {
-    Q_ASSERT_X(DbLoader::getConfig().isSqlite(), "ExplainTool<SqliteExplainInfo>", "need config sqlite");
+    Q_ASSERT_X(globalConfig->isSqlite(), "ExplainTool<SqliteExplainInfo>", "need config sqlite");
     QSqlQuery query = BaseQuery::queryPrimitiveThrowable("explain " + statement);
     QList<SqliteExplainInfo> result;
     while (query.next()) {
@@ -228,7 +204,7 @@ QList<SqliteExplainInfo> BaseQuery::ExplainTool<SqliteExplainInfo>::toExplain(co
 
 QList<SqliteExplainQueryPlanInfo> BaseQuery::ExplainTool<SqliteExplainQueryPlanInfo>::toExplain(
     const QString& statement) {
-    Q_ASSERT_X(DbLoader::getConfig().isSqlite(), "ExplainTool<SqliteExplainQueryPlanInfo>", "need config sqlite");
+    Q_ASSERT_X(globalConfig->isSqlite(), "ExplainTool<SqliteExplainQueryPlanInfo>", "need config sqlite");
     QSqlQuery query = BaseQuery::queryPrimitiveThrowable("explain query plan " + statement);
     QList<SqliteExplainQueryPlanInfo> result;
     while (query.next()) {
@@ -243,7 +219,7 @@ QList<SqliteExplainQueryPlanInfo> BaseQuery::ExplainTool<SqliteExplainQueryPlanI
 }
 
 QList<MysqlExplainInfo> BaseQuery::ExplainTool<MysqlExplainInfo>::toExplain(const QString& statement) {
-    Q_ASSERT_X(DbLoader::getConfig().isMysql(), "ExplainTool<MysqlExplainInfo>", "need config mysql");
+    Q_ASSERT_X(globalConfig->isMysql(), "ExplainTool<MysqlExplainInfo>", "need config mysql");
     QSqlQuery query = BaseQuery::queryPrimitiveThrowable("explain " + statement);
     QList<MysqlExplainInfo> result;
     while (query.next()) {
@@ -267,7 +243,7 @@ QList<MysqlExplainInfo> BaseQuery::ExplainTool<MysqlExplainInfo>::toExplain(cons
 
 //TODO
 QList<SqlServerExplainInfo> BaseQuery::ExplainTool<SqlServerExplainInfo>::toExplain(const QString& statement) {
-    Q_ASSERT_X(DbLoader::getConfig().isSqlServer(), "ExplainTool<SqlServerExplainInfo>", "need config sqlserver");
+    Q_ASSERT_X(globalConfig->isSqlServer(), "ExplainTool<SqlServerExplainInfo>", "need config sqlserver");
     QList<SqlServerExplainInfo> result;
     try {
         QSqlQuery query = BaseQuery::queryPrimitiveThrowable("SET STATISTICS PROFILE ON;" + statement + ";SET STATISTICS PROFILE OFF");

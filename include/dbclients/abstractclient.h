@@ -47,7 +47,7 @@ public:
     virtual void createIndex(
         const QString& tbName,
         QStringList fields,
-        IndexType type = INDEX_NORMAL
+        IndexType type
     );
 
     virtual void createIndex(
@@ -87,7 +87,7 @@ private:
     template<SqlClientList C>
     class ClientSelector {
     public:
-        ClientSelector(AbstractClient* client) : client(client) {}
+        explicit ClientSelector(AbstractClient* client) : client(client) {}
 
         template<typename E>
         void createTableIfNotExist();
@@ -121,10 +121,10 @@ private:
 
 template<SqlClientList C> class AbstractClient::Delegate<C> {
 public:
-    Delegate(AbstractClient* client) : client(client) {}
+    explicit Delegate(AbstractClient* client) : client(client) {}
 
-    void createTable() {}
-    void tableUpgrade() {};
+    virtual void createTable() {}
+    virtual void tableUpgrade() {};
 
 protected:
     AbstractClient* client;

@@ -4,8 +4,8 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 
-#include "dbloader.h"
-
+#include "dao.h"
+#include "dbexceptionhandler.h"
 #include "query/basequery.h"
 
 QTDAO_BEGIN_NAMESPACE
@@ -27,7 +27,7 @@ bool createPath(QString path) {
 }
 
 void SqliteClient::testConnect() {
-    auto appLocal = DbLoader::getConfig().getDbStoreDirectory();
+    auto appLocal = dynamic_cast<ConfigSqliteBuilder*>(globalConfig.get())->getDbStoreDirectory();
     QDir dir;
     if (!dir.exists(appLocal)) {
         if (!createPath(appLocal)) { // create directories recursively
@@ -41,8 +41,8 @@ void SqliteClient::createDatabase() {
 }
 
 void SqliteClient::dropDatabase() {
-    auto appLocal = DbLoader::getConfig().getDbStoreDirectory();
-    QFile file(DbLoader::getConfig().getDbStorePath());
+    auto appLocal = dynamic_cast<ConfigSqliteBuilder*>(globalConfig.get())->getDbStoreDirectory();
+    QFile file(dynamic_cast<ConfigSqliteBuilder*>(globalConfig.get())->getDbStorePath());
     if (file.exists()) {
         if (!file.remove()) {
             throw DaoException(DbErrCode::SQL_EXEC_FAIL, "unable remove database file!");
@@ -103,7 +103,7 @@ void SqliteClient::createIndex(const QString& tbName, QStringList fields, IndexT
     default:
         break;
     }
-    str = str.chopped(1).arg(typeStr).arg(indexName).arg(tbName);
+    str = str.chopped(1).arg(typeStr,indexName, tbName);
     str.append(")");
 
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLITE_CREATE_INDEX_FAIL);

@@ -1,11 +1,12 @@
 ﻿#include "dbclients/mysqlclient.h"
 
-#include "dbloader.h"
 #include "connectionpool.h"
+#include "dbexceptionhandler.h"
 #include "query/basequery.h"
+#include "dao.h"
 
-#include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlQuery>
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -41,7 +42,7 @@ void MysqlClient::createDatabase() {
         }
         QString sql = "create database if not exists %1 default character set utf8mb4 COLLATE utf8mb4_general_ci";
         QSqlQuery query(db);
-        if (!query.exec(sql.arg(DbLoader::getConfig().dbName))) {
+        if (!query.exec(sql.arg(globalConfig->mDatabaseName))) {
             lastErrStr = "create database fail! err = " + query.lastError().text();
             db.close();
             return;
@@ -63,7 +64,7 @@ void MysqlClient::dropDatabase() {
             return;
         }
         QString sql = "drop database if exists %1";
-        sql = sql.arg(DbLoader::getConfig().dbName);
+        sql = sql.arg(globalConfig->mDatabaseName);
         QSqlQuery query(db);
         if (!query.exec(sql)) {
             lastErrStr = "drop database fail! err = " + query.lastError().text();
@@ -80,7 +81,7 @@ void MysqlClient::dropDatabase() {
 
 bool MysqlClient::checkTableExist(const QString& tbName) {
     auto str = QString("select table_name from information_schema.TABLES where table_name ='%1' and table_schema = '%2'")
-        .arg(tbName, DbLoader::getConfig().dbName);
+        .arg(tbName, globalConfig->mDatabaseName);
 
     bool exist = false;
     BaseQuery::queryPrimitive(str, [&](QSqlQuery& query) {
@@ -159,7 +160,7 @@ void MysqlClient::truncateTable(const QString& tbName) {
 QStringList MysqlClient::getTagTableFields(const QString& tbName) {
     auto str = 
         QString("select COLUMN_NAME from information_schema.COLUMNS where table_name = '%1' and table_schema = '%2';")
-    .arg(tbName, DbLoader::getConfig().dbName);
+    .arg(tbName, globalConfig->mDatabaseName);
 
     QStringList fields;
 
@@ -175,7 +176,7 @@ void MysqlClient::dropAllIndexOnTable(const QString& tbName) {
     BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_DROP_OLD_INDEX_FAIL);
     auto query = BaseQuery::queryPrimitiveThrowable(
         QString("SELECT index_name FROM information_schema.statistics where TABLE_SCHEMA = '%1' and TABLE_NAME = '%2' GROUP BY index_name")
-        .arg(DbLoader::getConfig().dbName, tbName)
+        .arg(globalConfig->mDatabaseName, tbName)
     );
     QStringList indexNames;
     while (query.next()) {

@@ -346,3 +346,4 @@ out/
 
 .vscode
 CMakeSettings.json
+cmake-build*

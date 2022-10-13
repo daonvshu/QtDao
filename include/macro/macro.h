@@ -7,12 +7,6 @@ Builder& name(const Args&... args) {\
     return *this;\
 }
 
-#define QUERY_BUILDER_USE_THROWABLE(Builder)\
-Builder& throwable() {\
-    this->setThrowable = true;\
-    return *this;\
-}
-
 #define QUERY_BUILDER_USE_SET(Builder)            QUERY_BUILDER_USE(Builder, set)
 #define QUERY_BUILDER_USE_FILTER(Builder)         QUERY_BUILDER_USE(Builder, filter)
 #define QUERY_BUILDER_USE_WITH(Builder)           QUERY_BUILDER_USE(Builder, with)
@@ -78,7 +72,7 @@ Q(bool throwable, Q##Builder<E>* builder): BaseQuery(throwable, builder) {}
 
 #define BASE_QUERY_CONSTRUCTOR_DECLARE_W(Q)\
 friend class Q##Builder<E>;\
-Q(bool throwable, Q##Builder<E>* builder): BaseQuery(throwable, builder, true) {}
+Q(bool throwable, Q##Builder<E>* builder): Q##Impl(throwable, builder, true) {}
 
 #define QUERY_BUILDER_BUILDER_DECLARE(Q)\
 Q<E> build() {\

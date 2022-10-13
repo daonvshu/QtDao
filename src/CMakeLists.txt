@@ -17,6 +17,11 @@ add_library(${PROJECT_NAME}
     condition/entitycondition.cpp
     condition/functioncondition.cpp
 
+    config/configbuilder.cpp
+    config/configsqlite.cpp
+    config/configmysql.cpp
+    config/configsqlserver.cpp
+
     dbclients/abstractclient.cpp
     dbclients/mysqlclient.cpp
     dbclients/sqliteclient.cpp
@@ -24,9 +29,14 @@ add_library(${PROJECT_NAME}
 
     query/basequery.cpp
     query/sqlitelockcontrol.cpp
+    query/insertimpl.cpp
+    query/insertintoselectimpl.cpp
+    query/updateimpl.cpp
+    query/deleteimpl.cpp
+    query/selectimpl.cpp
+    query/joinimpl.cpp
 
     connectionpool.cpp
-    dbloader.cpp
     qtdao.cpp
 )
 

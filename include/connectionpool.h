@@ -22,7 +22,7 @@ private:
     static ConnectionPool& getInstance();
 
     ConnectionPool();
-    QSqlDatabase createConnection(const QString &connectionName); // create database connection
+    static QSqlDatabase createConnection(const QString &connectionName); // create database connection
 
     QQueue<QString> unusedConnectionNames;
     QHash<Qt::HANDLE, QString> keepConnections;// save work thread connections
