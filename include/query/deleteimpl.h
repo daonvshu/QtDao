@@ -23,7 +23,7 @@ protected:
 template<typename E>
 inline void DeleteImpl::buildDeleteEntitiesCondition(const QList<E> &entities) {
     buildDeleteEntitiesCondition([&](const QString& fieldName) {
-        return listMap(entities, [&](const E& entity) {
+        return listMap<QVariant, E>(entities, [&](const E& entity) {
             return E::Tool::getValueByName(entity, fieldName);
         });
     });

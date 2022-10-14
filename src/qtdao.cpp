@@ -15,7 +15,6 @@ QueryLogPrinter getQueryLogPrinter() {
 }
 
 void transcation() {
-    BaseQuery::sqliteLockControl.trancationStart();
     if (globalConfig->isSqlServer()) {
         BaseQuery::queryPrimitiveThrowable("begin tran");
     } else {
@@ -24,9 +23,7 @@ void transcation() {
 }
 
 void commit() {
-    BaseQuery::sqliteLockControl.trancationPrepareEnd();
     BaseQuery::queryPrimitiveThrowable("commit");
-    BaseQuery::sqliteLockControl.trancationEnd();
 }
 
 void transcation_save(const QString& savePoint) {
@@ -38,9 +35,6 @@ void transcation_save(const QString& savePoint) {
 }
 
 void rollback(const QString& savePoint) {
-    if (savePoint.isEmpty()) {
-        BaseQuery::sqliteLockControl.trancationPrepareEnd();
-    }
     if (globalConfig->isSqlServer()) {
         BaseQuery::queryPrimitiveThrowable(
             savePoint.isEmpty() ? QString("rollback tran") : QString("rollback tran %1").arg(savePoint)
@@ -50,13 +44,6 @@ void rollback(const QString& savePoint) {
             savePoint.isEmpty() ? QString("rollback") : QString("rollback to %1").arg(savePoint)
         );
     }
-    if (savePoint.isEmpty()) {
-        BaseQuery::sqliteLockControl.trancationEnd();
-    }
-}
-
-void sqlWriteSync(bool enable) {
-    BaseQuery::sqliteLockControl.enableSqliteWriteSync(enable);
 }
 
 QTDAO_END_NAMESPACE

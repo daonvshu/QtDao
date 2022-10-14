@@ -15,43 +15,37 @@
 
 #include "../query/explaininfo.h"
 
-#include "sqlitelockcontrol.h"
-
 #include "../dberrcode.h"
 
 QTDAO_BEGIN_NAMESPACE
 
 class BaseQuery {
 public:
-    explicit BaseQuery(bool throwable = false, BaseQueryBuilder* builder = nullptr, bool writeDb = false);
+    explicit BaseQuery(bool throwable = false, BaseQueryBuilder* builder = nullptr);
 
     BaseQuery(const BaseQuery& other);
     ~BaseQuery();
 
     static void queryPrimitive(
         const QString& statement, 
-        std::function<void(QSqlQuery& query)> callback = nullptr,
-        std::function<void(QString)> failCallback = nullptr,
-        bool writeDb = false
+        const std::function<void(QSqlQuery& query)>& callback = nullptr,
+        const std::function<void(QString)>& failCallback = nullptr
     );
 
     static void queryPrimitive(
         const QString& statement,
         const QVariantList& values,
-        std::function<void(QSqlQuery& query)> callback = nullptr,
-        std::function<void(QString)> failCallback = nullptr,
-        bool writeDb = false
+        const std::function<void(QSqlQuery& query)>& callback = nullptr,
+        const std::function<void(QString)>& failCallback = nullptr
+    );
+
+    static QSqlQuery queryPrimitiveThrowable(
+        const QString& statement
     );
 
     static QSqlQuery queryPrimitiveThrowable(
         const QString& statement,
-        bool writeDb = false
-    );
-
-    static QSqlQuery queryPrimitiveThrowable(
-        const QString& statement,
-        const QVariantList& values,
-        bool writeDb = false
+        const QVariantList& values
     );
 
     static void setErrIfQueryFail(DbErrCode::Code code);
@@ -62,18 +56,13 @@ protected:
     QSqlQuery exec();
     QSqlQuery execBatch();
 
-    void checkAndLockWrite();
-    void checkAndReleaseWriteLocker();
-
 protected:
     QString statement;
     QVariantList values;
     BaseQueryBuilder* builder;
-    bool writeDb;
 
     friend class BaseQueryBuilder;
 
-    static SqliteLockControl sqliteLockControl;
     static DbErrCode::Code exceptionLastErr;
 
     friend void transcation();

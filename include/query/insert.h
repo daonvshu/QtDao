@@ -4,6 +4,8 @@
 
 #include "../macro/macro.h"
 
+#include <qvector.h>
+
 QTDAO_BEGIN_NAMESPACE
 
 template<typename E>
@@ -81,7 +83,7 @@ public:
     }
 
 private:
-    BASE_QUERY_CONSTRUCTOR_DECLARE_W(Insert)
+    BASE_QUERY_CONSTRUCTOR_DECLARE(Insert)
 };
 
 template<typename E>

@@ -12,7 +12,6 @@
 #include "loader/DbLoaderTest.h"
 #include "condition/ConnectorTest.h"
 #include "query/InsertIntoSelectTest.h"
-#include "query/SqliteWriteSyncTest.h"
 
 #ifndef QT_DAO_TESTCASE
 #include <qfile.h>
@@ -106,8 +105,7 @@ int main(int argc, char *argv[])
             UpdateTest,
             DeleteTest,
             JoinTest,
-            InsertIntoSelectTest,
-            SqliteWriteSyncTest
+            InsertIntoSelectTest
         >
 #ifdef QT_DAO_TESTCASE
             ::run(EngineModel(i), argc, argv);

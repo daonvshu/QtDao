@@ -9,12 +9,10 @@
 
 QTDAO_BEGIN_NAMESPACE
 
-SqliteLockControl BaseQuery::sqliteLockControl;
 DbErrCode::Code BaseQuery::exceptionLastErr = DbErrCode::ERR_NOT_SET;
 
-BaseQuery::BaseQuery(bool throwable, BaseQueryBuilder* builder, bool writeDb)
+BaseQuery::BaseQuery(bool throwable, BaseQueryBuilder* builder)
     : builder(builder)
-    , writeDb(writeDb)
 {
     if (builder != nullptr) {
         this->builder = new BaseQueryBuilder(*builder);
@@ -37,10 +35,7 @@ BaseQuery::~BaseQuery() {
 QSqlQuery BaseQuery::exec() {
     bool prepareOk;
     auto query = getQuery(prepareOk, true);
-    if (prepareOk && execByCheckEmptyValue(query, this)) {
-        checkAndReleaseWriteLocker();
-    } else {
-        checkAndReleaseWriteLocker();
+    if (!prepareOk || !execByCheckEmptyValue(query, this)) {
         throw DaoException(getLastErrCode(), query.lastError().text());
     }
     return query;
@@ -49,47 +44,25 @@ QSqlQuery BaseQuery::exec() {
 QSqlQuery BaseQuery::execBatch() {
     bool prepareOk;
     auto query = getQuery(prepareOk);
-    if (prepareOk && query.execBatch()) {
-        checkAndReleaseWriteLocker();
-    } else {
-        checkAndReleaseWriteLocker();
+    if (!prepareOk || !query.execBatch()) {
         throw DaoException(getLastErrCode(), query.lastError().text());
     }
     return query;
 }
 
-void BaseQuery::checkAndLockWrite() {
-    if (!writeDb) {
-        sqliteLockControl.testRead();
-    } else {
-        sqliteLockControl.testWrite();
-    }
-}
-
-void BaseQuery::checkAndReleaseWriteLocker() {
-    if (!writeDb) {
-        sqliteLockControl.releaseRead();
-    } else {
-        sqliteLockControl.releaseWrite();
-    }
-}
-
-void BaseQuery::queryPrimitive(const QString& statement, 
-    std::function<void(QSqlQuery& query)> callback, 
-    std::function<void(QString)> failCallback,
-    bool writeDb
+void BaseQuery::queryPrimitive(const QString& statement,
+    const std::function<void(QSqlQuery& query)>& callback,
+    const std::function<void(QString)>& failCallback
 ) {
-    queryPrimitive(statement, QVariantList(), callback, failCallback, writeDb);
+    queryPrimitive(statement, QVariantList(), callback, failCallback);
 }
 
 void BaseQuery::queryPrimitive(const QString& statement, 
     const QVariantList& values, 
-    std::function<void(QSqlQuery& query)> callback, 
-    std::function<void(QString)> failCallback,
-    bool writeDb
+    const std::function<void(QSqlQuery& query)>& callback,
+    const std::function<void(QString)>& failCallback
 ) {
     BaseQuery executor;
-    executor.writeDb = writeDb;
     executor.setSqlQueryStatement(statement, values);
     bool prepareOk;
     auto query = executor.getQuery(prepareOk, true);
@@ -105,31 +78,25 @@ void BaseQuery::queryPrimitive(const QString& statement,
             throw DaoException(getLastErrCode(), query.lastError().text());
         }
     }
-    executor.checkAndReleaseWriteLocker();
 }
 
 QSqlQuery BaseQuery::queryPrimitiveThrowable(
-    const QString& statement,
-    bool writeDb
+    const QString& statement
 ) {
-    return queryPrimitiveThrowable(statement, QVariantList(), writeDb);
+    return queryPrimitiveThrowable(statement, QVariantList());
 }
 
 QSqlQuery BaseQuery::queryPrimitiveThrowable(
     const QString& statement, 
-    const QVariantList& values,
-    bool writeDb
+    const QVariantList& values
 ) {
     BaseQuery executor;
-    executor.writeDb = writeDb;
     executor.setSqlQueryStatement(statement, values);
     bool prepareOk;
     auto query = executor.getQuery(prepareOk, true);
     if (prepareOk && execByCheckEmptyValue(query, &executor)) {
-        executor.checkAndReleaseWriteLocker();
         return query;
     } else {
-        executor.checkAndReleaseWriteLocker();
         throw DaoException(getLastErrCode(), query.lastError().text());
     }
 }
@@ -144,7 +111,6 @@ void BaseQuery::setSqlQueryStatement(const QString& statement, const QVariantLis
 }
 
 QSqlQuery BaseQuery::getQuery(bool& prepareOk, bool skipEmptyValue) {
-    checkAndLockWrite();
     auto db = ConnectionPool::getConnection();
     QSqlQuery query(db);
     if (!skipEmptyValue || !values.isEmpty()) {

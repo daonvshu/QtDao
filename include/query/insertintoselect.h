@@ -18,7 +18,7 @@ public:
     void insert();
 
 private:
-    BASE_QUERY_CONSTRUCTOR_DECLARE_W(InsertIntoSelect)
+    BASE_QUERY_CONSTRUCTOR_DECLARE(InsertIntoSelect)
 };
 
 template<typename E>

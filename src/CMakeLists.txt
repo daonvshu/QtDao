@@ -28,7 +28,6 @@ add_library(${PROJECT_NAME}
     dbclients/sqlserverclient.cpp
 
     query/basequery.cpp
-    query/sqlitelockcontrol.cpp
     query/insertimpl.cpp
     query/insertintoselectimpl.cpp
     query/updateimpl.cpp

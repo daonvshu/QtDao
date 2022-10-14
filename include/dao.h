@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "connectionpool.h"
+#include "dbexceptionhandler.h"
 
 #include "builder/insertbuilder.h"
 #include "builder/selectbuilder.h"
@@ -104,8 +105,6 @@ extern void transcation_save(const QString& savePoint);
 
 extern void rollback(const QString& savePoint = QString());
 
-extern void sqlWriteSync(bool enable = true);
-
 template<typename E>
 class self : public E {
 public:
@@ -133,3 +132,6 @@ public:
 
 QTDAO_END_NAMESPACE
 
+#define SCOPE_CONNECTION \
+auto connectionCleanUp = qScopeGuard([] { ConnectionPool::closeConnection(); }); \
+Q_UNUSED(connectionCleanUp)

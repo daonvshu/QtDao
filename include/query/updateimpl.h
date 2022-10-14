@@ -21,7 +21,7 @@ protected:
 template<typename E>
 inline void UpdateImpl::bindUpdateEntitiesCondition(const QList<E> &entities) {
     bindUpdateEntitiesCondition([&](const QString& fieldName) {
-        return listMap(entities, [&](const E& entity) {
+        return listMap<QVariant, E>(entities, [&](const E& entity) {
             return E::Tool::getValueByName(entity, fieldName);
         });
     });
