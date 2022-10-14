@@ -10,6 +10,7 @@
 
 #include "../sqlserverentity/SqlServerTest1.h"
 #include "../sqlserverentity/SqlServerTest2.h"
+#include "dbexceptionhandler.h"
 
 void InsertTest::initTestCase() {
     configDb();
@@ -18,26 +19,23 @@ void InsertTest::initTestCase() {
 template<typename E>
 void runSetInsertTest() {
     typename E::Fields sf1;
-    bool success = dao::_insert<E>()
+    dao::_insert<E>()
         .set(sf1.name = "test", sf1.number = 1)
         .build().insert();
-    if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName())
-            , [&](QSqlQuery& query) {
-            QVariantList names, numbers;
-            while (query.next()) {
-                names << query.value("name");
-                numbers << query.value("number");
-            }
-            QCOMPARE(names, QVariantList() << "test");
-            QCOMPARE(numbers, QVariantList() << 1);
+
+    BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName())
+        , [&](QSqlQuery& query) {
+        QVariantList names, numbers;
+        while (query.next()) {
+            names << query.value("name");
+            numbers << query.value("number");
         }
-            , [&](QString err) {
-            QFAIL(("test set insert fail! " + err).toLocal8Bit());
-        });
-    } else {
-        QFAIL("set insert fail!");
+        QCOMPARE(names, QVariantList() << "test");
+        QCOMPARE(numbers, QVariantList() << 1);
     }
+        , [&](QString err) {
+        QFAIL(("test set insert fail! " + err).toLocal8Bit());
+    });
 }
 
 void InsertTest::setInsertTest() {
@@ -57,31 +55,27 @@ void runSetInsertBatchTest() {
     auto numbers = QList<int>() << 4 << 50;
 
     typename E::Fields sf2;
-    bool success = dao::_insert<E>()
+    dao::_insert<E>()
         .set(sf2.id = ids, sf2.number = numbers, sf2.name = names) //set value with sequence independent
         .build().insert();
 
-    if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName())
-            , [&](QSqlQuery& query) {
-            QList<qint64> idsRes;
-            QStringList namesRes;
-            QList<int> numbersRes;
-            while (query.next()) {
-                idsRes << query.value("id").toLongLong();
-                namesRes << query.value("name").toString();
-                numbersRes << query.value("number").toInt();
-            }
-            QCOMPARE(idsRes, QList<qint64>() << 1 << 2);
-            QCOMPARE(namesRes, names);
-            QCOMPARE(numbersRes, numbers);
+    BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName())
+        , [&](QSqlQuery& query) {
+        QList<qint64> idsRes;
+        QStringList namesRes;
+        QList<int> numbersRes;
+        while (query.next()) {
+            idsRes << query.value("id").toLongLong();
+            namesRes << query.value("name").toString();
+            numbersRes << query.value("number").toInt();
         }
-            , [&](QString err) {
-            QFAIL(("test set insert batch fail! " + err).toLocal8Bit());
-        });
-    } else {
-        QFAIL("set insert batch fail!");
+        QCOMPARE(idsRes, QList<qint64>() << 1 << 2);
+        QCOMPARE(namesRes, names);
+        QCOMPARE(numbersRes, numbers);
     }
+        , [&](QString err) {
+        QFAIL(("test set insert batch fail! " + err).toLocal8Bit());
+    });
 }
 
 void InsertTest::setInsertBatchTest() {
@@ -125,54 +119,49 @@ void InsertTest::insertObjectTest_data() {
 template<typename E1, typename E2>
 void runInsertObjectTest() {
     QFETCH(E1, test1);
-    bool success = dao::_insert<E1>().build().insert(test1);
-    QVERIFY(success);
+    dao::_insert<E1>().build().insert(test1);
     QCOMPARE(test1.getId(), 2);
 
-    if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1 where id = 2").arg(E1::Info::getTableName())
-            , [&](QSqlQuery& query) {
-            QVariantList data;
-            if (query.next()) {
-                for (const auto& f : E1::Info::getFieldsWithoutAutoIncrement()) {
-                    data << query.value(f);
-                }
+    BaseQuery::queryPrimitive(QString("select *from %1 where id = 2").arg(E1::Info::getTableName())
+        , [&](QSqlQuery& query) {
+        QVariantList data;
+        if (query.next()) {
+            for (const auto& f : E1::Info::getFieldsWithoutAutoIncrement()) {
+                data << query.value(f);
             }
-            QCOMPARE(data, E1::Tool::getValueWithoutAutoIncrement(test1));
         }
-            , [&](QString err) {
-            QFAIL(("test insert object fail! " + err).toLocal8Bit());
-        });
+        QCOMPARE(data, E1::Tool::getValueWithoutAutoIncrement(test1));
     }
+        , [&](QString err) {
+        QFAIL(("test insert object fail! " + err).toLocal8Bit());
+    });
 
     //test multi primary key insert
     QFETCH(E1, test2);
     try {
-        dao::_insert<E1>().throwable().build().insert(test2);
+        dao::_insert<E1>().build().insert(test2);
         QFAIL("insert should be fail!");
     }
     catch (DaoException&) {
     }
 
     QFETCH(E2, test3);
-    success = dao::_insert<E2>().build().insert(test3);
-    QVERIFY(success);
+    dao::_insert<E2>().build().insert(test3);
     QCOMPARE(test3.getId(), 3);
-    if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1 where id = 3").arg(E2::Info::getTableName())
-            , [&](QSqlQuery& query) {
-            QVariantList data;
-            if (query.next()) {
-                for (const auto& f : E2::Info::getFieldsWithoutAutoIncrement()) {
-                    data << query.value(f);
-                }
+
+    BaseQuery::queryPrimitive(QString("select *from %1 where id = 3").arg(E2::Info::getTableName())
+        , [&](QSqlQuery& query) {
+        QVariantList data;
+        if (query.next()) {
+            for (const auto& f : E2::Info::getFieldsWithoutAutoIncrement()) {
+                data << query.value(f);
             }
-            QCOMPARE(data, E2::Tool::getValueWithoutAutoIncrement(test3));
         }
-            , [&](QString err) {
-            QFAIL(("test insert object fail! " + err).toLocal8Bit());
-        });
+        QCOMPARE(data, E2::Tool::getValueWithoutAutoIncrement(test3));
     }
+        , [&](QString err) {
+        QFAIL(("test insert object fail! " + err).toLocal8Bit());
+    });
 }
 
 void InsertTest::insertObjectTest() {
@@ -216,29 +205,27 @@ void InsertTest::insertObjectsTest_data() {
 template<typename E>
 void runInsertObjectsTest() {
     QFETCH(QList<E>, test);
-    bool success = dao::_insert<E>().build().insert(test);
-    QVERIFY(success);
-    if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1 where id in (4, 5, 6)").arg(E::Info::getTableName())
-            , [&](QSqlQuery& query) {
-            QList<QVariantList> data;
-            while (query.next()) {
-                QVariantList d;
-                for (const auto& f : E::Info::getFieldsWithoutAutoIncrement()) {
-                    d << query.value(f);
-                }
-                data << d;
+    dao::_insert<E>().build().insert(test);
+
+    BaseQuery::queryPrimitive(QString("select *from %1 where id in (4, 5, 6)").arg(E::Info::getTableName())
+        , [&](QSqlQuery& query) {
+        QList<QVariantList> data;
+        while (query.next()) {
+            QVariantList d;
+            for (const auto& f : E::Info::getFieldsWithoutAutoIncrement()) {
+                d << query.value(f);
             }
-            QList<QVariantList> excepted;
-            for (const auto& t : test) {
-                excepted << E::Tool::getValueWithoutAutoIncrement(t);
-            }
-            QCOMPARE(data, excepted);
+            data << d;
         }
-            , [&](QString err) {
-            QFAIL(("test insert objects fail! " + err).toLocal8Bit());
-        });
+        QList<QVariantList> excepted;
+        for (const auto& t : test) {
+            excepted << E::Tool::getValueWithoutAutoIncrement(t);
+        }
+        QCOMPARE(data, excepted);
     }
+        , [&](QString err) {
+        QFAIL(("test insert objects fail! " + err).toLocal8Bit());
+    });
 }
 
 void InsertTest::insertObjectsTest() {
@@ -282,29 +269,27 @@ void InsertTest::insertObjects2Test_data() {
 template<typename E>
 void runInsertObjects2Test() {
     QFETCH(QList<E>, test);
-    bool success = dao::_insert<E>().build().insert2(test);
-    QVERIFY(success);
-    if (success) {
-        BaseQuery::queryPrimitive(QString("select *from %1 where id in (7, 8, 9)").arg(E::Info::getTableName())
-            , [&](QSqlQuery& query) {
-            QList<QVariantList> data;
-            while (query.next()) {
-                QVariantList d;
-                for (const auto& f : E::Info::getFieldsWithoutAutoIncrement()) {
-                    d << query.value(f);
-                }
-                data << d;
+    dao::_insert<E>().build().insert2(test);
+
+    BaseQuery::queryPrimitive(QString("select *from %1 where id in (7, 8, 9)").arg(E::Info::getTableName())
+        , [&](QSqlQuery& query) {
+        QList<QVariantList> data;
+        while (query.next()) {
+            QVariantList d;
+            for (const auto& f : E::Info::getFieldsWithoutAutoIncrement()) {
+                d << query.value(f);
             }
-            QList<QVariantList> excepted;
-            for (const auto& t : test) {
-                excepted << E::Tool::getValueWithoutAutoIncrement(t);
-            }
-            QCOMPARE(data, excepted);
+            data << d;
         }
-            , [&](QString err) {
-            QFAIL(("test insert objects 2 fail! " + err).toLocal8Bit());
-        });
+        QList<QVariantList> excepted;
+        for (const auto& t : test) {
+            excepted << E::Tool::getValueWithoutAutoIncrement(t);
+        }
+        QCOMPARE(data, excepted);
     }
+        , [&](QString err) {
+        QFAIL(("test insert objects 2 fail! " + err).toLocal8Bit());
+    });
 }
 
 void InsertTest::insertObjects2Test() {
@@ -330,27 +315,24 @@ void InsertTest::insertOrReplaceTest_data() {
 template<typename E>
 void runInsertOrReplaceTest() {
     QFETCH(E, entity);
-    bool success = dao::_insert<E>().build().insertOrReplace(entity);
-    QVERIFY(success);
-    if (success) {
-        entity.setNumber2(100);
-        success = dao::_insert<E>().build().insertOrReplace(entity);
-        QVERIFY(success);
-        BaseQuery::queryPrimitive(QString("select * from %1 where name = 'testinsertorreplace'").arg(E::Info::getTableName())
-            , [&](QSqlQuery& query) {
-            int count = 0;
-            int number2 = 0;
-            while (query.next()) {
-                count++;
-                number2 = query.value("number2").toInt();
-            }
-            QCOMPARE(count, 1);
-            QCOMPARE(number2, 100);
+    dao::_insert<E>().build().insertOrReplace(entity);
+
+    entity.setNumber2(100);
+    dao::_insert<E>().build().insertOrReplace(entity);
+    BaseQuery::queryPrimitive(QString("select * from %1 where name = 'testinsertorreplace'").arg(E::Info::getTableName())
+        , [&](QSqlQuery& query) {
+        int count = 0;
+        int number2 = 0;
+        while (query.next()) {
+            count++;
+            number2 = query.value("number2").toInt();
         }
-            , [&](QString err) {
-            QFAIL(("test insert or update fail! " + err).toLocal8Bit());
-        });
+        QCOMPARE(count, 1);
+        QCOMPARE(number2, 100);
     }
+        , [&](QString err) {
+        QFAIL(("test insert or update fail! " + err).toLocal8Bit());
+    });
 }
 
 void InsertTest::insertOrReplaceTest() {
@@ -381,7 +363,7 @@ void runTestTranscation() {
     QFETCH(E, entity);
     dao::_insert<E>().build().insert(entity);
     try {
-        dao::_insert<E>().throwable().build().insert(entity);
+        dao::_insert<E>().build().insert(entity);
         dao::commit();
     }
     catch (DaoException&) {
@@ -420,7 +402,7 @@ void InsertTest::testMysqlMyISAMTranscation() {
     dao::transcation();
     dao::_insert<MysqlTest1>().build().insert(data1);
     try {
-        dao::_insert<MysqlTest1>().throwable().build().insert(data2); //null of name will case error
+        dao::_insert<MysqlTest1>().build().insert(data2); //null of name will case error
         dao::commit();
     } catch (DaoException&) {
         dao::rollback();
@@ -436,6 +418,6 @@ void InsertTest::cleanup() {
 
 void InsertTest::cleanupTestCase() {
     ConnectionPool::release();
-    DbLoader::getClient().dropDatabase();
+    globalConfig->getClient()->dropDatabase();
 }
 

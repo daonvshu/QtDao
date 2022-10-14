@@ -6,17 +6,17 @@
 #include "mysqldefaulttesttime.h"
 #include "mysqldefaultteststr.h"
 
-#include "dbloader.h"
+#include "dao.h"
 
 QTDAO_USING_NAMESPACE
 
 namespace DaoMysql {
     void MysqlEntityDelegate::createEntityTables() {
-        DbLoader::getClient().createTables<ClientMysql, MysqlTest1, MysqlTest2, MysqlTest3, MysqlDefaultTestInt, MysqlDefaultTestTime, MysqlDefaultTestStr>();
+        globalConfig->getClient()->createTables<ClientMysql, MysqlTest1, MysqlTest2, MysqlTest3, MysqlDefaultTestInt, MysqlDefaultTestTime, MysqlDefaultTestStr>();
     }
 
     void MysqlEntityDelegate::entityTablesUpgrade() {
-        DbLoader::getClient().tablesUpgrade<ClientMysql, MysqlTest1, MysqlTest2, MysqlTest3, MysqlDefaultTestInt, MysqlDefaultTestTime, MysqlDefaultTestStr>();
+        globalConfig->getClient()->tablesUpgrade<ClientMysql, MysqlTest1, MysqlTest2, MysqlTest3, MysqlDefaultTestInt, MysqlDefaultTestTime, MysqlDefaultTestStr>();
     }
 
     const int entityMysqlDelegateId = qRegisterMetaType<MysqlEntityDelegate*>();

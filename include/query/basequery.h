@@ -68,7 +68,6 @@ protected:
     friend void transcation();
     friend void commit();
     friend void rollback(const QString&);
-    friend void sqlWriteSync(bool);
 
 private:
     QSqlQuery getQuery(bool& prepareOk, bool skipEmptyValue = false);

@@ -162,6 +162,6 @@ void UpdateTest::cleanup() {
 
 void UpdateTest::cleanupTestCase() {
     ConnectionPool::release();
-    DbLoader::getClient().dropDatabase();
+    globalConfig->getClient()->dropDatabase();
 }
 

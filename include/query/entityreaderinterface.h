@@ -23,10 +23,6 @@ protected:
     virtual QStringList getPrimaryKeys() = 0;
 
     virtual bool isAutoIncrement(const QString& fieldName) = 0;
-
-    virtual QString getTableEngine() = 0;
-
-    virtual QStringList getFieldsWithoutTimestamp() = 0;
 };
 
 template<typename E>
@@ -81,12 +77,12 @@ protected:
     }
 
     //mysql
-    QString getTableEngine() override {
+    QString getTableEngine() {
         return E::Info::getTableEngine();
     }
 
     //sqlserver
-    QStringList getFieldsWithoutTimestamp() override {
+    QStringList getFieldsWithoutTimestamp() {
         return E::Info::getFieldsWithoutTimestamp();
     }
 };

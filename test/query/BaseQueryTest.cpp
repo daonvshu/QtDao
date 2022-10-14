@@ -1,15 +1,13 @@
 #include "BaseQueryTest.h"
 
-#include "DbLoader.h"
-#include "ConnectionPool.h"
-
-#include "query/BaseQuery.h"
+#include "connectionpool.h"
+#include "dbexceptionhandler.h"
 
 #include <QtTest>
 
 void BaseQueryTest::initTestCase() {
     configDb();
-    DbLoader::getClient().testConnect();
+    globalConfig->getClient()->testConnect();
 }
 
 void BaseQueryTest::testPrimitiveQuery() {
@@ -86,6 +84,6 @@ void BaseQueryTest::cleanup() {
 
 void BaseQueryTest::cleanupTestCase() {
     ConnectionPool::release();
-    DbLoader::getClient().dropDatabase();
+    globalConfig->getClient()->dropDatabase();
 }
 

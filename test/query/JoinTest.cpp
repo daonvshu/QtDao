@@ -3,6 +3,7 @@
 #include <QtTest>
 
 #include "dao.h"
+#include "dbexceptionhandler.h"
 
 void JoinTest::initTestCase() {
     configDb();
@@ -670,6 +671,6 @@ void JoinTest::cleanup() {
 
 void JoinTest::cleanupTestCase() {
     ConnectionPool::release();
-    DbLoader::getClient().dropDatabase();
+    globalConfig->getClient()->dropDatabase();
 }
 

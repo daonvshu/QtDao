@@ -13,28 +13,9 @@ void SqlLogPrinter(const QString& sql, const QVariantList& values) {
     BaseTest::cachedSqlLog << qMakePair(sql, values);
 }
 
-class UnitQueryTestExceptionHandler : public DbExceptionHandler {
-public:
-    using DbExceptionHandler::DbExceptionHandler;
-
-    void execFail(DbErrCode errcode, const QString& lastErr) override {
-        Q_UNUSED(errcode)
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
-        std::cout << "----TEST EXECUTE ERR: " << lastErr.toLocal8Bit().toStdString() << std::endl;
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-    };
-
-    void execWarning(const QString& info) override {
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
-        std::cout << "----TEST EXECUTE WARNING: " << info.toLocal8Bit().toStdString() << std::endl;
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-    };
-};
-
 BaseTest::BaseTest(EngineModel model) : EngineModelSelector(model) {
     cachedSqlLog.clear();
     daoSetQueryLogPrinter(SqlLogPrinter);
-    DbExceptionHandler::setExceptionHandler(new UnitQueryTestExceptionHandler(this));
 }
 
 void BaseTest::clearCacheAndPrintIfTestFail() {

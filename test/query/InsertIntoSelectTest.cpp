@@ -52,26 +52,24 @@ void runTestInsertIntoSelect() {
     typename E2::Fields sf2;
 
     auto select = dao::_select<E1>().column(sf1.name, sf1.number).filter(sf1.number < 12).build();
-    bool success = dao::_insertIntoSelect<E2>()
+    dao::_insertIntoSelect<E2>()
         .column(sf2.name, sf2.number)
         .from (select)
         .build().insert();
-    QVERIFY(success);
-    if (success) {
-        auto test2 = dao::_selectAll<E2>();
-        QVariantList data;
-        for (const auto& r : test2) {
-            data << r.getName() << r.getNumber();
-        }
-        QVariantList expected;
-        QFETCH(QList<E1>, data1);
-        for (const auto& r : data1) {
-            if (r.getNumber() < 12) {
-                expected << r.getName() << r.getNumber();
-            }
-        }
-        QCOMPARE(data, expected);
+
+    auto test2 = dao::_selectAll<E2>();
+    QVariantList data;
+    for (const auto& r : test2) {
+        data << r.getName() << r.getNumber();
     }
+    QVariantList expected;
+    QFETCH(QList<E1>, data1);
+    for (const auto& r : data1) {
+        if (r.getNumber() < 12) {
+            expected << r.getName() << r.getNumber();
+        }
+    }
+    QCOMPARE(data, expected);
 }
 
 void InsertIntoSelectTest::testInsertIntoSelect() {
@@ -107,29 +105,26 @@ void runTestInsertIntoJoin() {
         .template from<E1>()
         .template innerJoin<E2>().on(sf2.name == sf1.name)
         .build();
-    bool success = dao::_insertIntoSelect<E2>()
+    dao::_insertIntoSelect<E2>()
         .column(sf2.name, sf2.number)
         .from(join)
         .build().insert();
-    QVERIFY(success);
-    QVERIFY(success);
-    if (success) {
-        auto test2 = dao::_selectAll<E2>();
-        QVariantList data;
-        for (const auto& r : test2) {
-            data << r.getName() << r.getNumber();
-        }
-        QVariantList expected;
-        QFETCH(QList<E1>, data1);
-        for (int i = 0; i <= 10; i += 10) {
-            for (const auto& r : data1) {
-                if (r.getNumber() < 12) {
-                    expected << r.getName() << (r.getNumber() + i);
-                }
+
+    auto test2 = dao::_selectAll<E2>();
+    QVariantList data;
+    for (const auto& r : test2) {
+        data << r.getName() << r.getNumber();
+    }
+    QVariantList expected;
+    QFETCH(QList<E1>, data1);
+    for (int i = 0; i <= 10; i += 10) {
+        for (const auto& r : data1) {
+            if (r.getNumber() < 12) {
+                expected << r.getName() << (r.getNumber() + i);
             }
         }
-        QCOMPARE(data, expected);
     }
+    QCOMPARE(data, expected);
 }
 
 void InsertIntoSelectTest::testInsertIntoJoin() {
@@ -148,5 +143,5 @@ void InsertIntoSelectTest::cleanup() {
 
 void InsertIntoSelectTest::cleanupTestCase() {
     ConnectionPool::release();
-    DbLoader::getClient().dropDatabase();
+    globalConfig->getClient()->dropDatabase();
 }

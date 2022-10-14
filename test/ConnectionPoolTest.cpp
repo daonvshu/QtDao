@@ -1,7 +1,6 @@
 #include "ConnectionPoolTest.h"
 
-#include "DbLoader.h"
-#include "ConnectionPool.h"
+#include "connectionpool.h"
 
 #include "dbclients/SqliteClient.h"
 #include "dao.h"
@@ -19,14 +18,12 @@
 QTDAO_USING_NAMESPACE
 
 void ConnectionPoolTest::initTestCase() {
-    if (engineModel == Engine_Sqlite) {
-        SqliteClient().testConnect();
-    }
+    setupDatabase();
+    ConnectionPool::closeConnection();
     QThreadPool::globalInstance()->setMaxThreadCount(10);
 }
 
 void ConnectionPoolTest::testConnect() {
-    loadConfigByEngineModel();
     {
         auto db = ConnectionPool::getConnection();
         QVERIFY(db.isOpen());
@@ -37,7 +34,6 @@ void ConnectionPoolTest::testConnect() {
 }
 
 void ConnectionPoolTest::testReuseConnection() {
-    loadConfigByEngineModel();
     {
         QString savedConnection;
         auto db = ConnectionPool::getConnection();
@@ -53,7 +49,6 @@ void ConnectionPoolTest::testReuseConnection() {
 }
 
 void ConnectionPoolTest::testMultiThreadOpenConnection() {
-    loadConfigByEngineModel();
     QEventLoop loop;
 
     QString connection1, connection2;
@@ -85,7 +80,6 @@ void ConnectionPoolTest::testMultiThreadOpenConnection() {
 }
 
 void ConnectionPoolTest::testReuseConnectionInOtherThread() {
-    loadConfigByEngineModel();
     QEventLoop loop;
 
     QString connection1, connection2;
@@ -125,13 +119,12 @@ void ConnectionPoolTest::testReuseConnectionInOtherThread() {
 }
 
 void ConnectionPoolTest::testAutoClose() {
-    loadConfigByEngineModel();
     QEventLoop loop;
 
     QString connection1, connection2;
 
     RunnableHandler<void>::exec([&] {
-        dao::LocalQuery local;
+        SCOPE_CONNECTION
         {
             auto db = ConnectionPool::getConnection();
             QVERIFY(db.isOpen());
@@ -146,7 +139,7 @@ void ConnectionPoolTest::testAutoClose() {
 
     //new thread
     RunnableHandler<void>::exec([&] {
-        dao::LocalQuery local;
+        SCOPE_CONNECTION
         {
             auto db = ConnectionPool::getConnection();
             QVERIFY(db.isOpen());
@@ -167,7 +160,6 @@ void ConnectionPoolTest::testGoneAway() {
     PASSSQLITE;
     PASSSQLSERVER;
 
-    loadConfigByEngineModel();
     QEventLoop loop;
 
     BaseQuery::queryPrimitive("set global wait_timeout=10");
@@ -198,22 +190,6 @@ void ConnectionPoolTest::cleanup() {
 }
 
 void ConnectionPoolTest::cleanupTestCase() {
-    DbLoader::getClient().dropDatabase();
-}
-
-void ConnectionPoolTest::loadConfigByEngineModel() {
-    switch (engineModel) {
-    case Engine_Sqlite:
-        DbLoader::loadConfig(SqliteConfig());
-        break;
-    case Engine_Mysql:
-        DbLoader::init(MysqlConfig());
-        ConnectionPool::release(); //connection pool used by dbload
-        break;
-    case Engine_SqlServer:
-        DbLoader::init(SqlServerConfig());
-        ConnectionPool::release();
-        break;
-    }
+    globalConfig->getClient()->dropDatabase();
 }
 

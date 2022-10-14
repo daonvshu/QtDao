@@ -70,15 +70,13 @@ void DeleteTest::initTestCase() {
 template<typename E>
 void runFilterDeleteTest() {
     typename E::Fields sf1;
-    bool success = dao::_delete<E>().filter(sf1.name.like("a%")).build().deleteBy();
-    QVERIFY(success);
+    dao::_delete<E>().filter(sf1.name.like("a%")).build().deleteBy();
     auto result1 = dao::_select<E>().filter(sf1.name.in(QStringList() << "abc" << "alice")).build().list();
     QVERIFY(result1.isEmpty());
 
     QStringList target;
     target << "bob" << "client";
-    success = dao::_delete<E>().filter(sf1.name == target).build().deleteBatch();
-    QVERIFY(success);
+    dao::_delete<E>().filter(sf1.name == target).build().deleteBatch();
     auto result2 = dao::_select<E>().filter(sf1.name.in(target)).build().list();
     QVERIFY(result2.isEmpty());
 }
@@ -97,14 +95,12 @@ template<typename E>
 void runObjectDeleteTest() {
     typename E::Fields sf2;
     auto result1 = dao::_select<E>().filter(sf2.name == "joker").build().unique();
-    bool success = dao::_delete<E>().build().deleteBy(result1);
-    QVERIFY(success);
+    dao::_delete<E>().build().deleteBy(result1);
     result1 = dao::_select<E>().filter(sf2.name == "joker").build().unique();
     QVERIFY(result1.getId() == -1);
 
     auto result2 = dao::_selectAll<E>();
-    success = dao::_delete<E>().build().deleteBatch(result2);
-    QVERIFY(success);
+    dao::_delete<E>().build().deleteBatch(result2);
     result2 = dao::_selectAll<E>();
     QVERIFY(result2.isEmpty());
 }
@@ -186,6 +182,6 @@ void DeleteTest::cleanup() {
 
 void DeleteTest::cleanupTestCase() {
     ConnectionPool::release();
-    DbLoader::getClient().dropDatabase();
+    globalConfig->getClient()->dropDatabase();
 }
 

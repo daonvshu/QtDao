@@ -7,8 +7,6 @@
 #include "sqlserverentity/SqlServerConfig.h"
 #include "EngineModelSelector.h"
 
-#include "dao.h"
-
 QTDAO_USING_NAMESPACE
 
 class BaseTest : public QObject , public EngineModelSelector {
@@ -25,13 +23,7 @@ protected:
     void clearCache();
 
     void configDb() {
-        if (engineModel == Engine_Sqlite) {
-            DbLoader::init(SqliteConfig());
-        } else if (engineModel == Engine_Mysql) {
-            DbLoader::init(MysqlConfig());
-        } else if (engineModel == Engine_SqlServer) {
-            DbLoader::init(SqlServerConfig());
-        }
+        setupDatabase();
         clearCacheAndPrintIfTestFail();
     }
 };

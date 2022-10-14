@@ -7,17 +7,17 @@
 #include "sqlserverdefaultteststr.h"
 #include "sqlserverdefaulttestbytes.h"
 
-#include "dbloader.h"
+#include "dao.h"
 
 QTDAO_USING_NAMESPACE
 
 namespace DaoSqlServer {
     void SqlServerEntityDelegate::createEntityTables() {
-        DbLoader::getClient().createTables<ClientSqlServer, SqlServerTest1, SqlServerTest2, SqlServerTest3, SqlServerDefaultTestInt, SqlServerDefaultTestTime, SqlServerDefaultTestStr, SqlServerDefaultTestBytes>();
+        globalConfig->getClient()->createTables<ClientSqlServer, SqlServerTest1, SqlServerTest2, SqlServerTest3, SqlServerDefaultTestInt, SqlServerDefaultTestTime, SqlServerDefaultTestStr, SqlServerDefaultTestBytes>();
     }
 
     void SqlServerEntityDelegate::entityTablesUpgrade() {
-        DbLoader::getClient().tablesUpgrade<ClientSqlServer, SqlServerTest1, SqlServerTest2, SqlServerTest3, SqlServerDefaultTestInt, SqlServerDefaultTestTime, SqlServerDefaultTestStr, SqlServerDefaultTestBytes>();
+        globalConfig->getClient()->tablesUpgrade<ClientSqlServer, SqlServerTest1, SqlServerTest2, SqlServerTest3, SqlServerDefaultTestInt, SqlServerDefaultTestTime, SqlServerDefaultTestStr, SqlServerDefaultTestBytes>();
     }
 
     const int entitySqlServerDelegateId = qRegisterMetaType<SqlServerEntityDelegate*>();

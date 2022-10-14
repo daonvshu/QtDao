@@ -1,7 +1,6 @@
 #include "DbLoaderTest.h"
 
-#include "DbLoader.h"
-#include "ConnectionPool.h"
+#include "connectionpool.h"
 
 #include "../sqliteentity/SqliteTest1.h"
 #include "../sqliteentity/SqliteTest2.h"
@@ -19,81 +18,40 @@
 
 QTDAO_USING_NAMESPACE
 
-class DbLoaderTestExceptionHandler : public DbExceptionHandler {
-public:
-    using DbExceptionHandler::DbExceptionHandler;
-
-    void initDbFail(DbErrCode errcode, const QString& reason) {
-        Q_UNUSED(errcode)
-        QFAIL(("init db fail:" + reason).toLocal8Bit());
-    }
-
-    void databaseOpenFail(DbErrCode errcode, const QString& failReason) {
-        Q_UNUSED(errcode)
-        QFAIL(("database open fail:" + failReason).toLocal8Bit());
-    }
-
-    void execFail(const QString& lastErr) {
-        QFAIL(("query fail:" + lastErr).toLocal8Bit());
-    }
-};
-
 void DbLoaderTest::initTestCase() {
 
 }
 
 void DbLoaderTest::loadConfigTest() {
+    setupDatabase();
     if (engineModel == Engine_Sqlite) {
-        DbLoader::init(SqliteConfig(), new DbLoaderTestExceptionHandler(this));
-        SqliteTest1::Info t1info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
-        SqliteTest2::Info t2info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(SqliteTest1::Info::getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(SqliteTest2::Info::getTableName()));
     } else if (engineModel == Engine_Mysql) {
-        DbLoader::init(MysqlConfig(), new DbLoaderTestExceptionHandler(this));
-        MysqlTest1::Info t1info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
-        MysqlTest2::Info t2info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(MysqlTest1::Info::getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(MysqlTest2::Info::getTableName()));
     } else if (engineModel == Engine_SqlServer) {
-        DbLoader::init(SqlServerConfig(), new DbLoaderTestExceptionHandler(this));
-        SqlServerTest1::Info t1info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
-        SqlServerTest2::Info t2info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(SqlServerTest1::Info::getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(SqlServerTest2::Info::getTableName()));
     }
-    QCOMPARE(DbLoader::getLocalVersion(), 1);
+    QCOMPARE(globalConfig->getLocalVersion(), 1);
 }
 
 void DbLoaderTest::upgradeTest() {
     //reinit
+    setupDatabase(3);
     if (engineModel == Engine_Sqlite) {
-        SqliteConfig cfg;
-        cfg.ver = 3;
-        DbLoader::init(cfg);
-        SqliteTest1::Info t1info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
-        SqliteTest2::Info t2info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(SqliteTest1::Info::getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(SqliteTest2::Info::getTableName()));
     } else if (engineModel == Engine_Mysql) {
-        MysqlConfig cfg;
-        cfg.ver = 3;
-        DbLoader::init(cfg);
-        MysqlTest1::Info t1info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
-        MysqlTest2::Info t2info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(MysqlTest1::Info::getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(MysqlTest2::Info::getTableName()));
     } else if (engineModel == Engine_SqlServer) {
-        SqlServerConfig cfg;
-        cfg.ver = 3;
-        DbLoader::init(cfg);
-        SqlServerTest1::Info t1info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t1info.getTableName()));
-        SqlServerTest2::Info t2info;
-        QVERIFY(DbLoader::getClient().checkTableExist(t2info.getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(SqlServerTest1::Info::getTableName()));
+        QVERIFY(globalConfig->getClient()->checkTableExist(SqlServerTest2::Info::getTableName()));
     }
     //test version
-    QCOMPARE(DbLoader::getLocalVersion(), 3);
+    QCOMPARE(globalConfig->getLocalVersion(), 3);
 }
 
 void DbLoaderTest::cleanup() {
@@ -102,5 +60,5 @@ void DbLoaderTest::cleanup() {
 
 void DbLoaderTest::cleanupTestCase() {
     ConnectionPool::release();
-    DbLoader::getClient().dropDatabase();
+    globalConfig->getClient()->dropDatabase();
 }

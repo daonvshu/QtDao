@@ -198,7 +198,7 @@ inline void AbstractClient::ClientSelector<C>::createIndex() {
     //create normal index
     auto indexFields = info.getIndexFields();
     for (const auto& i : indexFields) {
-        client->createIndex(info.getTableName(), i);
+        client->createIndex(info.getTableName(), i, INDEX_NORMAL);
     }
     //create unique index
     auto uniqueIndexFields = info.getUniqueIndexFields();

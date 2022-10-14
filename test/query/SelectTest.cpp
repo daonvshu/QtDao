@@ -3,6 +3,7 @@
 #include <QtTest>
 
 #include "dao.h"
+#include "dbexceptionhandler.h"
 
 void SelectTest::initTestCase() {
     configDb();
@@ -91,7 +92,7 @@ void runUniqueSelectTest(EngineModel model) {
     try {
         auto d3 = dao::_select<E>()
             .filter(sf1.number == 12)
-            .throwable().build().unique();
+            .build().unique();
         QFAIL("unique test should be fail!");
     }
     catch (DaoException&) {
@@ -284,7 +285,6 @@ void runSelectFromSelectTest() {
         auto select1 = dao::_select<E>()
             .from(select)
             .filter(sf1.name.like("%b%"))
-            .throwable()
             .build();
 
         auto result = select1.unique();
@@ -295,7 +295,6 @@ void runSelectFromSelectTest() {
 
         auto count = dao::_count<E>()
             .from(select1)
-            .throwable()
             .filter(sf1.number != 0)
             .count();
         QCOMPARE(count, 1);
@@ -469,6 +468,6 @@ void SelectTest::cleanup() {
 
 void SelectTest::cleanupTestCase() {
     ConnectionPool::release();
-    DbLoader::getClient().dropDatabase();
+    globalConfig->getClient()->dropDatabase();
 }
 

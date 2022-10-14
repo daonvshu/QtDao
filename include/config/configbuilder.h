@@ -56,6 +56,8 @@ public:
         return dbInitClient;
     }
 
+    int getLocalVersion();
+
 protected:
     ConfigType configType;
 
@@ -78,8 +80,6 @@ protected:
 
 protected:
     void setupDatabase();
-
-    int getLocalVersion();
 
     void updateLocalVersion();
 

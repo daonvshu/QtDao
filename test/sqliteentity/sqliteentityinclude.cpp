@@ -5,17 +5,17 @@
 #include "sqlitedefaulttestint.h"
 #include "sqlitedefaultteststr.h"
 
-#include "dbloader.h"
+#include "dao.h"
 
 QTDAO_USING_NAMESPACE
 
 namespace DaoSqlite {
     void SqliteEntityDelegate::createEntityTables() {
-        DbLoader::getClient().createTables<ClientSqlite, SqliteTest1, SqliteTest2, SqliteTest3, SqliteDefaultTestInt, SqliteDefaultTestStr>();
+        globalConfig->getClient()->createTables<ClientSqlite, SqliteTest1, SqliteTest2, SqliteTest3, SqliteDefaultTestInt, SqliteDefaultTestStr>();
     }
 
     void SqliteEntityDelegate::entityTablesUpgrade() {
-        DbLoader::getClient().tablesUpgrade<ClientSqlite, SqliteTest1, SqliteTest2, SqliteTest3, SqliteDefaultTestInt, SqliteDefaultTestStr>();
+        globalConfig->getClient()->tablesUpgrade<ClientSqlite, SqliteTest1, SqliteTest2, SqliteTest3, SqliteDefaultTestInt, SqliteDefaultTestStr>();
     }
 
     const int entitySqliteDelegateId = qRegisterMetaType<SqliteEntityDelegate*>();
