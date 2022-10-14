@@ -89,11 +89,11 @@ Builder& unionSelect(Join<E2...>& join, bool unionAll = false) {\
 
 #define BASE_QUERY_CONSTRUCTOR_DECLARE(Q)\
 friend class Q##Builder<E>;\
-Q(bool throwable, Q##Builder<E>* builder): BaseQuery(throwable, builder) {}
+Q(bool throwable, Q##Builder<E>* builder): Q##Impl(throwable, builder) {}
 
 #define BASE_QUERY_CONSTRUCTOR_DECLARE_W(Q)\
 friend class Q##Builder<E>;\
-Q(bool throwable, Q##Builder<E>* builder): BaseQuery(throwable, builder, true) {}
+Q(bool throwable, Q##Builder<E>* builder): Q##Impl(throwable, builder, true) {}
 
 #define QUERY_BUILDER_BUILDER_DECLARE(Q)\
 Q<E> build() {\
