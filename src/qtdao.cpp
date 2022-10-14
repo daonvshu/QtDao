@@ -16,31 +16,31 @@ QueryLogPrinter getQueryLogPrinter() {
 
 void transcation() {
     if (globalConfig->isSqlServer()) {
-        BaseQuery::queryPrimitiveThrowable("begin tran");
+        BaseQuery::queryPrimitive("begin tran");
     } else {
-        BaseQuery::queryPrimitiveThrowable("begin");
+        BaseQuery::queryPrimitive("begin");
     }
 }
 
 void commit() {
-    BaseQuery::queryPrimitiveThrowable("commit");
+    BaseQuery::queryPrimitive("commit");
 }
 
 void transcation_save(const QString& savePoint) {
     if (globalConfig->isSqlServer()) {
-        BaseQuery::queryPrimitiveThrowable(QString("save tran %1").arg(savePoint));
+        BaseQuery::queryPrimitive(QString("save tran %1").arg(savePoint));
     } else {
-        BaseQuery::queryPrimitiveThrowable(QString("savepoint %1").arg(savePoint));
+        BaseQuery::queryPrimitive(QString("savepoint %1").arg(savePoint));
     }
 }
 
 void rollback(const QString& savePoint) {
     if (globalConfig->isSqlServer()) {
-        BaseQuery::queryPrimitiveThrowable(
+        BaseQuery::queryPrimitive(
             savePoint.isEmpty() ? QString("rollback tran") : QString("rollback tran %1").arg(savePoint)
         );
     } else {
-        BaseQuery::queryPrimitiveThrowable(
+        BaseQuery::queryPrimitive(
             savePoint.isEmpty() ? QString("rollback") : QString("rollback to %1").arg(savePoint)
         );
     }

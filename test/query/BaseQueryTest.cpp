@@ -11,19 +11,8 @@ void BaseQueryTest::initTestCase() {
 }
 
 void BaseQueryTest::testPrimitiveQuery() {
-    BaseQuery::queryPrimitive("select 10 + 20", [&](QSqlQuery& query) {
-        if (query.next()) {
-            int result = query.value(0).toInt();
-            QCOMPARE(result, 30);
-        } else {
-            QFAIL("primitive query fail!");
-        }
-    }, [&](QString err) {
-        QFAIL(err.toLatin1());
-    });
-
     try {
-        auto query = BaseQuery::queryPrimitiveThrowable("select 10 + 20");
+        auto query = BaseQuery::queryPrimitive("select 10 + 20");
         if (query.next()) {
             int result = query.value(0).toInt();
             QCOMPARE(result, 30);
@@ -37,19 +26,8 @@ void BaseQueryTest::testPrimitiveQuery() {
 }
 
 void BaseQueryTest::testPrimitiveQueryWithValue() {
-    BaseQuery::queryPrimitive("select ? + ?", QVariantList() << 10 << 20, [&](QSqlQuery& query) {
-        if (query.next()) {
-            int result = query.value(0).toInt();
-            QCOMPARE(result, 30);
-        } else {
-            QFAIL("primitive query fail!");
-        }
-    }, [&](QString err) {
-        QFAIL(err.toLatin1());
-    });
-
     try {
-        auto query = BaseQuery::queryPrimitiveThrowable("select ? + ?", QVariantList() << 10 << 20);
+        auto query = BaseQuery::queryPrimitive("select ? + ?", QVariantList() << 10 << 20);
         if (query.next()) {
             int result = query.value(0).toInt();
             QCOMPARE(result, 30);
@@ -63,15 +41,8 @@ void BaseQueryTest::testPrimitiveQueryWithValue() {
 }
 
 void BaseQueryTest::testPrimitiveQueryFail() {
-    BaseQuery::queryPrimitive("select?+?", [&](QSqlQuery& query) {
-        Q_UNUSED(query);
-        QFAIL("primitive query should fail!");
-    }, [&](QString err) {
-        Q_UNUSED(err);
-    });
-
     try {
-        BaseQuery::queryPrimitiveThrowable("select?+?");
+        BaseQuery::queryPrimitive("select?+?", QVariantList(), false);
         QFAIL("primitive query should fail!");
     }
     catch (DaoException&) {

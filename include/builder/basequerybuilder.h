@@ -13,7 +13,7 @@ class RecursiveQueryBuilder;
 class BaseQueryBuilder {
 public:
     BaseQueryBuilder() 
-        : setThrowable(false)
+        : setFatalEnabled(true)
         , setCondition(",")
         , columnBind(",")
         , filterCondition("and")
@@ -98,7 +98,7 @@ protected:
     void unionSelect(Join<E...>& join, bool unionAll = false);
 
 protected:
-    bool setThrowable;
+    bool setFatalEnabled;
     Connector setCondition, columnBind, filterCondition, constraintCondition, onCondition;
     //from sub select
     QString fromSelectStatement;

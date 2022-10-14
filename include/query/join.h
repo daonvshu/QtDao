@@ -32,7 +32,7 @@ public:
 
 private:
     friend class JoinBuilder<E...>;
-    Join(bool throwable, JoinBuilder<E...>* builder) : JoinImpl(throwable, builder) {}
+    Join(bool fatalEnabled, JoinBuilder<E...>* builder) : JoinImpl(fatalEnabled, builder) {}
 
 protected:
 

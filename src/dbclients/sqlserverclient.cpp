@@ -100,13 +100,8 @@ bool SqlServerClient::checkTableExist(const QString& tbName) {
     auto str = QString("select * from sys.tables where name = '%1' and type = 'U'")
         .arg(tbName);
 
-    bool exist = false;
-    BaseQuery::queryPrimitive(str, [&](QSqlQuery& query) {
-        if (query.next()) {
-            exist = true;
-        }
-    });
-    return exist;
+    auto query = BaseQuery::queryPrimitive(str);
+    return query.next();
 }
 
 void SqlServerClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType, QStringList primaryKeys) {
@@ -128,7 +123,7 @@ void SqlServerClient::createTableIfNotExist(const QString& tbName, QStringList f
     str.append(")");
 
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLSERVER_CREATE_TABLE_FAIL);
-    BaseQuery::queryPrimitiveThrowable(str);
+    BaseQuery::queryPrimitive(str);
 }
 
 void SqlServerClient::createIndex(const QString& tbName, QStringList fields, IndexType type, const std::function<QString(const QString&)>& optionGet) {
@@ -163,14 +158,14 @@ void SqlServerClient::createIndex(const QString& tbName, QStringList fields, Ind
     }
 
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLSERVER_CREATE_INDEX_FAIL);
-    BaseQuery::queryPrimitiveThrowable(str);
+    BaseQuery::queryPrimitive(str);
 }
 
 void SqlServerClient::renameTable(const QString& oldName, const QString& newName) {
     auto str = QString("exec sp_rename '%1','%2'").arg(oldName, newName);
 
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLSERVER_CREATE_TMP_TABLE_FAIL);
-    BaseQuery::queryPrimitiveThrowable(str);
+    BaseQuery::queryPrimitive(str);
 }
 
 void SqlServerClient::dropTable(const QString& tbName) {
@@ -190,7 +185,7 @@ QStringList SqlServerClient::getTagTableFields(const QString& tbName) {
     QStringList fields;
 
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLSERVER_DUMP_FIELD_FAIL);
-    auto query = BaseQuery::queryPrimitiveThrowable(str);
+    auto query = BaseQuery::queryPrimitive(str);
     while (query.next()) {
         fields << query.value(0).toString();
     }
@@ -198,26 +193,26 @@ QStringList SqlServerClient::getTagTableFields(const QString& tbName) {
 }
 
 void SqlServerClient::restoreDataBefore(const QString& tbName) {
-    QSqlQuery query = BaseQuery::queryPrimitiveThrowable(QString("select objectproperty(object_id('%1'),'TableHasIdentity')").arg(tbName));
+    QSqlQuery query = BaseQuery::queryPrimitive(QString("select objectproperty(object_id('%1'),'TableHasIdentity')").arg(tbName));
     if (query.next()) {
         if (query.value(0).toInt() == 1) {
-            BaseQuery::queryPrimitiveThrowable(QString("set identity_insert %1 on").arg(tbName));
+            BaseQuery::queryPrimitive(QString("set identity_insert %1 on").arg(tbName));
         }
     }
 }
 
 void SqlServerClient::restoreDataAfter(const QString& tbName) {
-    QSqlQuery query = BaseQuery::queryPrimitiveThrowable(QString("select objectproperty(object_id('%1'),'TableHasIdentity')").arg(tbName));
+    QSqlQuery query = BaseQuery::queryPrimitive(QString("select objectproperty(object_id('%1'),'TableHasIdentity')").arg(tbName));
     if (query.next()) {
         if (query.value(0).toInt() == 1) {
-            BaseQuery::queryPrimitiveThrowable(QString("set identity_insert %1 off").arg(tbName));
+            BaseQuery::queryPrimitive(QString("set identity_insert %1 off").arg(tbName));
         }
     }
 }
 
 void SqlServerClient::dropAllIndexOnTable(const QString& tbName) {
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLSERVER_DROP_OLD_INDEX_FAIL);
-    auto query = BaseQuery::queryPrimitiveThrowable(
+    auto query = BaseQuery::queryPrimitive(
         QString("select a.name from sys.indexes a join sys.tables c ON (a.object_id = c.object_id) where c.name='%1' and a.name like 'index_%' group by a.name")
         .arg(tbName)
     );
@@ -226,7 +221,7 @@ void SqlServerClient::dropAllIndexOnTable(const QString& tbName) {
         indexNames << query.value(0).toString();
     }
     for (const auto& name : indexNames) {
-        BaseQuery::queryPrimitiveThrowable(
+        BaseQuery::queryPrimitive(
             QString("drop index %1 on %2").arg(name, tbName)
         );
     }

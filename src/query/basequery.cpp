@@ -11,8 +11,9 @@ QTDAO_BEGIN_NAMESPACE
 
 DbErrCode::Code BaseQuery::exceptionLastErr = DbErrCode::ERR_NOT_SET;
 
-BaseQuery::BaseQuery(bool throwable, BaseQueryBuilder* builder)
+BaseQuery::BaseQuery(bool fatalEnabled, BaseQueryBuilder* builder)
     : builder(builder)
+    , debugFatalEnabled(fatalEnabled)
 {
     if (builder != nullptr) {
         this->builder = new BaseQueryBuilder(*builder);
@@ -23,6 +24,7 @@ BaseQuery::BaseQuery(const BaseQuery& other) {
     this->statement = other.statement;
     this->values = other.values;
     this->builder = new BaseQueryBuilder(*other.builder);
+    this->debugFatalEnabled = other.debugFatalEnabled;
 }
 
 BaseQuery::~BaseQuery() {
@@ -36,6 +38,9 @@ QSqlQuery BaseQuery::exec() {
     bool prepareOk;
     auto query = getQuery(prepareOk, true);
     if (!prepareOk || !execByCheckEmptyValue(query, this)) {
+        if (debugFatalEnabled) {
+            fatalError(!prepareOk);
+        }
         throw DaoException(getLastErrCode(), query.lastError().text());
     }
     return query;
@@ -45,51 +50,15 @@ QSqlQuery BaseQuery::execBatch() {
     bool prepareOk;
     auto query = getQuery(prepareOk);
     if (!prepareOk || !query.execBatch()) {
+        if (debugFatalEnabled) {
+            fatalError(!prepareOk);
+        }
         throw DaoException(getLastErrCode(), query.lastError().text());
     }
     return query;
 }
 
-void BaseQuery::queryPrimitive(const QString& statement,
-    const std::function<void(QSqlQuery& query)>& callback,
-    const std::function<void(QString)>& failCallback
-) {
-    queryPrimitive(statement, QVariantList(), callback, failCallback);
-}
-
-void BaseQuery::queryPrimitive(const QString& statement, 
-    const QVariantList& values, 
-    const std::function<void(QSqlQuery& query)>& callback,
-    const std::function<void(QString)>& failCallback
-) {
-    BaseQuery executor;
-    executor.setSqlQueryStatement(statement, values);
-    bool prepareOk;
-    auto query = executor.getQuery(prepareOk, true);
-    if (prepareOk && execByCheckEmptyValue(query, &executor)) {
-        if (callback) {
-            callback(query);
-        }
-    } else {
-        auto lastErr = query.lastError().text();
-        if (failCallback) {
-            failCallback(lastErr);
-        } else {
-            throw DaoException(getLastErrCode(), query.lastError().text());
-        }
-    }
-}
-
-QSqlQuery BaseQuery::queryPrimitiveThrowable(
-    const QString& statement
-) {
-    return queryPrimitiveThrowable(statement, QVariantList());
-}
-
-QSqlQuery BaseQuery::queryPrimitiveThrowable(
-    const QString& statement, 
-    const QVariantList& values
-) {
+QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, bool debugFatalEnabled) {
     BaseQuery executor;
     executor.setSqlQueryStatement(statement, values);
     bool prepareOk;
@@ -97,6 +66,9 @@ QSqlQuery BaseQuery::queryPrimitiveThrowable(
     if (prepareOk && execByCheckEmptyValue(query, &executor)) {
         return query;
     } else {
+        if (debugFatalEnabled) {
+            fatalError(!prepareOk);
+        }
         throw DaoException(getLastErrCode(), query.lastError().text());
     }
 }
@@ -133,6 +105,18 @@ void BaseQuery::bindQueryValues(QSqlQuery& query) {
     }
 }
 
+void BaseQuery::fatalError(bool prepareError) {
+#ifdef QT_DEBUG
+    if (prepareError) {
+        qFatal("get connection prepare fail!");
+    } else {
+        qFatal("execute sql statement fail!");
+    }
+#else
+    Q_UNUSED(prepareError)
+#endif
+}
+
 bool BaseQuery::execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executor) {
     if (!executor->values.isEmpty()) {
         return query.exec();
@@ -151,7 +135,7 @@ DbErrCode::Code BaseQuery::getLastErrCode() {
 
 QList<SqliteExplainInfo> BaseQuery::ExplainTool<SqliteExplainInfo>::toExplain(const QString& statement) {
     Q_ASSERT_X(globalConfig->isSqlite(), "ExplainTool<SqliteExplainInfo>", "need config sqlite");
-    QSqlQuery query = BaseQuery::queryPrimitiveThrowable("explain " + statement);
+    QSqlQuery query = BaseQuery::queryPrimitive("explain " + statement);
     QList<SqliteExplainInfo> result;
     while (query.next()) {
         SqliteExplainInfo info;
@@ -171,7 +155,7 @@ QList<SqliteExplainInfo> BaseQuery::ExplainTool<SqliteExplainInfo>::toExplain(co
 QList<SqliteExplainQueryPlanInfo> BaseQuery::ExplainTool<SqliteExplainQueryPlanInfo>::toExplain(
     const QString& statement) {
     Q_ASSERT_X(globalConfig->isSqlite(), "ExplainTool<SqliteExplainQueryPlanInfo>", "need config sqlite");
-    QSqlQuery query = BaseQuery::queryPrimitiveThrowable("explain query plan " + statement);
+    QSqlQuery query = BaseQuery::queryPrimitive("explain query plan " + statement);
     QList<SqliteExplainQueryPlanInfo> result;
     while (query.next()) {
         SqliteExplainQueryPlanInfo info;
@@ -186,7 +170,7 @@ QList<SqliteExplainQueryPlanInfo> BaseQuery::ExplainTool<SqliteExplainQueryPlanI
 
 QList<MysqlExplainInfo> BaseQuery::ExplainTool<MysqlExplainInfo>::toExplain(const QString& statement) {
     Q_ASSERT_X(globalConfig->isMysql(), "ExplainTool<MysqlExplainInfo>", "need config mysql");
-    QSqlQuery query = BaseQuery::queryPrimitiveThrowable("explain " + statement);
+    QSqlQuery query = BaseQuery::queryPrimitive("explain " + statement);
     QList<MysqlExplainInfo> result;
     while (query.next()) {
         MysqlExplainInfo info;
@@ -212,7 +196,7 @@ QList<SqlServerExplainInfo> BaseQuery::ExplainTool<SqlServerExplainInfo>::toExpl
     Q_ASSERT_X(globalConfig->isSqlServer(), "ExplainTool<SqlServerExplainInfo>", "need config sqlserver");
     QList<SqlServerExplainInfo> result;
     try {
-        QSqlQuery query = BaseQuery::queryPrimitiveThrowable("SET STATISTICS PROFILE ON;" + statement + ";SET STATISTICS PROFILE OFF");
+        QSqlQuery query = BaseQuery::queryPrimitive("SET STATISTICS PROFILE ON;" + statement + ";SET STATISTICS PROFILE OFF");
         if (query.nextResult()) {
             while (query.next()) {
                 SqlServerExplainInfo info;

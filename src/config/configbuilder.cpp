@@ -63,7 +63,7 @@ int ConfigBuilder::getLocalVersion() {
         return -1;
     }
     int version = -1;
-    auto query = BaseQuery::queryPrimitiveThrowable("select *from dao_version");
+    auto query = BaseQuery::queryPrimitive("select *from dao_version");
     if (query.next()) {
         version = query.value(0).toInt();
     }
@@ -76,15 +76,15 @@ void ConfigBuilder::updateLocalVersion() {
     } else if (isMysql()) {
         dbInitClient->createTableIfNotExist("dao_version", QString(), QStringList() << "ver int", QStringList());
     }
-    auto query = BaseQuery::queryPrimitiveThrowable("select count(*) from dao_version");
+    auto query = BaseQuery::queryPrimitive("select count(*) from dao_version");
     int count = 0;
     if (query.next()) {
         count = query.value(0).toInt();
     }
     if (count == 0) {
-        BaseQuery::queryPrimitiveThrowable(QString("insert into dao_version(ver) values(%1)").arg(mVersion));
+        BaseQuery::queryPrimitive(QString("insert into dao_version(ver) values(%1)").arg(mVersion));
     } else {
-        BaseQuery::queryPrimitiveThrowable(QString("update dao_version set ver = %1").arg(mVersion));
+        BaseQuery::queryPrimitive(QString("update dao_version set ver = %1").arg(mVersion));
     }
 }
 

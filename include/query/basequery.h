@@ -21,32 +21,12 @@ QTDAO_BEGIN_NAMESPACE
 
 class BaseQuery {
 public:
-    explicit BaseQuery(bool throwable = false, BaseQueryBuilder* builder = nullptr);
+    explicit BaseQuery(bool fatalEnabled = true, BaseQueryBuilder* builder = nullptr);
 
     BaseQuery(const BaseQuery& other);
     ~BaseQuery();
 
-    static void queryPrimitive(
-        const QString& statement, 
-        const std::function<void(QSqlQuery& query)>& callback = nullptr,
-        const std::function<void(QString)>& failCallback = nullptr
-    );
-
-    static void queryPrimitive(
-        const QString& statement,
-        const QVariantList& values,
-        const std::function<void(QSqlQuery& query)>& callback = nullptr,
-        const std::function<void(QString)>& failCallback = nullptr
-    );
-
-    static QSqlQuery queryPrimitiveThrowable(
-        const QString& statement
-    );
-
-    static QSqlQuery queryPrimitiveThrowable(
-        const QString& statement,
-        const QVariantList& values
-    );
+    static QSqlQuery queryPrimitive(const QString& statement, const QVariantList& values = QVariantList(), bool debugFatalEnabled = true);
 
     static void setErrIfQueryFail(DbErrCode::Code code);
 
@@ -61,6 +41,8 @@ protected:
     QVariantList values;
     BaseQueryBuilder* builder;
 
+    bool debugFatalEnabled;
+
     friend class BaseQueryBuilder;
 
     static DbErrCode::Code exceptionLastErr;
@@ -72,6 +54,8 @@ protected:
 private:
     QSqlQuery getQuery(bool& prepareOk, bool skipEmptyValue = false);
     void bindQueryValues(QSqlQuery& query);
+
+    static void fatalError(bool prepareError);
     static bool execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executor);
     static DbErrCode::Code getLastErrCode();
 

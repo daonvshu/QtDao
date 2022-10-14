@@ -14,6 +14,12 @@ Builder& name(bool enabled, const Arg& arg) { \
     return *this;\
 }
 
+#define QUERY_BUILDER_USE_FATAL_DISABLE(Builder)\
+Builder& disableFatalMsg() {\
+    this->setFatalEnabled = false;\
+    return *this;\
+}
+
 #define QUERY_BUILDER_USE_SET(Builder)            \
     QUERY_BUILDER_USE(Builder, set)               \
     QUERY_BUILDER_USE_ENABLE(Builder, set)
@@ -89,9 +95,9 @@ Builder& unionSelect(Join<E2...>& join, bool unionAll = false) {\
 
 #define BASE_QUERY_CONSTRUCTOR_DECLARE(Q)\
 friend class Q##Builder<E>;\
-Q(bool throwable, Q##Builder<E>* builder): Q##Impl(throwable, builder) {}
+Q(bool fatalEnabled, Q##Builder<E>* builder): Q##Impl(fatalEnabled, builder) {}
 
 #define QUERY_BUILDER_BUILDER_DECLARE(Q)\
 Q<E> build() {\
-    return Q<E>(setThrowable, this);\
+    return Q<E>(setFatalEnabled, this);\
 }

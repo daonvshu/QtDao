@@ -83,13 +83,8 @@ bool MysqlClient::checkTableExist(const QString& tbName) {
     auto str = QString("select table_name from information_schema.TABLES where table_name ='%1' and table_schema = '%2'")
         .arg(tbName, globalConfig->mDatabaseName);
 
-    bool exist = false;
-    BaseQuery::queryPrimitive(str, [&](QSqlQuery& query) {
-        if (query.next()) {
-            exist = true;
-        }
-    });
-    return exist;
+    auto query = BaseQuery::queryPrimitive(str);
+    return query.next();
 }
 
 void MysqlClient::createTableIfNotExist(const QString& tbName, const QString& engine, QStringList fieldsType, QStringList primaryKeys) {
@@ -115,7 +110,7 @@ void MysqlClient::createTableIfNotExist(const QString& tbName, const QString& en
     str.append(" default charset = utf8mb4");
 
     BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_CREATE_TABLE_FAIL);
-    BaseQuery::queryPrimitiveThrowable(str);
+    BaseQuery::queryPrimitive(str);
 }
 
 void MysqlClient::createIndex(const QString& tbName, QStringList fields, IndexType type) {
@@ -137,14 +132,14 @@ void MysqlClient::createIndex(const QString& tbName, QStringList fields, IndexTy
     str.append(")");
 
     BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_CREATE_INDEX_FAIL);
-    BaseQuery::queryPrimitiveThrowable(str);
+    BaseQuery::queryPrimitive(str);
 }
 
 void MysqlClient::renameTable(const QString& oldName, const QString& newName) {
     auto str = QString("rename table %1 to %2").arg(oldName, newName);
 
     BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_CREATE_TMP_TABLE_FAIL);
-    BaseQuery::queryPrimitiveThrowable(str);
+    BaseQuery::queryPrimitive(str);
 }
 
 void MysqlClient::dropTable(const QString& tbName) {
@@ -165,7 +160,7 @@ QStringList MysqlClient::getTagTableFields(const QString& tbName) {
     QStringList fields;
 
     BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_DUMP_FIELD_FAIL);
-    auto query = BaseQuery::queryPrimitiveThrowable(str);
+    auto query = BaseQuery::queryPrimitive(str);
     while (query.next()) {
         fields << query.value(0).toString();
     }
@@ -174,7 +169,7 @@ QStringList MysqlClient::getTagTableFields(const QString& tbName) {
 
 void MysqlClient::dropAllIndexOnTable(const QString& tbName) {
     BaseQuery::setErrIfQueryFail(DbErrCode::MYSQL_DROP_OLD_INDEX_FAIL);
-    auto query = BaseQuery::queryPrimitiveThrowable(
+    auto query = BaseQuery::queryPrimitive(
         QString("SELECT index_name FROM information_schema.statistics where TABLE_SCHEMA = '%1' and TABLE_NAME = '%2' GROUP BY index_name")
         .arg(globalConfig->mDatabaseName, tbName)
     );
@@ -186,7 +181,7 @@ void MysqlClient::dropAllIndexOnTable(const QString& tbName) {
         indexNames << indexName;
     }
     for (const auto& name : indexNames) {
-        BaseQuery::queryPrimitiveThrowable(
+        BaseQuery::queryPrimitive(
             QString("drop index %1 on %2").arg(name, tbName)
         );
     }

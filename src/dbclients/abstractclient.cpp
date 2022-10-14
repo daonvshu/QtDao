@@ -24,7 +24,7 @@ void AbstractClient::restoreData2NewTable(const QString& tbname, QStringList fie
             .arg(tbname, fieldsStr, "tmp_" + tbname);
         BaseQuery::setErrIfQueryFail(DbErrCode::DATABASE_INIT_FAIL);
         restoreDataBefore(tbname);
-        BaseQuery::queryPrimitiveThrowable(sql);
+        BaseQuery::queryPrimitive(sql);
         restoreDataAfter(tbname);
     }
 }

@@ -11,6 +11,8 @@ QTDAO_BEGIN_NAMESPACE
 template<typename... E>
 class JoinBuilder : public BaseQueryBuilder {
 public:
+    QUERY_BUILDER_USE_FATAL_DISABLE(JoinBuilder)
+
     QUERY_BUILDER_USE_FILTER(JoinBuilder)
     QUERY_BUILDER_USE_WITH(JoinBuilder)
     QUERY_BUILDER_USE_COLUMN(JoinBuilder)
@@ -259,7 +261,7 @@ inline JoinBuilder<E...>& JoinBuilder<E...>::fullJoin(RecursiveQueryBuilder& bui
 
 template<typename ...E>
 inline Join<E...> JoinBuilder<E...>::build() {
-    Join<E...> query(setThrowable, this);
+    Join<E...> query(setFatalEnabled, this);
     query.mainData = mainData;
     query.mainTable = mainTable;
     query.subJoinData = subJoinData;

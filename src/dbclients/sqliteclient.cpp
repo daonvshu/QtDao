@@ -57,13 +57,8 @@ void SqliteClient::dropDatabase() {
 bool SqliteClient::checkTableExist(const QString& tbName) {
     auto str = QString("select *from sqlite_master where type='table' and name = '%1'").arg(tbName);
 
-    bool exist = false;
-    BaseQuery::queryPrimitive(str, [&](QSqlQuery& query) {
-        if (query.next()) {
-            exist = true;
-        }
-    });
-    return exist;
+    auto query = BaseQuery::queryPrimitive(str);
+    return query.next();
 }
 
 void SqliteClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType, QStringList primaryKeys) {
@@ -85,7 +80,7 @@ void SqliteClient::createTableIfNotExist(const QString& tbName, QStringList fiel
     str.append(")");
 
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLITE_CREATE_TABLE_FAIL);
-    BaseQuery::queryPrimitiveThrowable(str);
+    BaseQuery::queryPrimitive(str);
 }
 
 void SqliteClient::createIndex(const QString& tbName, QStringList fields, IndexType type) {
@@ -107,14 +102,14 @@ void SqliteClient::createIndex(const QString& tbName, QStringList fields, IndexT
     str.append(")");
 
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLITE_CREATE_INDEX_FAIL);
-    BaseQuery::queryPrimitiveThrowable(str);
+    BaseQuery::queryPrimitive(str);
 }
 
 void SqliteClient::renameTable(const QString& oldName, const QString& newName) {
     auto str = QString("alter table %1 rename to %2").arg(oldName, newName);
 
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLITE_CREATE_TMP_TABLE_FAIL);
-    BaseQuery::queryPrimitiveThrowable(str);
+    BaseQuery::queryPrimitive(str);
 }
 
 void SqliteClient::dropTable(const QString& tbName) {
@@ -136,7 +131,7 @@ QStringList SqliteClient::getTagTableFields(const QString& tbName) {
     QStringList fields;
 
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLITE_DUMP_FIELD_FAIL);
-    auto query = BaseQuery::queryPrimitiveThrowable(QString("pragma table_info('%1')").arg(tbName));
+    auto query = BaseQuery::queryPrimitive(QString("pragma table_info('%1')").arg(tbName));
     while (query.next()) {
         fields << query.value(1).toString();
     }
@@ -144,7 +139,7 @@ QStringList SqliteClient::getTagTableFields(const QString& tbName) {
 }
 
 void SqliteClient::dropAllIndexOnTable(const QString& tbName) {
-    auto query = BaseQuery::queryPrimitiveThrowable(
+    auto query = BaseQuery::queryPrimitive(
         QString("select *from sqlite_master where type='index' and tbl_name = '%1'").arg(tbName)
     );
     QStringList indexNames;
@@ -157,7 +152,7 @@ void SqliteClient::dropAllIndexOnTable(const QString& tbName) {
 
     BaseQuery::setErrIfQueryFail(DbErrCode::SQLITE_DROP_OLD_INDEX_FAIL);
     for (const auto& name : indexNames) {
-        BaseQuery::queryPrimitiveThrowable(
+        BaseQuery::queryPrimitive(
             QString("drop index %1").arg(name)
         );
     }
