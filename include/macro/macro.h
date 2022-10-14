@@ -7,11 +7,32 @@ Builder& name(const Args&... args) {\
     return *this;\
 }
 
-#define QUERY_BUILDER_USE_SET(Builder)            QUERY_BUILDER_USE(Builder, set)
-#define QUERY_BUILDER_USE_FILTER(Builder)         QUERY_BUILDER_USE(Builder, filter)
-#define QUERY_BUILDER_USE_WITH(Builder)           QUERY_BUILDER_USE(Builder, with)
-#define QUERY_BUILDER_USE_COLUMN(Builder)         QUERY_BUILDER_USE(Builder, column)
-#define QUERY_BUILDER_USE_ON(Builder)             QUERY_BUILDER_USE(Builder, on)
+#define QUERY_BUILDER_USE_ENABLE(Builder, name) \
+template<typename Arg>                      \
+Builder& name(bool enabled, const Arg& arg) { \
+    BaseQueryBuilder::name(enabled, arg);\
+    return *this;\
+}
+
+#define QUERY_BUILDER_USE_SET(Builder)            \
+    QUERY_BUILDER_USE(Builder, set)               \
+    QUERY_BUILDER_USE_ENABLE(Builder, set)
+
+#define QUERY_BUILDER_USE_FILTER(Builder)         \
+    QUERY_BUILDER_USE(Builder, filter)            \
+    QUERY_BUILDER_USE_ENABLE(Builder, filter)
+
+#define QUERY_BUILDER_USE_WITH(Builder)           \
+    QUERY_BUILDER_USE(Builder, with)              \
+    QUERY_BUILDER_USE_ENABLE(Builder, with)
+
+#define QUERY_BUILDER_USE_COLUMN(Builder)         \
+    QUERY_BUILDER_USE(Builder, column)            \
+    QUERY_BUILDER_USE_ENABLE(Builder, column)
+
+#define QUERY_BUILDER_USE_ON(Builder)             \
+    QUERY_BUILDER_USE(Builder, on)                \
+    QUERY_BUILDER_USE_ENABLE(Builder, on)
 
 #define QUERY_BUILDER_USE_COLUMNALL(Builder)\
 Builder& columnAll() {\
@@ -72,7 +93,7 @@ Q(bool throwable, Q##Builder<E>* builder): BaseQuery(throwable, builder) {}
 
 #define BASE_QUERY_CONSTRUCTOR_DECLARE_W(Q)\
 friend class Q##Builder<E>;\
-Q(bool throwable, Q##Builder<E>* builder): Q##Impl(throwable, builder, true) {}
+Q(bool throwable, Q##Builder<E>* builder): BaseQuery(throwable, builder, true) {}
 
 #define QUERY_BUILDER_BUILDER_DECLARE(Q)\
 Q<E> build() {\
