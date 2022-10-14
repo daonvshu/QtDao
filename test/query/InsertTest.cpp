@@ -126,7 +126,7 @@ void runInsertObjectTest() {
     //test multi primary key insert
     QFETCH(E1, test2);
     try {
-        dao::_insert<E1>().build().insert(test2);
+        dao::_insert<E1>().disableFatalMsg().build().insert(test2);
         QFAIL("insert should be fail!");
     }
     catch (DaoException&) {
@@ -332,7 +332,7 @@ void runTestTranscation() {
     QFETCH(E, entity);
     dao::_insert<E>().build().insert(entity);
     try {
-        dao::_insert<E>().build().insert(entity);
+        dao::_insert<E>().disableFatalMsg().build().insert(entity);
         dao::commit();
     }
     catch (DaoException&) {

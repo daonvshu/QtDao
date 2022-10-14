@@ -96,7 +96,7 @@ template<typename E>
 inline void Insert<E>::insert(E& entity) {
     auto sqlStatement = buildInsertObjectSqlStatement();
     auto values = getValueWithoutAutoIncrement(entity);
-    setSqlQueryStatement(buildInsertObjectSqlStatement(), values);
+    setSqlQueryStatement(sqlStatement, values);
 
     QSqlQuery query = exec();
     bindAutoIncrementId(entity, query.lastInsertId());
@@ -127,7 +127,10 @@ inline void Insert<E>::insert2(const QList<E>& entities) {
     int entitySize = entities.size();
     Q_ASSERT(entitySize != 0);
     auto sqlStatement = buildInsertObjects2SqlStatement(entitySize);
-    auto values = listMap<QVariant, E>(entities, &E::Tool::getValueWithoutAutoIncrement);
+    QVariantList values;
+    for (const auto& entity: entities) {
+        values << getValueWithoutAutoIncrement(entity);
+    }
     setSqlQueryStatement(sqlStatement, values);
     exec();
 }

@@ -4,7 +4,7 @@
 
 QTDAO_BEGIN_NAMESPACE
 ConfigMysqlBuilder::ConfigMysqlBuilder()
-    : ConfigBuilder(ConfigType::Sqlite)
+    : ConfigBuilder(ConfigType::Mysql)
     , mHost("localhost")
     , mUser("root")
     , mPort(3306)

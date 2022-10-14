@@ -38,10 +38,11 @@ QSqlQuery BaseQuery::exec() {
     bool prepareOk;
     auto query = getQuery(prepareOk, true);
     if (!prepareOk || !execByCheckEmptyValue(query, this)) {
+        auto errText = query.lastError().text();
         if (debugFatalEnabled) {
             fatalError(!prepareOk);
         }
-        throw DaoException(getLastErrCode(), query.lastError().text());
+        throw DaoException(getLastErrCode(), errText);
     }
     return query;
 }
@@ -50,10 +51,11 @@ QSqlQuery BaseQuery::execBatch() {
     bool prepareOk;
     auto query = getQuery(prepareOk);
     if (!prepareOk || !query.execBatch()) {
+        auto errText = query.lastError().text();
         if (debugFatalEnabled) {
             fatalError(!prepareOk);
         }
-        throw DaoException(getLastErrCode(), query.lastError().text());
+        throw DaoException(getLastErrCode(), errText);
     }
     return query;
 }
@@ -66,10 +68,11 @@ QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList
     if (prepareOk && execByCheckEmptyValue(query, &executor)) {
         return query;
     } else {
+        auto errText = query.lastError().text();
         if (debugFatalEnabled) {
             fatalError(!prepareOk);
         }
-        throw DaoException(getLastErrCode(), query.lastError().text());
+        throw DaoException(getLastErrCode(), errText);
     }
 }
 

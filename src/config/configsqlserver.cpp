@@ -4,7 +4,7 @@
 
 QTDAO_BEGIN_NAMESPACE
 ConfigSqlServerBuilder::ConfigSqlServerBuilder()
-    : ConfigBuilder(ConfigType::Sqlite)
+    : ConfigBuilder(ConfigType::SqlServer)
     , mHost("localhost")
     , mUser("sa")
     , mPort(1433)

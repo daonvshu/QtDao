@@ -46,7 +46,8 @@ public:
                         .password("root")
                         .initializeDatabase();
             }
-        } catch (dao::DaoException&) {
+        } catch (dao::DaoException& e) {
+            Q_UNUSED(e)
             qFatal("setup database fail!");
         }
     }
