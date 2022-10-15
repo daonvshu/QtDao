@@ -76,7 +76,7 @@
     <item name="typedatetime5" type="datetime" default="CURRENT_TIMESTAMP"/>
     <item name="typedatetime6" type="datetime" bitsize="3" default="CURRENT_TIMESTAMP(3)"/>
     <item name="typedatetime7" type="datetime" bitsize="3" default="CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)"/>
-    <item name="typedatetime8" type="datetime" default="null ON UPDATE CURRENT_TIMESTAMP"/>
+    <item name="typedatetime8" type="datetime" default="NULL ON UPDATE CURRENT_TIMESTAMP"/>
 
     <item name="typetimestamp" type="timestamp" default="2020-01-01 12:59:59"/>
     <item name="typetimestamp2" type="timestamp" default="QDateTime::currentDateTime()"/>
@@ -85,7 +85,7 @@
     <item name="typetimestamp5" type="timestamp" default="CURRENT_TIMESTAMP"/>
     <item name="typetimestamp6" type="timestamp" bitsize="3" default="CURRENT_TIMESTAMP(3)"/>
     <item name="typetimestamp7" type="timestamp" bitsize="3" default="CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)"/>
-    <item name="typetimestamp8" type="timestamp" default="null ON UPDATE CURRENT_TIMESTAMP"/>
+    <item name="typetimestamp8" type="timestamp" default="NULL ON UPDATE CURRENT_TIMESTAMP"/>
   </tb>
   <tb name="MysqlDefaultTestStr" declaremetatype="true">
     <!--string type-->

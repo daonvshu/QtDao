@@ -31,7 +31,7 @@ public:
                 dao::_config<dao::ConfigMysqlBuilder>()
                         .version(version)
                         .databaseName("mysqltest")
-                        .host("192.168.1.19")
+                        .host("localhost")
                         .port(3306)
                         .user("root")
                         .password("root")
@@ -41,13 +41,15 @@ public:
                 dao::_config<dao::ConfigSqlServerBuilder>()
                         .version(version)
                         .databaseName("sqlservertest")
-                        .host("192.168.1.19\\sqlexpress")
-                        .user("root")
+                        .host("localhost")
+                        .user("sa")
                         .password("root")
                         .initializeDatabase();
             }
         } catch (dao::DaoException& e) {
             Q_UNUSED(e)
+            auto validDrivers = QSqlDatabase::drivers();
+            Q_UNUSED(validDrivers)
             qFatal("setup database fail!");
         }
     }

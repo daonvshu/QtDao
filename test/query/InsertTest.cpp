@@ -371,7 +371,7 @@ void InsertTest::testMysqlMyISAMTranscation() {
     dao::transcation();
     dao::_insert<MysqlTest1>().build().insert(data1);
     try {
-        dao::_insert<MysqlTest1>().build().insert(data2); //null of name will case error
+        dao::_insert<MysqlTest1>().disableFatalMsg().build().insert(data2); //null of name will case error
         dao::commit();
     } catch (DaoException&) {
         dao::rollback();

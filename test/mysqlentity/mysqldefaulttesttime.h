@@ -107,7 +107,7 @@ public:
         typedatetime5 = QDateTime::currentDateTime();
         typedatetime6 = QDateTime::currentDateTime();
         typedatetime7 = QDateTime::currentDateTime();
-        typedatetime8 = QDateTime::fromString("null ON UPDATE CURRENT_TIMESTAMP");
+        typedatetime8 = QDateTime();
         typetimestamp = QDateTime::fromString("2020-01-01 12:59:59");
         typetimestamp2 = QDateTime::currentDateTime();
         typetimestamp3 = QDateTime();
@@ -115,7 +115,7 @@ public:
         typetimestamp5 = QDateTime::currentDateTime();
         typetimestamp6 = QDateTime::currentDateTime();
         typetimestamp7 = QDateTime::currentDateTime();
-        typetimestamp8 = QDateTime::fromString("null ON UPDATE CURRENT_TIMESTAMP");
+        typetimestamp8 = QDateTime();
    }
 
     MysqlDefaultTestTime(
@@ -321,7 +321,7 @@ public:
                 << QStringLiteral("typedatetime5 datetime null default CURRENT_TIMESTAMP comment ''")
                 << QStringLiteral("typedatetime6 datetime(3) null default CURRENT_TIMESTAMP(3) comment ''")
                 << QStringLiteral("typedatetime7 datetime(3) null default CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) comment ''")
-                << QStringLiteral("typedatetime8 datetime null default 'null ON UPDATE CURRENT_TIMESTAMP' comment ''")
+                << QStringLiteral("typedatetime8 datetime null default NULL ON UPDATE CURRENT_TIMESTAMP comment ''")
                 << QStringLiteral("typetimestamp timestamp null default '2020-01-01 12:59:59' comment ''")
                 << QStringLiteral("typetimestamp2 timestamp null default null comment ''")
                 << QStringLiteral("typetimestamp3 timestamp null default null comment ''")
@@ -329,7 +329,7 @@ public:
                 << QStringLiteral("typetimestamp5 timestamp null default CURRENT_TIMESTAMP comment ''")
                 << QStringLiteral("typetimestamp6 timestamp(3) null default CURRENT_TIMESTAMP(3) comment ''")
                 << QStringLiteral("typetimestamp7 timestamp(3) null default CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) comment ''")
-                << QStringLiteral("typetimestamp8 timestamp null default 'null ON UPDATE CURRENT_TIMESTAMP' comment ''");
+                << QStringLiteral("typetimestamp8 timestamp null default NULL ON UPDATE CURRENT_TIMESTAMP comment ''");
         }
 
         static QStringList getPrimaryKeys() {
