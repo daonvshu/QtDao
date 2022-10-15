@@ -10,6 +10,8 @@
 #include <qsqldatabase.h>
 #include <qsharedpointer.h>
 
+class ConnectionPool;
+
 QTDAO_BEGIN_NAMESPACE
 
 class ConfigBuilder {
@@ -76,7 +78,7 @@ protected:
     friend class SqliteClient;
     friend class MysqlClient;
     friend class SqlServerClient;
-    friend class ConnectionPool;
+    friend class ::ConnectionPool;
 
 protected:
     void setupDatabase();

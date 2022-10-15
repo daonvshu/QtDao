@@ -75,7 +75,7 @@ inline E Select<E>::unique() {
 
     E entity;
     uniqueExec([&](const QString& fieldName, const QVariant& value){
-        bindValue(entity, fieldName, value);
+        EntityReaderProvider<E>::bindValue(entity, fieldName, value);
     });
 
     return entity;
@@ -86,7 +86,7 @@ inline E Select<E>::one() {
 
     E entity;
     oneExec([&](const QString& fieldName, const QVariant& value){
-        bindValue(entity, fieldName, value);
+        EntityReaderProvider<E>::bindValue(entity, fieldName, value);
     });
 
     return entity;
@@ -99,7 +99,7 @@ inline QList<E> Select<E>::list() {
     listExec([&](const QSqlRecord& record){
         E entity;
         recordBind(record, [&](const QString& fieldName, const QVariant& value){
-            bindValue(entity, fieldName, value);
+            EntityReaderProvider<E>::bindValue(entity, fieldName, value);
         });
         data << entity;
     });
@@ -110,7 +110,8 @@ inline QList<E> Select<E>::list() {
 template<typename E>
 inline void Select<E>::raw(const std::function<void(QSqlQuery&)>& callback) {
     buildFilterSqlStatement();
-    callback(exec());
+    auto query = exec();
+    callback(query);
 }
 
 template<typename E>

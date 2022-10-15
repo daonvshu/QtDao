@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include <qvector.h>
 #include "basequery.h"
 #include "entityreaderinterface.h"
 

@@ -2,12 +2,8 @@
 
 #include "connectionpool.h"
 
-#include "dbclients/SqliteClient.h"
+#include "dbclients/sqliteclient.h"
 #include "dao.h"
-
-#include "sqliteentity/SqliteConfig.h"
-#include "mysqlentity/MysqlConfig.h"
-#include "sqlserverentity/SqlServerConfig.h"
 
 #include "RunnableHandler.h"
 

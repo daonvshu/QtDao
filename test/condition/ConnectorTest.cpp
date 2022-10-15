@@ -1,8 +1,8 @@
 #include "ConnectorTest.h"
 
-#include "../sqliteentity/SqliteTest2.h"
+#include "../sqliteentity/sqlitetest2.h"
 
-#include "condition/ConditionOperator.h"
+#include "condition/conditionoperator.h"
 
 #include <QtTest>
 

@@ -95,11 +95,11 @@ inline void Insert<E>::insert() {
 template<typename E>
 inline void Insert<E>::insert(E& entity) {
     auto sqlStatement = buildInsertObjectSqlStatement();
-    auto values = getValueWithoutAutoIncrement(entity);
+    auto values = EntityReaderProvider<E>::getValueWithoutAutoIncrement(entity);
     setSqlQueryStatement(sqlStatement, values);
 
     QSqlQuery query = exec();
-    bindAutoIncrementId(entity, query.lastInsertId());
+    EntityReaderProvider<E>::bindAutoIncrementId(entity, query.lastInsertId());
 }
 
 template<typename E>
@@ -108,7 +108,7 @@ inline void Insert<E>::insert(const QList<E>& entities) {
     QVector<QVariantList> values(fieldSize());
     int usedValueSize = 0;
     for (const auto& entity : entities) {
-        auto v = getValueWithoutAutoIncrement(entity);
+        auto v = EntityReaderProvider<E>::getValueWithoutAutoIncrement(entity);
         usedValueSize = v.size();
         for (int i = 0; i < v.size(); i++) {
             values[i] << v.at(i);
@@ -129,7 +129,7 @@ inline void Insert<E>::insert2(const QList<E>& entities) {
     auto sqlStatement = buildInsertObjects2SqlStatement(entitySize);
     QVariantList values;
     for (const auto& entity: entities) {
-        values << getValueWithoutAutoIncrement(entity);
+        values << EntityReaderProvider<E>::getValueWithoutAutoIncrement(entity);
     }
     setSqlQueryStatement(sqlStatement, values);
     exec();

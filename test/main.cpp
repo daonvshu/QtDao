@@ -16,7 +16,10 @@
 #ifndef QT_DAO_TESTCASE
 #include <qfile.h>
 #include <iostream>
+
+#ifdef Q_CC_MSVC
 #include <Windows.h>
+#endif
 
 void setColor() {
     QFile file(QDir::currentPath() + "/test.txt");
@@ -24,6 +27,7 @@ void setColor() {
         while (true) {
             auto line = file.readLine();
             if (line.isEmpty()) break;
+#ifdef Q_CC_MSVC
             if (line.startsWith("PASS")) {
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN);
             } else if (line.startsWith("FAIL")) {
@@ -35,6 +39,7 @@ void setColor() {
             } else if (line.startsWith("QWARN")) {
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
             }
+#endif
             std::cout << line.toStdString();
         }
         std::cout << std::endl;
@@ -86,7 +91,9 @@ int main(int argc, char *argv[])
     int result = 0;
     for (int i = 0; i < 3; i++) {
 #ifndef QT_DAO_TESTCASE
+#ifdef Q_CC_MSVC
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
+#endif
         if (i == 0) {
             std::cout << "------------------------------ Test Sqlite ------------------------------" << std::endl;
         } else if (i == 1) {
@@ -115,10 +122,14 @@ int main(int argc, char *argv[])
             ::run(EngineModel(i));
     }
     if (result != 0) {
+#ifdef Q_CC_MSVC
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
+#endif
         std::cout << "Not all tests are successful!" << std::endl;
     } else {
+#ifdef Q_CC_MSVC
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_GREEN);
+#endif
         std::cout << "All tests passed!" << std::endl;
     }
     return a.exec();

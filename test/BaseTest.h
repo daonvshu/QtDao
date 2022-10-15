@@ -2,9 +2,6 @@
 
 #include <qobject.h>
 
-#include "sqliteentity/SqliteConfig.h"
-#include "mysqlentity/MysqlConfig.h"
-#include "sqlserverentity/SqlServerConfig.h"
 #include "EngineModelSelector.h"
 
 QTDAO_USING_NAMESPACE
