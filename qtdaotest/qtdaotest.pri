@@ -7,54 +7,51 @@
 
 HEADERS += ../test/BaseTest.h \
     ../test/ConnectionPoolTest.h \
-    ../test/query/UpdateTest.h \
-    ../test/query/SqliteWriteSyncTest.h \
-    ../test/query/SelectTest.h \
-    ../test/query/JoinTest.h \
-    ../test/query/InsertTest.h \
-    ../test/query/InsertIntoSelectTest.h \
-    ../test/query/DeleteTest.h \
-    ../test/query/BaseQueryTest.h \
-    ../test/loader/DbLoaderTest.h \
-    ../test/sqliteentity/SqliteDefaultTestInt.h \
-    ../test/sqliteentity/SqliteDefaultTestStr.h \
-    ../test/sqliteentity/SqliteTest1.h \
-    ../test/sqliteentity/SqliteTest2.h \
-    ../test/sqliteentity/SqliteTest3.h \
-    ../test/sqliteentity/SqliteEntityInclude.h \
-    ../test/sqliteentity/SqliteConfig.h \
+    ../test/EngineModelSelector.h \
+    ../test/RunnableHandler.h \
     ../test/condition/ConnectorTest.h \
-    ../test/mysqlentity/MysqlDefaultTestInt.h \
-    ../test/mysqlentity/MysqlDefaultTestStr.h \
-    ../test/mysqlentity/MysqlDefaultTestTime.h \
-    ../test/mysqlentity/MysqlTest1.h \
-    ../test/mysqlentity/MysqlTest2.h \
-    ../test/mysqlentity/MysqlTest3.h \
-    ../test/mysqlentity/MysqlTest4.h \
-    ../test/mysqlentity/MysqlConfig.h \
-    ../test/mysqlentity/MysqlEntityInclude.h \
-    ../test/sqlserverentity/SqlServerDefaultTestBytes.h \
-    ../test/sqlserverentity/SqlServerDefaultTestInt.h \
-    ../test/sqlserverentity/SqlServerDefaultTestStr.h \
-    ../test/sqlserverentity/SqlServerDefaultTestTime.h \
-    ../test/sqlserverentity/SqlServerTest1.h \
-    ../test/sqlserverentity/SqlServerTest2.h \
-    ../test/sqlserverentity/SqlServerTest3.h \
-    ../test/sqlserverentity/SqlServerConfig.h \
-    ../test/sqlserverentity/SqlServerEntityInclude.h
+    ../test/loader/DbLoaderTest.h \
+    ../test/mysqlentity/mysqldefaulttestint.h \
+    ../test/mysqlentity/mysqldefaultteststr.h \
+    ../test/mysqlentity/mysqldefaulttesttime.h \
+    ../test/mysqlentity/mysqlentityinclude.h \
+    ../test/mysqlentity/mysqltest1.h \
+    ../test/mysqlentity/mysqltest2.h \
+    ../test/mysqlentity/mysqltest3.h \
+    ../test/query/BaseQueryTest.h \
+    ../test/query/DeleteTest.h \
+    ../test/query/InsertIntoSelectTest.h \
+    ../test/query/InsertTest.h \
+    ../test/query/JoinTest.h \
+    ../test/query/SelectTest.h \
+    ../test/query/UpdateTest.h \
+    ../test/sqliteentity/sqlitedefaulttestint.h \
+    ../test/sqliteentity/sqlitedefaultteststr.h \
+    ../test/sqliteentity/sqliteentityinclude.h \
+    ../test/sqliteentity/sqlitetest1.h \
+    ../test/sqliteentity/sqlitetest2.h \
+    ../test/sqliteentity/sqlitetest3.h \
+    ../test/sqlserverentity/sqlserverdefaulttestbytes.h \
+    ../test/sqlserverentity/sqlserverdefaulttestint.h \
+    ../test/sqlserverentity/sqlserverdefaultteststr.h \
+    ../test/sqlserverentity/sqlserverdefaulttesttime.h \
+    ../test/sqlserverentity/sqlserverentityinclude.h \
+    ../test/sqlserverentity/sqlservertest1.h \
+    ../test/sqlserverentity/sqlservertest2.h \
+    ../test/sqlserverentity/sqlservertest3.h
+
 SOURCES += ../test/BaseTest.cpp \
     ../test/ConnectionPoolTest.cpp \
     ../test/main.cpp \
+    ../test/condition/ConnectorTest.cpp \
+    ../test/loader/DbLoaderTest.cpp \
+    ../test/mysqlentity/mysqlentityinclude.cpp \
     ../test/query/BaseQueryTest.cpp \
     ../test/query/DeleteTest.cpp \
     ../test/query/InsertIntoSelectTest.cpp \
     ../test/query/InsertTest.cpp \
     ../test/query/JoinTest.cpp \
     ../test/query/SelectTest.cpp \
-    ../test/query/SqliteWriteSyncTest.cpp \
     ../test/query/UpdateTest.cpp \
-    ../test/loader/DbLoaderTest.cpp \
-    ../test/condition/ConnectorTest.cpp \
-    ../test/sqliteentity/SqliteEntityInclude.cpp \
-    ../test/mysqlentity/MysqlEntityInclude.cpp \
-    ../test/sqlserverentity/SqlServerEntityInclude.cpp
+    ../test/sqliteentity/sqliteentityinclude.cpp \
+    ../test/sqlserverentity/sqlserverentityinclude.cpp

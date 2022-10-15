@@ -6,55 +6,77 @@
 # Remove it when you are finished editing this file.
 
 
-HEADERS += ../include/ConnectionPool.h \
+HEADERS += ../include/connectionpool.h \
     ../include/dao.h \
-    ../include/DbConfig.h \
-    ../include/DbErrCode.h \
-    ../include/DbExceptionHandler.h \
-    ../include/DbLoader.h \
-    ../include/builder/BaseQueryBuilder.h \
-    ../include/builder/CountBuilder.h \
-    ../include/builder/DeleteBuilder.h \
-    ../include/builder/InsertBuilder.h \
-    ../include/builder/InsertIntoSelectBuilder.h \
-    ../include/builder/JoinBuilder.h \
-    ../include/builder/RecursiveQueryBuilder.h \
-    ../include/builder/SelectBuilder.h \
-    ../include/builder/UpdateBuilder.h \
-    ../include/condition/ConditionConstraint.h \
-    ../include/condition/ConditionOperator.h \
-    ../include/condition/Connector.h \
-    ../include/condition/ConnectorData.h \
-    ../include/condition/EntityCondition.h \
-    ../include/condition/EntityConditionData.h \
-    ../include/condition/EntityField.h \
-    ../include/condition/FunctionCondition.h \
-    ../include/condition/FunctionConditionData.h \
-    ../include/dbclients/AbstractClient.h \
-    ../include/dbclients/MysqlClient.h \
-    ../include/dbclients/SqliteClient.h \
-    ../include/dbclients/SqlServerClient.h \
+    ../include/dbconfig.h \
+    ../include/dberrcode.h \
+    ../include/dbexceptionhandler.h \
+    ../include/global.h \
+    ../include/builder/basequerybuilder.h \
+    ../include/builder/countbuilder.h \
+    ../include/builder/deletebuilder.h \
+    ../include/builder/insertbuilder.h \
+    ../include/builder/insertintoselectbuilder.h \
+    ../include/builder/joinbuilder.h \
+    ../include/builder/recursivequerybuilder.h \
+    ../include/builder/selectbuilder.h \
+    ../include/builder/updatebuilder.h \
+    ../include/condition/conditionconstraint.h \
+    ../include/condition/conditionoperator.h \
+    ../include/condition/connector.h \
+    ../include/condition/connectordata.h \
+    ../include/condition/entitycondition.h \
+    ../include/condition/entityconditiondata.h \
+    ../include/condition/entityfield.h \
+    ../include/condition/functioncondition.h \
+    ../include/condition/functionconditiondata.h \
+    ../include/config/configbuilder.h \
+    ../include/config/configmysql.h \
+    ../include/config/configsqlite.h \
+    ../include/config/configsqlserver.h \
+    ../include/config/configtype.h \
+    ../include/dbclients/abstractclient.h \
+    ../include/dbclients/mysqlclient.h \
+    ../include/dbclients/sqliteclient.h \
+    ../include/dbclients/sqlserverclient.h \
     ../include/macro/macro.h \
-    ../include/query/BaseQuery.h \
-    ../include/query/Delete.h \
-    ../include/query/ExplainInfo.h \
-    ../include/query/Insert.h \
-    ../include/query/InsertIntoSelect.h \
-    ../include/query/Join.h \
-    ../include/query/Select.h \
-    ../include/query/SqliteLockControl.h \
-    ../include/query/Update.h
-SOURCES += ../src/ConnectionPool.cpp \
-    ../src/DbLoader.cpp \
+    ../include/query/basequery.h \
+    ../include/query/delete.h \
+    ../include/query/deleteimpl.h \
+    ../include/query/entityreaderinterface.h \
+    ../include/query/explaininfo.h \
+    ../include/query/insert.h \
+    ../include/query/insertimpl.h \
+    ../include/query/insertintoselect.h \
+    ../include/query/insertintoselectimpl.h \
+    ../include/query/join.h \
+    ../include/query/joinimpl.h \
+    ../include/query/select.h \
+    ../include/query/selectimpl.h \
+    ../include/query/update.h \
+    ../include/query/updateimpl.h \
+    ../include/utils/listutils.h
+
+SOURCES += ../src/connectionpool.cpp \
     ../src/qtdao.cpp \
-    ../src/builder/BaseQueryBuilder.cpp \
-    ../src/condition/ConditionConstraint.cpp \
-    ../src/condition/ConnectorData.cpp \
-    ../src/condition/EntityCondition.cpp \
-    ../src/condition/FunctionCondition.cpp \
-    ../src/dbclients/AbstractClient.cpp \
-    ../src/dbclients/MysqlClient.cpp \
-    ../src/dbclients/SqliteClient.cpp \
-    ../src/dbclients/SqlServerClient.cpp \
-    ../src/query/BaseQuery.cpp \
-    ../src/query/SqliteLockControl.cpp
+    ../src/builder/basequerybuilder.cpp \
+    ../src/condition/conditionconstraint.cpp \
+    ../src/condition/connectordata.cpp \
+    ../src/condition/entitycondition.cpp \
+    ../src/condition/functioncondition.cpp \
+    ../src/config/configbuilder.cpp \
+    ../src/config/configmysql.cpp \
+    ../src/config/configsqlite.cpp \
+    ../src/config/configsqlserver.cpp \
+    ../src/dbclients/abstractclient.cpp \
+    ../src/dbclients/mysqlclient.cpp \
+    ../src/dbclients/sqliteclient.cpp \
+    ../src/dbclients/sqlserverclient.cpp \
+    ../src/query/basequery.cpp \
+    ../src/query/deleteimpl.cpp \
+    ../src/query/insertimpl.cpp \
+    ../src/query/insertintoselectimpl.cpp \
+    ../src/query/joinimpl.cpp \
+    ../src/query/selectimpl.cpp \
+    ../src/query/updateimpl.cpp
+
