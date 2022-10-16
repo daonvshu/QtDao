@@ -8,7 +8,7 @@ layout: post
 
 Qt Creator / VS
 -------------
-使用前，使用`QtCreator`打开`qtdaolib/qtdaolib.pro`，选择目标Qt库构建套件，最后执行`构建`，构建出qtdao静态链接库，在`lib`目录中找到编译出的库。
+使用前，使用`QtCreator`打开`qtdao.pro`，选择目标Qt库构建套件，最后执行`构建`，构建出qtdao静态链接库，在`lib`目录中找到编译出的库。
 
 #### 项目中导入库
 - QtCreator
@@ -24,8 +24,7 @@ SOURCES += \
     widget.cpp
 
 HEADERS += \
-    widget.h \
-    entity/sqliteconfig.h #添加数据库连接配置文件
+    widget.h
 
 FORMS += \
     widget.ui
@@ -67,9 +66,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/entity/entity.cmake)
 #...
 add_executable(${PROJECT_NAME} WIN32 
     #...
-
-    #添加数据库连接配置文件
-    entity/sqliteconfig.h
     #添加entity文件列表，此变量由entity.cmake提供
     ${ENTITY_FILE_LIST}
 )

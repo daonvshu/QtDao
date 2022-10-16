@@ -7,7 +7,7 @@ layout: post
 异常捕捉
 -------------
 
-`QtDao`中所有的增删改查操作都提供了`throwable()`函数。调用该函数后，当前的数据库操作失败会抛出异常，此时通过`try-catch`可以捕捉到，未使用该函数将直接回调到[统一的异常处理回调]({{site.baseurl}}/pages/config/03_init/#异常处理)中。
+`QtDao`中所有的增删改查操作遇到错误时都会抛出`DaoException`异常，此时通过`try-catch`可以捕捉到。另外，在调试（Debug）模式下，遇到错误抛出异常之前，会调用`qFatal`函数以便于调试时命中错误位置。建议只有在不确定的查询时使用`try-catch`，调试模式下忽略`qFatal`调用`disableFatalMsg()`禁用。
 
 ```cpp
 User::Fields field;
@@ -15,6 +15,7 @@ User::Fields field;
 try {
     auto user = dao::_select<User>()
         .filter(field.name == "Alice")
+        //.disableFatalMsg() //禁用qFatal调用
         .build().unique();
 } catch (DaoException& e) {
     qDebug() << e.reason;
@@ -32,7 +33,7 @@ dao::transcation();
 
 try {
     User alice("Alice", 18, 100);
-    dao::_insert<User>().build().insert(alice);
+    dao::_insert<User>().disableFatalMsg().build().insert(alice);
     //提交
     dao::commit();
 } catch (DaoException&) {
