@@ -22,7 +22,6 @@ void AbstractClient::restoreData2NewTable(const QString& tbname, QStringList fie
         fieldsStr.chop(1);
         auto sql = QString("insert into %1(%2) select %2 from %3")
             .arg(tbname, fieldsStr, "tmp_" + tbname);
-        BaseQuery::setErrIfQueryFail(DbErrCode::DATABASE_INIT_FAIL);
         restoreDataBefore(tbname);
         BaseQuery::queryPrimitive(sql);
         restoreDataAfter(tbname);

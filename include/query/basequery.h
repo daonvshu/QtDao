@@ -15,8 +15,6 @@
 
 #include "../query/explaininfo.h"
 
-#include "../dberrcode.h"
-
 QTDAO_BEGIN_NAMESPACE
 
 class BaseQuery {
@@ -27,8 +25,6 @@ public:
     ~BaseQuery();
 
     static QSqlQuery queryPrimitive(const QString& statement, const QVariantList& values = QVariantList(), bool debugFatalEnabled = true);
-
-    static void setErrIfQueryFail(DbErrCode::Code code);
 
 protected:
     void setSqlQueryStatement(const QString& statement, const QVariantList& values);
@@ -45,8 +41,6 @@ protected:
 
     friend class BaseQueryBuilder;
 
-    static DbErrCode::Code exceptionLastErr;
-
     friend void transcation();
     friend void commit();
     friend void rollback(const QString&);
@@ -57,7 +51,6 @@ private:
 
     static void fatalError(bool prepareError);
     static bool execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executor);
-    static DbErrCode::Code getLastErrCode();
 
 protected:
     template<typename I>

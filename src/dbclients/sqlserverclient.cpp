@@ -13,30 +13,29 @@
 QTDAO_BEGIN_NAMESPACE
 
 void SqlServerClient::testConnect() {
-    QString lastErrStr;
+    QSqlError lastErr;
     [&] {
         auto db = ConnectionPool::prepareConnect("testconnection", "master");
         if (!db.open()) {
-            lastErrStr = "open master table 'master' fail! " + db.lastError().text();
+            lastErr = db.lastError();
             return;
         }
         QSqlQuery query("select 1", db);
         if (query.lastError().type() != QSqlError::NoError) {
-            lastErrStr = "master table 'master' cannot execute query!";
+            lastErr = db.lastError();
             db.close();
             return;
         }
         db.close();
     } ();
     QSqlDatabase::removeDatabase("testconnection");
-    if (!lastErrStr.isEmpty()) {
-        throw DaoException(DbErrCode::SQLSERVER_CONNECT_FAIL, lastErrStr);
+    if (lastErr.type() != QSqlError::NoError) {
+        throw DaoException(lastErr);
     }
 }
 
 void SqlServerClient::createDatabase() {
     QString lastErrStr;
-    DbErrCode::Code code = DbErrCode::ERR_NOT_SET;
     [&] {
         auto db = ConnectionPool::prepareConnect("createconnection", "master");
         if (!db.open()) {
@@ -47,7 +46,6 @@ void SqlServerClient::createDatabase() {
         QString storePath = "C:\\ProgramData\\" + appName;
         QSqlQuery query(db);
         if (!query.exec("xp_create_subdir N'" + storePath + "'")) {
-            code = DbErrCode::SQLSERVER_CREATE_DB_PATH_FAIL;
             lastErrStr = "cannot create sqlserver store path! path = " + storePath + " err = " + query.lastError().text();
             db.close();
             return;
@@ -59,7 +57,6 @@ RUdST1dUSCA9IDY0TUIKCSkKCUxPRyBPTgoJKAoJCU5BTUUgPSBOJyUxX2xvZycsCgkJRklMRU5BTUUg
 oJCVNJWkUgPSA4TUIsCgkJTUFYU0laRSA9IFVOTElNSVRFRCwKCQlGSUxFR1JPV1RIID0gNjRNQgoJKQ==");
         sql = sql.arg(globalConfig->mDatabaseName, storePath);
         if (!query.exec(sql)) {
-            code = DbErrCode::SQLSERVER_CREATE_DATABASE_FAIL;
             lastErrStr = "create database fail! err = " + query.lastError().text();
             db.close();
             return;
@@ -68,31 +65,31 @@ oJCVNJWkUgPSA4TUIsCgkJTUFYU0laRSA9IFVOTElNSVRFRCwKCQlGSUxFR1JPV1RIID0gNjRNQgoJKQ
     } ();
     QSqlDatabase::removeDatabase("createconnection");
     if (!lastErrStr.isEmpty()) {
-        throw DaoException(code, lastErrStr);
+        throw DaoException(lastErrStr);
     }
 }
 
 void SqlServerClient::dropDatabase() {
-    QString lastErrStr;
+    QSqlError lastErr;
     [&] {
         auto db = ConnectionPool::prepareConnect("dropconnection", "master");
         if (!db.open()) {
-            lastErrStr = "drop database open fail! " + db.lastError().text();
+            lastErr = db.lastError();
             return;
         }
         QString sql = "if exists (select* from sysdatabases where name ='%1') drop database %1";
         sql = sql.arg(globalConfig->mDatabaseName);
         QSqlQuery query(db);
         if (!query.exec(sql)) {
-            lastErrStr = "drop database fail! err = " + query.lastError().text();
+            lastErr = db.lastError();
             db.close();
             return;
         }
         db.close();
     } ();
     QSqlDatabase::removeDatabase("dropconnection");
-    if (!lastErrStr.isEmpty()) {
-        throw DaoException(DbErrCode::SQL_EXEC_FAIL, lastErrStr);
+    if (lastErr.type() != QSqlError::NoError) {
+        throw DaoException(lastErr);
     }
 }
 
@@ -122,7 +119,6 @@ void SqlServerClient::createTableIfNotExist(const QString& tbName, QStringList f
     }
     str.append(")");
 
-    BaseQuery::setErrIfQueryFail(DbErrCode::SQLSERVER_CREATE_TABLE_FAIL);
     BaseQuery::queryPrimitive(str);
 }
 
@@ -157,14 +153,11 @@ void SqlServerClient::createIndex(const QString& tbName, QStringList fields, Ind
         str.append(" with (").append(option).append(")");
     }
 
-    BaseQuery::setErrIfQueryFail(DbErrCode::SQLSERVER_CREATE_INDEX_FAIL);
     BaseQuery::queryPrimitive(str);
 }
 
 void SqlServerClient::renameTable(const QString& oldName, const QString& newName) {
     auto str = QString("exec sp_rename '%1','%2'").arg(oldName, newName);
-
-    BaseQuery::setErrIfQueryFail(DbErrCode::SQLSERVER_CREATE_TMP_TABLE_FAIL);
     BaseQuery::queryPrimitive(str);
 }
 
@@ -184,7 +177,6 @@ QStringList SqlServerClient::getTagTableFields(const QString& tbName) {
 
     QStringList fields;
 
-    BaseQuery::setErrIfQueryFail(DbErrCode::SQLSERVER_DUMP_FIELD_FAIL);
     auto query = BaseQuery::queryPrimitive(str);
     while (query.next()) {
         fields << query.value(0).toString();
@@ -211,7 +203,6 @@ void SqlServerClient::restoreDataAfter(const QString& tbName) {
 }
 
 void SqlServerClient::dropAllIndexOnTable(const QString& tbName) {
-    BaseQuery::setErrIfQueryFail(DbErrCode::SQLSERVER_DROP_OLD_INDEX_FAIL);
     auto query = BaseQuery::queryPrimitive(
         QString("select a.name from sys.indexes a join sys.tables c ON (a.object_id = c.object_id) where c.name='%1' and a.name like 'index_%' group by a.name")
         .arg(tbName)

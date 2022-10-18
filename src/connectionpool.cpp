@@ -118,7 +118,7 @@ QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
     // create new connection
     auto db = prepareConnect(connectionName, globalConfig->mDatabaseName);
     if (!db.open()) {
-        throw DaoException(DbErrCode::CREATE_CONNECTION_FAIL, db.lastError().text());
+        throw DaoException(db.lastError());
     }
 
     return db;

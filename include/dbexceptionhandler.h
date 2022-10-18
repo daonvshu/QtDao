@@ -5,8 +5,9 @@
 #include <qvariant.h>
 #include <qstring.h>
 #include <qexception.h>
+#include <qsqlerror.h>
 
-#include "dberrcode.h"
+#include <utility>
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -21,13 +22,23 @@ QueryLogPrinter getQueryLogPrinter();
 
 class DaoException : public QException {
 public:
-    DaoException(DbErrCode::Code code, const QString& reason) : reason(reason), code(code) {}
+    explicit DaoException(const QSqlError& error)
+        : reason(error.text())
+        , errorType(error.type())
+        , nativeCode(error.nativeErrorCode())
+    {}
+
+    explicit DaoException(QString  reason)
+        : reason(std::move(reason))
+        , errorType(QSqlError::ConnectionError)
+    {}
 
     void raise() const override { throw* this; }
     DaoException* clone() const override { return new DaoException(*this); }
 
     QString reason;
-    DbErrCode code;
+    QSqlError::ErrorType errorType;
+    QString nativeCode;
 };
 
 QTDAO_END_NAMESPACE

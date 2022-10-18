@@ -22,7 +22,7 @@ bool InsertImpl::buildInsertBySetSqlStatement() {
         } else if (globalConfig->isMysql()) {
             sql = "replace into %1 (";
         } else {
-            throw DaoException(DbErrCode::SQL_EXEC_FAIL, "sqlserver insert or replace unsupported!");
+            throw DaoException("sqlserver insert or replace unsupported!");
         }
     }
 
@@ -60,7 +60,7 @@ QString InsertImpl::buildInsertObjectSqlStatement() {
         } else if (globalConfig->isMysql()) {
             sql = "replace into %1 (";
         } else {
-            throw DaoException(DbErrCode::SQL_EXEC_FAIL, "sqlserver insert or replace unsupported!");
+            throw DaoException("sqlserver insert or replace unsupported!");
         }
     }
     sql = sql.arg(getTableName());
@@ -92,7 +92,7 @@ QString InsertImpl::buildInsertObjects2SqlStatement(int valueSize) {
         } else if (globalConfig->isMysql()) {
             sql = "replace into %1 (";
         } else {
-            throw DaoException(DbErrCode::SQL_EXEC_FAIL, "sqlserver insert or replace unsupported!");
+            throw DaoException("sqlserver insert or replace unsupported!");
         }
     }
     sql = sql.arg(getTableName());

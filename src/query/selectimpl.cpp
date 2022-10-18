@@ -80,7 +80,7 @@ void SelectImpl::uniqueExec(const EntityBinder& entityBinder) {
         resultSize++;
     }
     if (resultSize > 1) {
-        throw DaoException(DbErrCode::SQL_EXEC_FAIL, "unique result size > 1, actual is " + QString::number(resultSize));
+        throw DaoException("unique result size > 1, actual is " + QString::number(resultSize));
     }
 }
 

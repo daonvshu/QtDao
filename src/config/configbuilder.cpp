@@ -3,7 +3,6 @@
 #include "dbclients/mysqlclient.h"
 #include "dbclients/sqliteclient.h"
 #include "dbclients/sqlserverclient.h"
-#include "dberrcode.h"
 #include "dbexceptionhandler.h"
 #include "query/basequery.h"
 
@@ -53,7 +52,7 @@ void ConfigBuilder::setupDatabase() {
 
     } else {
         if (!versionValid) {
-            throw DaoException(DbErrCode::DATABASE_INIT_FAIL, "The local version is smaller than the target version!");
+            throw DaoException("The local version is smaller than the target version!");
         }
     }
 }

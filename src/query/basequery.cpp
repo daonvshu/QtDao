@@ -9,8 +9,6 @@
 
 QTDAO_BEGIN_NAMESPACE
 
-DbErrCode::Code BaseQuery::exceptionLastErr = DbErrCode::ERR_NOT_SET;
-
 BaseQuery::BaseQuery(bool fatalEnabled, BaseQueryBuilder* builder)
     : builder(builder)
     , debugFatalEnabled(fatalEnabled)
@@ -38,11 +36,13 @@ QSqlQuery BaseQuery::exec() {
     bool prepareOk;
     auto query = getQuery(prepareOk, true);
     if (!prepareOk || !execByCheckEmptyValue(query, this)) {
-        auto errText = query.lastError().text();
+        auto lastErr = query.lastError();
+        auto errText = lastErr.text();
+        Q_UNUSED(errText)
         if (debugFatalEnabled) {
             fatalError(!prepareOk);
         }
-        throw DaoException(getLastErrCode(), errText);
+        throw DaoException(lastErr);
     }
     return query;
 }
@@ -51,11 +51,13 @@ QSqlQuery BaseQuery::execBatch() {
     bool prepareOk;
     auto query = getQuery(prepareOk);
     if (!prepareOk || !query.execBatch()) {
-        auto errText = query.lastError().text();
+        auto lastErr = query.lastError();
+        auto errText = lastErr.text();
+        Q_UNUSED(errText)
         if (debugFatalEnabled) {
             fatalError(!prepareOk);
         }
-        throw DaoException(getLastErrCode(), errText);
+        throw DaoException(lastErr);
     }
     return query;
 }
@@ -68,16 +70,14 @@ QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList
     if (prepareOk && execByCheckEmptyValue(query, &executor)) {
         return query;
     } else {
-        auto errText = query.lastError().text();
+        auto lastErr = query.lastError();
+        auto errText = lastErr.text();
+        Q_UNUSED(errText)
         if (debugFatalEnabled) {
             fatalError(!prepareOk);
         }
-        throw DaoException(getLastErrCode(), errText);
+        throw DaoException(lastErr);
     }
-}
-
-void BaseQuery::setErrIfQueryFail(DbErrCode::Code code) {
-    exceptionLastErr = code;
 }
 
 void BaseQuery::setSqlQueryStatement(const QString& statement, const QVariantList& values) {
@@ -125,15 +125,6 @@ bool BaseQuery::execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executo
         return query.exec();
     }
     return query.exec(executor->statement);
-}
-
-DbErrCode::Code BaseQuery::getLastErrCode() {
-    auto errcode = exceptionLastErr;
-    if (errcode == DbErrCode::ERR_NOT_SET) {
-        errcode = DbErrCode::SQL_EXEC_FAIL;
-    }
-    exceptionLastErr = DbErrCode::ERR_NOT_SET;
-    return errcode;
 }
 
 QList<SqliteExplainInfo> BaseQuery::ExplainTool<SqliteExplainInfo>::toExplain(const QString& statement) {

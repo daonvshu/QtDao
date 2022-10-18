@@ -35,7 +35,7 @@ add_library(${PROJECT_NAME}
     query/selectimpl.cpp
     query/joinimpl.cpp
 
-    connectionpool.cpp
+  connectionpool.cpp
     qtdao.cpp
 )
 
