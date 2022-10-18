@@ -12,42 +12,33 @@ QTDAO_USING_NAMESPACE
 #define MAX_CONNECTION_SIZE    200
 
 QMutex ConnectionPool::mutex;
-ConnectionPool* ConnectionPool::instance = nullptr;
-
-ConnectionPool::ConnectionPool() {
-}
 
 ConnectionPool::~ConnectionPool() {
+    release();
+}
+
+ConnectionPool& ConnectionPool::getInstance() {
+    static ConnectionPool connectionPool;
+    return connectionPool;
+}
+
+void ConnectionPool::release() {
     // close all connection when destoryed, call release()
     mutex.lock();
-    foreach(QString connectionName, keepConnections) {
+    foreach(QString connectionName, getInstance().keepConnections) {
         QSqlDatabase::removeDatabase(connectionName);
     }
+    getInstance().keepConnections.clear();
 
-    foreach(QString connectionName, unusedConnectionNames) {
+    foreach(QString connectionName, getInstance().unusedConnectionNames) {
         QSqlDatabase::removeDatabase(connectionName);
     }
+    getInstance().unusedConnectionNames.clear();
     mutex.unlock();
 
     //destory default connection
     QString name = QSqlDatabase::database().connectionName();
     QSqlDatabase::removeDatabase(name);
-}
-
-ConnectionPool& ConnectionPool::getInstance() {
-    if (nullptr == instance) {
-        QMutexLocker locker(&mutex);
-        if (nullptr == instance) {
-            instance = new ConnectionPool();
-        }
-    }
-
-    return *instance;
-}
-
-void ConnectionPool::release() {
-    delete instance;
-    instance = nullptr;
 }
 
 QSqlDatabase ConnectionPool::getConnection() {
@@ -71,7 +62,7 @@ QSqlDatabase ConnectionPool::getConnection() {
     }
 
     // open connection
-    auto db = pool.createConnection(connectionName);
+    auto db = ConnectionPool::createConnection(connectionName);
 
     // push valid connection into usedConnectionNames
     if (db.isOpen()) {
@@ -102,26 +93,36 @@ int ConnectionPool::getUsedConnectionSize() {
 
 QSqlDatabase ConnectionPool::createConnection(const QString &connectionName) {
     // check connection name in QSqlDatabase
-    if (QSqlDatabase::contains(connectionName)) {
-        {
-            auto db1 = QSqlDatabase::database(connectionName);
-            QSqlQuery query("select 1", db1);
-            if (query.lastError().type() == QSqlError::NoError) {
-                return db1;
+    QSqlError lastErr;
+    int testCount = 3;
+    while (testCount--) {
+        if (QSqlDatabase::contains(connectionName)) {
+            {
+                auto db1 = QSqlDatabase::database(connectionName);
+                QSqlQuery query("select 1", db1);
+                if (query.lastError().type() == QSqlError::NoError) {
+                    return db1;
+                }
             }
+            //remove error connection, and try to create new connection
+            QSqlDatabase::removeDatabase(connectionName);
         }
-        //remove error connection, and try to create new connection
-        QSqlDatabase::removeDatabase(connectionName);
-        //TODO:check retry 3 times fail
-    }
 
-    // create new connection
-    auto db = prepareConnect(connectionName, globalConfig->mDatabaseName);
-    if (!db.open()) {
-        throw DaoException(db.lastError());
+        // create new connection
+        auto db = prepareConnect(connectionName, globalConfig->mDatabaseName);
+        if (!db.open()) {
+            lastErr = db.lastError();
+        } else {
+            return db;
+        }
     }
-
-    return db;
+    auto lastErrText = lastErr.text();
+#ifdef QT_DEBUG
+    qFatal(reinterpret_cast<const char *>(("create connection fail: " + lastErrText).data()));
+#else
+    Q_UNUSED(lastErrText)
+#endif
+    throw DaoException(lastErr);
 }
 
 QSqlDatabase ConnectionPool::prepareConnect(const QString& connectName, const QString& dbName) {

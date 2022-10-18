@@ -20,13 +20,10 @@ public:
 
 private:
     static ConnectionPool& getInstance();
-
-    ConnectionPool();
     static QSqlDatabase createConnection(const QString &connectionName); // create database connection
 
     QQueue<QString> unusedConnectionNames;
     QHash<Qt::HANDLE, QString> keepConnections;// save work thread connections
 
     static QMutex mutex;
-    static ConnectionPool *instance;
 };
