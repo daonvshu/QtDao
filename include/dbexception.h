@@ -7,18 +7,7 @@
 #include <qexception.h>
 #include <qsqlerror.h>
 
-#include <utility>
-
 QTDAO_BEGIN_NAMESPACE
-
-/// <summary>
-/// set query statement and value list printer
-/// </summary>
-typedef void (*QueryLogPrinter)(const QString&, const QVariantList&);
-void daoSetQueryLogPrinter(QueryLogPrinter);
-
-QueryLogPrinter getQueryLogPrinter();
-
 
 class DaoException : public QException {
 public:

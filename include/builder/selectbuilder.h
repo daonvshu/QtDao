@@ -12,6 +12,8 @@ template<typename E>
 class SelectBuilder : public BaseQueryBuilder {
 public:
     QUERY_BUILDER_USE_FATAL_DISABLE(SelectBuilder)
+    QUERY_BUILDER_SET_LOGGING(SelectBuilder)
+
     QUERY_BUILDER_USE_FILTER(SelectBuilder)
     QUERY_BUILDER_USE_WITH(SelectBuilder)
     QUERY_BUILDER_USE_COLUMN(SelectBuilder)

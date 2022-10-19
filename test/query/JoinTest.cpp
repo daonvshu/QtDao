@@ -3,7 +3,7 @@
 #include <QtTest>
 
 #include "dao.h"
-#include "dbexceptionhandler.h"
+#include "dbexception.h"
 
 void JoinTest::initTestCase() {
     configDb();

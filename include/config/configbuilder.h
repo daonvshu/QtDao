@@ -9,6 +9,7 @@
 
 #include <qsqldatabase.h>
 #include <qsharedpointer.h>
+#include <qscopedpointer.h>
 
 class ConnectionPool;
 
@@ -91,5 +92,7 @@ protected:
 
     QByteArray getDelegateStr();
 };
+
+extern QScopedPointer<ConfigBuilder> globalConfig;
 
 QTDAO_END_NAMESPACE

@@ -14,6 +14,8 @@ public:
     }
 
     QUERY_BUILDER_USE_FATAL_DISABLE(CountBuilder)
+    QUERY_BUILDER_SET_LOGGING(CountBuilder);
+
     QUERY_BUILDER_USE_FILTER(CountBuilder)
 
     QUERY_BUILDER_USE_QUERY_FROM_SELECT(CountBuilder)

@@ -16,7 +16,6 @@ void SqlLogPrinter(const QString& sql, const QVariantList& values) {
 
 BaseTest::BaseTest(EngineModel model) : EngineModelSelector(model) {
     cachedSqlLog.clear();
-    daoSetQueryLogPrinter(SqlLogPrinter);
 }
 
 void BaseTest::clearCacheAndPrintIfTestFail() {

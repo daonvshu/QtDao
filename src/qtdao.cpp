@@ -1,18 +1,9 @@
-﻿#include "dbexceptionhandler.h"
+﻿#include "dbexception.h"
 #include "dao.h"
 
 QTDAO_BEGIN_NAMESPACE
 
 QScopedPointer<ConfigBuilder> globalConfig;
-
-static QueryLogPrinter queryLogPrinter = nullptr;
-void daoSetQueryLogPrinter(QueryLogPrinter printer) {
-    queryLogPrinter = printer;
-}
-
-QueryLogPrinter getQueryLogPrinter() {
-    return queryLogPrinter;
-}
 
 void transcation() {
     if (globalConfig->isSqlServer()) {

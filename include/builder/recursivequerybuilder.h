@@ -8,7 +8,7 @@ class BaseQueryBuilder;
 
 class RecursiveQueryBuilder {
 public:
-    RecursiveQueryBuilder(bool unionAll = false) : unionAll(unionAll) {}
+    explicit RecursiveQueryBuilder(bool unionAll = false) : unionAll(unionAll) {}
 
     template<typename E>
     RecursiveQueryBuilder& initialSelect(Select<E>& select);

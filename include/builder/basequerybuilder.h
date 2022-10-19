@@ -6,6 +6,8 @@
 #include "../condition/connector.h"
 #include "../condition/functioncondition.h"
 
+#include "../utils/logging.h"
+
 QTDAO_BEGIN_NAMESPACE
 
 class RecursiveQueryBuilder;
@@ -14,6 +16,7 @@ class BaseQueryBuilder {
 public:
     BaseQueryBuilder() 
         : setFatalEnabled(true)
+        , loggingCategoryPtr(nullptr)
         , setCondition(",")
         , columnBind(",")
         , filterCondition("and")
@@ -99,6 +102,7 @@ protected:
 
 protected:
     bool setFatalEnabled;
+    LoggingCategoryPtr loggingCategoryPtr;
     Connector setCondition, columnBind, filterCondition, constraintCondition, onCondition;
     //from sub select
     QString fromSelectStatement;

@@ -1,7 +1,7 @@
 #include "BaseQueryTest.h"
 
 #include "connectionpool.h"
-#include "dbexceptionhandler.h"
+#include "dbexception.h"
 
 #include <QtTest>
 
@@ -42,7 +42,7 @@ void BaseQueryTest::testPrimitiveQueryWithValue() {
 
 void BaseQueryTest::testPrimitiveQueryFail() {
     try {
-        BaseQuery::queryPrimitive("select?+?", QVariantList(), false);
+        BaseQuery::queryPrimitive("select?+?", QVariantList(), nullptr, false);
         QFAIL("primitive query should fail!");
     }
     catch (DaoException&) {

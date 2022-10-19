@@ -120,13 +120,15 @@ void ConnectionPoolTest::testAutoClose() {
     QString connection1, connection2;
 
     RunnableHandler<void>::exec([&] {
-        SCOPE_CONNECTION
         {
-            auto db = ConnectionPool::getConnection();
-            QVERIFY(db.isOpen());
-            connection1 = db.connectionName();
-            QSqlQuery query(db);
-            query.exec("select 1");
+            SCOPE_CONNECTION
+            {
+                auto db = ConnectionPool::getConnection();
+                QVERIFY(db.isOpen());
+                connection1 = db.connectionName();
+                QSqlQuery query(db);
+                query.exec("select 1");
+            }
         }
         QThread::msleep(200);
         loop.quit();
@@ -135,13 +137,15 @@ void ConnectionPoolTest::testAutoClose() {
 
     //new thread
     RunnableHandler<void>::exec([&] {
-        SCOPE_CONNECTION
         {
-            auto db = ConnectionPool::getConnection();
-            QVERIFY(db.isOpen());
-            QSqlQuery query(db);
-            query.exec("select 1");
-            connection2 = db.connectionName();
+            SCOPE_CONNECTION
+            {
+                auto db = ConnectionPool::getConnection();
+                QVERIFY(db.isOpen());
+                QSqlQuery query(db);
+                query.exec("select 1");
+                connection2 = db.connectionName();
+            }
         }
         QThread::msleep(20);
         loop.quit();

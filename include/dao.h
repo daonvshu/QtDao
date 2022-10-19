@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "connectionpool.h"
-#include "dbexceptionhandler.h"
+#include "dbexception.h"
 
 #include "builder/insertbuilder.h"
 #include "builder/selectbuilder.h"
@@ -19,7 +19,6 @@
 #include "config/configsqlserver.h"
 
 #include <QtSql/QSqlDriver>
-#include <qscopedpointer.h>
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -44,8 +43,6 @@ template<typename T>
 static T _config() {
     return _config(TypeIdentify<T>());
 }
-
-extern QScopedPointer<ConfigBuilder> globalConfig;
 
 template<typename T>
 static InsertBuilder<T> _insert() {
@@ -89,7 +86,7 @@ static JoinBuilder<T...> _join() {
 
 static RecursiveQueryBuilder _recursive(bool unionAll = false) {
     Q_ASSERT_X(!globalConfig->isMysql(), "RecursiveQuery", "mysql recursive query unsupported!");
-    return {unionAll};
+    return RecursiveQueryBuilder(unionAll);
 }
 
 template<typename E>

@@ -9,6 +9,7 @@
 #include "query/UpdateTest.h"
 #include "query/DeleteTest.h"
 #include "query/JoinTest.h"
+#include "query/LoggingTest.h"
 #include "loader/DbLoaderTest.h"
 #include "condition/ConnectorTest.h"
 #include "query/InsertIntoSelectTest.h"
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
     QTEST_SET_MAIN_SOURCE_PATH;
 #endif
     int result = 0;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 1; i++) {
 #ifndef QT_DAO_TESTCASE
 #ifdef Q_CC_MSVC
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
@@ -112,7 +113,8 @@ int main(int argc, char *argv[])
             UpdateTest,
             DeleteTest,
             JoinTest,
-            InsertIntoSelectTest
+            InsertIntoSelectTest,
+            LoggingTest
         >
 #ifdef QT_DAO_TESTCASE
             ::run(EngineModel(i), argc, argv);

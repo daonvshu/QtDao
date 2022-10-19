@@ -12,6 +12,8 @@ template<typename E>
 class UpdateBuilder : public BaseQueryBuilder {
 public:
     QUERY_BUILDER_USE_FATAL_DISABLE(UpdateBuilder)
+    QUERY_BUILDER_SET_LOGGING(UpdateBuilder)
+
     QUERY_BUILDER_USE_SET(UpdateBuilder)
     QUERY_BUILDER_USE_FILTER(UpdateBuilder)
 

@@ -4,8 +4,8 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 
-#include "dao.h"
-#include "dbexceptionhandler.h"
+#include "config/configsqlite.h"
+#include "dbexception.h"
 #include "query/basequery.h"
 
 QTDAO_BEGIN_NAMESPACE

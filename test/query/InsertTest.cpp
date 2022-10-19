@@ -10,7 +10,7 @@
 
 #include "../sqlserverentity/sqlservertest1.h"
 #include "../sqlserverentity/sqlservertest2.h"
-#include "dbexceptionhandler.h"
+#include "dbexception.h"
 
 void InsertTest::initTestCase() {
     configDb();

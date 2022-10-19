@@ -20,6 +20,12 @@ Builder& disableFatalMsg() {\
     return *this;\
 }
 
+#define QUERY_BUILDER_SET_LOGGING(Builder) \
+Builder& logging(LoggingCategoryPtr ptr) {\
+    this->loggingCategoryPtr = ptr;\
+    return *this;\
+}
+
 #define QUERY_BUILDER_USE_SET(Builder)            \
     QUERY_BUILDER_USE(Builder, set)               \
     QUERY_BUILDER_USE_ENABLE(Builder, set)
@@ -95,9 +101,9 @@ Builder& unionSelect(Join<E2...>& join, bool unionAll = false) {\
 
 #define BASE_QUERY_CONSTRUCTOR_DECLARE(Q)\
 friend class Q##Builder<E>;\
-Q(bool fatalEnabled, Q##Builder<E>* builder): Q##Impl(fatalEnabled, builder) {}
+Q(bool fatalEnabled, Q##Builder<E>* builder, LoggingCategoryPtr ptr): Q##Impl(fatalEnabled, builder, ptr) {}
 
 #define QUERY_BUILDER_BUILDER_DECLARE(Q)\
 Q<E> build() {\
-    return Q<E>(setFatalEnabled, this);\
+    return Q<E>(setFatalEnabled, this, loggingCategoryPtr);\
 }

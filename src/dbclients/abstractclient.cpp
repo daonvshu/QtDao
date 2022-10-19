@@ -2,7 +2,7 @@
 
 #include "query/basequery.h"
 
-#include "dbexceptionhandler.h"
+#include "dbexception.h"
 
 QTDAO_BEGIN_NAMESPACE
 

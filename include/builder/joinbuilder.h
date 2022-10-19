@@ -12,6 +12,7 @@ template<typename... E>
 class JoinBuilder : public BaseQueryBuilder {
 public:
     QUERY_BUILDER_USE_FATAL_DISABLE(JoinBuilder)
+    QUERY_BUILDER_SET_LOGGING(JoinBuilder)
 
     QUERY_BUILDER_USE_FILTER(JoinBuilder)
     QUERY_BUILDER_USE_WITH(JoinBuilder)

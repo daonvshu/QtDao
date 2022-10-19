@@ -1,6 +1,7 @@
 #include "query/selectimpl.h"
-#include "dao.h"
-#include "dbexceptionhandler.h"
+
+#include "config/configbuilder.h"
+#include "dbexception.h"
 
 QTDAO_BEGIN_NAMESPACE
 

@@ -1,6 +1,6 @@
 ﻿#include "config/configsqlserver.h"
 
-#include "dao.h"
+#include "config/configbuilder.h"
 
 QTDAO_BEGIN_NAMESPACE
 ConfigSqlServerBuilder::ConfigSqlServerBuilder()

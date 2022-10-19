@@ -2,7 +2,7 @@
 
 #include <qstandardpaths.h>
 
-#include "dao.h"
+#include "config/configbuilder.h"
 
 QTDAO_BEGIN_NAMESPACE
     ConfigSqliteBuilder::ConfigSqliteBuilder()

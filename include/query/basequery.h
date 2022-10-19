@@ -15,19 +15,21 @@
 
 #include "../query/explaininfo.h"
 
+#include "../utils/logging.h"
+
 QTDAO_BEGIN_NAMESPACE
 
 class BaseQuery {
 public:
-    explicit BaseQuery(bool fatalEnabled = true, BaseQueryBuilder* builder = nullptr);
+    explicit BaseQuery(bool fatalEnabled = true, BaseQueryBuilder* builder = nullptr, LoggingCategoryPtr logging = nullptr);
 
     BaseQuery(const BaseQuery& other);
     ~BaseQuery();
 
-    static QSqlQuery queryPrimitive(const QString& statement, const QVariantList& values = QVariantList(), bool debugFatalEnabled = true);
+    static QSqlQuery queryPrimitive(const QString& statement, const QVariantList& values = QVariantList(), LoggingCategoryPtr logging = nullptr, bool debugFatalEnabled = true);
 
 protected:
-    void setSqlQueryStatement(const QString& statement, const QVariantList& values);
+    void setSqlQueryStatement(const QString& curStatement, const QVariantList& curValues);
 
     QSqlQuery exec();
     QSqlQuery execBatch();
@@ -44,11 +46,16 @@ protected:
     friend void transcation();
     friend void commit();
     friend void rollback(const QString&);
+    friend void printQueryLog(BaseQuery* query, bool batchExecMode);
+
+private:
+    LoggingCategoryPtr loggingCategoryPtr;
 
 private:
     QSqlQuery getQuery(bool& prepareOk, bool skipEmptyValue = false);
     void bindQueryValues(QSqlQuery& query);
 
+    static void postError(const QSqlQuery& lastQuery, bool fatalEnabled, bool prepareStatementFail);
     static void fatalError(bool prepareError);
     static bool execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executor);
 

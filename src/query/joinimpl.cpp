@@ -1,5 +1,5 @@
 #include "query/joinimpl.h"
-#include "dao.h"
+#include "config/configbuilder.h"
 
 QTDAO_BEGIN_NAMESPACE
 

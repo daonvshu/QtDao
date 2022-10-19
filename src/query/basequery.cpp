@@ -1,17 +1,21 @@
 ﻿#include "query/basequery.h"
 
 #include "connectionpool.h"
-#include "dbexceptionhandler.h"
-#include "dao.h"
+#include "dbexception.h"
+
+#include "config/configbuilder.h"
 
 #include <iostream>
 #include <QThread>
 
 QTDAO_BEGIN_NAMESPACE
 
-BaseQuery::BaseQuery(bool fatalEnabled, BaseQueryBuilder* builder)
+Q_LOGGING_CATEGORY(loggingDefault, "qtdao.query")
+
+BaseQuery::BaseQuery(bool fatalEnabled, BaseQueryBuilder* builder, LoggingCategoryPtr logging)
     : builder(builder)
     , debugFatalEnabled(fatalEnabled)
+    , loggingCategoryPtr(logging)
 {
     if (builder != nullptr) {
         this->builder = new BaseQueryBuilder(*builder);
@@ -23,6 +27,7 @@ BaseQuery::BaseQuery(const BaseQuery& other) {
     this->values = other.values;
     this->builder = new BaseQueryBuilder(*other.builder);
     this->debugFatalEnabled = other.debugFatalEnabled;
+    this->loggingCategoryPtr = other.loggingCategoryPtr;
 }
 
 BaseQuery::~BaseQuery() {
@@ -36,13 +41,7 @@ QSqlQuery BaseQuery::exec() {
     bool prepareOk;
     auto query = getQuery(prepareOk, true);
     if (!prepareOk || !execByCheckEmptyValue(query, this)) {
-        auto lastErr = query.lastError();
-        auto errText = lastErr.text();
-        Q_UNUSED(errText)
-        if (debugFatalEnabled) {
-            fatalError(!prepareOk);
-        }
-        throw DaoException(lastErr);
+        postError(query, debugFatalEnabled, !prepareOk);
     }
     return query;
 }
@@ -51,38 +50,26 @@ QSqlQuery BaseQuery::execBatch() {
     bool prepareOk;
     auto query = getQuery(prepareOk);
     if (!prepareOk || !query.execBatch()) {
-        auto lastErr = query.lastError();
-        auto errText = lastErr.text();
-        Q_UNUSED(errText)
-        if (debugFatalEnabled) {
-            fatalError(!prepareOk);
-        }
-        throw DaoException(lastErr);
+        postError(query, debugFatalEnabled, !prepareOk);
     }
     return query;
 }
 
-QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, bool debugFatalEnabled) {
+QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, LoggingCategoryPtr logging, bool debugFatalEnabled) {
     BaseQuery executor;
+    executor.loggingCategoryPtr = logging;
     executor.setSqlQueryStatement(statement, values);
     bool prepareOk;
     auto query = executor.getQuery(prepareOk, true);
-    if (prepareOk && execByCheckEmptyValue(query, &executor)) {
-        return query;
-    } else {
-        auto lastErr = query.lastError();
-        auto errText = lastErr.text();
-        Q_UNUSED(errText)
-        if (debugFatalEnabled) {
-            fatalError(!prepareOk);
-        }
-        throw DaoException(lastErr);
+    if (!prepareOk || !execByCheckEmptyValue(query, &executor)) {
+        postError(query, debugFatalEnabled, !prepareOk);
     }
+    return query;
 }
 
-void BaseQuery::setSqlQueryStatement(const QString& statement, const QVariantList& values) {
-    this->statement = statement;
-    this->values = values;
+void BaseQuery::setSqlQueryStatement(const QString& curStatement, const QVariantList& curValues) {
+    this->statement = curStatement;
+    this->values = curValues;
 }
 
 QSqlQuery BaseQuery::getQuery(bool& prepareOk, bool skipEmptyValue) {
@@ -95,9 +82,12 @@ QSqlQuery BaseQuery::getQuery(bool& prepareOk, bool skipEmptyValue) {
         }
         bindQueryValues(query);
     }
-    if (getQueryLogPrinter()) {
-        getQueryLogPrinter()(statement, values);
+    if (loggingCategoryPtr != nullptr) {
+        if (loggingCategoryPtr().isDebugEnabled()) {
+            printQueryLog(this, !skipEmptyValue);
+        }
     }
+
     prepareOk = true;
     return query;
 }
@@ -106,6 +96,16 @@ void BaseQuery::bindQueryValues(QSqlQuery& query) {
     for (const auto& d : values) {
         query.addBindValue(d, d.type() == QVariant::ByteArray ? QSql::Binary : QSql::In);
     }
+}
+
+void BaseQuery::postError(const QSqlQuery& lastQuery, bool fatalEnabled, bool prepareStatementFail) {
+    auto lastErr = lastQuery.lastError();
+    auto errText = lastErr.text();
+    Q_UNUSED(errText)
+    if (fatalEnabled) {
+        fatalError(prepareStatementFail);
+    }
+    throw DaoException(lastErr);
 }
 
 void BaseQuery::fatalError(bool prepareError) {

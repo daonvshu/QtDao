@@ -3,7 +3,7 @@
 #include "dbclients/mysqlclient.h"
 #include "dbclients/sqliteclient.h"
 #include "dbclients/sqlserverclient.h"
-#include "dbexceptionhandler.h"
+#include "dbexception.h"
 #include "query/basequery.h"
 
 QTDAO_BEGIN_NAMESPACE

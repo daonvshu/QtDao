@@ -1,8 +1,8 @@
 ﻿#include "connectionpool.h"
 #include <qthread.h>
 
-#include "dbexceptionhandler.h"
-#include "dao.h"
+#include "dbexception.h"
+#include "config/configbuilder.h"
 
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
