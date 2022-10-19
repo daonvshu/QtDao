@@ -33,20 +33,27 @@ protected:
 日志输出
 -------------
 
-目前使用的数据库执行过程日志通过统一的回调注册，并交给程序员自己处理。未来将加入更加完善的日志管理系统。
+`QtDao`内部使用`QLoggingCategory`打印日志，如果要查看某一个查询执行的sql语句，在执行`build`之前调用`logging`函数传入`category`即可：
+
 ```cpp
-#include "dao.h"
 
-void SqlLogPrinter(const QString& sql, const QVariantList& values) {
-#ifdef QT_DEBUG
-    qDebug() << "sql:" << sql << " values:" << values;
-#endif
+Q_LOGGING_CATEGORY(userCategory, "query.user")
+
+UserList listUsers() {
+    User::Fields field;
+    return dao::_select<User>()
+        .filter(field.score > 100)
+        .logging(userCategory)
+        .build().list();
 }
+```
 
-int main(int argc, char *argv[])
-{
+在不需要打印指定查询时，关闭其日志即可：
+
+```cpp
+int main(int argc, char *argv[]) {
     //...
-    daoSetQueryLogPrinter(SqlLogPrinter);
-    //do something ...
+    QLoggingCategory::setFilterRules("query.user.debug=false");
+    //...
 }
 ```

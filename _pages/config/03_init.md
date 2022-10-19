@@ -124,19 +124,10 @@ try {
 
 #include "dao.h"
 
-QTDAO_USING_NAMESPACE
-
-void SqlLogPrinter(const QString& sql, const QVariantList& values) {
-#ifdef QT_DEBUG
-    qDebug() << "sql:" << sql << " values:" << values;
-#endif
-}
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    daoSetQueryLogPrinter(SqlLogPrinter);
     try {
         dao::_config<dao::ConfigSqliteBuilder>()
             .version(1)
@@ -152,5 +143,3 @@ int main(int argc, char *argv[])
     a.exec();
 }
 ```
-
-其中，使用 `daoSetQueryLogPrinter` 可以注册数据库执行语句的打印回调函数。
