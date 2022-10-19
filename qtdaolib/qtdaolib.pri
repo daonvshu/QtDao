@@ -9,8 +9,7 @@
 HEADERS += ../include/connectionpool.h \
     ../include/dao.h \
     ../include/dbconfig.h \
-    ../include/dberrcode.h \
-    ../include/dbexceptionhandler.h \
+    ../include/dbexception.h \
     ../include/global.h \
     ../include/builder/basequerybuilder.h \
     ../include/builder/countbuilder.h \
@@ -55,7 +54,8 @@ HEADERS += ../include/connectionpool.h \
     ../include/query/selectimpl.h \
     ../include/query/update.h \
     ../include/query/updateimpl.h \
-    ../include/utils/listutils.h
+    ../include/utils/listutils.h \
+    ../include/utils/logging.h
 
 SOURCES += ../src/connectionpool.cpp \
     ../src/qtdao.cpp \
@@ -78,5 +78,6 @@ SOURCES += ../src/connectionpool.cpp \
     ../src/query/insertintoselectimpl.cpp \
     ../src/query/joinimpl.cpp \
     ../src/query/selectimpl.cpp \
-    ../src/query/updateimpl.cpp
+    ../src/query/updateimpl.cpp \
+    ../src/utils/logging.cpp
 
