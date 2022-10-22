@@ -24,6 +24,10 @@ enum ConditionType {
 struct FieldInfo {
     QString name;
     QString bindTable;
+
+    bool operator==(const FieldInfo& other) const {
+        return name == other.name && bindTable == other.bindTable;
+    }
 };
 
 struct EntityConditionData : public QSharedData {

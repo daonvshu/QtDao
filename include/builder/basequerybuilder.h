@@ -120,6 +120,7 @@ protected:
     template<typename E> friend class Delete;
     template<typename... E> friend class Join;
     template<typename E> friend class InsertIntoSelect;
+    template<typename E> friend class Upsert;
 
     friend class InsertImpl;
     friend class InsertIntoSelectImpl;
@@ -127,6 +128,7 @@ protected:
     friend class DeleteImpl;
     friend class SelectImpl;
     friend class JoinImpl;
+    friend class UpsertImpl;
 };
 
 template<typename ...Args>

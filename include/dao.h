@@ -11,6 +11,7 @@
 #include "builder/joinbuilder.h"
 #include "builder/recursivequerybuilder.h"
 #include "builder/insertintoselectbuilder.h"
+#include "builder/upsertbuilder.h"
 
 #include "condition/conditionoperator.h"
 
@@ -52,6 +53,11 @@ static InsertBuilder<T> _insert() {
 template<typename T>
 static InsertIntoSelectBuilder<T> _insertIntoSelect() {
     return InsertIntoSelectBuilder<T>();
+}
+
+template<typename T>
+static UpsertBuilder<T> _insertOrUpdate() {
+    return Upsert<T>();
 }
 
 template<typename T>
