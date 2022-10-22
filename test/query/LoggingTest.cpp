@@ -6,6 +6,9 @@
 void LoggingTest::initTestCase() {
     configDb();
 
+    PASSMYSQL;
+    PASSSQLSERVER;
+
     SqliteTest1List sqliteData1;
 
     sqliteData1 << SqliteTest1(1, "abc", 10, "");

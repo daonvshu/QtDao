@@ -313,6 +313,43 @@ void InsertTest::insertOrReplaceTest() {
     }
 }
 
+void InsertTest::insertOrIgnoreTest_data() {
+    if (engineModel == Engine_Sqlite) {
+        QTest::addColumn<SqliteTest2>("entity");
+        QTest::addRow("sqlite test data") << SqliteTest2("testinsertorreplace", -1, -2, "666");
+    } else if (engineModel == Engine_Mysql) {
+        QTest::addColumn<MysqlTest2>("entity");
+        QTest::addRow("mysql test data") << MysqlTest2("testinsertorreplace", -1, -2);
+    }
+}
+
+template<typename E>
+void runInsertOrIgnoreTest() {
+    QFETCH(E, entity);
+    dao::_insert<E>().build().insertOrIgnore(entity);
+
+    entity.setNumber2(150);
+    dao::_insert<E>().build().insertOrIgnore(entity);
+    auto query = BaseQuery::queryPrimitive(QString("select * from %1 where name = 'testinsertorreplace'").arg(E::Info::getTableName()));
+    int count = 0;
+    int number2 = 0;
+    while (query.next()) {
+        count++;
+        number2 = query.value("number2").toInt();
+    }
+    QCOMPARE(count, 1);
+    QCOMPARE(number2, 100);
+}
+
+void InsertTest::insertOrIgnoreTest() {
+    PASSSQLSERVER;
+    if (engineModel == Engine_Sqlite) {
+        runInsertOrIgnoreTest<SqliteTest2>();
+    } else if (engineModel == Engine_Mysql) {
+        runInsertOrIgnoreTest<MysqlTest2>();
+    }
+}
+
 void InsertTest::testTranscation_data() {
     if (engineModel == Engine_Sqlite) {
         QTest::addColumn<SqliteTest2>("entity");
