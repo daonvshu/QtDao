@@ -35,8 +35,8 @@ void rollback(const QString& savePoint) {
     }
 }
 
-void loggingUseDefault() {
-    BaseQuery::useDefaultLogging = true;
+void loggingUseDefault(bool useDefault) {
+    BaseQuery::useDefaultLogging = useDefault;
 }
 
 QTDAO_END_NAMESPACE

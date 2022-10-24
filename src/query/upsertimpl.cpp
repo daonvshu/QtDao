@@ -52,11 +52,16 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
     if (globalConfig->isSqlite()) {
         QString statementTemplate = "insert into %1 (%2) values(%3) on conflict(%4) do update set %5";
         //conflict field
-        conflictCols.connect();
-        auto conflictFields = conflictCols.getConditionStr();
+        builder->conflictCols.connect();
+        QString conflictFields;
+        for (const auto& field: builder->conflictCols.getUsedFieldNames()) {
+            conflictFields += field.name + ",";
+        }
+        conflictFields.chop(1);
         //update fields
+        builder->updateCols.connect();
         QString updateStr;
-        for (const auto& fieldInfo: updateCols.getUsedFieldNames()) {
+        for (const auto& fieldInfo: builder->updateCols.getUsedFieldNames()) {
             updateStr += fieldInfo.name + "=excluded." + fieldInfo.name + ",";
         }
         updateStr.chop(1);
@@ -66,8 +71,9 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
     } else if (globalConfig->isMysql()) {
         QString statementTemplate = "insert into %1 (%2) values(%3) on duplicate key update %4";
         //update fields
+        builder->updateCols.connect();
         QString updateStr;
-        for (const auto& fieldInfo: updateCols.getUsedFieldNames()) {
+        for (const auto& fieldInfo: builder->updateCols.getUsedFieldNames()) {
             updateStr += fieldInfo.name + "=?,";
             values.append(fieldToValue(fieldInfo.name));
         }
@@ -90,14 +96,16 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         }
         tempValueFields.chop(1);
         //on condition
+        builder->conflictCols.connect();
         QString onConditionStr;
-        for (const auto& fieldInfo: conflictCols.getUsedFieldNames()) {
+        for (const auto& fieldInfo: builder->conflictCols.getUsedFieldNames()) {
             onConditionStr += "a." + fieldInfo.name + "=b." + fieldInfo.name + ",";
         }
         onConditionStr.chop(1);
         //update string
+        builder->updateCols.connect();
         QString updateStr;
-        for (const auto& fieldInfo: updateCols.getUsedFieldNames()) {
+        for (const auto& fieldInfo: builder->updateCols.getUsedFieldNames()) {
             updateStr += "a." + fieldInfo.name + "=b." + fieldInfo.name + ",";
         }
         updateStr.chop(1);

@@ -70,6 +70,12 @@ void BaseQueryBuilder::with() {
 void BaseQueryBuilder::column() {
 }
 
+void BaseQueryBuilder::conflictColumns() {
+}
+
+void BaseQueryBuilder::updateColumns() {
+}
+
 void BaseQueryBuilder::from(RecursiveQueryBuilder& builder) {
     Q_ASSERT(!builder.initialQueryStatement.isEmpty());
     Q_ASSERT(!builder.recursiveQueryStatement.isEmpty());

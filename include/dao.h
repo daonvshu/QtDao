@@ -57,7 +57,7 @@ static InsertIntoSelectBuilder<T> _insertIntoSelect() {
 
 template<typename T>
 static UpsertBuilder<T> _insertOrUpdate() {
-    return Upsert<T>();
+    return UpsertBuilder<T>();
 }
 
 template<typename T>
@@ -108,7 +108,7 @@ extern void transcation_save(const QString& savePoint);
 
 extern void rollback(const QString& savePoint = QString());
 
-extern void loggingUseDefault();
+extern void loggingUseDefault(bool useDefault = true);
 
 template<typename E>
 class self : public E {

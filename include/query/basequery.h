@@ -48,8 +48,8 @@ protected:
     friend void transcation();
     friend void commit();
     friend void rollback(const QString&);
+    friend void loggingUseDefault(bool useDefault);
     friend void printQueryLog(BaseQuery* query, bool batchExecMode);
-    friend void loggingUseDefault();
 
 private:
     LoggingCategoryPtr loggingCategoryPtr;

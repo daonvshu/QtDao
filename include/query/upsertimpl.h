@@ -13,9 +13,6 @@ protected:
     bool buildInsertBySetSqlStatement();
 
     QString buildInsertStatement(const QStringList& fields, const std::function<QVariant(const QString&)>& fieldToValue);
-
-protected:
-    Connector conflictCols, updateCols;
 };
 
 QTDAO_END_NAMESPACE

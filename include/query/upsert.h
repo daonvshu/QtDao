@@ -32,24 +32,16 @@ public:
 
 private:
     BASE_QUERY_CONSTRUCTOR_DECLARE(Upsert)
-
-    void applyCols() {
-        auto builderPtr = dynamic_cast<UpsertBuilder<E>*>(builder);
-        conflictCols = builderPtr->conflictCols;
-        updateCols = builderPtr->conflictCols;
-    }
 };
 
 template<typename E>
 void Upsert<E>::insert() {
-    applyCols();
     bool operateBatch = buildInsertBySetSqlStatement();
     operateBatch ? execBatch() : exec();
 }
 
 template<typename E>
 void Upsert<E>::insert(E &entity) {
-    applyCols();
 
     auto values = EntityReaderProvider<E>::getValueWithoutAutoIncrement(entity);
     auto fields = getFieldsWithoutAutoIncrement();
@@ -65,7 +57,6 @@ void Upsert<E>::insert(E &entity) {
 
 template<typename E>
 void Upsert<E>::insert(const QList<E> &entities) {
-    applyCols();
 
     QVector<QVariantList> values(fieldSize());
     int usedValueSize = 0;

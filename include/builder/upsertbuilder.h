@@ -16,32 +16,13 @@ public:
 
     QUERY_BUILDER_USE_SET(UpsertBuilder)
 
+    //call ignored when config is mysql
+    QUERY_BUILDER_USE_CONFLICT_COLUMNS(UpsertBuilder)
+
+    //call ignored when config is mysql
+    QUERY_BUILDER_USE_UPDATE_COLUMNS(UpsertBuilder)
+
     QUERY_BUILDER_BUILDER_DECLARE(Upsert)
-
-    template<typename... Args>
-    UpsertBuilder<E>& conflictColumns(const EntityField<E>& field, const Args&... fields) {
-        conflictCols.appendCol(field);
-        conflictColumns(fields...);
-    }
-
-    UpsertBuilder<E>& conflictColumns(const EntityField<E>& field) {
-        conflictCols.appendCol(field);
-    }
-
-    template<typename... Args>
-    UpsertBuilder<E>& updateColumns(const EntityField<E>& field, const Args&... fields) {
-        updateCols.appendCol(field);
-        updateColumns(fields...);
-    }
-
-    UpsertBuilder<E>& updateColumns(const EntityField<E>& field) {
-        updateCols.appendCol(field);
-    }
-
-private:
-    Connector conflictCols, updateCols;
-
-    friend class Upsert<E>;
 };
 
 QTDAO_END_NAMESPACE
