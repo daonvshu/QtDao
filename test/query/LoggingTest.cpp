@@ -84,6 +84,27 @@ void LoggingTest::rulerTest() {
     batchQueryTest();
 }
 
+void LoggingTest::defaultLoggingTest() {
+    PASSMYSQL;
+    PASSSQLSERVER;
+
+    QLoggingCategory::setFilterRules("*.debug=true");
+    dao::loggingUseDefault();
+
+    SqliteTest1::Fields sf;
+    dao::_select<SqliteTest1>()
+            .filter(sf.number > 12, sf.name.notNull())
+            .with(_limit(3))
+            .build().list();
+
+    auto names = QStringList() << "abc" << "alice" << "bob" << "client1" << "client2"
+                               << "client3" << "client4" << "client5" << "client6";
+
+    dao::_select<SqliteTest1>()
+            .filter(sf.name.in(names))
+            .build().list();
+}
+
 void LoggingTest::cleanup() {
     clearCacheAndPrintIfTestFail();
 }

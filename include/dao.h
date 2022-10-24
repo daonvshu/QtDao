@@ -108,6 +108,8 @@ extern void transcation_save(const QString& savePoint);
 
 extern void rollback(const QString& savePoint = QString());
 
+extern void loggingUseDefault();
+
 template<typename E>
 class self : public E {
 public:

@@ -3,8 +3,6 @@
 
 QTDAO_BEGIN_NAMESPACE
 
-QScopedPointer<ConfigBuilder> globalConfig;
-
 void transcation() {
     if (globalConfig->isSqlServer()) {
         BaseQuery::queryPrimitive("begin tran");
@@ -35,6 +33,10 @@ void rollback(const QString& savePoint) {
             savePoint.isEmpty() ? QString("rollback") : QString("rollback to %1").arg(savePoint)
         );
     }
+}
+
+void loggingUseDefault() {
+    BaseQuery::useDefaultLogging = true;
 }
 
 QTDAO_END_NAMESPACE
