@@ -5,10 +5,12 @@
 QTDAO_BEGIN_NAMESPACE
 
 const QString logStatementTemplate = "\n>>>--------------------------------------------------------<<<\n"
+                                     "category:        %0\n"
                                      "build the query: %1\n"
                                      "--------------------------------------------------------------\n";
 
 const QString logStatementValuesTemplate = "\n>>>--------------------------------------------------------<<<\n"
+                                           "category:        %0\n"
                                            "build the query: %1\n"
                                            "values:          %2\n"
                                            "translated:      %3\n"
@@ -50,7 +52,7 @@ QString variantTypeFormatSql(const QVariant& v) {
 }
 
 void printStatement(LoggingCategoryPtr loggingPtr, const QString& statement) {
-    qCDebug(loggingPtr).noquote() << logStatementTemplate.arg(statement);
+    qCDebug(loggingPtr).noquote() << logStatementTemplate.arg(loggingPtr().categoryName(), statement);
 }
 
 void printStatementValues(LoggingCategoryPtr loggingPtr, const QString& statement, const QVariantList& values) {
@@ -75,7 +77,7 @@ void printStatementValues(LoggingCategoryPtr loggingPtr, const QString& statemen
         offset = index + valueFormatted.size();
     }
 
-    qCDebug(loggingPtr).noquote() << logStatementValuesTemplate.arg(statement, valueStr, translatedStr);
+    qCDebug(loggingPtr).noquote() << logStatementValuesTemplate.arg(loggingPtr().categoryName(), statement, valueStr, translatedStr);
 }
 
 void printStatementValuesBatch(LoggingCategoryPtr loggingPtr, const QString& statement, const QVariantList& values) {
@@ -142,7 +144,7 @@ void printStatementValuesBatch(LoggingCategoryPtr loggingPtr, const QString& sta
         translatedStr.chop(QByteArray("                 ").length());
     }
 
-    qCDebug(loggingPtr).noquote() << logStatementValuesTemplate.arg(statement, valueStr, translatedStr);
+    qCDebug(loggingPtr).noquote() << logStatementValuesTemplate.arg(loggingPtr().categoryName(), statement, valueStr, translatedStr);
 }
 
 void printQueryLog(BaseQuery* query, bool batchExecMode) {
