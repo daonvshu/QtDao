@@ -103,6 +103,8 @@ void LoggingTest::defaultLoggingTest() {
     dao::_select<SqliteTest1>()
             .filter(sf.name.in(names))
             .build().list();
+
+    dao::loggingUseDefault(false);
 }
 
 void LoggingTest::cleanup() {

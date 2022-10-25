@@ -13,7 +13,6 @@
 
 void UpsertTest::initTestCase() {
     configDb();
-    dao::loggingUseDefault();
 }
 
 template<typename E>
@@ -29,7 +28,7 @@ void runSetUpsertTest() {
                 .set(sf2.name = "testName2", sf2.number = 20, sf2.number2 = 50)
                 .conflictColumns(sf2.name, sf2.number)
                 .updateColumns(sf2.number2)
-                .build();
+                .build().insert();
 
         auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName()));
         QVariantList names, numbers, number2s;
@@ -49,7 +48,7 @@ void runSetUpsertTest() {
                 .set(sf2.name = "testName1", sf2.number = 20, sf2.number2 = 30)
                 .conflictColumns(sf2.name, sf2.number)
                 .updateColumns(sf2.number2)
-                .build();
+                .build().insert();
 
         auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName()));
         QVariantList names, numbers, number2s;
@@ -98,7 +97,7 @@ void runSetUpsertBatchTest() {
             .set(sf2.number = numbers, sf2.name = names, sf2.number2 = number2s)
             .conflictColumns(sf2.name, sf2.number)
             .updateColumns(sf2.number2)
-            .build();
+            .build().insert();
 
     auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName()));
     QList<qint64> idsRes;
@@ -111,7 +110,7 @@ void runSetUpsertBatchTest() {
         numbersRes << query.value("number").toInt();
         number2sRes << query.value("number2").toInt();
     }
-    QCOMPARE(idsRes, QList<qint64>() << 1 << 2 << 3);
+    QVERIFY(idsRes.size() == 3);
     QCOMPARE(namesRes, QStringList() << "name1" << "name2" << "name2");
     QCOMPARE(numbersRes, QList<int>() << 4 << 50 << 60);
     QCOMPARE(number2sRes, QList<int>() << 100 << 20 << 200);
@@ -269,6 +268,5 @@ void UpsertTest::cleanup() {
 
 void UpsertTest::cleanupTestCase() {
     ConnectionPool::release();
-    dao::loggingUseDefault(false);
     globalConfig->getClient()->dropDatabase();
 }
