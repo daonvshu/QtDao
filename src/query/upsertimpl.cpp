@@ -49,35 +49,59 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         return QString("?,").repeated(fields.size()).chopped(1);
     };
 
+    const auto usedUpdateFieldNames = [&] {
+        builder->updateCols.connect();
+        auto usedFieldNames = listMap<QString, FieldInfo>(builder->updateCols.getUsedFieldNames(), [&](const FieldInfo& info) {
+            return info.name;
+        });
+        if (usedFieldNames.isEmpty()) {
+            usedFieldNames = fields;
+        }
+        return usedFieldNames;
+    };
+
     if (globalConfig->isSqlite()) {
         QString statementTemplate = "insert into %1 (%2) values(%3) on conflict(%4) do update set %5";
+
         //conflict field
         builder->conflictCols.connect();
         QString conflictFields;
+        QSet<QString> conflictFieldNames;
         for (const auto& field: builder->conflictCols.getUsedFieldNames()) {
             conflictFields += field.name + ",";
+            conflictFieldNames << field.name;
         }
         conflictFields.chop(1);
+
         //update fields
-        builder->updateCols.connect();
         QString updateStr;
-        for (const auto& fieldInfo: builder->updateCols.getUsedFieldNames()) {
-            updateStr += fieldInfo.name + "=excluded." + fieldInfo.name + ",";
+        for (const auto& fieldName: usedUpdateFieldNames()) {
+            if (conflictFieldNames.contains(fieldName)) continue;
+            updateStr += fieldName + "=excluded." + fieldName + ",";
         }
         updateStr.chop(1);
+
         return statementTemplate.arg(getTableName(), usedFieldListStr(), valuePlaceholder(),
                                      conflictFields, updateStr);
 
     } else if (globalConfig->isMysql()) {
         QString statementTemplate = "insert into %1 (%2) values(%3) on duplicate key update %4";
+
+        builder->conflictCols.connect();
+        QSet<QString> conflictFieldNames;
+        for (const auto& field: builder->conflictCols.getUsedFieldNames()) {
+            conflictFieldNames << field.name;
+        }
+
         //update fields
-        builder->updateCols.connect();
         QString updateStr;
-        for (const auto& fieldInfo: builder->updateCols.getUsedFieldNames()) {
-            updateStr += fieldInfo.name + "=?,";
-            values.append(fieldToValue(fieldInfo.name));
+        for (const auto& fieldName: usedUpdateFieldNames()) {
+            if (conflictFieldNames.contains(fieldName)) continue;
+            updateStr += fieldName + "=?,";
+            values.append(fieldToValue(fieldName));
         }
         updateStr.chop(1);
+
         return statementTemplate.arg(getTableName(), usedFieldListStr(), valuePlaceholder(),
                                      updateStr);
 
@@ -89,26 +113,32 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
                                     "update set %4\n"
                                     "when not matched then\n"
                                     "insert(%5) values(%6);";
+
         //temp value table
         QString tempValueFields;
         for (const auto& field : fields) {
             tempValueFields += "? as " + field + ", ";
         }
         tempValueFields.chop(2);
+
         //on condition
         builder->conflictCols.connect();
         QString onConditionStr;
+        QSet<QString> conflictFieldNames;
         for (const auto& fieldInfo: builder->conflictCols.getUsedFieldNames()) {
             onConditionStr += "a." + fieldInfo.name + "=b." + fieldInfo.name + " and ";
+            conflictFieldNames << fieldInfo.name;
         }
         onConditionStr.chop(5);
+
         //update string
-        builder->updateCols.connect();
         QString updateStr;
-        for (const auto& fieldInfo: builder->updateCols.getUsedFieldNames()) {
-            updateStr += "a." + fieldInfo.name + "=b." + fieldInfo.name + ",";
+        for (const auto& fieldName: usedUpdateFieldNames()) {
+            if (conflictFieldNames.contains(fieldName)) continue;
+            updateStr += "a." + fieldName + "=b." + fieldName + ",";
         }
         updateStr.chop(1);
+
         //insert string
         QString insertStrFields, insertStrValues;
         for (const auto& field: fields) {
@@ -117,6 +147,7 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         }
         insertStrFields.chop(1);
         insertStrValues.chop(1);
+
         return statementTemplate.arg(getTableName(), tempValueFields, onConditionStr,
                                      updateStr, insertStrFields, insertStrValues);
     }

@@ -22,6 +22,20 @@ void runSetUpsertTest() {
             .set(sf2.name = "testName1", sf2.number = 20, sf2.number2 = 10)
             .build().insert();
 
+    const auto& compareResult = [] (const QVariantList& expectNames, const QVariantList& expectNumbers
+            , const QVariantList& expectNumber2s) {
+        auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName()));
+        QVariantList names, numbers, number2s;
+        while (query.next()) {
+            names << query.value("name");
+            numbers << query.value("number");
+            number2s << query.value("number2");
+        }
+        QCOMPARE(names, expectNames);
+        QCOMPARE(numbers, expectNumbers);
+        QCOMPARE(number2s, expectNumber2s);
+    };
+
     //not conflict with insert
     {
         dao::_insertOrUpdate<E>()
@@ -30,16 +44,8 @@ void runSetUpsertTest() {
                 .updateColumns(sf2.number2)
                 .build().insert();
 
-        auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName()));
-        QVariantList names, numbers, number2s;
-        while (query.next()) {
-            names << query.value("name");
-            numbers << query.value("number");
-            number2s << query.value("number2");
-        }
-        QCOMPARE(names, QVariantList() << "testName1" << "testName2");
-        QCOMPARE(numbers, QVariantList() << 20 << 20);
-        QCOMPARE(number2s, QVariantList() << 10 << 50);
+        compareResult(QVariantList() << "testName1" << "testName2", QVariantList() << 20 << 20,
+                      QVariantList() << 10 << 50);
     }
 
     //conflict by unique index (name, number) with update field 'number2'
@@ -50,16 +56,19 @@ void runSetUpsertTest() {
                 .updateColumns(sf2.number2)
                 .build().insert();
 
-        auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName()));
-        QVariantList names, numbers, number2s;
-        while (query.next()) {
-            names << query.value("name");
-            numbers << query.value("number");
-            number2s << query.value("number2");
-        }
-        QCOMPARE(names, QVariantList() << "testName1" << "testName2");
-        QCOMPARE(numbers, QVariantList() << 20 << 20);
-        QCOMPARE(number2s, QVariantList() << 30 << 50);
+        compareResult(QVariantList() << "testName1" << "testName2", QVariantList() << 20 << 20,
+                      QVariantList() << 30 << 50);
+    }
+
+    //test optional update columns
+    {
+        dao::_insertOrUpdate<E>()
+                .set(sf2.name = "testName1", sf2.number = 20, sf2.number2 = 60)
+                .conflictColumns(sf2.name, sf2.number)
+                .build().insert();
+
+        compareResult(QVariantList() << "testName1" << "testName2", QVariantList() << 20 << 20,
+                      QVariantList() << 60 << 50);
     }
 
     dao::_truncate<E>();
@@ -87,6 +96,26 @@ void runSetUpsertBatchTest() {
             .set(sf2.id = ids, sf2.number = numbers, sf2.name = names, sf2.number2 = number2s) //set value with sequence independent
             .build().insert();
 
+    const auto& compareResult = [] (int idSize, const QStringList& expectNames, const QList<int>& expectNumbers,
+            const QList<int>& expectNumber2s) {
+        auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName()));
+        QList<qint64> idsRes;
+        QStringList namesRes;
+        QList<int> numbersRes;
+        QList<int> number2sRes;
+        while (query.next()) {
+            idsRes << query.value("id").toLongLong();
+            namesRes << query.value("name").toString();
+            numbersRes << query.value("number").toInt();
+            number2sRes << query.value("number2").toInt();
+        }
+        QVERIFY(idsRes.size() == idSize);
+        QCOMPARE(namesRes, expectNames);
+        QCOMPARE(numbersRes, expectNumbers);
+        QCOMPARE(number2sRes, expectNumber2s);
+    };
+
+
     numbers.clear();
     number2s.clear();
 
@@ -99,21 +128,23 @@ void runSetUpsertBatchTest() {
             .updateColumns(sf2.number2)
             .build().insert();
 
-    auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName()));
-    QList<qint64> idsRes;
-    QStringList namesRes;
-    QList<int> numbersRes;
-    QList<int> number2sRes;
-    while (query.next()) {
-        idsRes << query.value("id").toLongLong();
-        namesRes << query.value("name").toString();
-        numbersRes << query.value("number").toInt();
-        number2sRes << query.value("number2").toInt();
-    }
-    QVERIFY(idsRes.size() == 3);
-    QCOMPARE(namesRes, QStringList() << "name1" << "name2" << "name2");
-    QCOMPARE(numbersRes, QList<int>() << 4 << 50 << 60);
-    QCOMPARE(number2sRes, QList<int>() << 100 << 20 << 200);
+    compareResult(3, QStringList() << "name1" << "name2" << "name2",
+                  QList<int>() << 4 << 50 << 60, QList<int>() << 100 << 20 << 200);
+
+    //test optional update columns
+    numbers.clear();
+    number2s.clear();
+
+    numbers << 4 << 70; //col1 conflict with update; col2 not conflict with insert;
+    number2s << 1000 << 2000;
+
+    dao::_insertOrUpdate<E>()
+            .set(sf2.number = numbers, sf2.name = names, sf2.number2 = number2s)
+            .conflictColumns(sf2.name, sf2.number)
+            .build().insert();
+
+    compareResult(4, QStringList() << "name1" << "name2" << "name2" << "name2",
+                  QList<int>() << 4 << 50 << 60 << 70, QList<int>() << 1000 << 20 << 200 << 2000);
 
     dao::_truncate<E>();
 }
@@ -175,21 +206,43 @@ void runUpsertObjectTest() {
     QFETCH(E, test1);
     dao::_insert<E>().build().insert(test1);
 
-    auto builder = dao::_insertOrUpdate<E>()
-            .conflictColumns(sf2.name, sf2.number);
-    bindUpdateColumn(builder);
+    {
+        auto builder = dao::_insertOrUpdate<E>()
+                .conflictColumns(sf2.name, sf2.number);
+        bindUpdateColumn(builder);
 
-    QFETCH(E, test2); //not conflict
-    builder.build().insert(test2);
+        QFETCH(E, test2); //not conflict
+        builder.build().insert(test2);
 
-    QFETCH(E, test3); //conflict
-    builder.build().insert(test3);
+        QFETCH(E, test3); //conflict
+        builder.build().insert(test3);
 
-    //test only keep test1,test3
-    auto entities = dao::_selectAll<E>();
-    QVERIFY(entities.size() == 2);
-    QCOMPARE(entities.at(0), test1);
-    QCOMPARE(entities.at(1), test3);
+        //test only keep test1,test3
+        auto entities = dao::_selectAll<E>();
+        QVERIFY(entities.size() == 2);
+        QCOMPARE(entities.at(0), test1);
+        QCOMPARE(entities.at(1), test3);
+    }
+
+    //test optional update columns
+    {
+        dao::_delete<E>().filter(sf2.name == "name2").build().deleteBy();
+
+        auto builder = dao::_insertOrUpdate<E>()
+                .conflictColumns(sf2.name, sf2.number);
+
+        QFETCH(E, test2); //not conflict
+        builder.build().insert(test2);
+
+        QFETCH(E, test3); //conflict
+        builder.build().insert(test3);
+
+        //test only keep test1,test3
+        auto entities = dao::_selectAll<E>();
+        QVERIFY(entities.size() == 2);
+        QCOMPARE(entities.at(0), test1);
+        QCOMPARE(entities.at(1), test3);
+    }
 
     dao::_truncate<E>();
 }
@@ -237,17 +290,35 @@ void runUpsertObjectsTest() {
     QFETCH(QList<E>, test);
 
     typename E::Fields sf2;
-    auto builder = dao::_insertOrUpdate<E>()
-            .conflictColumns(sf2.name, sf2.number);
-    bindUpdateColumn(builder);
 
-    builder.build().insert(test);
+    {
+        auto builder = dao::_insertOrUpdate<E>()
+                .conflictColumns(sf2.name, sf2.number);
+        bindUpdateColumn(builder);
 
-    //test only keep test1,test3
-    auto entities = dao::_selectAll<E>();
-    QVERIFY(entities.size() == 2);
-    QCOMPARE(entities.at(0), test.at(0));
-    QCOMPARE(entities.at(1), test.at(2));
+        builder.build().insert(test);
+
+        //test only keep test1,test3
+        auto entities = dao::_selectAll<E>();
+        QVERIFY(entities.size() == 2);
+        QCOMPARE(entities.at(0), test.at(0));
+        QCOMPARE(entities.at(1), test.at(2));
+    }
+
+    //test optional update columns
+    {
+        dao::_truncate<E>();
+
+        dao::_insertOrUpdate<E>()
+            .conflictColumns(sf2.name, sf2.number)
+            .build().insert(test);
+
+        //test only keep test1,test3
+        auto entities = dao::_selectAll<E>();
+        QVERIFY(entities.size() == 2);
+        QCOMPARE(entities.at(0), test.at(0));
+        QCOMPARE(entities.at(1), test.at(2));
+    }
 
     dao::_truncate<E>();
 }
