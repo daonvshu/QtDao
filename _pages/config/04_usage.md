@@ -57,3 +57,10 @@ int main(int argc, char *argv[]) {
     //...
 }
 ```
+
+使用函数`dao::loggingUseDefault()`启用默认日志输出，此时未使用logging的查询将使用默认的`category`：
+```cpp
+dao::loggingUseDefault();
+//关闭默认 category
+QLoggingCategory::setFilterRules("*qtdao.query.debug=false");
+```

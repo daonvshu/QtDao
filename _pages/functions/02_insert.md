@@ -102,6 +102,102 @@ users << User("Bob", 19, 120);
 dao::_insert<User>().build().insertOrReplace(users);
 ```
 
+插入或忽略
+-------------
+
+使用`insertOrIgnore()`函数执行‘插入或忽略’操作，与`insertOrReplace()`使用一样，在插入冲突时忽略该次插入数据。
+
+```cpp
+User::Fields field;
+dao::_insert<User>()
+    .set(field.name = "Alice", field.age = 18)
+    .build().insertOrIgnore();
+
+User alice("Alice", 18, 100);
+dao::_insert<User>().build().insertOrIgnore(alice);
+
+UserList users;
+users << User("Alice", 18, 100);
+users << User("Bob", 19, 120);
+dao::_insert<User>().build().insertOrIgnore(users);
+```
+
+插入或更新
+-------------
+
+插入或更新使用数据库非标准语法 `Upsert`，其中sqlite/mysql使用`'insert into ... on ... update ...'`语法支持，sqlserver使用`'merge'`语法支持。
+```cpp
+template<typename E>
+Upsert<E> dao::_insertOrUpdate<E>()
+    .set()
+    .conflictColumns()
+    .updateColumns()
+    .build()
+```
+当插入一条（或批量插入）数据时，数据库引擎检查到字段冲突时使用`update`方式更新数据，否则使用`insert`方式添加数据。通常情况下，字段冲突使用`primary key`或`unique index`约束检查。该操作与`insert or replace`不同的是，字段冲突时`insert or replace`会删除原有数据再插入新数据。
+
+- conflictColumns  
+设置冲突检查的字段，仅传入字段即可。通常情况下，传入`primary key`或`unique index`对应的字段（对象插入模式下，将忽略自增主键）。
+
+- updateColumns  
+设置遇到冲突时需要更新的字段。显示调用该函数指定冲突时更新的字段，忽略时则使用冲突字段之外的其他所有字段。
+
+- set方式插入数据  
+使用方法与`insert`操作一致，调用`set`函数传入部分字段进行插入：
+
+```cpp
+User::Fields field;
+//假设 name,classes 作为一个unique index
+dao::_insert<User>()
+    .set(field.name = "Alice", field.classes = "classA", field.age = 18, field.score = 90)
+    .conflictColumns(field.name, field.classes)
+    .updateColumns(field.score)
+    .build().insert();
+
+//省略 updateColumns 则同时更新 age,score
+dao::_insert<User>()
+    .set(field.name = "Alice", field.classes = "classA", field.age = 18, field.score = 90)
+    .conflictColumns(field.name, field.classes)
+    .build().insert();
+
+//与 insert 操作一样，可批量插入
+auto names = QStringList() << "Alice" << "Bob";
+auto classes = QStringList() << "classA" << "classA";
+auto ages = QList<int>() << 18 << 19;
+auto scores = QList<int>() << 90 << 91;
+
+dao::_insert<User>()
+    .set(field.name = names, field.classes = classes, field.age = ages, field.score = scores)
+    .conflictColumns(field.name, field.classes)
+    .build().insert();
+```
+
+- 插入实体对象  
+与`insert`一样，`upsert`也提供了`insert(E&)/insert(const QList<E>&)`插入对象方法：
+
+```cpp
+User::Fields field;
+//假设 name,classes 作为一个unique index
+User alice("Alice", "classA", 18, 90);
+dao::_insert<User>()
+    .conflictColumns(field.name, field.classes)
+    .updateColumns(field.score)
+    .build().insert(alice);
+
+//省略 updateColumns 则同时更新 age,score
+dao::_insert<User>()
+    .conflictColumns(field.name, field.classes)
+    .build().insert(alice);
+
+//批量插入
+User bob("Bob", "classA", 19, 91);
+auto users = UserList() << alice << bob;
+
+dao::_insert<User>()
+    .conflictColumns(field.name, field.classes)
+    .build().insert(users);
+```
+ 
 insert into select
 -------------
 
