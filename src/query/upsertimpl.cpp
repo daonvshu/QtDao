@@ -82,7 +82,7 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
                                      updateStr);
 
     } else if (globalConfig->isSqlServer()) {
-        QString statementTemplate = "merge info %1 a\n"
+        QString statementTemplate = "merge into %1 a\n"
                                     "using (select %2) b\n"
                                     "on %3\n"
                                     "when matched then\n"
@@ -92,16 +92,16 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         //temp value table
         QString tempValueFields;
         for (const auto& field : fields) {
-            tempValueFields += "? as " + field + ",";
+            tempValueFields += "? as " + field + ", ";
         }
-        tempValueFields.chop(1);
+        tempValueFields.chop(2);
         //on condition
         builder->conflictCols.connect();
         QString onConditionStr;
         for (const auto& fieldInfo: builder->conflictCols.getUsedFieldNames()) {
-            onConditionStr += "a." + fieldInfo.name + "=b." + fieldInfo.name + ",";
+            onConditionStr += "a." + fieldInfo.name + "=b." + fieldInfo.name + " and ";
         }
-        onConditionStr.chop(1);
+        onConditionStr.chop(5);
         //update string
         builder->updateCols.connect();
         QString updateStr;

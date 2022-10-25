@@ -77,7 +77,7 @@ void Upsert<E>::insert(const QList<E> &entities) {
         return tagValues.at(fields.indexOf(field));
     });
 
-    values.append(this->values);
+    tagValues.append(this->values);
     setSqlQueryStatement(sqlStatement, tagValues);
     execBatch();
 }
