@@ -26,6 +26,7 @@ HEADERS += ../test/BaseTest.h \
     ../test/query/SelectTest.h \
     ../test/query/UpdateTest.h \
     ../test/query/LoggingTest.h \
+    ../test/query/UpsertTest.h \
     ../test/sqliteentity/sqlitedefaulttestint.h \
     ../test/sqliteentity/sqlitedefaultteststr.h \
     ../test/sqliteentity/sqliteentityinclude.h \
@@ -55,5 +56,6 @@ SOURCES += ../test/BaseTest.cpp \
     ../test/query/SelectTest.cpp \
     ../test/query/UpdateTest.cpp \
     ../test/query/LoggingTest.cpp \
+    ../test/query/UpsertTest.cpp \
     ../test/sqliteentity/sqliteentityinclude.cpp \
     ../test/sqlserverentity/sqlserverentityinclude.cpp

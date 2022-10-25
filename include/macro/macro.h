@@ -46,6 +46,14 @@ Builder& logging(LoggingCategoryPtr ptr) {\
     QUERY_BUILDER_USE(Builder, on)                \
     QUERY_BUILDER_USE_ENABLE(Builder, on)
 
+#define QUERY_BUILDER_USE_CONFLICT_COLUMNS(Builder)     \
+    QUERY_BUILDER_USE(Builder, conflictColumns)         \
+    QUERY_BUILDER_USE_ENABLE(Builder, conflictColumns)
+
+#define QUERY_BUILDER_USE_UPDATE_COLUMNS(Builder)       \
+    QUERY_BUILDER_USE(Builder, updateColumns)           \
+    QUERY_BUILDER_USE_ENABLE(Builder, updateColumns)
+
 #define QUERY_BUILDER_USE_COLUMNALL(Builder)\
 Builder& columnAll() {\
     BaseQueryBuilder::columnAll<E>();\

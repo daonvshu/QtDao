@@ -41,11 +41,14 @@ protected:
 
     bool debugFatalEnabled;
 
+    static bool useDefaultLogging;
+
     friend class BaseQueryBuilder;
 
     friend void transcation();
     friend void commit();
     friend void rollback(const QString&);
+    friend void loggingUseDefault(bool useDefault);
     friend void printQueryLog(BaseQuery* query, bool batchExecMode);
 
 private:

@@ -19,6 +19,8 @@ private slots:
 
     void rulerTest();
 
+    void defaultLoggingTest();
+
     void cleanup();
 
     void cleanupTestCase();

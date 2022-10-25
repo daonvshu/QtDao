@@ -11,6 +11,7 @@
 #include "builder/joinbuilder.h"
 #include "builder/recursivequerybuilder.h"
 #include "builder/insertintoselectbuilder.h"
+#include "builder/upsertbuilder.h"
 
 #include "condition/conditionoperator.h"
 
@@ -52,6 +53,11 @@ static InsertBuilder<T> _insert() {
 template<typename T>
 static InsertIntoSelectBuilder<T> _insertIntoSelect() {
     return InsertIntoSelectBuilder<T>();
+}
+
+template<typename T>
+static UpsertBuilder<T> _insertOrUpdate() {
+    return UpsertBuilder<T>();
 }
 
 template<typename T>
@@ -101,6 +107,8 @@ extern void commit();
 extern void transcation_save(const QString& savePoint);
 
 extern void rollback(const QString& savePoint = QString());
+
+extern void loggingUseDefault(bool useDefault = true);
 
 template<typename E>
 class self : public E {

@@ -12,6 +12,8 @@ QTDAO_BEGIN_NAMESPACE
 
 Q_LOGGING_CATEGORY(loggingDefault, "qtdao.query")
 
+bool BaseQuery::useDefaultLogging = false;
+
 BaseQuery::BaseQuery(bool fatalEnabled, BaseQueryBuilder* builder, LoggingCategoryPtr logging)
     : builder(builder)
     , debugFatalEnabled(fatalEnabled)
@@ -81,6 +83,11 @@ QSqlQuery BaseQuery::getQuery(bool& prepareOk, bool skipEmptyValue) {
             return query;
         }
         bindQueryValues(query);
+    }
+    if (loggingCategoryPtr == nullptr) {
+        if (useDefaultLogging) {
+            loggingCategoryPtr = loggingDefault;
+        }
     }
     if (loggingCategoryPtr != nullptr) {
         if (loggingCategoryPtr().isDebugEnabled()) {

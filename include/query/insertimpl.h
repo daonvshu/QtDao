@@ -19,7 +19,16 @@ protected:
     QString buildInsertObjects2SqlStatement(int valueSize);
 
 protected:
-    bool insertOrRp = false;
+    enum class InsertMode {
+        INSERT_ONLY,
+        INSERT_OR_REPLACE,
+        INSERT_OR_IGNORE,
+    };
+
+    InsertMode insertMode = InsertMode::INSERT_ONLY;
+
+private:
+    QString buildInsertPrefix();
 };
 
 QTDAO_END_NAMESPACE

@@ -34,6 +34,7 @@ add_library(${PROJECT_NAME}
     query/deleteimpl.cpp
     query/selectimpl.cpp
     query/joinimpl.cpp
+    query/upsertimpl.cpp
 
     utils/logging.cpp
 

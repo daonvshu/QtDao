@@ -78,11 +78,25 @@ protected:
     template<typename E>
     void columnAll();
 
+    template<typename Col, typename... Args>
+    void conflictColumns(const Col& field, const Args&... args);
+
+    template<typename Col>
+    void conflictColumns(bool enabled, const Col& field);
+
+    template<typename Col, typename... Args>
+    void updateColumns(const Col& field, const Args&... args);
+
+    template<typename Col>
+    void updateColumns(bool enabled, const Col& field);
+
     virtual void set();
     virtual void filter();
     virtual void on();
     virtual void with();
     virtual void column();
+    virtual void conflictColumns();
+    virtual void updateColumns();
 
     template<typename E>
     void from(Select<E>& select);
@@ -104,6 +118,8 @@ protected:
     bool setFatalEnabled;
     LoggingCategoryPtr loggingCategoryPtr;
     Connector setCondition, columnBind, filterCondition, constraintCondition, onCondition;
+    //used for upsert
+    Connector conflictCols, updateCols;
     //from sub select
     QString fromSelectStatement;
     QVariantList fromSelectValues;
@@ -120,6 +136,7 @@ protected:
     template<typename E> friend class Delete;
     template<typename... E> friend class Join;
     template<typename E> friend class InsertIntoSelect;
+    template<typename E> friend class Upsert;
 
     friend class InsertImpl;
     friend class InsertIntoSelectImpl;
@@ -127,6 +144,7 @@ protected:
     friend class DeleteImpl;
     friend class SelectImpl;
     friend class JoinImpl;
+    friend class UpsertImpl;
 };
 
 template<typename ...Args>
@@ -196,6 +214,32 @@ inline void BaseQueryBuilder::columnAll() {
     QStringList fields = E::Info::getFields();
     for (const auto& field : fields) {
         columnBind.appendCol(FieldInfo{ field, tbName });
+    }
+}
+
+template<typename Col, typename ...Args>
+inline void BaseQueryBuilder::conflictColumns(const Col& field, const Args & ...args) {
+    conflictCols.appendCol(field);
+    conflictColumns(args...);
+}
+
+template<typename Col>
+inline void BaseQueryBuilder::conflictColumns(bool enabled, const Col& field) {
+    if (enabled) {
+        conflictCols.appendCol(field);
+    }
+}
+
+template<typename Col, typename ...Args>
+inline void BaseQueryBuilder::updateColumns(const Col& field, const Args & ...args) {
+    updateCols.appendCol(field);
+    updateColumns(args...);
+}
+
+template<typename Col>
+inline void BaseQueryBuilder::updateColumns(bool enabled, const Col& field) {
+    if (enabled) {
+        updateCols.appendCol(field);
     }
 }
 

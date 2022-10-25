@@ -10,6 +10,7 @@
 #include "query/DeleteTest.h"
 #include "query/JoinTest.h"
 #include "query/LoggingTest.h"
+#include "query/UpsertTest.h"
 #include "loader/DbLoaderTest.h"
 #include "condition/ConnectorTest.h"
 #include "query/InsertIntoSelectTest.h"
@@ -39,6 +40,8 @@ void setColor() {
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
             } else if (line.startsWith("QWARN")) {
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
+            } else if (line.startsWith("QDEBUG")) {
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_BLUE);
             }
 #endif
             std::cout << line.toStdString();
@@ -90,7 +93,7 @@ int main(int argc, char *argv[])
     QTEST_SET_MAIN_SOURCE_PATH;
 #endif
     int result = 0;
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 3; i++) {
 #ifndef QT_DAO_TESTCASE
 #ifdef Q_CC_MSVC
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
@@ -114,7 +117,8 @@ int main(int argc, char *argv[])
             DeleteTest,
             JoinTest,
             InsertIntoSelectTest,
-            LoggingTest
+            LoggingTest,
+            UpsertTest
         >
 #ifdef QT_DAO_TESTCASE
             ::run(EngineModel(i), argc, argv);

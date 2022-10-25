@@ -28,6 +28,9 @@ private slots:
     void insertOrReplaceTest_data();
     void insertOrReplaceTest();
 
+    void insertOrIgnoreTest_data();
+    void insertOrIgnoreTest();
+
     void testTranscation_data();
     void testTranscation();
 

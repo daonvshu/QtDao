@@ -15,18 +15,7 @@ bool InsertImpl::buildInsertBySetSqlStatement() {
 
     bool operateBatch = values.at(0).type() == QVariant::List;
 
-    QString sql = "insert into %1 (";
-    if (insertOrRp) {
-        if (globalConfig->isSqlite()) {
-            sql = "insert or replace into %1 (";
-        } else if (globalConfig->isMysql()) {
-            sql = "replace into %1 (";
-        } else {
-            throw DaoException("sqlserver insert or replace unsupported!");
-        }
-    }
-
-    sql = sql.arg(getTableName());
+    auto sql = buildInsertPrefix();
 
     bool hasPre = false;
     for (int i = 0; i < usedFieldName.size(); ) {
@@ -53,17 +42,7 @@ bool InsertImpl::buildInsertBySetSqlStatement() {
 
 QString InsertImpl::buildInsertObjectSqlStatement() {
 
-    QString sql = "insert into %1 (";
-    if (insertOrRp) {
-        if (globalConfig->isSqlite()) {
-            sql = "insert or replace into %1 (";
-        } else if (globalConfig->isMysql()) {
-            sql = "replace into %1 (";
-        } else {
-            throw DaoException("sqlserver insert or replace unsupported!");
-        }
-    }
-    sql = sql.arg(getTableName());
+    auto sql = buildInsertPrefix();
 
     QStringList fields = getFieldsWithoutAutoIncrement();
     for (const auto& f : fields) {
@@ -85,17 +64,7 @@ QString InsertImpl::buildInsertObjectsSqlStatement() {
 
 QString InsertImpl::buildInsertObjects2SqlStatement(int valueSize) {
 
-    QString sql = "insert into %1 (";
-    if (insertOrRp) {
-        if (globalConfig->isSqlite()) {
-            sql = "insert or replace into %1 (";
-        } else if (globalConfig->isMysql()) {
-            sql = "replace into %1 (";
-        } else {
-            throw DaoException("sqlserver insert or replace unsupported!");
-        }
-    }
-    sql = sql.arg(getTableName());
+    auto sql = buildInsertPrefix();
 
     QStringList fields = getFieldsWithoutAutoIncrement();
     for (const auto& f : fields) {
@@ -112,6 +81,40 @@ QString InsertImpl::buildInsertObjects2SqlStatement(int valueSize) {
     sql.append(str.repeated(valueSize));
     sql.chop(1);
     return sql;
+}
+
+QString InsertImpl::buildInsertPrefix() {
+
+    QString sql;
+
+    switch (insertMode) {
+        case InsertMode::INSERT_ONLY:
+            sql = "insert into %1 (";
+            break;
+        case InsertMode::INSERT_OR_REPLACE:
+        {
+            if (globalConfig->isSqlite()) {
+                sql = "insert or replace into %1 (";
+            } else if (globalConfig->isMysql()) {
+                sql = "replace into %1 (";
+            } else {
+                throw DaoException("sqlserver insert or replace unsupported!");
+            }
+        }
+            break;
+        case InsertMode::INSERT_OR_IGNORE:
+        {
+            if (globalConfig->isSqlite()) {
+                sql = "insert or ignore into %1 (";
+            } else if (globalConfig->isMysql()) {
+                sql = "insert ignore into %1 (";
+            } else {
+                throw DaoException("sqlserver insert or ignore unsupported!");
+            }
+        }
+            break;
+    }
+    return sql.arg(getTableName());
 }
 
 

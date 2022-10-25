@@ -8,6 +8,8 @@
 
 QTDAO_BEGIN_NAMESPACE
 
+QScopedPointer<ConfigBuilder> globalConfig;
+
 ConfigBuilder::ConfigBuilder(ConfigType type)
     : configType(type)
 {

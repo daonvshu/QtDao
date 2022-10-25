@@ -20,6 +20,7 @@ HEADERS += ../include/connectionpool.h \
     ../include/builder/recursivequerybuilder.h \
     ../include/builder/selectbuilder.h \
     ../include/builder/updatebuilder.h \
+    ../include/builder/upsertbuilder.h \
     ../include/condition/conditionconstraint.h \
     ../include/condition/conditionoperator.h \
     ../include/condition/connector.h \
@@ -54,8 +55,10 @@ HEADERS += ../include/connectionpool.h \
     ../include/query/selectimpl.h \
     ../include/query/update.h \
     ../include/query/updateimpl.h \
-    ../include/utils/listutils.h \
-    ../include/utils/logging.h
+    ../include/utils/logging.h \
+    ../include/query/upsert.h \
+    ../include/query/upsertimpl.h \
+    ../include/utils/listutils.h
 
 SOURCES += ../src/connectionpool.cpp \
     ../src/qtdao.cpp \
@@ -79,5 +82,6 @@ SOURCES += ../src/connectionpool.cpp \
     ../src/query/joinimpl.cpp \
     ../src/query/selectimpl.cpp \
     ../src/query/updateimpl.cpp \
+    ../src/query/upsertimpl.cpp
     ../src/utils/logging.cpp
 

@@ -24,7 +24,16 @@ public:
     /// update if a unique constraint exists, otherwise insert
     /// </summary>
     void insertOrReplace() {
-        this->insertOrRp = true;
+        insertMode = InsertMode::INSERT_OR_REPLACE;
+        insert();
+    }
+
+    /// <summary>
+    /// using the SET condition to insert a record, can be inserted in batches
+    /// ignore when insert conflict
+    /// </summary>
+    void insertOrIgnore() {
+        insertMode = InsertMode::INSERT_OR_IGNORE;
         insert();
     }
 
@@ -40,7 +49,17 @@ public:
     /// </summary>
     /// <param name="entity"></param>
     void insertOrReplace(E& entity) {
-        this->insertOrRp = true;
+        insertMode = InsertMode::INSERT_OR_REPLACE;
+        insert(entity);
+    }
+
+    /// <summary>
+    /// insert an object instance and set the ID back to the object after successful insertion
+    /// ignore when insert conflict
+    /// </summary>
+    /// <param name="entity"></param>
+    void insertOrIgnore(E& entity) {
+        insertMode = InsertMode::INSERT_OR_IGNORE;
         insert(entity);
     }
 
@@ -58,7 +77,18 @@ public:
     /// </summary>
     /// <param name="entities"></param>
     void insertOrReplace(const QList<E>& entities) {
-        this->insertOrRp = true;
+        insertMode = InsertMode::INSERT_OR_REPLACE;
+        insert(entities);
+    }
+
+    /// <summary>
+    /// insert objects in batches
+    /// use 'execbatch'
+    /// ignore when insert conflict
+    /// </summary>
+    /// <param name="entities"></param>
+    void insertOrIgnore(const QList<E>& entities) {
+        insertMode = InsertMode::INSERT_OR_IGNORE;
         insert(entities);
     }
 
@@ -78,7 +108,19 @@ public:
     /// </summary>
     /// <param name="entities"></param>
     void insert2OrReplace(const QList<E>& entities) {
-        this->insertOrRp = true;
+        insertMode = InsertMode::INSERT_OR_REPLACE;
+        insert2(entities);
+    }
+
+    /// <summary>
+    /// insert objects in batches
+    /// use 'exec'，the values list connect by string(warning: sql statement length limit)
+    /// insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx)
+    /// ignore when insert conflict
+    /// </summary>
+    /// <param name="entities"></param>
+    void insert2OrIgnore(const QList<E>& entities) {
+        insertMode = InsertMode::INSERT_OR_IGNORE;
         insert2(entities);
     }
 
