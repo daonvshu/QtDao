@@ -87,7 +87,7 @@
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="prefix" type="xs:string" use="required" />
+      <xs:attribute name="prefix" type="xs:string" use="optional" />
       <xs:attribute name="db" use="required">
         <xs:simpleType>
           <xs:restriction base="xs:string">

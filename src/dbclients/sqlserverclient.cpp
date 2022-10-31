@@ -102,8 +102,9 @@ bool SqlServerClient::checkTableExist(const QString& tbName) {
 }
 
 void SqlServerClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType, QStringList primaryKeys) {
-    QString str = "if not exists (select * from sys.tables where name = '%1' and type = 'U') create table %1(";
-    str = str.arg(tbName);
+    QString str = "if not exists (select * from sys.tables where name = '%1' and type = 'U') create table %2(";
+    auto tbTmpName = tbName;
+    str = str.arg(tbTmpName.remove("[").remove("]"), tbName);
     for (const auto& ft : fieldsType) {
         str.append(ft).append(",");
     }
