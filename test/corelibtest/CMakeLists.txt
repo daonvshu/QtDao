@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(qtdaotest)
+project(qtdaocoretest)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
@@ -15,13 +15,13 @@ file(GLOB ENTITY_MYSQL mysqlentity/*.h mysqlentity/*.cpp)
 file(GLOB ENTITY_SQLSERVER sqlserverentity/*.h sqlserverentity/*.cpp)
 
 add_executable(${PROJECT_NAME}
-    BaseTest.h
-    BaseTest.cpp
-    ConnectionPoolTest.h
-    ConnectionPoolTest.cpp
-    EngineModelSelector.h
-    RunnableHandler.h
-    main.cpp
+  BaseTest.h
+  BaseTest.cpp
+  ConnectionPoolTest.h
+  ConnectionPoolTest.cpp
+  EngineModelSelector.h
+  RunnableHandler.h
+  main.cpp
     ${CONDITION_TEST}
     ${LOADER_TEST}
     ${QUERY_TEST}

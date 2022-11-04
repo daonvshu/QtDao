@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../BaseTest.h"
+#include "BaseTest.h"
 
 class UpsertTest : public BaseTest {
     Q_OBJECT

@@ -348,20 +348,20 @@ out/
 CMakeSettings.json
 cmake-build*
 
-test/sqliteentity/*.h
-test/sqliteentity/*.cpp
-test/sqliteentity/*.cmake
-test/sqliteentity/*.pri
+test/corelibtest/sqliteentity/*.h
+test/corelibtest/sqliteentity/*.cpp
+test/corelibtest/sqliteentity/*.cmake
+test/corelibtest/sqliteentity/*.pri
 
-test/mysqlentity/*.h
-test/mysqlentity/*.cpp
-test/mysqlentity/*.cmake
-test/mysqlentity/*.pri
+test/corelibtest/mysqlentity/*.h
+test/corelibtest/mysqlentity/*.cpp
+test/corelibtest/mysqlentity/*.cmake
+test/corelibtest/mysqlentity/*.pri
 
-test/sqlserverentity/*.h
-test/sqlserverentity/*.cpp
-test/sqlserverentity/*.cmake
-test/sqlserverentity/*.pri
+test/corelibtest/sqlserverentity/*.h
+test/corelibtest/sqlserverentity/*.cpp
+test/corelibtest/sqlserverentity/*.cmake
+test/corelibtest/sqlserverentity/*.pri
 
 test/keywordstest/sqlite/*.h
 test/keywordstest/sqlite/*.cpp

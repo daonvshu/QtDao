@@ -2,7 +2,7 @@
 
 #include <qobject.h>
 
-#include "../EngineModelSelector.h"
+#include "EngineModelSelector.h"
 
 class ConnectorTest : public QObject, public EngineModelSelector {
     Q_OBJECT

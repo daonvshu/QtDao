@@ -45,9 +45,12 @@
                         <xs:enumeration value="sql_variant" />
                         <xs:enumeration value="uniqueidentifier" />
                         <xs:enumeration value="xml" />
+
+                        <xs:enumeration value="custom" />
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:attribute>
+                  <xs:attribute name="customtype" type="xs:string" use="optional" />
                   <xs:attribute name="bitsize" type="xs:int" use="optional" />
                   <xs:attribute name="decimal-d" type="xs:int" use="optional" />
                   <xs:attribute name="note" type="xs:string" use="optional" />

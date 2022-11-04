@@ -2,9 +2,9 @@
 
 #include <qobject.h>
 
-#include "../BaseTest.h"
+#include "BaseTest.h"
 
-class DeleteTest : public BaseTest {
+class UpdateTest : public BaseTest {
     Q_OBJECT
 
 public:
@@ -13,11 +13,8 @@ public:
 private slots:
     void initTestCase();
 
-    void filterDeleteTest();
-    void objectDeleteTest();
-
-    void truncateTest_data();
-    void truncateTest();
+    void setUpdateTest();
+    void objectUpdateTest();
 
     void cleanup();
 

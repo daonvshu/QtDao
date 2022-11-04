@@ -18,9 +18,12 @@
                         <xs:enumeration value="text" />
                         <xs:enumeration value="blob" />
                         <xs:enumeration value="variant" />
+
+                        <xs:enumeration value="custom" />
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:attribute>
+                  <xs:attribute name="customtype" type="xs:string" use="optional" />
                   <xs:attribute name="note" type="xs:string" use="optional" />
                   <xs:attribute name="constraints" use="optional">
                     <xs:simpleType>

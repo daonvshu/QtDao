@@ -2,7 +2,7 @@
 
 #include <qobject.h>
 
-#include "../BaseTest.h"
+#include "BaseTest.h"
 
 class InsertTest : public BaseTest {
     Q_OBJECT

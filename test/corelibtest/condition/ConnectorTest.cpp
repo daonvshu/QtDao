@@ -1,6 +1,6 @@
 #include "ConnectorTest.h"
 
-#include "../sqliteentity/sqlitetest2.h"
+#include "sqliteentity/sqlitetest2.h"
 
 #include "condition/conditionoperator.h"
 
