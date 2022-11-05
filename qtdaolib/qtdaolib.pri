@@ -58,7 +58,8 @@ HEADERS += ../include/connectionpool.h \
     ../include/utils/logging.h \
     ../include/query/upsert.h \
     ../include/query/upsertimpl.h \
-    ../include/utils/listutils.h
+    ../include/utils/listutils.h \
+    ../include/utils/serializing.h
 
 SOURCES += ../src/connectionpool.cpp \
     ../src/qtdao.cpp \

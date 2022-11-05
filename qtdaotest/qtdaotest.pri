@@ -5,57 +5,57 @@
 # This is a reminder that you are using a generated .pro file.
 # Remove it when you are finished editing this file.
 
-HEADERS += ../test/BaseTest.h \
-    ../test/ConnectionPoolTest.h \
-    ../test/EngineModelSelector.h \
-    ../test/RunnableHandler.h \
-    ../test/condition/ConnectorTest.h \
-    ../test/loader/DbLoaderTest.h \
-    ../test/mysqlentity/mysqldefaulttestint.h \
-    ../test/mysqlentity/mysqldefaultteststr.h \
-    ../test/mysqlentity/mysqldefaulttesttime.h \
-    ../test/mysqlentity/mysqlentityinclude.h \
-    ../test/mysqlentity/mysqltest1.h \
-    ../test/mysqlentity/mysqltest2.h \
-    ../test/mysqlentity/mysqltest3.h \
-    ../test/query/BaseQueryTest.h \
-    ../test/query/DeleteTest.h \
-    ../test/query/InsertIntoSelectTest.h \
-    ../test/query/InsertTest.h \
-    ../test/query/JoinTest.h \
-    ../test/query/SelectTest.h \
-    ../test/query/UpdateTest.h \
-    ../test/query/LoggingTest.h \
-    ../test/query/UpsertTest.h \
-    ../test/sqliteentity/sqlitedefaulttestint.h \
-    ../test/sqliteentity/sqlitedefaultteststr.h \
-    ../test/sqliteentity/sqliteentityinclude.h \
-    ../test/sqliteentity/sqlitetest1.h \
-    ../test/sqliteentity/sqlitetest2.h \
-    ../test/sqliteentity/sqlitetest3.h \
-    ../test/sqlserverentity/sqlserverdefaulttestbytes.h \
-    ../test/sqlserverentity/sqlserverdefaulttestint.h \
-    ../test/sqlserverentity/sqlserverdefaultteststr.h \
-    ../test/sqlserverentity/sqlserverdefaulttesttime.h \
-    ../test/sqlserverentity/sqlserverentityinclude.h \
-    ../test/sqlserverentity/sqlservertest1.h \
-    ../test/sqlserverentity/sqlservertest2.h \
-    ../test/sqlserverentity/sqlservertest3.h
+HEADERS += ../test/corelibtest/BaseTest.h \
+    ../test/corelibtest/ConnectionPoolTest.h \
+    ../test/corelibtest/EngineModelSelector.h \
+    ../test/corelibtest/RunnableHandler.h \
+    ../test/corelibtest/condition/ConnectorTest.h \
+    ../test/corelibtest/loader/DbLoaderTest.h \
+    ../test/corelibtest/mysqlentity/mysqldefaulttestint.h \
+    ../test/corelibtest/mysqlentity/mysqldefaultteststr.h \
+    ../test/corelibtest/mysqlentity/mysqldefaulttesttime.h \
+    ../test/corelibtest/mysqlentity/mysqlentityinclude.h \
+    ../test/corelibtest/mysqlentity/mysqltest1.h \
+    ../test/corelibtest/mysqlentity/mysqltest2.h \
+    ../test/corelibtest/mysqlentity/mysqltest3.h \
+    ../test/corelibtest/query/BaseQueryTest.h \
+    ../test/corelibtest/query/DeleteTest.h \
+    ../test/corelibtest/query/InsertIntoSelectTest.h \
+    ../test/corelibtest/query/InsertTest.h \
+    ../test/corelibtest/query/JoinTest.h \
+    ../test/corelibtest/query/SelectTest.h \
+    ../test/corelibtest/query/UpdateTest.h \
+    ../test/corelibtest/query/LoggingTest.h \
+    ../test/corelibtest/query/UpsertTest.h \
+    ../test/corelibtest/sqliteentity/sqlitedefaulttestint.h \
+    ../test/corelibtest/sqliteentity/sqlitedefaultteststr.h \
+    ../test/corelibtest/sqliteentity/sqliteentityinclude.h \
+    ../test/corelibtest/sqliteentity/sqlitetest1.h \
+    ../test/corelibtest/sqliteentity/sqlitetest2.h \
+    ../test/corelibtest/sqliteentity/sqlitetest3.h \
+    ../test/corelibtest/sqlserverentity/sqlserverdefaulttestbytes.h \
+    ../test/corelibtest/sqlserverentity/sqlserverdefaulttestint.h \
+    ../test/corelibtest/sqlserverentity/sqlserverdefaultteststr.h \
+    ../test/corelibtest/sqlserverentity/sqlserverdefaulttesttime.h \
+    ../test/corelibtest/sqlserverentity/sqlserverentityinclude.h \
+    ../test/corelibtest/sqlserverentity/sqlservertest1.h \
+    ../test/corelibtest/sqlserverentity/sqlservertest2.h \
+    ../test/corelibtest/sqlserverentity/sqlservertest3.h
 
-SOURCES += ../test/BaseTest.cpp \
-    ../test/ConnectionPoolTest.cpp \
-    ../test/main.cpp \
-    ../test/condition/ConnectorTest.cpp \
-    ../test/loader/DbLoaderTest.cpp \
-    ../test/mysqlentity/mysqlentityinclude.cpp \
-    ../test/query/BaseQueryTest.cpp \
-    ../test/query/DeleteTest.cpp \
-    ../test/query/InsertIntoSelectTest.cpp \
-    ../test/query/InsertTest.cpp \
-    ../test/query/JoinTest.cpp \
-    ../test/query/SelectTest.cpp \
-    ../test/query/UpdateTest.cpp \
-    ../test/query/LoggingTest.cpp \
-    ../test/query/UpsertTest.cpp \
-    ../test/sqliteentity/sqliteentityinclude.cpp \
-    ../test/sqlserverentity/sqlserverentityinclude.cpp
+SOURCES += ../test/corelibtest/BaseTest.cpp \
+    ../test/corelibtest/ConnectionPoolTest.cpp \
+    ../test/corelibtest/main.cpp \
+    ../test/corelibtest/condition/ConnectorTest.cpp \
+    ../test/corelibtest/loader/DbLoaderTest.cpp \
+    ../test/corelibtest/mysqlentity/mysqlentityinclude.cpp \
+    ../test/corelibtest/query/BaseQueryTest.cpp \
+    ../test/corelibtest/query/DeleteTest.cpp \
+    ../test/corelibtest/query/InsertIntoSelectTest.cpp \
+    ../test/corelibtest/query/InsertTest.cpp \
+    ../test/corelibtest/query/JoinTest.cpp \
+    ../test/corelibtest/query/SelectTest.cpp \
+    ../test/corelibtest/query/UpdateTest.cpp \
+    ../test/corelibtest/query/LoggingTest.cpp \
+    ../test/corelibtest/query/UpsertTest.cpp \
+    ../test/corelibtest/sqliteentity/sqliteentityinclude.cpp \
+    ../test/corelibtest/sqlserverentity/sqlserverentityinclude.cpp
