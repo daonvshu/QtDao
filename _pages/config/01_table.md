@@ -55,6 +55,7 @@ layout: post
         <item name="name" type="varchar" bitsize="100" constraints="not null" jsonkey="json_name" jsontimeformat="yyyy-MM"/>
         <item name="nametmp" type="text" transient="true"/>
         <item name="typedecimal" type="decimal" bitsize="8" decimal-d="4" default="0.3" />
+        <item name="myStructType" type="custom" customtype="MyStruct">
     </tb>
 </dao>
 ```
@@ -63,6 +64,7 @@ layout: post
 |:--:|:--|:--|
 |`name`|声明数据表字段名称，建议使用小写驼峰命名法，生产的c++模型成员变量也使用该名称。|
 |`type`|声明字段类型，该类型必须是当前数据库支持的类型，不同数据库有不同的可选类型，见下面类型与默认值说明表描述。|
+|`customtype`|当`type`值为`custom`时有效，表示使用自定义类型，该字段的使用见[自定义操作篇](/QtDao/pages/functions/08_custom/#自定义类型)说明。|可选|
 |`default`|设置字段和c++模型成员变量默认值，不同数据库有不同程度的默认值支持。同时，当查询单个实例结果时，设置字段默认值是个重要的判断条件，见下面类型与默认值说明表描述。|可选|
 |`autoincrement`|声明自增长字段。|可选|
 |`constraints`|为字段添加限制，只能为以下3种：`'not null'`限制字段不能存储null类型值，`'unique'`限制字段不可重复，`'primary key'`声明字段为主键。|可选|
@@ -245,7 +247,7 @@ public:
 
 > variant类型
 
-variant类型使用blob存储QVariant类型的数据，其声明的字段支持QVariant可存储的大部分类型，读取与写入通过QVariant隐式转换，因此通过variant字段可以存储不同的类型的数据，但仅限于sqlite支持
+variant类型使用blob存储QVariant类型的数据，其声明的字段支持QVariant可存储的大部分类型，读取与写入通过QVariant隐式转换，因此通过variant字段可以存储不同的类型的数据，但仅限于sqlite支持的类型，使用自定义类型时可参考[自定义操作篇](/QtDao/pages/functions/08_custom/#自定义类型)说明。
 ```xml
 <!-- 默认值仅初始化QVariant，sql默认值null -->
 <item name="num" type="variant" default="100"/>

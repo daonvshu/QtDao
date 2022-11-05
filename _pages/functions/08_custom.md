@@ -1,8 +1,55 @@
 ---
-title: 自定义查询
+title: 自定义数据库操作
 category: functions
 layout: post
 ---
+
+自定义类型
+-------------
+
+在`QtDao`中允许使用自定义类型，定义数据表时配置如下：
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<dao prefix="ts_" db="mysql">
+    <tb name="TestTb">
+        <item name="qtType" type="custom" customType="QRect" note="qt default supported type for serialize">
+        <item name="myStruct" type="custom" customtype="MyStruct">
+        <item name="collectionType" type="custom" customtype="QHash&lt;QString, QList&lt;MyStruct&gt;&gt;">
+    </tb>
+</dao>
+```
+
+其工作原理是，使用`QDataStream`存储时进行序列化为`QByteArray`类型，读取时反序列化为定义类型，使用的数据库类型为`blob/binary`。因此，使用自定义类型时确保定义的类型可反序列化，通常情况下，你需要实现`"QDataStream::operator<<"`和`"QDataStream::operator>>"`操作符，另外还需要实现自身的`"operator=="`用于模型类等于操作符。如下示例：
+
+```cpp
+#include <qdatastream.h>
+#include <qdatetime.h>
+
+struct MyStruct {
+    QString name;
+    int id;
+    QDateTime dateTime;
+
+    bool operator==(const MyStruct& other) const {
+        return other.name == this->name 
+            && other.id == this->id 
+            && other.dateTime == this->dateTime;
+    }
+};
+
+inline QDataStream& operator<<(QDataStream& out, const MyStruct& data) {
+    out << data.name << data.id << data.dateTime;
+    return out;
+}
+
+inline QDataStream& operator>>(QDataStream& in, MyStruct& data) {
+    in >> data.name >> data.id >> data.dateTime;
+    return in;
+}
+```
+
+Qt中有默认有许多类型自身实现了`QDataStream`序列化操作符，参考Qt文档[Serializing Qt Data Types](https://doc.qt.io/qt-5/datastreamformat.html){:target="_blank"}，因此在使用时可以直接使用，无需再实现`"operator<<"`和`"operator>>"`操作符。
 
 自定义条件
 -------------
