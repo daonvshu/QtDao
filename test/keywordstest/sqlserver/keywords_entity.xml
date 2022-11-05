@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dao xmlns="../../entity/sqlserver_entity.xsd" db="sqlserver">
+<dao xmlns="../../../entity/sqlserver_entity.xsd" db="sqlserver">
     <tb name="Database">
         <item name="column" type="int" note="keywords1" />
         <item name="group" type="varchar" bitsize="256" note="keywords2" />

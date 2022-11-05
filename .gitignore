@@ -377,3 +377,8 @@ test/keywordstest/sqlserver/*.h
 test/keywordstest/sqlserver/*.cpp
 test/keywordstest/sqlserver/*.cmake
 test/keywordstest/sqlserver/*.pri
+
+test/customtypetest/entity/*.h
+test/customtypetest/entity/*.cpp
+test/customtypetest/entity/*.cmake
+test/customtypetest/entity/*.pri

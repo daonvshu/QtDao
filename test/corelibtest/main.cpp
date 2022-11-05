@@ -65,7 +65,7 @@ struct TestRunner<T, Arg...> : TestRunner<Arg...> {
 #else
     static int run(EngineModel model) {
         T t(model);
-        int result = QTest::qExec(&t, QStringList() << "QtDao.exe" << "-o" << "test.txt");
+        int result = QTest::qExec(&t, QStringList() << "qtdaocoretest.exe" << "-o" << "test.txt");
         setColor();
         result += TestRunner<Arg...>::run(model);
         return result;
