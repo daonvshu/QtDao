@@ -16,11 +16,12 @@ public:
 
     QUERY_BUILDER_USE_SET(UpsertBuilder)
 
-    //call ignored when config is mysql
     QUERY_BUILDER_USE_CONFLICT_COLUMNS(UpsertBuilder)
 
-    //call ignored when config is mysql
     QUERY_BUILDER_USE_UPDATE_COLUMNS(UpsertBuilder)
+
+    //only supported for sqlite
+    QUERY_BUILDER_USE_FILTER(UpsertBuilder)
 
     QUERY_BUILDER_BUILDER_DECLARE(Upsert)
 };

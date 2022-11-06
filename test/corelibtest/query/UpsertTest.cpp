@@ -333,6 +333,61 @@ void UpsertTest::upsertObjectsTest() {
     }
 }
 
+void UpsertTest::upsertFilterTest() {
+    PASSMYSQL;
+    PASSSQLSERVER;
+
+    auto ids = QList<qint64>() << 10 << 11;  //auto increment id set value will not work
+    auto names = QStringList() << "name1" << "name2";
+    auto numbers = QList<int>() << 4 << 50;
+    auto number2s = QList<int>() << 10 << 20;
+
+    SqliteTest2::Fields sf2;
+    dao::_insert<SqliteTest2>()
+        .set(sf2.id = ids, sf2.number = numbers, sf2.name = names, sf2.number2 = number2s) //set value with sequence independent
+        .build().insert();
+
+    const auto& compareResult = [] (int idSize, const QStringList& expectNames, const QList<int>& expectNumbers,
+                                    const QList<int>& expectNumber2s) {
+        auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(SqliteTest2::Info::getTableName()));
+        QList<qint64> idsRes;
+        QStringList namesRes;
+        QList<int> numbersRes;
+        QList<int> number2sRes;
+        while (query.next()) {
+            idsRes << query.value("id").toLongLong();
+            namesRes << query.value("name").toString();
+            numbersRes << query.value("number").toInt();
+            number2sRes << query.value("number2").toInt();
+        }
+        QVERIFY(idsRes.size() == idSize);
+        QCOMPARE(namesRes, expectNames);
+        QCOMPARE(numbersRes, expectNumbers);
+        QCOMPARE(number2sRes, expectNumber2s);
+    };
+
+
+    numbers.clear();
+    number2s.clear();
+
+    numbers << 4 << 50; //col1 conflict with update; col2 ignore by filter condition;
+    number2s << 5 << 40;
+
+    dao::UpsertExcluded<SqliteTest2>::Fields excluded;
+
+    dao::_insertOrUpdate<SqliteTest2>()
+        .set(sf2.number = numbers, sf2.name = names, sf2.number2 = number2s)
+        .conflictColumns(sf2.name, sf2.number)
+        .updateColumns(sf2.number2)
+        .filter(excluded.number2 < sf2.number2)
+        .build().insert();
+
+    compareResult(2, QStringList() << "name1" << "name2",
+                  QList<int>() << 4 << 50, QList<int>() << 5 << 20);
+
+    dao::_truncate<SqliteTest2>();
+}
+
 void UpsertTest::cleanup() {
     clearCacheAndPrintIfTestFail();
 }

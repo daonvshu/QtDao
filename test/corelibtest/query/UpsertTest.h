@@ -21,6 +21,8 @@ private slots:
     void upsertObjectsTest_data();
     void upsertObjectsTest();
 
+    void upsertFilterTest();
+
     void cleanup();
 
     void cleanupTestCase();

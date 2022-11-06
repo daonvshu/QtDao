@@ -81,6 +81,14 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         }
         updateStr.chop(1);
 
+        if (!builder->filterCondition.isEmpty()) {
+            builder->filterCondition.connect([&](const QString& tableName) {
+                return tableName + '.';
+            });
+            updateStr.append(" where ").append(builder->filterCondition.getConditionStr());
+            values << builder->filterCondition.getValues();
+        }
+
         return statementTemplate.arg(getTableName(), usedFieldListStr(), valuePlaceholder(),
                                      conflictFields, updateStr);
 

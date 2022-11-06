@@ -135,6 +135,27 @@ public:
     };
 };
 
+template<typename E>
+class UpsertExcluded : public E {
+public:
+    struct Info : E::Info {
+        static QString getSourceName() {
+            return getTableName();
+        }
+
+        static QString getTableName() {
+            return "excluded";
+        }
+    };
+
+    class Fields : public E::Fields {
+    public:
+        Fields() {
+            this->reset(Info::getTableName());
+        }
+    };
+};
+
 QTDAO_END_NAMESPACE
 
 #define SCOPE_CONNECTION \
