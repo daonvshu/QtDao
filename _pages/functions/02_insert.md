@@ -132,6 +132,7 @@ Upsert<E> dao::_insertOrUpdate<E>()
     .set()
     .conflictColumns()
     .updateColumns()
+    .filter()
     .build()
 ```
 当插入一条（或批量插入）数据时，数据库引擎检查到字段冲突时使用`update`方式更新数据，否则使用`insert`方式添加数据。通常情况下，字段冲突使用`primary key`或`unique index`约束检查。该操作与`insert or replace`不同的是，字段冲突时`insert or replace`会删除原有数据再插入新数据。
@@ -197,6 +198,29 @@ dao::_insert<User>()
     .conflictColumns(field.name, field.classes)
     .build().insert(users);
 ```
+
+- filter  
+使用条件更新。当发生冲突时，是否执行`update`操作额外取决于`filter`条件的设置。要使用`sqlite`中的`upsert`特定表`excluded`字段，实例化`dao::UpsertExcluded<E>::Fields`即可，示例如下：
+
+```cpp
+auto names = QStringList() << "Alice" << "Bob";
+auto classes = QStringList() << "classA" << "classA";
+auto ages = QList<int>() << 12 << 20;
+auto scores = QList<int>() << 90 << 91;
+
+User::Fields field;
+dao::UpsertExcluded<User>::Fields excluded;
+
+dao::_insert<User>()
+    .set(field.name = names, field.classes = classes, field.age = ages, field.score = scores)
+    .conflictColumns(field.name, field.classes)
+    .filter(excluded.age > field.age)
+    .build().insert();
+```
+
+在上面的例子中，若`Alice`和`Bob`数据库中的`age`都为18，`Alice`不满足`filter`条件则忽略本次`Update`操作。
+
+> 注意：目前只支持在`sqlite`中使用，其他数据库忽略该条件的设置。
  
 insert into select
 -------------
