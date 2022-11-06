@@ -12,6 +12,8 @@
 
 QTDAO_BEGIN_NAMESPACE
 
+#define SQLSERVER_KEYWORDS_ESCAPES {"[", "]"}
+
 void SqlServerClient::testConnect() {
     QSqlError lastErr;
     [&] {
@@ -51,10 +53,10 @@ void SqlServerClient::createDatabase() {
             return;
         }
 
-        QString sql = QByteArray::fromBase64("SUYgREJfSUQoTiclMScpIElTIE5VTEwKCUNSRUFURSBEQVRBQkFTRSBbJTFdCglPTgoJUFJJTUFSWQoJKAoJCU5BTU\
-UgPSBOJyUxJywKCQlGSUxFTkFNRSA9IE4nJTJcJTEubmRmJywKCQlTSVpFID0gOE1CLAoJCU1BWFNJWkUgPSBVTkxJTUlURUQsCgkJRklM\
-RUdST1dUSCA9IDY0TUIKCSkKCUxPRyBPTgoJKAoJCU5BTUUgPSBOJyUxX2xvZycsCgkJRklMRU5BTUUgPSBOJyUyXCUxX2xvZy5sZGYnLA\
-oJCVNJWkUgPSA4TUIsCgkJTUFYU0laRSA9IFVOTElNSVRFRCwKCQlGSUxFR1JPV1RIID0gNjRNQgoJKQ==");
+        QString sql = QByteArray::fromBase64("SUYgREJfSUQoTiclMScpIElTIE5VTEwKCUNSRUFURSBEQVRBQkFTRSBbJTFdCglPTgoJUFJJTUFSWQoJKAoJCU5BTU"
+                                             "UgPSBOJyUxJywKCQlGSUxFTkFNRSA9IE4nJTJcJTEubmRmJywKCQlTSVpFID0gOE1CLAoJCU1BWFNJWkUgPSBVTkxJTUlURUQsCgkJRklM"
+                                             "RUdST1dUSCA9IDY0TUIKCSkKCUxPRyBPTgoJKAoJCU5BTUUgPSBOJyUxX2xvZycsCgkJRklMRU5BTUUgPSBOJyUyXCUxX2xvZy5sZGYnLA"
+                                             "oJCVNJWkUgPSA4TUIsCgkJTUFYU0laRSA9IFVOTElNSVRFRCwKCQlGSUxFR1JPV1RIID0gNjRNQgoJKQ==");
         sql = sql.arg(globalConfig->mDatabaseName, storePath);
         if (!query.exec(sql)) {
             lastErrStr = "create database fail! err = " + query.lastError().text();
@@ -95,7 +97,7 @@ void SqlServerClient::dropDatabase() {
 
 bool SqlServerClient::checkTableExist(const QString& tbName) {
     auto str = QString("select * from sys.tables where name = '%1' and type = 'U'")
-        .arg(tbName);
+        .arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES));
 
     auto query = BaseQuery::queryPrimitive(str);
     return query.next();
@@ -103,8 +105,7 @@ bool SqlServerClient::checkTableExist(const QString& tbName) {
 
 void SqlServerClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType, QStringList primaryKeys) {
     QString str = "if not exists (select * from sys.tables where name = '%1' and type = 'U') create table %2(";
-    auto tbTmpName = tbName;
-    str = str.arg(tbTmpName.remove("[").remove("]"), tbName);
+    str = str.arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES), tbName);
     for (const auto& ft : fieldsType) {
         str.append(ft).append(",");
     }
@@ -127,7 +128,7 @@ void SqlServerClient::createIndex(const QString& tbName, QStringList fields, Ind
     QString str = "create %1 index %2 on %3 (";
     QString indexName = "index";
     for (const auto& field : fields) {
-        indexName.append("_").append(field.split(" ").at(0));
+        indexName.append("_").append(checkAndRemoveKeywordEscapes(field.split(" ").at(0), SQLSERVER_KEYWORDS_ESCAPES));
         str.append(field).append(",");
     }
     QString typeStr = "nonclustered";
@@ -174,7 +175,7 @@ void SqlServerClient::truncateTable(const QString& tbName) {
 
 QStringList SqlServerClient::getTagTableFields(const QString& tbName) {
     auto str = QString("select COLUMN_NAME from information_schema.COLUMNS where table_name = '%1'")
-        .arg(tbName);
+        .arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES));
 
     QStringList fields;
 
@@ -186,7 +187,8 @@ QStringList SqlServerClient::getTagTableFields(const QString& tbName) {
 }
 
 void SqlServerClient::restoreDataBefore(const QString& tbName) {
-    QSqlQuery query = BaseQuery::queryPrimitive(QString("select objectproperty(object_id('%1'),'TableHasIdentity')").arg(tbName));
+    QSqlQuery query = BaseQuery::queryPrimitive(QString("select objectproperty(object_id('%1'),'TableHasIdentity')")
+        .arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES)));
     if (query.next()) {
         if (query.value(0).toInt() == 1) {
             BaseQuery::queryPrimitive(QString("set identity_insert %1 on").arg(tbName));
@@ -195,7 +197,8 @@ void SqlServerClient::restoreDataBefore(const QString& tbName) {
 }
 
 void SqlServerClient::restoreDataAfter(const QString& tbName) {
-    QSqlQuery query = BaseQuery::queryPrimitive(QString("select objectproperty(object_id('%1'),'TableHasIdentity')").arg(tbName));
+    QSqlQuery query = BaseQuery::queryPrimitive(QString("select objectproperty(object_id('%1'),'TableHasIdentity')")
+        .arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES)));
     if (query.next()) {
         if (query.value(0).toInt() == 1) {
             BaseQuery::queryPrimitive(QString("set identity_insert %1 off").arg(tbName));
@@ -206,7 +209,7 @@ void SqlServerClient::restoreDataAfter(const QString& tbName) {
 void SqlServerClient::dropAllIndexOnTable(const QString& tbName) {
     auto query = BaseQuery::queryPrimitive(
         QString("select a.name from sys.indexes a join sys.tables c ON (a.object_id = c.object_id) where c.name='%1' and a.name like 'index_%' group by a.name")
-        .arg(tbName)
+            .arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES))
     );
     QStringList indexNames;
     while (query.next()) {

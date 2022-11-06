@@ -82,4 +82,11 @@ QString AbstractClient::translateSqlStatement(const QString& statement, const QV
     return tmp;
 }
 
+QString AbstractClient::checkAndRemoveKeywordEscapes(const QString& tbOrFieldName, const QStringList& symbols) {
+    auto name = tbOrFieldName;
+    for (const auto& s : symbols) {
+        name.remove(s);
+    }
+    return name;
+}
 QTDAO_END_NAMESPACE

@@ -10,6 +10,8 @@
 
 QTDAO_BEGIN_NAMESPACE
 
+#define MYSQL_KEYWORDS_ESCAPES {"`"}
+
 void MysqlClient::testConnect() {
     QSqlError lastErr;
     [&] {
@@ -81,7 +83,7 @@ void MysqlClient::dropDatabase() {
 
 bool MysqlClient::checkTableExist(const QString& tbName) {
     auto str = QString("select table_name from information_schema.TABLES where table_name ='%1' and table_schema = '%2'")
-        .arg(tbName, globalConfig->mDatabaseName);
+        .arg(checkAndRemoveKeywordEscapes(tbName, MYSQL_KEYWORDS_ESCAPES), globalConfig->mDatabaseName);
 
     auto query = BaseQuery::queryPrimitive(str);
     return query.next();
@@ -116,7 +118,7 @@ void MysqlClient::createIndex(const QString& tbName, QStringList fields, IndexTy
     QString str = "create %1 index %2 on %3 (";
     QString indexName = "index";
     for (const auto& field : fields) {
-        indexName.append("_").append(field.split(" ").at(0));
+        indexName.append("_").append(checkAndRemoveKeywordEscapes(field.split(" ").at(0), MYSQL_KEYWORDS_ESCAPES));
         str.append(field).append(",");
     }
     QString typeStr = "";
@@ -152,7 +154,7 @@ void MysqlClient::truncateTable(const QString& tbName) {
 QStringList MysqlClient::getTagTableFields(const QString& tbName) {
     auto str = 
         QString("select COLUMN_NAME from information_schema.COLUMNS where table_name = '%1' and table_schema = '%2';")
-    .arg(tbName, globalConfig->mDatabaseName);
+    .arg(checkAndRemoveKeywordEscapes(tbName, MYSQL_KEYWORDS_ESCAPES), globalConfig->mDatabaseName);
 
     QStringList fields;
 
@@ -166,7 +168,7 @@ QStringList MysqlClient::getTagTableFields(const QString& tbName) {
 void MysqlClient::dropAllIndexOnTable(const QString& tbName) {
     auto query = BaseQuery::queryPrimitive(
         QString("SELECT index_name FROM information_schema.statistics where TABLE_SCHEMA = '%1' and TABLE_NAME = '%2' GROUP BY index_name")
-        .arg(globalConfig->mDatabaseName, tbName)
+        .arg(globalConfig->mDatabaseName, checkAndRemoveKeywordEscapes(tbName, MYSQL_KEYWORDS_ESCAPES))
     );
     QStringList indexNames;
     while (query.next()) {

@@ -117,6 +117,9 @@ private:
     void tableUpgrade();
 
     void restoreData2NewTable(const QString& tbname, QStringList fields);
+
+protected:
+    QString checkAndRemoveKeywordEscapes(const QString& tbOrFieldName, const QStringList& symbols);
 };
 
 template<SqlClientList C> class AbstractClient::Delegate<C> {

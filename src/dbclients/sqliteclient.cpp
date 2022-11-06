@@ -10,6 +10,8 @@
 
 QTDAO_BEGIN_NAMESPACE
 
+#define SQLITE_KEYWORDS_ESCAPES {"\""}
+
 bool createPath(QString path) {
     QDir dir;
     QFileInfo info(path);
@@ -55,7 +57,8 @@ void SqliteClient::dropDatabase() {
 }
 
 bool SqliteClient::checkTableExist(const QString& tbName) {
-    auto str = QString("select *from sqlite_master where type='table' and name = '%1'").arg(tbName);
+    auto str = QString("select *from sqlite_master where type='table' and name = '%1'").arg(
+        checkAndRemoveKeywordEscapes(tbName, SQLITE_KEYWORDS_ESCAPES));
 
     auto query = BaseQuery::queryPrimitive(str);
     return query.next();
@@ -86,7 +89,7 @@ void SqliteClient::createIndex(const QString& tbName, QStringList fields, IndexT
     QString str = "create %1 index %2 on %3 (";
     QString indexName = "index";
     for (const auto& field : fields) {
-        indexName.append("_").append(field.split(" ").at(0));
+        indexName.append("_").append(checkAndRemoveKeywordEscapes(field.split(" ").at(0), SQLITE_KEYWORDS_ESCAPES));
         str.append(field).append(",");
     }
     QString typeStr = "";
@@ -118,7 +121,7 @@ void SqliteClient::truncateTable(const QString& tbName) {
     BaseQuery::queryPrimitive(str);
 
     if (checkTableExist("sqlite_sequence")) {
-        str = QString("delete from sqlite_sequence where name = \"%1\"").arg(tbName);
+        str = QString("delete from sqlite_sequence where name = '%1'").arg(checkAndRemoveKeywordEscapes(tbName, SQLITE_KEYWORDS_ESCAPES));
         BaseQuery::queryPrimitive(str);
     }
 }
@@ -126,7 +129,8 @@ void SqliteClient::truncateTable(const QString& tbName) {
 QStringList SqliteClient::getTagTableFields(const QString& tbName) {
     QStringList fields;
 
-    auto query = BaseQuery::queryPrimitive(QString("pragma table_info('%1')").arg(tbName));
+    auto query = BaseQuery::queryPrimitive(QString("pragma table_info('%1')")
+        .arg(checkAndRemoveKeywordEscapes(tbName, SQLITE_KEYWORDS_ESCAPES)));
     while (query.next()) {
         fields << query.value(1).toString();
     }
@@ -135,7 +139,8 @@ QStringList SqliteClient::getTagTableFields(const QString& tbName) {
 
 void SqliteClient::dropAllIndexOnTable(const QString& tbName) {
     auto query = BaseQuery::queryPrimitive(
-        QString("select *from sqlite_master where type='index' and tbl_name = '%1'").arg(tbName)
+        QString("select *from sqlite_master where type='index' and tbl_name = '%1'")
+            .arg(checkAndRemoveKeywordEscapes(tbName, SQLITE_KEYWORDS_ESCAPES))
     );
     QStringList indexNames;
     while (query.next()) {
