@@ -58,7 +58,7 @@ template<typename E, typename... T>
 struct JoinEUnpackHelper<E, T...> : JoinEUnpackHelper<T...> {
 
     static void setOrder(QHash<QString, QString>& orderMap, int i) {
-        orderMap.insert(E::Info::getTableName(), ('a' + i) + QString("."));
+        orderMap.insert(E::Info::getTableName(), (char)('a' + i) + QString("."));
         JoinEUnpackHelper<T...>::setOrder(orderMap, i + 1);
     }
 
