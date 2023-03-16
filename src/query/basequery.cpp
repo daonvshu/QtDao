@@ -5,8 +5,7 @@
 
 #include "config/configbuilder.h"
 
-#include <iostream>
-#include <QThread>
+#include <qsqlrecord.h>
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -14,34 +13,36 @@ Q_LOGGING_CATEGORY(loggingDefault, "qtdao.query")
 
 bool BaseQuery::useDefaultLogging = false;
 
-BaseQuery::BaseQuery(bool fatalEnabled, BaseQueryBuilder* builder, LoggingCategoryPtr logging)
-    : builder(builder)
-    , debugFatalEnabled(fatalEnabled)
-    , loggingCategoryPtr(logging)
-{
-    if (builder != nullptr) {
-        this->builder = new BaseQueryBuilder(*builder);
+QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, LoggingCategoryPtr logging, bool debugFatalEnabled) {
+    BaseQuery executor;
+    executor.setSqlQueryStatement(statement, values);
+    executor.setDebug(debugFatalEnabled, logging);
+
+    if (!values.isEmpty()) {
+        if (values.first().type() == QVariant::List) {
+            return executor.execBatch();
+        }
     }
+    return executor.exec();
 }
 
-BaseQuery::BaseQuery(const BaseQuery& other) {
-    this->statement = other.statement;
-    this->values = other.values;
-    this->builder = new BaseQueryBuilder(*other.builder);
-    this->debugFatalEnabled = other.debugFatalEnabled;
-    this->loggingCategoryPtr = other.loggingCategoryPtr;
+void BaseQuery::useDefaultLoggingIfNull(bool useDefault) {
+    useDefaultLogging = useDefault;
 }
 
-BaseQuery::~BaseQuery() {
-    if (builder != nullptr) {
-        delete builder;
-        builder = nullptr;
-    }
+void BaseQuery::setSqlQueryStatement(const QString& curStatement, const QVariantList& curValues) {
+    this->statement = curStatement;
+    this->values = curValues;
+}
+
+void BaseQuery::setDebug(bool fatalEnabled, LoggingCategoryPtr logging) {
+    this->debugFatalEnabled = fatalEnabled;
+    this->loggingCategoryPtr = logging;
 }
 
 QSqlQuery BaseQuery::exec() {
     bool prepareOk;
-    auto query = getQuery(prepareOk, true);
+    auto query = getQuery(prepareOk, false);
     if (!prepareOk || !execByCheckEmptyValue(query, this)) {
         postError(query, debugFatalEnabled, !prepareOk);
     }
@@ -50,34 +51,17 @@ QSqlQuery BaseQuery::exec() {
 
 QSqlQuery BaseQuery::execBatch() {
     bool prepareOk;
-    auto query = getQuery(prepareOk);
+    auto query = getQuery(prepareOk, true);
     if (!prepareOk || !query.execBatch()) {
         postError(query, debugFatalEnabled, !prepareOk);
     }
     return query;
 }
 
-QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, LoggingCategoryPtr logging, bool debugFatalEnabled) {
-    BaseQuery executor;
-    executor.loggingCategoryPtr = logging;
-    executor.setSqlQueryStatement(statement, values);
-    bool prepareOk;
-    auto query = executor.getQuery(prepareOk, true);
-    if (!prepareOk || !execByCheckEmptyValue(query, &executor)) {
-        postError(query, debugFatalEnabled, !prepareOk);
-    }
-    return query;
-}
-
-void BaseQuery::setSqlQueryStatement(const QString& curStatement, const QVariantList& curValues) {
-    this->statement = curStatement;
-    this->values = curValues;
-}
-
-QSqlQuery BaseQuery::getQuery(bool& prepareOk, bool skipEmptyValue) {
+QSqlQuery BaseQuery::getQuery(bool& prepareOk, bool batchExecMode) {
     auto db = ConnectionPool::getConnection();
     QSqlQuery query(db);
-    if (!skipEmptyValue || !values.isEmpty()) {
+    if (batchExecMode || !values.isEmpty()) {
         if (!query.prepare(statement)) {
             prepareOk = false;
             return query;
@@ -91,7 +75,7 @@ QSqlQuery BaseQuery::getQuery(bool& prepareOk, bool skipEmptyValue) {
     }
     if (loggingCategoryPtr != nullptr) {
         if (loggingCategoryPtr().isDebugEnabled()) {
-            printQueryLog(this, !skipEmptyValue);
+            printQueryLog(this, batchExecMode);
         }
     }
 

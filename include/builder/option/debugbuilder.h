@@ -20,7 +20,7 @@ public:
     }
 
     /**
-     * set current query logging category, by default use 'qtdao.query'
+     * set current query logging category, call 'dao::loggingUseDefault' to use default category 'qtdao.query'
      * @param ptr new logging category function pointer
      * @return this
      */

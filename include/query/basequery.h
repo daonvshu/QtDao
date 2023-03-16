@@ -3,15 +3,7 @@
 #include "../global.h"
 
 #include <qvariant.h>
-#include <QtSql/QSqlQuery>
-#include <QtSql/QSqlRecord>
-#include <QtSql/QSqlError>
-
-#include <functional>
-#include <qmutex.h>
-#include <qwaitcondition.h>
-
-#include "../builder/basequerybuilder.h"
+#include <qsqlquery.h>
 
 #include "../query/explaininfo.h"
 
@@ -21,45 +13,103 @@ QTDAO_BEGIN_NAMESPACE
 
 class BaseQuery {
 public:
-    explicit BaseQuery(bool fatalEnabled = true, BaseQueryBuilder* builder = nullptr, LoggingCategoryPtr logging = nullptr);
-
-    BaseQuery(const BaseQuery& other);
-    ~BaseQuery();
-
+    /**
+     * execute sql statement directly
+     * @param statement sql query statement
+     * @param values bound the values to prepared statement
+     * @param logging current logging category function ptr
+     * @param debugFatalEnabled use qFatal in debug mode
+     * @return
+     */
     static QSqlQuery queryPrimitive(const QString& statement, const QVariantList& values = QVariantList(), LoggingCategoryPtr logging = nullptr, bool debugFatalEnabled = true);
 
+    /**
+     * use default logging category if not set 'LoggingCategoryPtr'
+     * @param useDefault use default logging
+     */
+    static void useDefaultLoggingIfNull(bool useDefault);
+
 protected:
+    /**
+     * add current query sql statement and prepared values
+     * @param curStatement sql query statement
+     * @param curValues prepared values
+     */
     void setSqlQueryStatement(const QString& curStatement, const QVariantList& curValues);
 
+    /**
+     * set fatal enable or logging category
+     * @param fatalEnabled
+     * @param logging
+     */
+    void setDebug(bool fatalEnabled, LoggingCategoryPtr logging);
+
+    /**
+     * execute prepared sql query
+     * @return
+     */
     QSqlQuery exec();
+
+    /**
+     * execute prepared sql query in a batch
+     * @return
+     */
     QSqlQuery execBatch();
 
 protected:
+    //sql statement
     QString statement;
+    //prepare bound values
     QVariantList values;
-    BaseQueryBuilder* builder;
 
+private:
+    //enable fatal error
     bool debugFatalEnabled;
+    //current query logging category
+    LoggingCategoryPtr loggingCategoryPtr;
 
+    //use default category if not set
     static bool useDefaultLogging;
 
-    friend class BaseQueryBuilder;
-
-    friend void transcation();
-    friend void commit();
-    friend void rollback(const QString&);
-    friend void loggingUseDefault(bool useDefault);
+    //print formatted query error message
     friend void printQueryLog(BaseQuery* query, bool batchExecMode);
 
 private:
-    LoggingCategoryPtr loggingCategoryPtr;
+    /**
+     * get a sql connection from connection pool
+     * @param prepareOk set prepare statement result
+     * @param batchExecMode current execute in batch mode
+     * @return opened query connection
+     */
+    QSqlQuery getQuery(bool& prepareOk, bool batchExecMode);
 
-private:
-    QSqlQuery getQuery(bool& prepareOk, bool skipEmptyValue = false);
+    /**
+     * bound values to prepared query
+     * @param query
+     */
     void bindQueryValues(QSqlQuery& query);
 
+    /**
+     * get last query error and throw exception or fatal error
+     * @param lastQuery current execute query
+     * @param fatalEnabled post error use fatal error
+     * @param prepareStatementFail current is prepare statement error
+     */
     static void postError(const QSqlQuery& lastQuery, bool fatalEnabled, bool prepareStatementFail);
+
+    /**
+     * post a fatal error if current is debug mode
+     * @param prepareError
+     */
     static void fatalError(bool prepareError);
+
+    /**
+     * check the values to execute sql query, if values is not empty, only call 'exec()',
+     * otherwise call 'exec(statement)'
+     * @param query opened sql connection query
+     * @param executor
+     * @return execute result
+     */
     static bool execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executor);
 
 protected:
