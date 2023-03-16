@@ -1,36 +1,28 @@
 ﻿#pragma once
 
-#include "basequerybuilder.h"
+#include "option/debugbuilder.h"
+#include "option/columnbuilder.h"
+#include "option/filterbuilder.h"
+#include "option/onconditionbuilder.h"
+#include "option/constraintbuilder.h"
+#include "option/unionbuilder.h"
 
-#include "../macro/macro.h" 
+#include "../macro/macro.h"
 
 #include "../query/join.h"
 
 QTDAO_BEGIN_NAMESPACE
 
 template<typename... E>
-class JoinBuilder : public BaseQueryBuilder {
+class JoinBuilder
+        : public DebugBuilder<JoinBuilder<E...>>
+        , public ColumnBuilder<JoinBuilder<E...>>
+        , public FilterBuilder<JoinBuilder<E...>>
+        , public OnConditionBuilder<JoinBuilder<E...>>
+        , public ConstraintBuilder<JoinBuilder<E...>>
+        , public UnionBuilder<JoinBuilder<E...>>
+{
 public:
-    QUERY_BUILDER_USE_FATAL_DISABLE(JoinBuilder)
-    QUERY_BUILDER_SET_LOGGING(JoinBuilder)
-
-    QUERY_BUILDER_USE_FILTER(JoinBuilder)
-    QUERY_BUILDER_USE_WITH(JoinBuilder)
-    QUERY_BUILDER_USE_COLUMN(JoinBuilder)
-    QUERY_BUILDER_USE_ON(JoinBuilder)
-
-    QUERY_BUILDER_USE_QUERY_UNION_SELECT(JoinBuilder)
-    QUERY_BUILDER_USE_QUERY_UNION_JOIN(JoinBuilder)
-
-    void filter() override;
-    void on() override;
-
-    template<typename E2>
-    JoinBuilder<E...>& columnAll() {
-        BaseQueryBuilder::columnAll<E2>();
-        return *this;
-    }
-
     template<typename E2>
     JoinBuilder<E...>& from();
 
@@ -80,6 +72,10 @@ public:
     JoinBuilder<E...>& fullJoin(RecursiveQueryBuilder& builder);
 
     Join<E...> build();
+
+protected:
+    void filter() override;
+    void on() override;
 
 private:
     QString lastTableName, mainTable;

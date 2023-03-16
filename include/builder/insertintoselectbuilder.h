@@ -1,6 +1,9 @@
 ﻿#pragma once
 
-#include "basequerybuilder.h"
+#include "option/debugbuilder.h"
+#include "option/columnbuilder.h"
+#include "option/fromselectbuilder.h"
+#include "option/fromjoinbuilder.h"
 
 #include "../macro/macro.h"
 
@@ -9,17 +12,16 @@
 QTDAO_BEGIN_NAMESPACE
 
 template<typename E>
-class InsertIntoSelectBuilder : public BaseQueryBuilder {
+class InsertIntoSelectBuilder
+        : public DebugBuilder<InsertIntoSelectBuilder<E>>
+        , public ColumnBuilder<InsertIntoSelectBuilder<E>>
+        , public FromSelectBuilder<false, InsertIntoSelectBuilder, E>
+        , public FromJoinBuilder<false, InsertIntoSelectBuilder, E>
+{
 public:
-    QUERY_BUILDER_USE_FATAL_DISABLE(InsertIntoSelectBuilder)
-    QUERY_BUILDER_SET_LOGGING(InsertIntoSelectBuilder)
-
-    QUERY_BUILDER_USE_COLUMN(InsertIntoSelectBuilder)
-
-    QUERY_BUILDER_USE_QUERY_FROM_SELECT2(InsertIntoSelectBuilder)
-    QUERY_BUILDER_USE_QUERY_FROM_JOIN2(InsertIntoSelectBuilder)
-
-    QUERY_BUILDER_BUILDER_DECLARE(InsertIntoSelect)
+    InsertIntoSelect <E> build() {
+        return InsertIntoSelect<E>(this->setFatalEnabled, this, this->loggingCategoryPtr);
+    }
 };
 
 QTDAO_END_NAMESPACE

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-#include "basequerybuilder.h"
+#include "option/debugbuilder.h"
+#include "option/filterbuilder.h"
 
 #include "../macro/macro.h"
 
@@ -9,14 +10,14 @@
 QTDAO_BEGIN_NAMESPACE
 
 template<typename E>
-class DeleteBuilder : public BaseQueryBuilder {
+class DeleteBuilder
+        : public DebugBuilder<DeleteBuilder<E>>
+        , public FilterBuilder<DeleteBuilder<E>>
+{
 public:
-    QUERY_BUILDER_USE_FATAL_DISABLE(DeleteBuilder)
-    QUERY_BUILDER_SET_LOGGING(DeleteBuilder)
-
-    QUERY_BUILDER_USE_FILTER(DeleteBuilder)
-
-    QUERY_BUILDER_BUILDER_DECLARE(Delete)
+    Delete<E> build() {
+        return Delete<E>(this->setFatalEnabled, this, this->loggingCategoryPtr);
+    }
 };
 
 QTDAO_END_NAMESPACE

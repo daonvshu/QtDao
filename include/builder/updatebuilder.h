@@ -1,6 +1,8 @@
 ﻿#pragma once
 
-#include "basequerybuilder.h"
+#include "option/debugbuilder.h"
+#include "option/filterbuilder.h"
+#include "option/setbuilder.h"
 
 #include "../macro/macro.h"
 
@@ -9,15 +11,15 @@
 QTDAO_BEGIN_NAMESPACE
 
 template<typename E>
-class UpdateBuilder : public BaseQueryBuilder {
+class UpdateBuilder
+        : public DebugBuilder<UpdateBuilder<E>>
+        , public FilterBuilder<UpdateBuilder<E>>
+        , public SetBuilder<UpdateBuilder<E>>
+{
 public:
-    QUERY_BUILDER_USE_FATAL_DISABLE(UpdateBuilder)
-    QUERY_BUILDER_SET_LOGGING(UpdateBuilder)
-
-    QUERY_BUILDER_USE_SET(UpdateBuilder)
-    QUERY_BUILDER_USE_FILTER(UpdateBuilder)
-
-    QUERY_BUILDER_BUILDER_DECLARE(Update)
+    Update <E> build() {
+        return Update<E>(this->setFatalEnabled, this, this->loggingCategoryPtr);
+    }
 };
 
 QTDAO_END_NAMESPACE

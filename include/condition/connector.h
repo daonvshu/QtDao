@@ -47,7 +47,7 @@ public:
 protected:
     virtual void appendConnector();
 
-private:
+public:
     template<typename E, typename... Args>
     Connector& appendCol(const EntityField<E>& field, const Args&... condition) {
         d->append(FieldInfo{ field.name, field.bindTable });

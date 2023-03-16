@@ -5,6 +5,7 @@
 
 QTDAO_BEGIN_NAMESPACE
 
+class FromBuilder;
 class SelectImpl : protected BaseQuery, protected virtual EntityReaderInterface {
 public:
     using BaseQuery::BaseQuery;
@@ -30,6 +31,8 @@ protected:
 protected:
     int topSize = 0;
     bool topPercent = false;
+
+    friend class FromBuilder;
 };
 
 QTDAO_END_NAMESPACE

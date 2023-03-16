@@ -11,6 +11,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 add_library(${PROJECT_NAME}
     builder/basequerybuilder.cpp
+    builder/frombuilder.cpp
+    builder/unionbuilder.cpp
 
     condition/conditionconstraint.cpp
     condition/connectordata.cpp
