@@ -47,6 +47,12 @@ public:
 private:
     //use default connect conditions
     Connector constraintCondition;
+
+    template<template<typename> class, typename>
+    friend class BuilderReaderProvider;
+
+    template<template<typename...> class, typename...>
+    friend class BuilderJbReaderProvider;
 };
 
 QTDAO_END_NAMESPACE

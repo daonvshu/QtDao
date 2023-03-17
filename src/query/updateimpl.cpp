@@ -8,23 +8,27 @@ void UpdateImpl::buildUpdateBySetSqlStatement() {
 
     QVariantList value;
 
-    builder->setCondition.connect();
-    Q_ASSERT(!builder->setCondition.getConditionStr().isEmpty());
+    auto& sc = setConnector();
+    sc.connect();
+    Q_ASSERT(!sc.getConditionStr().isEmpty());
     sql.append(" set ");
-    sql.append(builder->setCondition.getConditionStr());
-    value << builder->setCondition.getValues();
+    sql.append(sc.getConditionStr());
+    value << sc.getValues();
 
-    if (!builder->filterCondition.isEmpty()) {
-        builder->filterCondition.connect();
-        sql.append(" where ").append(builder->filterCondition.getConditionStr());
-        value << builder->filterCondition.getValues();
+    auto& fc = filterConnector();
+    if (!fc.isEmpty()) {
+        fc.connect();
+        sql.append(" where ").append(fc.getConditionStr());
+        value << fc.getValues();
     }
     setSqlQueryStatement(sql, value);
 }
 
 void UpdateImpl::bindUpdateEntitiesCondition(const std::function<QVariantList(const QString &)> &fieldColValuesReader) {
-    Q_ASSERT(builder->setCondition.isEmpty());
-    Q_ASSERT(builder->filterCondition.isEmpty());
+    auto& sc = setConnector();
+    auto& fc = filterConnector();
+    Q_ASSERT(sc.isEmpty());
+    Q_ASSERT(fc.isEmpty());
 
     QStringList primaryKeys = getPrimaryKeys();
     Q_ASSERT(!primaryKeys.isEmpty());
@@ -35,9 +39,9 @@ void UpdateImpl::bindUpdateEntitiesCondition(const std::function<QVariantList(co
         auto condition =
             EntityCondition(FieldInfo{ field, getTableName() }, "=", fieldValue.size() == 1 ? fieldValue.at(0) : fieldValue);
         if (primaryKeys.contains(field)) {
-            builder->filterCondition.append(condition);
+            fc.append(condition);
         } else {
-            builder->setCondition.append(condition);
+            sc.append(condition);
         }
     }
 }

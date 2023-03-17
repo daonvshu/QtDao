@@ -16,7 +16,7 @@ class InsertBuilder
 {
 public:
     Insert <E> build() {
-        return Insert<E>(this->setFatalEnabled, this, this->loggingCategoryPtr);
+        return Insert<E>(this);
     }
 };
 

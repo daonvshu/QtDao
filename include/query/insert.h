@@ -12,113 +12,115 @@ template<typename E>
 class InsertBuilder;
 
 template<typename E>
-class Insert : EntityReaderProvider<E>, InsertImpl {
+class Insert
+        : EntityReaderProvider<E>
+        , BuilderReaderProvider<InsertBuilder, E>
+        , InsertImpl
+{
 public:
-    /// <summary>
-    /// using the SET condition to insert a record, can be inserted in batches
-    /// </summary>
+    /**
+     * using the SET condition to insert a record, can be inserted in batches
+     */
     void insert();
 
-    /// <summary>
-    /// using the SET condition to insert a record, can be inserted in batches 
-    /// update if a unique constraint exists, otherwise insert
-    /// </summary>
+    /**
+     * using the SET condition to insert a record, can be inserted in batches,
+     * update if a unique constraint exists, otherwise insert
+     */
     void insertOrReplace() {
         insertMode = InsertMode::INSERT_OR_REPLACE;
         insert();
     }
 
-    /// <summary>
-    /// using the SET condition to insert a record, can be inserted in batches
-    /// ignore when insert conflict
-    /// </summary>
+    /**
+     * using the SET condition to insert a record, can be inserted in batches,
+     * ignore when insert conflict
+     */
     void insertOrIgnore() {
         insertMode = InsertMode::INSERT_OR_IGNORE;
         insert();
     }
 
-    /// <summary>
-    /// insert an object instance and set the ID back to the object after successful insertion
-    /// </summary>
-    /// <param name="entity"></param>
+    /**
+     * insert an object instance and set the ID back to the object after successful insertion
+     * @param entity
+     */
     void insert(E& entity);
 
-    /// <summary>
-    /// insert an object instance and set the ID back to the object after successful insertion 
-    /// update if a unique constraint exists, otherwise insert
-    /// </summary>
-    /// <param name="entity"></param>
+    /**
+     * insert an object instance and set the ID back to the object after successful insertion,
+     * update if a unique constraint exists, otherwise insert
+     * @param entity
+     */
     void insertOrReplace(E& entity) {
         insertMode = InsertMode::INSERT_OR_REPLACE;
         insert(entity);
     }
 
-    /// <summary>
-    /// insert an object instance and set the ID back to the object after successful insertion
-    /// ignore when insert conflict
-    /// </summary>
-    /// <param name="entity"></param>
+    /**
+     * insert an object instance and set the ID back to the object after successful insertion,
+     * ignore when insert conflict
+     * @param entity
+     */
     void insertOrIgnore(E& entity) {
         insertMode = InsertMode::INSERT_OR_IGNORE;
         insert(entity);
     }
 
-    /// <summary>
-    /// insert objects in batches 
-    /// use 'execbatch'
-    /// </summary>
-    /// <param name="entities"></param>
+    /**
+     * insert objects in batches,
+     * use 'execbatch'
+     * @param entities
+     */
     void insert(const QList<E>& entities);
 
-    /// <summary>
-    /// insert objects in batches 
-    /// use 'execbatch' 
-    /// update if a unique constraint exists, otherwise insert
-    /// </summary>
-    /// <param name="entities"></param>
+    /**
+     * insert objects in batches, use 'execbatch',
+     * update if a unique constraint exists, otherwise insert
+     * @param entities
+     */
     void insertOrReplace(const QList<E>& entities) {
         insertMode = InsertMode::INSERT_OR_REPLACE;
         insert(entities);
     }
 
-    /// <summary>
-    /// insert objects in batches
-    /// use 'execbatch'
-    /// ignore when insert conflict
-    /// </summary>
-    /// <param name="entities"></param>
+    /**
+     * insert objects in batches, use 'execbatch',
+     * ignore when insert conflict
+     * @param entities
+     */
     void insertOrIgnore(const QList<E>& entities) {
         insertMode = InsertMode::INSERT_OR_IGNORE;
         insert(entities);
     }
 
-    /// <summary>
-    /// insert objects in batches 
-    /// use 'exec'，the values list connect by string(warning: sql statement length limit)
-    /// insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx)
-    /// </summary>
-    /// <param name="entities"></param>
+    /**
+     * insert objects in batches,
+     * use 'exec'，the values list connect by string(warning: sql statement length limit),
+     * insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx)
+     * @param entities
+     */
     void insert2(const QList<E>& entities);
 
-    /// <summary>
-    /// insert objects in batches
-    /// use 'exec'，the values list connect by string(warning: sql statement length limit)
-    /// insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx)
-    /// update if a unique constraint exists, otherwise insert
-    /// </summary>
-    /// <param name="entities"></param>
+    /**
+     * insert objects in batches,
+     * use 'exec'，the values list connect by string(warning: sql statement length limit),
+     * insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx),
+     * update if a unique constraint exists, otherwise insert
+     * @param entities
+     */
     void insert2OrReplace(const QList<E>& entities) {
         insertMode = InsertMode::INSERT_OR_REPLACE;
         insert2(entities);
     }
 
-    /// <summary>
-    /// insert objects in batches
-    /// use 'exec'，the values list connect by string(warning: sql statement length limit)
-    /// insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx)
-    /// ignore when insert conflict
-    /// </summary>
-    /// <param name="entities"></param>
+    /**
+     * insert objects in batches,
+     * use 'exec'，the values list connect by string(warning: sql statement length limit),
+     * insert into E (xx, xx) values(xx,xx), (xx, xx), (xx, xx),
+     * ignore when insert conflict
+     * @param entities
+     */
     void insert2OrIgnore(const QList<E>& entities) {
         insertMode = InsertMode::INSERT_OR_IGNORE;
         insert2(entities);
@@ -131,6 +133,7 @@ private:
 template<typename E>
 inline void Insert<E>::insert() {
     bool operateBatch = buildInsertBySetSqlStatement();
+    setDebug(this->builder);
     operateBatch ? execBatch() : exec();
 }
 
@@ -140,6 +143,7 @@ inline void Insert<E>::insert(E& entity) {
     auto values = EntityReaderProvider<E>::getValueWithoutAutoIncrement(entity);
     setSqlQueryStatement(sqlStatement, values);
 
+    setDebug(this->builder);
     QSqlQuery query = exec();
     EntityReaderProvider<E>::bindAutoIncrementId(entity, query.lastInsertId());
 }
@@ -161,6 +165,7 @@ inline void Insert<E>::insert(const QList<E>& entities) {
         tagValues << QVariant(values.at(i));
     }
     setSqlQueryStatement(sqlStatement, tagValues);
+    setDebug(this->builder);
     execBatch();
 }
 
@@ -174,6 +179,7 @@ inline void Insert<E>::insert2(const QList<E>& entities) {
         values << EntityReaderProvider<E>::getValueWithoutAutoIncrement(entity);
     }
     setSqlQueryStatement(sqlStatement, values);
+    setDebug(this->builder);
     exec();
 }
 

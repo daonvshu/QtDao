@@ -13,24 +13,26 @@ void JoinImpl::buildJoinSqlStatement() {
         return tableOrder.value(tb);
     };
     usedColumns.clear();
-    if (!builder->columnBind.isEmpty()) {
-        builder->columnBind.connect(prefixGetter);
-        sql.append(builder->columnBind.getConditionStr());
-        values.append(builder->columnBind.getValues());
-        usedColumns = builder->columnBind.getUsedFieldNames();
+    auto& cc = columnConnector();
+    if (!cc.isEmpty()) {
+        cc.connect(prefixGetter);
+        sql.append(cc.getConditionStr());
+        values.append(cc.getValues());
+        usedColumns = cc.getUsedFieldNames();
     } else {
         sql.append(getAllEntityField());
     }
     sql.append(" from ");
-    if (mainData.fromSelectStatement.isEmpty()) {
+    auto& mainFromData = fromBuildData();
+    if (mainFromData.statement.isEmpty()) {
         sql.append(mainTable);
     } else {
-        if (mainData.recursiveQuery) {
-            sql.prepend(mainData.fromSelectStatement).append(mainData.fromSelectAs);
+        if (mainFromData.recursiveQuery) {
+            sql.prepend(mainFromData.statement).append(mainFromData.asName);
         } else {
-            sql.append("(").append(mainData.fromSelectStatement).append(")");
+            sql.append("(").append(mainFromData.statement).append(")");
         }
-        values.append(mainData.fromSelectValues);
+        values.append(mainFromData.values);
     }
     sql.append(' ').append(prefixGetter(mainTable));
     sql.chop(1);
@@ -44,16 +46,16 @@ void JoinImpl::buildJoinSqlStatement() {
         sql.append(' ');
         sql.append(getJoinTypeName(joinData.joinType));
         sql.append(' ');
-        if (joinData.fromSelectStatement.isEmpty()) {
+        if (joinData.fromBuildData.statement.isEmpty()) {
             sql.append(insideRecursiveQuery ? tb.first : tb.second);
         } else {
-            if (joinData.recursiveQuery) {
-                sql.prepend(joinData.fromSelectStatement).append(joinData.fromSelectAs);
-                joinData.fromSelectValues.append(values);
-                joinData.fromSelectValues.swap(values);
+            if (joinData.fromBuildData.recursiveQuery) {
+                sql.prepend(joinData.fromBuildData.statement).append(joinData.fromBuildData.asName);
+                joinData.fromBuildData.values.append(values);
+                joinData.fromBuildData.values.swap(values);
             } else {
-                sql.append("(").append(joinData.fromSelectStatement).append(")");
-                values.append(joinData.fromSelectValues);
+                sql.append("(").append(joinData.fromBuildData.statement).append(")");
+                values.append(joinData.fromBuildData.values);
             }
         }
         sql.append(' ').append(prefixGetter(tb.first));
@@ -64,25 +66,30 @@ void JoinImpl::buildJoinSqlStatement() {
             values.append(joinData.filter.getValues());
         }
     }
-    if (!mainData.filter.isEmpty()) {
-        mainData.filter.connect(prefixGetter);
-        sql.append(" where ").append(mainData.filter.getConditionStr());
-        values.append(mainData.filter.getValues());
-    }
-    bool unionSelect = !builder->unionSelectStatement.isEmpty();
-    if (unionSelect) {
-        sql.append(builder->unionAll ? " union all " : " union ");
-        sql.append(builder->unionSelectStatement);
-        values.append(builder->unionSelectValues);
+
+    auto& fc = filterConnector();
+    if (!fc.isEmpty()) {
+        fc.connect(prefixGetter);
+        sql.append(" where ").append(fc.getConditionStr());
+        values.append(fc.getValues());
     }
 
-    if (!builder->constraintCondition.isEmpty()) {
-        builder->constraintCondition.connect(
+    auto& unionData = unionBuildData();
+    bool unionSelect = !unionData.statement.isEmpty();
+    if (unionSelect) {
+        sql.append(unionData.unionAll ? " union all " : " union ");
+        sql.append(unionData.statement);
+        values.append(unionData.values);
+    }
+
+    auto& constraint = constraintConnector();
+    if (!constraint.isEmpty()) {
+        constraint.connect(
             unionSelect && !globalConfig->isSqlite() ? std::function<QString(const QString&)>() : prefixGetter
         );
         sql.append(' ');
-        sql.append(builder->constraintCondition.getConditionStr());
-        values.append(builder->constraintCondition.getValues());
+        sql.append(constraint.getConditionStr());
+        values.append(constraint.getValues());
     }
 
     setSqlQueryStatement(sql, values);

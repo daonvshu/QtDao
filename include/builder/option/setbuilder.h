@@ -19,7 +19,7 @@ public:
      */
     template<typename...Args>
     T& set(const Args &...args) {
-        set(args...);
+        doSet(args...);
         return static_cast<T&>(*this);
     }
 
@@ -32,7 +32,7 @@ public:
      */
     template<typename Arg>
     T& set(bool enabled, const Arg &arg) {
-        set(enabled, arg);
+        doSet(enabled, arg);
         return static_cast<T&>(*this);
     }
 
@@ -45,9 +45,9 @@ private:
      * @param args other fields of conditions
      */
     template<typename... Args>
-    void set(const EntityCondition& condition, const Args&... args){
+    void doSet(const EntityCondition& condition, const Args&... args){
         setCondition.append(condition);
-        return set(args...);
+        return doSet(args...);
     }
 
     /**
@@ -55,7 +55,7 @@ private:
      * @param enabled add condition if enabled
      * @param condition set conditions
      */
-    void set(bool enabled, const EntityCondition& condition){
+    void doSet(bool enabled, const EntityCondition& condition){
         if (enabled) {
             setCondition.append(condition);
         }
@@ -64,11 +64,17 @@ private:
     /**
      * end function recursion
      */
-    void set() {}
+    void doSet() {}
 
 private:
     //use ',' connect conditions
     Connector setCondition{","};
+
+    template<template<typename> class, typename>
+    friend class BuilderReaderProvider;
+
+    template<template<typename...> class, typename...>
+    friend class BuilderJbReaderProvider;
 };
 
 QTDAO_END_NAMESPACE

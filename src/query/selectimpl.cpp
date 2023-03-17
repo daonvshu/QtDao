@@ -15,48 +15,54 @@ void SelectImpl::buildFilterSqlStatement() {
         sql = sql.arg("");
     }
     sql = sql.arg(getBindColumns(values));
-    if (builder->fromSelectStatement.isEmpty()) {
+
+    auto& fs = fromBuildData();
+    if (fs.statement.isEmpty()) {
         sql = sql.arg(getTableName());
     } else {
-        if (builder->recursiveQuery) {
-            sql = sql.arg(builder->fromSelectAs);
-            sql = builder->fromSelectStatement + sql;
-            builder->fromSelectValues.append(values);
-            builder->fromSelectValues.swap(values);
+        if (fs.recursiveQuery) {
+            sql = sql.arg(fs.asName);
+            sql = fs.statement + sql;
+            fs.values.append(values);
+            fs.values.swap(values);
         } else {
-            sql = sql.arg('(' + builder->fromSelectStatement + ") as " + builder->fromSelectAs);
-            values.append(builder->fromSelectValues);
+            sql = sql.arg('(' + fs.statement + ") as " + fs.asName);
+            values.append(fs.values);
         }
     }
 
-    if (!builder->filterCondition.isEmpty()) {
-        builder->filterCondition.connect();
-        sql.append(" where ").append(builder->filterCondition.getConditionStr());
-        values.append(builder->filterCondition.getValues());
+    auto& fc = filterConnector();
+    if (!fc.isEmpty()) {
+        fc.connect();
+        sql.append(" where ").append(fc.getConditionStr());
+        values.append(fc.getValues());
     }
 
-    if (!builder->constraintCondition.isEmpty()) {
-        builder->constraintCondition.connect();
-        sql.append(" ").append(builder->constraintCondition.getConditionStr());
-        values.append(builder->constraintCondition.getValues());
+    auto& cc = constraintConnector();
+    if (!cc.isEmpty()) {
+        cc.connect();
+        sql.append(" ").append(cc.getConditionStr());
+        values.append(cc.getValues());
     }
 
-    if (!builder->unionSelectStatement.isEmpty()) {
-        sql.append(builder->unionAll ? " union all " : " union ");
-        sql.append(builder->unionSelectStatement);
-        values.append(builder->unionSelectValues);
+    auto& uc = unionBuildData();
+    if (!uc.statement.isEmpty()) {
+        sql.append(uc.unionAll ? " union all " : " union ");
+        sql.append(uc.statement);
+        values.append(uc.values);
     }
 
     setSqlQueryStatement(sql, values);
 }
 
 QString SelectImpl::getBindColumns(QVariantList &values) {
-    if (builder->columnBind.isEmpty()) {
+    auto& cc = columnConnector();
+    if (cc.isEmpty()) {
         return "*";
     }
-    builder->columnBind.connect();
-    values << builder->columnBind.getValues();
-    return builder->columnBind.getConditionStr();
+    cc.connect();
+    values << cc.getValues();
+    return cc.getConditionStr();
 }
 
 QString SelectImpl::readExplainStatement() {

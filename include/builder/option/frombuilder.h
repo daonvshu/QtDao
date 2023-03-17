@@ -2,12 +2,15 @@
 
 #include "../../global.h"
 
+#include <qvariant.h>
+
 QTDAO_BEGIN_NAMESPACE
 
 struct FromBuildData {
     QString statement;
     QVariantList values;
     QString asName;
+    bool recursiveQuery = false;
 };
 
 class SelectImpl;
@@ -17,18 +20,27 @@ class RecursiveQueryBuilder;
 class FromBuilder {
 public:
     void fromDataClear() {
-        data = FromBuildData();
+        fromData = FromBuildData();
     }
 
 protected:
-    void from(SelectImpl& select);
+    void fromSelect(SelectImpl& select);
 
-    void from(JoinImpl& join);
+    void fromJoin(JoinImpl& join);
 
     void fromBuilder(RecursiveQueryBuilder& builder);
 
-private:
-    FromBuildData data;
+protected:
+    FromBuildData fromData;
+
+    template<template<typename> class, typename>
+    friend class BuilderReaderProvider;
+
+    template<template<typename...> class, typename...>
+    friend class BuilderJbReaderProvider;
+
+    template<typename E>
+    friend class CountBuilder;
 };
 
 QTDAO_END_NAMESPACE

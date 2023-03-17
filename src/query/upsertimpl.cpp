@@ -6,10 +6,11 @@ QTDAO_BEGIN_NAMESPACE
 
 bool UpsertImpl::buildInsertBySetSqlStatement() {
 
-    builder->setCondition.connect();
+    auto& sc = setConnector();
+    sc.connect();
 
-    auto usedFieldName = builder->setCondition.getUsedFieldNames();
-    QVariantList values = builder->setCondition.getValues();
+    auto usedFieldName = sc.getUsedFieldNames();
+    QVariantList values = sc.getValues();
     Q_ASSERT(!values.isEmpty());
 
     bool operateBatch = values.at(0).type() == QVariant::List;
@@ -50,8 +51,9 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
     };
 
     const auto usedUpdateFieldNames = [&] {
-        builder->updateCols.connect();
-        auto usedFieldNames = listMap<QString, FieldInfo>(builder->updateCols.getUsedFieldNames(), [&](const FieldInfo& info) {
+        auto& updateCols = updateColumnConnector();
+        updateCols.connect();
+        auto usedFieldNames = listMap<QString, FieldInfo>(updateCols.getUsedFieldNames(), [&](const FieldInfo& info) {
             return info.name;
         });
         if (usedFieldNames.isEmpty()) {
@@ -64,10 +66,11 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         QString statementTemplate = "insert into %1 (%2) values(%3) on conflict(%4) do update set %5";
 
         //conflict field
-        builder->conflictCols.connect();
+        auto& conflictCols = conflictColumnConnector();
+        conflictCols.connect();
         QString conflictFields;
         QSet<QString> conflictFieldNames;
-        for (const auto& field: builder->conflictCols.getUsedFieldNames()) {
+        for (const auto& field: conflictCols.getUsedFieldNames()) {
             conflictFields += field.name + ",";
             conflictFieldNames << field.name;
         }
@@ -81,12 +84,13 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         }
         updateStr.chop(1);
 
-        if (!builder->filterCondition.isEmpty()) {
-            builder->filterCondition.connect([&](const QString& tableName) {
+        auto& fc = filterConnector();
+        if (!fc.isEmpty()) {
+            fc.connect([&](const QString& tableName) {
                 return tableName + '.';
             });
-            updateStr.append(" where ").append(builder->filterCondition.getConditionStr());
-            values << builder->filterCondition.getValues();
+            updateStr.append(" where ").append(fc.getConditionStr());
+            values << fc.getValues();
         }
 
         return statementTemplate.arg(getTableName(), usedFieldListStr(), valuePlaceholder(),
@@ -95,9 +99,10 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
     } else if (globalConfig->isMysql()) {
         QString statementTemplate = "insert into %1 (%2) values(%3) on duplicate key update %4";
 
-        builder->conflictCols.connect();
+        auto& conflictCols = conflictColumnConnector();
+        conflictCols.connect();
         QSet<QString> conflictFieldNames;
-        for (const auto& field: builder->conflictCols.getUsedFieldNames()) {
+        for (const auto& field: conflictCols.getUsedFieldNames()) {
             conflictFieldNames << field.name;
         }
 
@@ -129,11 +134,12 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         }
         tempValueFields.chop(2);
 
+        auto& conflictCols = conflictColumnConnector();
         //on condition
-        builder->conflictCols.connect();
+        conflictCols.connect();
         QString onConditionStr;
         QSet<QString> conflictFieldNames;
-        for (const auto& fieldInfo: builder->conflictCols.getUsedFieldNames()) {
+        for (const auto& fieldInfo: conflictCols.getUsedFieldNames()) {
             onConditionStr += "a." + fieldInfo.name + "=b." + fieldInfo.name + " and ";
             conflictFieldNames << fieldInfo.name;
         }

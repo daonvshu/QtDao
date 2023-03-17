@@ -16,7 +16,7 @@ class DeleteBuilder
 {
 public:
     Delete<E> build() {
-        return Delete<E>(this->setFatalEnabled, this, this->loggingCategoryPtr);
+        return Delete<E>(this);
     }
 };
 

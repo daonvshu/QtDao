@@ -5,8 +5,6 @@
 
 #include "config/configbuilder.h"
 
-#include <qsqlrecord.h>
-
 QTDAO_BEGIN_NAMESPACE
 
 Q_LOGGING_CATEGORY(loggingDefault, "qtdao.query")

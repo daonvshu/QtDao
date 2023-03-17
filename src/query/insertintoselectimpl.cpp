@@ -9,13 +9,16 @@ void InsertIntoSelectImpl::buildSqlStatement() {
 
     QVariantList values;
 
-    if (!builder->columnBind.isEmpty()) {
-        builder->columnBind.connect();
-        sql.append(" (").append(builder->columnBind.getConditionStr()).append(")");
-        values << builder->columnBind.getValues();
+    auto& cc = columnConnector();
+    if (!cc.isEmpty()) {
+        cc.connect();
+        sql.append(" (").append(cc.getConditionStr()).append(")");
+        values << cc.getValues();
     }
-    sql.append(" ").append(builder->fromSelectStatement);
-    values << builder->fromSelectValues;
+
+    auto& fd = fromBuildData();
+    sql.append(" ").append(fd.statement);
+    values << fd.values;
 
     setSqlQueryStatement(sql, values);
 }

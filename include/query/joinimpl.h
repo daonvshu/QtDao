@@ -1,12 +1,14 @@
 #pragma once
 
 #include <qvector.h>
+
 #include "basequery.h"
-#include "entityreaderinterface.h"
+#include "reader/entityreaderinterface.h"
+#include "reader/builderreaderinterface.h"
 
 QTDAO_BEGIN_NAMESPACE
 
-enum JoinType {
+enum class JoinType {
     CrossJoin,
     InnerJoin,
     LeftJoin,
@@ -18,15 +20,16 @@ struct JoinData {
     JoinType joinType;
     Connector filter;
     //select from select
-    QString fromSelectStatement;
-    QVariantList fromSelectValues;
-    QString fromSelectAs;
-    bool recursiveQuery;
+    FromBuildData fromBuildData;
 };
 
-class JoinImpl : protected BaseQuery {
+class JoinImpl
+        : protected BaseQuery
+        , protected virtual BuilderReaderInterface
+{
 public:
-    using BaseQuery::BaseQuery;
+    JoinImpl(QString mainTable, const QHash<QString, JoinData>& subJoinData)
+        : mainTable(std::move(mainTable)), subJoinData(subJoinData) {}
 
 protected:
     void buildJoinSqlStatement();
@@ -42,7 +45,6 @@ protected:
     virtual void initSequenceTbName() = 0;
 
 protected:
-    JoinData mainData;
     QString mainTable;
     QHash<QString, JoinData> subJoinData;
     QList<FieldInfo> usedColumns;
@@ -51,6 +53,9 @@ protected:
     QList<QPair<QString, QString>> sequenceTableNames;
 
     bool insideRecursiveQuery = false;
+
+    friend class FromBuilder;
+    friend class UnionBuilderImpl;
 };
 
 template<typename... T> struct JoinEUnpackHelper;

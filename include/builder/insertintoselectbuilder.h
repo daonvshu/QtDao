@@ -16,11 +16,10 @@ class InsertIntoSelectBuilder
         : public DebugBuilder<InsertIntoSelectBuilder<E>>
         , public ColumnBuilder<InsertIntoSelectBuilder<E>>
         , public FromSelectBuilder<false, InsertIntoSelectBuilder, E>
-        , public FromJoinBuilder<false, InsertIntoSelectBuilder, E>
 {
 public:
     InsertIntoSelect <E> build() {
-        return InsertIntoSelect<E>(this->setFatalEnabled, this, this->loggingCategoryPtr);
+        return InsertIntoSelect<E>(this);
     }
 };
 

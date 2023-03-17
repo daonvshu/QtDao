@@ -4,9 +4,10 @@
 
 #include <qvariant.h>
 #include <qsqlquery.h>
+#include <qsqlrecord.h>
 
 #include "../query/explaininfo.h"
-
+#include "../builder/option/debugbuilder.h"
 #include "../utils/logging.h"
 
 QTDAO_BEGIN_NAMESPACE
@@ -43,6 +44,11 @@ protected:
      * @param logging
      */
     void setDebug(bool fatalEnabled, LoggingCategoryPtr logging);
+
+    template<typename T>
+    void setDebug(DebugBuilder<T>* builder) {
+        setDebug(builder->setFatalEnabled, builder->loggingCategoryPtr);
+    }
 
     /**
      * execute prepared sql query

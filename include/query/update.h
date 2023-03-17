@@ -10,32 +10,36 @@ template<typename E>
 class UpdateBuilder;
 
 template<typename E>
-class Update : EntityReaderProvider<E>, UpdateImpl {
+class Update
+        : EntityReaderProvider<E>
+        , BuilderReaderProvider<UpdateBuilder, E>
+        , UpdateImpl
+{
 public:
-    /// <summary>
-    /// using the SET condition to update a record
-    /// </summary>
-    /// <returns>effect rows</returns>
+    /**
+     * using the SET condition to update a record
+     * @return effect rows
+     */
     int update();
 
-    /// <summary>
-    /// using the SET condition to update a record in batches 
-    /// </summary>
-    /// <returns>effect rows</returns>
+    /**
+     * using the SET condition to update a record in batches
+     * @return effect rows
+     */
     int updateBatch();
 
-    /// <summary>
-    /// update by object's primary key
-    /// </summary>
-    /// <param name="entity"></param>
-    /// <returns>effect rows</returns>
+    /**
+     * update by object's primary key
+     * @param entity
+     * @return effect rows
+     */
     int update(const E& entity);
 
-    /// <summary>
-    /// update by object's primary key in batches 
-    /// </summary>
-    /// <param name="entities"></param>
-    /// <returns>effect rows</returns>
+    /**
+     * update by object's primary key in batches
+     * @param entities
+     * @return effect rows
+     */
     int updateBatch(const QList<E>& entities);
 
 private:
@@ -45,6 +49,7 @@ private:
 template<typename E>
 inline int Update<E>::update() {
     buildUpdateBySetSqlStatement();
+    setDebug(this->builder);
     auto query = exec();
     return query.numRowsAffected();
 }
@@ -52,6 +57,7 @@ inline int Update<E>::update() {
 template<typename E>
 inline int Update<E>::updateBatch() {
     buildUpdateBySetSqlStatement();
+    setDebug(this->builder);
     auto query = execBatch();
     return query.numRowsAffected();
 }

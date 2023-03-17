@@ -10,11 +10,15 @@ template<typename E>
 class InsertIntoSelectBuilder;
 
 template<typename E>
-class InsertIntoSelect : EntityReaderProvider<E>, InsertIntoSelectImpl {
+class InsertIntoSelect
+        : EntityReaderProvider<E>
+        , BuilderReaderProvider<InsertIntoSelectBuilder, E>
+        , InsertIntoSelectImpl
+{
 public:
-    /// <summary>
-    /// select and copy from other select results
-    /// </summary>
+    /**
+     * select and copy from other select results
+     */
     void insert();
 
 private:
@@ -24,6 +28,7 @@ private:
 template<typename E>
 inline void InsertIntoSelect<E>::insert() {
     buildSqlStatement();
+    setDebug(this->builder);
     exec();
 }
 

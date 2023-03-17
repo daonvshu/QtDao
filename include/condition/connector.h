@@ -71,7 +71,6 @@ public:
         return *this;
     }
 
-    friend class BaseQueryBuilder;
     template<typename E> friend class UpsertBuilder;
 
 private:

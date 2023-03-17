@@ -1,12 +1,17 @@
 #pragma once
 
 #include "basequery.h"
-#include "entityreaderinterface.h"
+#include "reader/entityreaderinterface.h"
+#include "reader/builderreaderinterface.h"
 
 QTDAO_BEGIN_NAMESPACE
 
 class FromBuilder;
-class SelectImpl : protected BaseQuery, protected virtual EntityReaderInterface {
+class SelectImpl
+        : protected BaseQuery
+        , protected virtual EntityReaderInterface
+        , protected virtual BuilderReaderInterface
+{
 public:
     using BaseQuery::BaseQuery;
 
@@ -33,6 +38,7 @@ protected:
     bool topPercent = false;
 
     friend class FromBuilder;
+    friend class UnionBuilderImpl;
 };
 
 QTDAO_END_NAMESPACE

@@ -4,8 +4,6 @@
 
 QTDAO_BEGIN_NAMESPACE
 
-class BaseQueryBuilder;
-
 class RecursiveQueryBuilder {
 public:
     explicit RecursiveQueryBuilder(bool unionAll = false) : unionAll(unionAll) {}
@@ -31,7 +29,7 @@ private:
     QString tmpTableName;
     bool unionAll;
 
-    friend class BaseQueryBuilder;
+    friend class FromBuilder;
 };
 
 template<typename E>

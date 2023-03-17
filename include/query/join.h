@@ -11,31 +11,36 @@ template<typename... E>
 class JoinBuilder;
 
 class RecursiveQueryBuilder;
+
 class FunctionCondition;
 
 template<typename... E>
-class Join : JoinImpl {
+class Join
+        : JoinImpl
+        , BuilderJbReaderProvider<JoinBuilder, E...>
+{
 public:
-    /// <summary>
-    /// get select result list
-    /// </summary>
-    /// <returns></returns>
+    /**
+     * get select result list
+     * @return
+     */
     QList<std::tuple<E...>> list();
 
-    /// <summary>
-    /// explain query statement
-    /// </summary>
-    /// <typeparam name="I">must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo/SqlServerExplainInfo</typeparam>
-    /// <returns>SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo</returns>
+    /**
+     * explain query statement
+     * @tparam I must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo/SqlServerExplainInfo
+     * @return
+     */
     template<typename I>
     QList<I> explain();
 
 private:
     friend class JoinBuilder<E...>;
-    Join(bool fatalEnabled, JoinBuilder<E...>* builder) : JoinImpl(fatalEnabled, builder) {}
 
-protected:
-
+    Join(const QString& mainTable, const QHash<QString, JoinData>& subJoinData, JoinBuilder<E...> *builder)
+        : JoinImpl(mainTable, subJoinData)
+        , BuilderJbReaderProvider<JoinBuilder, E...>(builder)
+    {}
 
 private:
     void setTableOrder() override;
@@ -48,15 +53,27 @@ private:
 
     void resultBind(std::tuple<E...>& result, QSqlQuery& query);
 
-    friend class BaseQueryBuilder;
     friend class RecursiveQueryBuilder;
     friend class FunctionCondition;
+
+    template<bool, template<typename> class, typename>
+    friend class FromSelectBuilder;
+
+    template<template<typename...> class, typename...>
+    friend class FromEsSelectBuilder;
+
+    template<typename T>
+    friend class UnionBuilder;
+
+    template<typename T>
+    friend class JoinConnectBuilder;
 };
 
 template<typename ...E>
 inline QList<std::tuple<E...>> Join<E...>::list() {
     buildJoinSqlStatement();
     QList<std::tuple<E...>> results;
+    setDebug(this->builder);
     auto query = exec();
     while (query.next()) {
         std::tuple<E...> result;
@@ -80,16 +97,16 @@ inline QString Join<E...>::getAllEntityField() {
 template<typename ...E>
 inline QString Join<E...>::getJoinTypeName(JoinType type) {
     switch (type) {
-    case CrossJoin:
-        return "cross join";
-    case InnerJoin:
-        return "inner join";
-    case LeftJoin:
-        return "left join";
-    case RightJoin:
-        return "right join";
-    case FullJoin:
-        return "full join";
+        case JoinType::CrossJoin:
+            return "cross join";
+        case JoinType::InnerJoin:
+            return "inner join";
+        case JoinType::LeftJoin:
+            return "left join";
+        case JoinType::RightJoin:
+            return "right join";
+        case JoinType::FullJoin:
+            return "full join";
     }
     return {};
 }
@@ -120,7 +137,7 @@ template<typename ...E>
 template<typename I>
 inline QList<I> Join<E...>::explain() {
     Q_STATIC_ASSERT_X(ExplainTool<I>::Valid == 1,
-        "template parameter must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo/SqlServerExplainInfo");
+                      "template parameter must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo/SqlServerExplainInfo");
 
     return ExplainTool<I>::toExplain(readExplainStatement());
 }

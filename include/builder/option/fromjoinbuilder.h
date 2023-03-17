@@ -11,7 +11,7 @@ template<template<typename> class T, typename... E>
 class FromJoinBuilder<true, T, E...> : FromBuilder {
 public:
     T<E...>& from(Join<E...> &join) {
-        from(static_cast<JoinImpl&>(join));
+        fromJoin(static_cast<JoinImpl&>(join));
         return static_cast<T<E...>&>(*this);
     }
 };
@@ -21,7 +21,7 @@ class FromJoinBuilder<false, T, E...> : FromBuilder {
 public:
     template<typename... E2>
     T<E...>& from(Join<E2...> &join) {
-        from(static_cast<JoinImpl&>(join));
+        fromJoin(static_cast<JoinImpl&>(join));
         return static_cast<T<E...>&>(*this);
     }
 };

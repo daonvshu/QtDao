@@ -7,10 +7,11 @@ QTDAO_BEGIN_NAMESPACE
 
 bool InsertImpl::buildInsertBySetSqlStatement() {
 
-    builder->setCondition.connect();
+    auto& sc = setConnector();
+    sc.connect();
 
-    auto usedFieldName = builder->setCondition.getUsedFieldNames();
-    QVariantList values = builder->setCondition.getValues();
+    auto usedFieldName = sc.getUsedFieldNames();
+    QVariantList values = sc.getValues();
     Q_ASSERT(!values.isEmpty());
 
     bool operateBatch = values.at(0).type() == QVariant::List;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../global.h"
-#include "../utils/listutils.h"
+#include "global.h"
+#include "utils/listutils.h"
 
 #pragma warning(disable:4250)
 QTDAO_BEGIN_NAMESPACE

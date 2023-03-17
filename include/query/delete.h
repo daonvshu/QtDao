@@ -10,28 +10,32 @@ template<typename E>
 class DeleteBuilder;
 
 template<typename E>
-class Delete : EntityReaderProvider<E>, DeleteImpl {
+class Delete
+        : EntityReaderProvider<E>
+        , BuilderReaderProvider<DeleteBuilder, E>
+        , DeleteImpl
+{
 public:
-    /// <summary>
-    /// delete by filter condition
-    /// </summary>
+    /**
+     * delete by filter condition
+     */
     void deleteBy();
 
-    /// <summary>
-    /// delete by filter condition in batches
-    /// </summary>
+    /**
+     * delete by filter condition in batches
+     */
     void deleteBatch();
 
-    /// <summary>
-    /// delete object by primary key
-    /// </summary>
-    /// <param name="entity"></param>
+    /**
+     * delete object by primary key
+     * @param entity
+     */
     void deleteBy(const E& entity);
 
-    /// <summary>
-    /// delete object by primary key in batches
-    /// </summary>
-    /// <param name="entities"></param>
+    /**
+     * delete object by primary key in batches
+     * @param entities
+     */
     void deleteBatch(const QList<E>& entities);
 
 private:
@@ -41,12 +45,14 @@ private:
 template<typename E>
 inline void Delete<E>::deleteBy() {
     buildDeleteByFilterSqlStatement();
+    setDebug(this->builder);
     exec();
 }
 
 template<typename E>
 inline void Delete<E>::deleteBatch() {
     buildDeleteByFilterSqlStatement();
+    setDebug(this->builder);
     execBatch();
 }
 

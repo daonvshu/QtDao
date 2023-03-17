@@ -5,18 +5,18 @@
 
 QTDAO_BEGIN_NAMESPACE
 
-void dao::UnionBuilderImpl::from(SelectImpl &select) {
+void dao::UnionBuilderImpl::unionWithSelect(SelectImpl &select, bool unionAll) {
     select.buildFilterSqlStatement();
-    unionSelectStatement = select.statement;
-    unionSelectValues = select.values;
-    this->unionAll = unionAll;
+    unionData.statement = select.statement;
+    unionData.values = select.values;
+    unionData.unionAll = unionAll;
 }
 
-void UnionBuilderImpl::from(JoinImpl &join) {
+void UnionBuilderImpl::unionWithJoin(JoinImpl &join, bool unionAll) {
     join.buildJoinSqlStatement();
-    unionSelectStatement = join.statement;
-    unionSelectValues = join.values;
-    this->unionAll = unionAll;
+    unionData.statement = join.statement;
+    unionData.values = join.values;
+    unionData.unionAll = unionAll;
 }
 
 QTDAO_END_NAMESPACE

@@ -34,6 +34,8 @@ protected:
     bool setFatalEnabled = true;
     //print sql query log use target category
     LoggingCategoryPtr loggingCategoryPtr = nullptr;
+
+    friend class BaseQuery;
 };
 
 QTDAO_END_NAMESPACE

@@ -10,24 +10,27 @@ template<typename E>
 class UpsertBuilder;
 
 template<typename E>
-class Upsert : EntityReaderProvider<E>, UpsertImpl {
+class Upsert
+        : EntityReaderProvider<E>
+        , BuilderReaderProvider<UpsertBuilder, E>
+        , UpsertImpl
+{
 public:
-    /// <summary>
-    /// using the SET condition to insert a record, can be inserted in batches
-    /// </summary>
+    /**
+     * using the SET condition to insert a record, can be inserted in batches
+     */
     void insert();
 
-    /// <summary>
-    /// insert an object instance and set the ID back to the object after successful insertion
-    /// </summary>
-    /// <param name="entity"></param>
+    /**
+     * insert an object instance and set the ID back to the object after successful insertion
+     * @param entity
+     */
     void insert(E& entity);
 
-    /// <summary>
-    /// insert objects in batches
-    /// use 'execbatch'
-    /// </summary>
-    /// <param name="entities"></param>
+    /**
+     * insert objects in batches, use 'execbatch'
+     * @param entities
+     */
     void insert(const QList<E>& entities);
 
 private:
@@ -50,6 +53,7 @@ void Upsert<E>::insert(E &entity) {
     });
     values.append(this->values);
     setSqlQueryStatement(sqlStatement, values);
+    setDebug(this->builder);
 
     QSqlQuery query = exec();
     EntityReaderProvider<E>::bindAutoIncrementId(entity, query.lastInsertId());
@@ -79,6 +83,8 @@ void Upsert<E>::insert(const QList<E> &entities) {
 
     tagValues.append(this->values);
     setSqlQueryStatement(sqlStatement, tagValues);
+    setDebug(this->builder);
+
     execBatch();
 }
 

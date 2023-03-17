@@ -1,13 +1,18 @@
 #pragma once
 
 #include "basequery.h"
-#include "entityreaderinterface.h"
+#include "reader/entityreaderinterface.h"
+#include "reader/builderreaderinterface.h"
 
 #include <functional>
 
 QTDAO_BEGIN_NAMESPACE
 
-class DeleteImpl : protected BaseQuery, protected virtual EntityReaderInterface {
+class DeleteImpl
+        : protected BaseQuery
+        , protected virtual EntityReaderInterface
+        , protected virtual BuilderReaderInterface
+{
 public:
     using BaseQuery::BaseQuery;
 

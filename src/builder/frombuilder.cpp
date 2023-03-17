@@ -6,25 +6,29 @@
 
 QTDAO_BEGIN_NAMESPACE
 
-void FromBuilder::from(SelectImpl &select) {
+void FromBuilder::fromSelect(SelectImpl &select) {
     select.buildFilterSqlStatement();
-    data.statement = select.statement;
-    data.value = select.values;
-    if (select.builder->fromSelectAs.isEmpty()) {
-        fromSelectAs = "sel_" + E::Info::getTableName();
+    fromData.statement = select.statement;
+    fromData.values = select.values;
+
+    auto& selectFromData = select.fromBuildData();
+    if (selectFromData.asName.isEmpty()) {
+        fromData.asName = "sel_" + select.getTableName();
     } else {
-        fromSelectAs = "sel_" + select.builder->fromSelectAs;
+        fromData.asName = "sel_" + selectFromData.asName;
     }
 }
 
-void FromBuilder::from(JoinImpl &join) {
+void FromBuilder::fromJoin(JoinImpl &join) {
     join.buildJoinSqlStatement();
-    fromSelectStatement = join.statement;
-    fromSelectValues = join.values;
-    if (join.builder->fromSelectAs.isEmpty()) {
-        fromSelectAs = "join_" + join.mainTable;
+    fromData.statement = join.statement;
+    fromData.values = join.values;
+
+    auto& mainFromData = join.fromBuildData();
+    if (mainFromData.asName.isEmpty()) {
+        fromData.asName = "join_" + join.mainTable;
     } else {
-        fromSelectAs = "join_" + join.builder->fromSelectAs;
+        fromData.asName = "join_" + mainFromData.asName;
     }
 }
 
@@ -33,16 +37,16 @@ void FromBuilder::fromBuilder(RecursiveQueryBuilder &builder) {
     Q_ASSERT(!builder.recursiveQueryStatement.isEmpty());
     Q_ASSERT(!builder.tmpTableName.isEmpty());
 
-    fromSelectAs = builder.tmpTableName;
-    fromSelectStatement = QString("with %1 as (%2 %3 %4) ")
-            .arg(fromSelectAs)
-            .arg(builder.initialQueryStatement)
-            .arg(builder.unionAll ? "union all" : "union")
-            .arg(builder.recursiveQueryStatement)
-            ;
-    fromSelectValues.append(builder.initialQueryValue);
-    fromSelectValues.append(builder.recursiveQueryValue);
-    recursiveQuery = true;
+    fromData.asName = builder.tmpTableName;
+    fromData.statement = QString("with %1 as (%2 %3 %4) ")
+            .arg(fromData.asName,
+                 builder.initialQueryStatement,
+                 builder.unionAll ? "union all" : "union",
+                 builder.recursiveQueryStatement
+                 );
+    fromData.values.append(builder.initialQueryValue);
+    fromData.values.append(builder.recursiveQueryValue);
+    fromData.recursiveQuery = true;
 }
 
 QTDAO_END_NAMESPACE
