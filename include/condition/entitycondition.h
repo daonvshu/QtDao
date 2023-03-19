@@ -10,6 +10,8 @@
 
 #include "entityconditiondata.h"
 
+#include "connector/connectable.h"
+
 QTDAO_BEGIN_NAMESPACE
 
 template<typename T>

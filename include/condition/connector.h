@@ -8,7 +8,6 @@
 
 QTDAO_BEGIN_NAMESPACE
 
-class BaseQueryBuilder;
 class FunctionCondition;
 
 class Connector {
