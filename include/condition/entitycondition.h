@@ -24,7 +24,7 @@ public:
     virtual void addValue(const QVariant& value);
 
     template<typename T>
-    void setCustomValue(const T& value) {
+    void addCustomValue(const T& value) {
         addValue(serializeCustomTypeToBinary(value));
     }
 
@@ -65,7 +65,7 @@ public:
         Connector::addValue(QVariant(variantList));
     }
 
-    void setCustomValues(const QList<T>& values) {
+    void addCustomValues(const QList<T>& values) {
         QVariantList variantList;
         for (const auto& v : values) {
             variantList << serializeCustomTypeToBinary(v);
@@ -75,18 +75,10 @@ public:
 };
 
 template<typename T>
-class BatchOperatorEntityConnector : public BatchOperatorEntityConnectorImpl<T, OperatorEntityConnector> {
-public:
-    using BatchOperatorEntityConnectorImpl<T, OperatorEntityConnector>::addValues;
-    using BatchOperatorEntityConnectorImpl<T, OperatorEntityConnector>::setCustomValues;
-};
+class BatchOperatorEntityConnector : public BatchOperatorEntityConnectorImpl<T, OperatorEntityConnector> {};
 
 template<typename T>
-class BatchSelfOperatorEntityConnector : public BatchOperatorEntityConnectorImpl<T, SelfOperatorEntityConnector> {
-public:
-    using BatchOperatorEntityConnectorImpl<T, SelfOperatorEntityConnector>::addValues;
-    using BatchOperatorEntityConnectorImpl<T, SelfOperatorEntityConnector>::setCustomValues;
-};
+class BatchSelfOperatorEntityConnector : public BatchOperatorEntityConnectorImpl<T, SelfOperatorEntityConnector> {};
 
 class FieldOperatorEntityConnector : public EntityConnector {
 public:
@@ -100,11 +92,6 @@ public:
     }
 
     void combine() override;
-
-private:
-    using EntityConnector::addField;
-    using EntityConnector::addValue;
-    using EntityConnector::setCustomValue;
 
 protected:
     QString connectorOp;
@@ -125,7 +112,7 @@ public:
     }
 
     template<typename T>
-    void setCustomValues(const QList<T>& values) {
+    void addCustomValues(const QList<T>& values) {
         for (const auto& v : values) {
             addValue(serializeCustomTypeToBinary(v));
         }
@@ -143,10 +130,6 @@ public:
     }
 
     void combine() override;
-
-private:
-    using EntityConnector::addValue;
-    using EntityConnector::setCustomValue;
 };
 
 class IsNullConnector : public EntityConnector {
@@ -154,10 +137,6 @@ public:
     explicit IsNullConnector(bool isNull) : checkIsNull(isNull) {}
 
     void combine() override;
-
-private:
-    using EntityConnector::addValue;
-    using EntityConnector::setCustomValue;
 
 private:
     bool checkIsNull;

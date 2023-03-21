@@ -39,185 +39,254 @@ private:
     friend class Connector;
 
 private:
-    EntityCondition setValue(const char* op, const T& v) {
-        return EntityCondition(FieldInfo{ name, bindTable }, op, v);
-    }
-
-    EntityCondition setValueSelf(const char* op, const T& v) {
-        return EntityCondition(FieldInfo{ name, bindTable }, op, v, true);
-    }
-
-    EntityCondition setValue(const char* op, const QList<T>& v) {
-        QVariantList values;
-        for (const auto& i : v) {
-            values << i;
+    Connectable* setValue(const char* op, const T& v) {
+        auto connector = new OperatorEntityConnector;
+        connector->setOperator(op);
+        connector->addField(FieldInfo{ name, bindTable });
+        if (customType) {
+            connector->addCustomValue(v);
+        } else {
+            connector->addValue(v);
         }
-        return EntityCondition(FieldInfo{ name, bindTable }, op, values);
+        return connector;
     }
 
-    EntityCondition setValueSelf(const char* op, const QList<T>& v) {
-        QVariantList values;
-        for (const auto& i : v) {
-            values << i;
+    Connectable* setValueSelf(const char* op, const T& v) {
+        auto connector = new SelfOperatorEntityConnector;
+        connector->setOperator(op);
+        connector->addField(FieldInfo{ name, bindTable });
+        if (customType) {
+            connector->addCustomValue(v);
+        } else {
+            connector->addValue(v);
         }
-        return EntityCondition(FieldInfo{ name, bindTable }, op, values, true);
+        return connector;
     }
 
-    EntityCondition setValue(const char* op, const EntityField<T>& other) {
-        QList<FieldInfo> info;
-        info << FieldInfo{ name, bindTable };
-        info << FieldInfo{ other.name, other.bindTable };
-        return EntityCondition(info, op);
+    Connectable* setValues(const char* op, const QList<T>& v) {
+        auto connector = new BatchOperatorEntityConnector<T>;
+        connector->setOperator(op);
+        connector->addField(FieldInfo{ name, bindTable });
+        if (customType) {
+            connector->addCustomValues(v);
+        } else {
+            connector->addValues(v);
+        }
+        return connector;
+    }
+
+    Connectable* setValuesSelf(const char* op, const QList<T>& v) {
+        auto connector = new BatchSelfOperatorEntityConnector<T>;
+        connector->setOperator(op);
+        connector->addField(FieldInfo{ name, bindTable });
+        if (customType) {
+            connector->addCustomValues(v);
+        } else {
+            connector->addValues(v);
+        }
+        return connector;
+    }
+
+    Connectable* setFieldValue(const char* op, const EntityField<T>& other) {
+        auto connector = new FieldOperatorEntityConnector;
+        connector->addFields(FieldInfo{ name, bindTable }, FieldInfo{ other.name, other.bindTable });
+        connector->setOperator(op);
+        return connector;
+    }
+
+    Connectable* setFieldValueSelf(const char* op, const EntityField<T>& other) {
+        auto connector = new SelfFieldOperatorEntityConnector;
+        connector->addFields(FieldInfo{ name, bindTable }, FieldInfo{ other.name, other.bindTable });
+        connector->setOperator(op);
+        return connector;
     }
 
 public:
     /*equal "="*/
-    EntityCondition operator==(const T& v) {
+    Connectable* operator==(const T& v) {
         return setValue("=", v);
     }
-    EntityCondition operator==(const QList<T>& v) {
-        return setValue("=", v);
+    Connectable* operator==(const QList<T>& v) {
+        return setValues("=", v);
     }
-    EntityCondition operator==(const EntityField<T>& other) {
-        return setValue("=", other);
+    Connectable* operator==(const EntityField<T>& other) {
+        return setFieldValue("=", other);
     }
     /*no equal "!="*/
-    EntityCondition operator!=(const T& v) {
+    Connectable* operator!=(const T& v) {
         return setValue("!=", v);
     }
-    EntityCondition operator!=(const QList<T>& v) {
-        return setValue("!=", v);
+    Connectable* operator!=(const QList<T>& v) {
+        return setValues("!=", v);
     }
-    EntityCondition operator!=(const EntityField<T>& other) {
-        return setValue("!=", other);
+    Connectable* operator!=(const EntityField<T>& other) {
+        return setFieldValue("!=", other);
     }
     /*greater than ">"*/
-    EntityCondition operator>(const T& v) {
+    Connectable* operator>(const T& v) {
         return setValue(">", v);
     }
-    EntityCondition operator>(const QList<T>& v) {
-        return setValue(">", v);
+    Connectable* operator>(const QList<T>& v) {
+        return setValues(">", v);
     }
-    EntityCondition operator>(const EntityField<T>& other) {
-        return setValue(">", other);
+    Connectable* operator>(const EntityField<T>& other) {
+        return setFieldValue(">", other);
     }
     /*greater than and equal ">=" */
-    EntityCondition operator>=(const T& v) {
+    Connectable* operator>=(const T& v) {
         return setValue(">=", v);
     }
-    EntityCondition operator>=(const QList<T>& v) {
-        return setValue(">=", v);
+    Connectable* operator>=(const QList<T>& v) {
+        return setValues(">=", v);
     }
-    EntityCondition operator>=(const EntityField<T>& other) {
-        return setValue(">=", other);
+    Connectable* operator>=(const EntityField<T>& other) {
+        return setFieldValue(">=", other);
     }
     /*less than "<"*/
-    EntityCondition operator<(const T& v) {
+    Connectable* operator<(const T& v) {
         return setValue("<", v);
     }
-    EntityCondition operator<(const QList<T>& v) {
-        return setValue("<", v);
+    Connectable* operator<(const QList<T>& v) {
+        return setValues("<", v);
     }
-    EntityCondition operator<(const EntityField<T>& other) {
-        return setValue("<", other);
+    Connectable* operator<(const EntityField<T>& other) {
+        return setFieldValue("<", other);
     }
     /*less than and equal "<="*/
-    EntityCondition operator<=(const T& v) {
+    Connectable* operator<=(const T& v) {
         return setValue("<=", v);
     }
-    EntityCondition operator<=(const QList<T>& v) {
-        return setValue("<=", v);
+    Connectable* operator<=(const QList<T>& v) {
+        return setValues("<=", v);
     }
-    EntityCondition operator<=(const EntityField<T>& other) {
-        return setValue("<=", other);
+    Connectable* operator<=(const EntityField<T>& other) {
+        return setFieldValue("<=", other);
     }
 
     /*like "like"*/
-    EntityCondition like(const T& v) {
+    Connectable* like(const T& v) {
         return setValue(" like ", v);
     }
-    EntityCondition like(const QList<T>& v) {
-        return setValue(" like ", v);
+    Connectable* like(const QList<T>& v) {
+        return setValues(" like ", v);
+    }
+    Connectable* like(const EntityField<T>& other) {
+        return setFieldValue(" like ", other);
     }
 
     /*like sqlite "glob"*/
-    EntityCondition glob(const T& v) {
+    Connectable* glob(const T& v) {
         return setValue(" glob ", v);
     }
-    EntityCondition glob(const QList<T>& v) {
-        return setValue(" glob ", v);
+    Connectable* glob(const QList<T>& v) {
+        return setValues(" glob ", v);
+    }
+    Connectable* glob(const EntityField<T>& other) {
+        return setFieldValue(" glob ", other);
     }
 
     //set condition
-    EntityCondition operator=(const T& v) {
+    Connectable* operator=(const T& v) {
         return setValue("=", v);
     }
-    EntityCondition operator=(const QList<T>& v) {
-        return setValue("=", v);
+    Connectable* operator=(const QList<T>& v) {
+        return setValues("=", v);
+    }
+    Connectable* operator=(const EntityField<T>& other) {
+        return setFieldValue("=", other);
     }
     /*mod "a=a%value*/
-    EntityCondition operator%(const T& v) {
+    Connectable* operator%(const T& v) {
         return setValueSelf("%", v);
     }
-    EntityCondition operator%(const QList<T>& v) {
-        return setValueSelf("%", v);
+    Connectable* operator%(const QList<T>& v) {
+        return setValuesSelf("%", v);
+    }
+    Connectable* operator%(const EntityField<T>& other) {
+        return setFieldValueSelf("%", other);
     }
     /*plus value "a=a+value"*/
-    EntityCondition operator+(const T& v) {
+    Connectable* operator+(const T& v) {
         return setValueSelf("+", v);
     }
-    EntityCondition operator+(const QList<T>& v) {
-        return setValueSelf("+", v);
+    Connectable* operator+(const QList<T>& v) {
+        return setValuesSelf("+", v);
+    }
+    Connectable* operator+(const EntityField<T>& other) {
+        return setFieldValueSelf("+", other);
     }
     /*minus value "a=a-value"*/
-    EntityCondition operator-(const T& v) {
+    Connectable* operator-(const T& v) {
         return setValueSelf("-", v);
     }
-    EntityCondition operator-(const QList<T>& v) {
-        return setValueSelf("-", v);
+    Connectable* operator-(const QList<T>& v) {
+        return setValuesSelf("-", v);
+    }
+    Connectable* operator-(const EntityField<T>& other) {
+        return setFieldValueSelf("-", other);
     }
     /*repeat count "a=a*count"*/
-    EntityCondition operator*(const T& v) {
+    Connectable* operator*(const T& v) {
         return setValueSelf("*", v);
     }
-    EntityCondition operator*(const QList<T>& v) {
-        return setValueSelf("*", v);
+    Connectable* operator*(const QList<T>& v) {
+        return setValuesSelf("*", v);
+    }
+    Connectable* operator*(const EntityField<T>& other) {
+        return setFieldValueSelf("*", other);
     }
     /*divide count "a=a/count"*/
-    EntityCondition operator/(const T& v) {
+    Connectable* operator/(const T& v) {
         return setValueSelf("/", v);
     }
-    EntityCondition operator/(const QList<T>& v) {
-        return setValueSelf("/", v);
+    Connectable* operator/(const QList<T>& v) {
+        return setValuesSelf("/", v);
+    }
+    Connectable* operator/(const EntityField<T>& other) {
+        return setFieldValueSelf("/", other);
     }
 
     /*plus one "a=a+1"*/
-    EntityCondition operator++(int) {
+    Connectable* operator++(int) {
         return setValueSelf("+", 1);
     }
     /*minus one "a=a-1"*/
-    EntityCondition operator--(int) {
+    Connectable* operator--(int) {
         return setValueSelf("-", 1);
     }
 
     /*condition in*/
-    EntityCondition in(const QList<T>& value) {
-        return EntityCondition::conditionIn(FieldInfo{name, bindTable}, value);
+    Connectable* in(const QList<T>& value) {
+        auto connector = new InEntityConnector;
+        connector->addField(FieldInfo{name, bindTable});
+        if (customType) {
+            connector->addCustomValues(value);
+        } else {
+            connector->addValues(value);
+        }
+        return connector;
     }
 
     /*condition between*/
-    EntityCondition between(const T& a, const T& b) {
-        return EntityCondition::conditionBetween(FieldInfo{ name, bindTable }, a, b);
+    Connectable* between(const T& a, const T& b) {
+        auto connector = new BetweenConnector;
+        connector->addField(FieldInfo{name, bindTable});
+        connector->addValues(a, b);
+        return connector;
     }
 
     /*condition is null*/
-    EntityCondition lsNull() {
-        return EntityCondition::conditionIs(FieldInfo{ name, bindTable }, false);
+    Connectable* lsNull() {
+        auto connector = new IsNullConnector(true);
+        connector->addField(FieldInfo{name, bindTable});
+        return connector;
     }
 
     /*condition is not null*/
-    EntityCondition notNull() {
-        return EntityCondition::conditionIs(FieldInfo{ name, bindTable }, true);
+    Connectable* notNull() {
+        auto connector = new IsNullConnector(false);
+        connector->addField(FieldInfo{name, bindTable});
+        return connector;
     }
 
     /*for order by*/
