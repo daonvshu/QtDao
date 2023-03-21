@@ -5,6 +5,8 @@
 #include <qobject.h>
 #include <qvariant.h>
 
+#include <utility>
+
 #include "entitycondition.h"
 
 QTDAO_BEGIN_NAMESPACE
@@ -16,9 +18,10 @@ class Connector;
 template<typename T>
 class EntityField {
 public:
-    explicit EntityField(const QString& fieldName, const QString& bindTable)
-        : name(fieldName)
-        , bindTable(bindTable)
+    explicit EntityField(QString fieldName, QString bindTable, bool isCustomType = false)
+        : name(std::move(fieldName))
+        , bindTable(std::move(bindTable))
+        , customType(isCustomType)
     {}
 
     /*get name*/
@@ -29,6 +32,7 @@ public:
 private:
     QString name;
     QString bindTable;
+    bool customType;
 
     friend class ConditionConstraint;
     friend class FunctionCondition;
