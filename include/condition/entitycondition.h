@@ -77,13 +77,15 @@ public:
 template<typename T>
 class BatchOperatorEntityConnector : public BatchOperatorEntityConnectorImpl<T, OperatorEntityConnector> {
 public:
-    using BatchOperatorEntityConnectorImpl<T, OperatorEntityConnector>::BatchOperatorEntityConnectorImpl;
+    using BatchOperatorEntityConnectorImpl<T, OperatorEntityConnector>::addValues;
+    using BatchOperatorEntityConnectorImpl<T, OperatorEntityConnector>::setCustomValues;
 };
 
 template<typename T>
 class BatchSelfOperatorEntityConnector : public BatchOperatorEntityConnectorImpl<T, SelfOperatorEntityConnector> {
 public:
-    using BatchOperatorEntityConnectorImpl<T, SelfOperatorEntityConnector>::BatchOperatorEntityConnectorImpl;
+    using BatchOperatorEntityConnectorImpl<T, SelfOperatorEntityConnector>::addValues;
+    using BatchOperatorEntityConnectorImpl<T, SelfOperatorEntityConnector>::setCustomValues;
 };
 
 class FieldOperatorEntityConnector : public EntityConnector {
