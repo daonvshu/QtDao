@@ -4,11 +4,8 @@
 
 QTDAO_BEGIN_NAMESPACE
 
-template<bool SelfEntity, template<typename> class T, typename E>
-class FromSelectBuilder;
-
 template<template<typename> class T, typename E>
-class FromSelectBuilder<true, T, E> : protected FromBuilder {
+class FromSelfSelectBuilder : protected FromBuilder {
 public:
     T<E>& from(Select<E> &select) {
         fromSelect(static_cast<SelectImpl&>(select));
@@ -42,34 +39,34 @@ public:
     friend class BuilderJbReaderProvider;
 };
 
-template<template<typename> class T, typename E>
-class FromSelectBuilder<false, T, E> : protected FromBuilder {
+template<typename T>
+class FromE2SelectBuilder : protected FromBuilder {
 public:
-    template<typename E2>
-    T<E>& from(Select<E2> &select) {
+    template<typename E>
+    T& from(Select<E> &select) {
         fromSelect(static_cast<SelectImpl&>(select));
-        return static_cast<T<E>&>(*this);
+        return static_cast<T&>(*this);
     }
 
-    template<typename E2>
-    T<E>& from(Select<E2> &&select) {
+    template<typename E>
+    T& from(Select<E> &&select) {
         return from(select);
     }
 
-    template<typename... E2>
-    T<E>& from(Join<E2...> &join) {
+    template<typename... E>
+    T& from(Join<E...> &join) {
         fromJoin(static_cast<JoinImpl&>(join));
-        return static_cast<T<E>&>(*this);
+        return static_cast<T&>(*this);
     }
 
-    T<E>& from(RecursiveQueryBuilder& builder) {
+    T& from(RecursiveQueryBuilder& builder) {
         fromBuilder(builder);
-        return static_cast<T<E>&>(*this);
+        return static_cast<T&>(*this);
     }
 
-    T<E>& from(RecursiveQueryBuilder&& builder) {
+    T& from(RecursiveQueryBuilder&& builder) {
         fromBuilder(builder);
-        return static_cast<T<E>&>(*this);
+        return static_cast<T&>(*this);
     }
 
     template<template<typename> class, typename>

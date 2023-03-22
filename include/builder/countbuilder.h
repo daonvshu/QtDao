@@ -15,7 +15,7 @@ template<typename E>
 class CountBuilder
         : public DebugBuilder<CountBuilder<E>>
         , public FilterBuilder<CountBuilder<E>>
-        , public FromSelectBuilder<true, CountBuilder, E>
+        , public FromSelfSelectBuilder<CountBuilder, E>
 {
 public:
     int count() {

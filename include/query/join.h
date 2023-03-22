@@ -56,8 +56,11 @@ private:
     friend class RecursiveQueryBuilder;
     friend class FunctionCondition;
 
-    template<bool, template<typename> class, typename>
-    friend class FromSelectBuilder;
+    template<template<typename> class, typename>
+    class FromSelfSelectBuilder;
+
+    template<typename T>
+    class FromE2SelectBuilder;
 
     template<template<typename...> class, typename...>
     friend class FromEsSelectBuilder;

@@ -15,7 +15,7 @@ template<typename E>
 class InsertIntoSelectBuilder
         : public DebugBuilder<InsertIntoSelectBuilder<E>>
         , public ColumnBuilder<InsertIntoSelectBuilder<E>>
-        , public FromSelectBuilder<false, InsertIntoSelectBuilder, E>
+        , public FromE2SelectBuilder<InsertIntoSelectBuilder<E>>
 {
 public:
     InsertIntoSelect <E> build() {

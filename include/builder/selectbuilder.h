@@ -23,7 +23,7 @@ class SelectBuilder
         , public ColumnBuilder<SelectBuilder<E>>
         , public FilterBuilder<SelectBuilder<E>>
         , public ConstraintBuilder<SelectBuilder<E>>
-        , public FromSelectBuilder<true, SelectBuilder, E>
+        , public FromSelfSelectBuilder<SelectBuilder, E>
         , public UnionBuilder<SelectBuilder<E>>
 {
 public:
