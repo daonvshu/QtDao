@@ -18,6 +18,8 @@ add_library(${PROJECT_NAME}
     condition/entitycondition.cpp
     condition/functioncondition.cpp
 
+    condition/connector/entityconnector.cpp
+
     config/configbuilder.cpp
     config/configsqlite.cpp
     config/configmysql.cpp

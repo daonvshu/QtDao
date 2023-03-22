@@ -5,40 +5,19 @@
 #include <qobject.h>
 #include <qvariant.h>
 
-#include "connector/connectable.h"
-
 #include "utils/serializing.h"
+
+#include "connector/entityconnector.h"
 
 QTDAO_BEGIN_NAMESPACE
 
-class EntityConnector : public Connectable {
+class OperatorEntityConnector : EntityConnector {
 public:
-    QList<FieldInfo> getUsedFields() override;
+    using EntityConnector::addField;
+    using EntityConnector::addValue;
+    using EntityConnector::addCustomValue;
+    using EntityConnector::ptr;
 
-    QVariantList getValueList() override;
-
-    QString getConditionSegment() override;
-
-    virtual void addField(const FieldInfo& field);
-
-    virtual void addValue(const QVariant& value);
-
-    template<typename T>
-    void addCustomValue(const T& value) {
-        addValue(serializeCustomTypeToBinary(value));
-    }
-
-protected:
-    QString getField(int index) const;
-
-protected:
-    QList<FieldInfo> fields;
-    QVariantList values;
-    QString connectedStr;
-};
-
-class OperatorEntityConnector : public EntityConnector {
-public:
     void setOperator(const QString& op) {
         this->connectorOp = op;
     }
@@ -47,6 +26,9 @@ public:
 
 protected:
     QString connectorOp;
+
+    using EntityConnector::getField;
+    using EntityConnector::connectedStr;
 };
 
 class SelfOperatorEntityConnector : public OperatorEntityConnector {
@@ -55,8 +37,12 @@ public:
 };
 
 template<typename T, typename Connector>
-class BatchOperatorEntityConnectorImpl : public Connector {
+class BatchOperatorEntityConnectorImpl : Connector {
 public:
+    using Connector::setOperator;
+    using Connector::addField;
+    using Connector::ptr;
+
     void addValues(const QList<T>& values) {
         QVariantList variantList;
         for (const auto& v : values) {
@@ -80,8 +66,10 @@ class BatchOperatorEntityConnector : public BatchOperatorEntityConnectorImpl<T, 
 template<typename T>
 class BatchSelfOperatorEntityConnector : public BatchOperatorEntityConnectorImpl<T, SelfOperatorEntityConnector> {};
 
-class FieldOperatorEntityConnector : public EntityConnector {
+class FieldOperatorEntityConnector : EntityConnector {
 public:
+    using EntityConnector::ptr;
+
     void addFields(const FieldInfo& to, const FieldInfo& from) {
         addField(to);
         addField(from);
@@ -95,6 +83,9 @@ public:
 
 protected:
     QString connectorOp;
+
+    using EntityConnector::getField;
+    using EntityConnector::connectedStr;
 };
 
 class SelfFieldOperatorEntityConnector : public FieldOperatorEntityConnector {
@@ -102,8 +93,11 @@ public:
     void combine() override;
 };
 
-class InEntityConnector : public EntityConnector {
+class InEntityConnector : EntityConnector {
 public:
+    using EntityConnector::addField;
+    using EntityConnector::ptr;
+
     template<typename T>
     void addValues(const QList<T>& values) {
         for (const auto& v : values) {
@@ -121,8 +115,11 @@ public:
     void combine() override;
 };
 
-class BetweenConnector : public EntityConnector {
+class BetweenConnector : EntityConnector {
 public:
+    using EntityConnector::addField;
+    using EntityConnector::ptr;
+
     template<typename T>
     void addValues(const T& from, const T& to) {
         addValue(from);
@@ -132,9 +129,12 @@ public:
     void combine() override;
 };
 
-class IsNullConnector : public EntityConnector {
+class IsNullConnector : EntityConnector {
 public:
     explicit IsNullConnector(bool isNull) : checkIsNull(isNull) {}
+
+    using EntityConnector::addField;
+    using EntityConnector::ptr;
 
     void combine() override;
 

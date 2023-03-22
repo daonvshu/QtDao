@@ -18,6 +18,9 @@ struct FieldInfo {
 
 typedef std::function<QString(const QString& tbName)> FieldPrefixGetter;
 
+template<typename T>
+class EntityField;
+
 class Connectable {
 public:
     void setFieldPrefixGetter(const FieldPrefixGetter& getter) {
@@ -36,6 +39,9 @@ public:
 
 protected:
     FieldPrefixGetter fieldPrefixGetter;
+
+    template<typename T>
+    FieldInfo getEntityFieldInfo(const EntityField<T>& entityField);
 };
 
 QTDAO_END_NAMESPACE
