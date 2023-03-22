@@ -1,86 +1,62 @@
 ﻿#pragma once
 
 #include "../global.h"
+#include "../builder/option/fromselectbuilder.h"
 
 #include "entityfield.h"
-#include "functionconditiondata.h"
 
 QTDAO_BEGIN_NAMESPACE
 
-template<typename E>
-class Select;
-
-template<typename... E>
-class Join;
-
-class ConditionConstraint;
-
-class Connector;
-class FunctionCondition {
+class FunctionConnector : Connectable, public FromE2SelectBuilder<FunctionConnector> {
 public:
-    FunctionCondition();
-
-    FunctionCondition(const QString& expressions);
-
     template<typename T, typename... E>
-    FunctionCondition& field(const EntityField<T>& field, const EntityField<E>&... n);
+    FunctionConnector& field(const EntityField<T>& f, const EntityField<E>&... n) {
+        fields << getEntityFieldInfo(f);
+        return field(n...);
+    }
 
-    template<typename T>
-    FunctionCondition& field(const EntityField<T>& field);
+    FunctionConnector& field() {
+        return *this;
+    }
 
     template<typename... Args>
-    FunctionCondition& value(QVariant v, Args... args);
+    FunctionConnector& value(const QVariant& v, Args... args) {
+        values << v;
+        return value(args...);
+    }
 
-    FunctionCondition& value(QVariant v);
+    FunctionConnector& value() {
+        return *this;
+    }
 
-    template<typename E>
-    FunctionCondition& from(Select<E>& select);
+    QList<FieldInfo> getUsedFields() override;
 
-    template<typename... E>
-    FunctionCondition& from(Join<E...>& join);
+    QString getConditionSegment() override;
+
+    QVariantList getValueList() override;
+
+    void combine() override;
+
+    Connectable* ptr() {
+        return this;
+    }
+
+protected:
+    void fromSelect(SelectImpl& select) override;
+
+    void fromJoin(JoinImpl& join) override;
+
+    void fromBuilder(RecursiveQueryBuilder& builder) override;
+
+    void solveFromQueryBuildResult();
+
+    QString getField(int index) const;
 
 private:
-    QSharedDataPointer<FunctionConditionData> d;
-
-private:
-    void setFieldPrefixGetter(std::function<QString(const QString&)> prefixGetter);
-
-    void combine();
-
-    friend class Connector;
-    friend class ConditionConstraint;
+    QString expressions;
+    QList<FieldInfo> fields;
+    QVariantList values;
+    QString connectedStr;
 };
-
-template<typename T, typename ...E>
-inline FunctionCondition& FunctionCondition::field(const EntityField<T>& f, const EntityField<E>& ...n) {
-    return field(f).field(n...);
-}
-
-template<typename T>
-inline FunctionCondition& FunctionCondition::field(const EntityField<T>& f) {
-    d->fields << FieldInfo{f.name, f.bindTable};
-    return *this;
-}
-
-template<typename ...Args>
-inline FunctionCondition& FunctionCondition::value(QVariant v, Args ...args) {
-    return value(v).value(args...);
-}
-
-template<typename E>
-inline FunctionCondition& FunctionCondition::from(Select<E>& select) {
-    select.buildFilterSqlStatement();
-    d->fields << FieldInfo{ select.statement.prepend("(").append(")"), "" };
-    d->values << select.values;
-    return *this;
-}
-
-template<typename ...E>
-inline FunctionCondition& FunctionCondition::from(Join<E...>& join) {
-    join.buildJoinSqlStatement();
-    d->fields << FieldInfo{ join.statement.prepend("(").append(")"), "" };
-    d->values << join.values;
-    return *this;
-}
 
 QTDAO_END_NAMESPACE

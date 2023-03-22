@@ -24,11 +24,11 @@ public:
     }
 
 protected:
-    void fromSelect(SelectImpl& select);
+    virtual void fromSelect(SelectImpl& select);
 
-    void fromJoin(JoinImpl& join);
+    virtual void fromJoin(JoinImpl& join);
 
-    void fromBuilder(RecursiveQueryBuilder& builder);
+    virtual void fromBuilder(RecursiveQueryBuilder& builder);
 
 protected:
     FromBuildData fromData;

@@ -26,7 +26,6 @@ HEADERS += ../include/connectionpool.h \
     ../include/condition/connector.h \
     ../include/condition/connectordata.h \
     ../include/condition/entitycondition.h \
-    ../include/condition/entityconditiondata.h \
     ../include/condition/entityfield.h \
     ../include/condition/functioncondition.h \
     ../include/condition/functionconditiondata.h \
