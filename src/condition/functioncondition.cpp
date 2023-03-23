@@ -50,4 +50,8 @@ void FunctionConnector::solveFromQueryBuildResult() {
     fromDataClear();
 }
 
+bool FunctionConnector::isEmpty() {
+    return expressions.isEmpty() && Connectable::isEmpty();
+}
+
 QTDAO_END_NAMESPACE

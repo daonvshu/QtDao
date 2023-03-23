@@ -39,6 +39,9 @@ public:
         return this;
     }
 
+private:
+    bool isEmpty() override;
+
 protected:
     void fromSelect(SelectImpl& select) override;
 
