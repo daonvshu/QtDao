@@ -8,13 +8,6 @@
 QTDAO_BEGIN_NAMESPACE
 
 template<typename... E>
-class JoinBuilder;
-
-class RecursiveQueryBuilder;
-
-class FunctionCondition;
-
-template<typename... E>
 class Join
         : JoinImpl
         , BuilderJbReaderProvider<JoinBuilder, E...>
@@ -57,10 +50,10 @@ private:
     friend class FunctionCondition;
 
     template<template<typename> class, typename>
-    class FromSelfSelectBuilder;
+    friend class FromSelfSelectBuilder;
 
     template<typename T>
-    class FromE2SelectBuilder;
+    friend class FromE2SelectBuilder;
 
     template<template<typename...> class, typename...>
     friend class FromEsSelectBuilder;

@@ -5,7 +5,6 @@
 #include "option/filterbuilder.h"
 #include "option/constraintbuilder.h"
 #include "option/fromselectbuilder.h"
-#include "option/fromjoinbuilder.h"
 #include "option/unionbuilder.h"
 
 #include "../macro/macro.h"

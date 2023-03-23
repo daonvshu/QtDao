@@ -2,7 +2,7 @@
 
 #include "../../global.h"
 
-#include "../../condition/connector.h"
+#include "../../condition/connector/groupconnector.h"
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -12,27 +12,27 @@ protected:
     /**
      * use fields or custom function to add select columns, example:
      * fields.name, _fun("sum(%1) as scores").field(fields.score)
-     * @tparam Col type of fields or custom function
-     * @tparam Args condition type, Entity/FunctionCondition
-     * @param function fields or custom function
+     * @tparam Col type of EntityField<E> or FunctionConnector
+     * @tparam Args condition types
+     * @param col fields or custom function
      * @param args other types of columns
      */
     template<typename Col, typename... Args>
-    void doColumn(const Col& function, const Args&... args){
-        columnCondition.appendCol(function);
+    void doColumn(Col&& col, Args&&... args){
+        columnCondition.append(std::forward<Col>(col));
         doColumn(args...);
     }
 
     /**
      * use fields or custom function to add select columns, using enabled to add column optional
-     * @tparam Col type of fields or custom function
+     * @tparam Col type of EntityField<E> or FunctionConnector
      * @param enabled add column if enabled
-     * @param function fields or custom function
+     * @param col fields or custom function
      */
     template<typename Col>
-    void doColumn(bool enabled, const Col& function){
+    void doColumn(bool enabled, Col&& col){
         if (enabled) {
-            columnCondition.appendCol(function);
+            columnCondition.append(std::forward<Col>(col));
         }
     }
 
@@ -43,7 +43,7 @@ protected:
 
 protected:
     //use ',' connect conditions
-    Connector columnCondition{","};
+    FieldGroupConnector columnCondition;
 };
 
 template<typename T>
@@ -52,26 +52,26 @@ public:
     /**
      * use fields or custom function to add select columns, example:
      * fields.name, _fun("sum(%1) as scores").field(fields.score)
-     * @tparam Args condition type, Entity/FunctionCondition
+     * @tparam Args condition type, EntityField<E> or FunctionConnector
      * @param args fields or custom function
      * @return this
      */
     template<typename...Args>
-    T& column(const Args &...args) {
-        this->doColumn(args...);
+    T& column(Args&&... args) {
+        this->doColumn(std::forward<Args>(args)...);
         return static_cast<T&>(*this);
     }
 
     /**
      * use fields or custom function to add select columns, using enabled to add column optional
-     * @tparam Arg type of fields or custom function
+     * @tparam Arg condition type, EntityField<E> or FunctionConnector
      * @param enabled add column if enabled
      * @param arg fields or custom function
      * @return this
      */
     template<typename Arg>
-    T& column(bool enabled, const Arg &arg) {
-        this->doColumn(enabled, arg);
+    T& column(bool enabled, Arg&& arg) {
+        this->doColumn(enabled, std::forward<Arg>(arg));
         return static_cast<T&>(*this);
     }
 
@@ -84,7 +84,7 @@ public:
         QString tbName = E::Info::getTableName();
         QStringList fields = E::Info::getFields();
         for (const auto& field : fields) {
-            this->columnCondition.appendCol(FieldInfo{ field, tbName });
+            this->columnCondition.append(FieldInfo{ field, tbName });
         }
         return static_cast<T&>(*this);
     }
@@ -103,26 +103,26 @@ public:
     /**
      * use fields or custom function to add upsert conflict columns, example:
      * fields.name, fields.age
-     * @tparam Args condition type, Entity
+     * @tparam Args condition type, EntityField<E> or FunctionConnector
      * @param args fields
      * @return this
      */
     template<typename...Args>
-    T& conflictColumns(const Args &...args) {
-        this->doColumn(args...);
+    T& conflictColumns(Args&&... args) {
+        this->doColumn(std::forward<Args>(args)...);
         return static_cast<T&>(*this);
     }
 
     /**
      * use fields or custom function to add upsert conflict columns, using enabled to add column optional
-     * @tparam Arg type of Entity
+     * @tparam Arg condition type, EntityField<E> or FunctionConnector
      * @param enabled add column if enabled
      * @param arg fields
      * @return this
      */
     template<typename Arg>
-    T& conflictColumns(bool enabled, const Arg &arg) {
-        this->doColumn(enabled, arg);
+    T& conflictColumns(bool enabled, Arg&& arg) {
+        this->doColumn(enabled, std::forward<Arg>(arg));
         return static_cast<T&>(*this);
     }
 
@@ -139,26 +139,26 @@ public:
     /**
      * use fields or custom function to add upsert update columns, example:
      * fields.name, fields.age
-     * @tparam Args condition type, Entity
+     * @tparam Args condition type, EntityField<E> or FunctionConnector
      * @param args fields
      * @return this
      */
     template<typename...Args>
-    T& updateColumns(const Args &...args) {
-        this->doColumn(args...);
+    T& updateColumns(Args&&... args) {
+        this->doColumn(std::forward<Args>(args)...);
         return static_cast<T&>(*this);
     }
 
     /**
      * use fields or custom function to add upsert update columns, using enabled to add column optional
-     * @tparam Arg type of Entity
+     * @tparam Arg condition type, EntityField<E> or FunctionConnector
      * @param enabled add column if enabled
      * @param arg fields
      * @return this
      */
     template<typename Arg>
-    T& updateColumns(bool enabled, const Arg &arg) {
-        this->doColumn(enabled, arg);
+    T& updateColumns(bool enabled, Arg&& arg) {
+        this->doColumn(enabled, std::forward<Arg>(arg));
         return static_cast<T&>(*this);
     }
 

@@ -3,6 +3,7 @@
 #include "../../global.h"
 
 #include <qobject.h>
+#include <qvariant.h>
 #include <functional>
 
 QTDAO_BEGIN_NAMESPACE
@@ -29,16 +30,24 @@ public:
 
     virtual void combine() = 0;
 
-    virtual QList<FieldInfo> getUsedFields() = 0;
+    virtual QList<FieldInfo> getUsedFields();
 
-    virtual QString getConditionSegment() = 0;
+    virtual QString getConditionSegment();
 
-    virtual QVariantList  getValueList() = 0;
+    virtual QVariantList getValueList();
+
+    virtual bool isEmpty();
 
     virtual ~Connectable() = default;
 
 protected:
+    QString getField(int index) const;
+
+protected:
     FieldPrefixGetter fieldPrefixGetter;
+    QList<FieldInfo> fields;
+    QVariantList values;
+    QString connectedStr;
 
     template<typename T>
     FieldInfo getEntityFieldInfo(const EntityField<T>& entityField);

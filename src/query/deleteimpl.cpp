@@ -10,9 +10,9 @@ void DeleteImpl::buildDeleteByFilterSqlStatement() {
     QVariantList value;
     auto& fc = filterConnector();
     if (!fc.isEmpty()) {
-        fc.connect();
-        sql.append(" where ").append(fc.getConditionStr());
-        value << fc.getValues();
+        fc.combine();
+        sql.append(" where ").append(fc.getConditionSegment());
+        value << fc.getValueList();
     }
     setSqlQueryStatement(sql, value);
 }
@@ -24,9 +24,11 @@ void DeleteImpl::buildDeleteEntitiesCondition(const std::function<QVariantList(c
     auto& fc = filterConnector();
     for (const auto& field : primaryKeys) {
         auto fieldValue = fieldColValuesReader(field);
-        auto condition =
-            EntityCondition(FieldInfo{ field, getTableName() }, "=", fieldValue.size() == 1 ? fieldValue.at(0) : fieldValue);
-        fc.append(condition);
+        auto condition = new OperatorEntityConnector;
+        condition->setOperator("=");
+        condition->addField(FieldInfo{ field, getTableName() });
+        condition->addValue(fieldValue.size() == 1 ? fieldValue.at(0) : fieldValue);
+        fc.append(condition->ptr());
     }
 }
 

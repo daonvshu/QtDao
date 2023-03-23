@@ -3,7 +3,6 @@
 #include "option/debugbuilder.h"
 #include "option/filterbuilder.h"
 #include "option/fromselectbuilder.h"
-#include "option/fromjoinbuilder.h"
 
 #include "selectbuilder.h"
 
@@ -20,7 +19,7 @@ class CountBuilder
 public:
     int count() {
         SelectBuilder<E> builder;
-        builder.column(FunctionCondition("count(*) as __selectcount"));
+        builder.column(FunctionConnector("count(*) as __selectcount"));
         builder.setFatalEnabled = this->setFatalEnabled;
         builder.loggingCategoryPtr = this->loggingCategoryPtr;
         builder.filterCondition = this->filterCondition;

@@ -23,7 +23,6 @@ HEADERS += ../include/connectionpool.h \
     ../include/builder/upsertbuilder.h \
     ../include/condition/conditionconstraint.h \
     ../include/condition/conditionoperator.h \
-    ../include/condition/connector.h \
     ../include/condition/connectordata.h \
     ../include/condition/entitycondition.h \
     ../include/condition/entityfield.h \

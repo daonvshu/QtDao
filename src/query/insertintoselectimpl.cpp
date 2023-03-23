@@ -11,9 +11,9 @@ void InsertIntoSelectImpl::buildSqlStatement() {
 
     auto& cc = columnConnector();
     if (!cc.isEmpty()) {
-        cc.connect();
-        sql.append(" (").append(cc.getConditionStr()).append(")");
-        values << cc.getValues();
+        cc.combine();
+        sql.append(" (").append(cc.getConditionSegment()).append(")");
+        values << cc.getValueList();
     }
 
     auto& fd = fromBuildData();

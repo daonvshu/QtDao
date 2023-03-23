@@ -4,6 +4,12 @@
 
 QTDAO_BEGIN_NAMESPACE
 
+template<typename>
+class Select;
+
+template<typename...>
+class Join;
+
 template<template<typename> class T, typename E>
 class FromSelfSelectBuilder : protected FromBuilder {
 public:
@@ -20,6 +26,11 @@ public:
     T<E>& from(Join<E2...> &join) {
         fromJoin(static_cast<JoinImpl&>(join));
         return static_cast<T<E>&>(*this);
+    }
+
+    template<typename... E2>
+    T<E>& from(Join<E2...> &&join) {
+        return from(join);
     }
 
     T<E>& from(RecursiveQueryBuilder& builder) {
@@ -57,6 +68,11 @@ public:
     T& from(Join<E...> &join) {
         fromJoin(static_cast<JoinImpl&>(join));
         return static_cast<T&>(*this);
+    }
+
+    template<typename... E>
+    T& from(Join<E...> &&join) {
+        return from(join);
     }
 
     T& from(RecursiveQueryBuilder& builder) {

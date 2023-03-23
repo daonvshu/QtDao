@@ -2,53 +2,59 @@
 
 #include "../global.h"
 
-#include "connector.h"
-#include "entityfield.h"
-#include "entitycondition.h"
+#include "connector/groupconnector.h"
 #include "conditionconstraint.h"
-#include "functioncondition.h"
 
 template<typename... T>
-inline dao::Connector _and(const T&... t) {
-    return dao::Connector("and").append(t...);
-}
-
-template<typename... T>
-inline dao::Connector _or(const T&... t) {
-    return dao::Connector("or").append(t...);
+inline dao::FilterGroupGroupConnector* _and(T&&... t) {
+    auto ptr = new dao::AndFilterGroupConnector;
+    ptr->appends(std::forward<T>(t)...);
+    return ptr;
 }
 
 template<typename... T>
-inline dao::Connector _constraint(const T&... t) {
-    return dao::Connector("").append(t...);
+inline dao::FilterGroupGroupConnector* _or(T&&... t) {
+    auto ptr = new dao::OrFilterGroupConnector;
+    ptr->appends(std::forward<T>(t)...);
+    return ptr;
 }
 
-inline dao::ConditionConstraint _limit(int a, int b) {
-    return dao::ConditionConstraint::limit(a, b);
+template<typename... T>
+inline dao::ConstraintGroupGroupConnector* _constraint(T&&... t) {
+    auto ptr = new dao::ConstraintGroupGroupConnector;
+    ptr->appends(std::forward<T>(t)...);
+    return ptr;
 }
 
-inline dao::ConditionConstraint _limit(int a) {
-    return dao::ConditionConstraint::limit(a);
+inline dao::ConstraintConnector* _limit(int a, int b) {
+    return new dao::LimitConstraintConnector(a, b);
+}
+
+inline dao::ConstraintConnector* _limit(int a) {
+    return new dao::LimitConstraintConnector(a);
 }
 
 template<typename... E>
-inline dao::ConditionConstraint _orderBy(const dao::EntityField<E>&... n) {
-    return dao::ConditionConstraint::orderBy(n...);
+inline dao::ConstraintConnector* _orderBy(const dao::EntityField<E>&... n) {
+    auto ptr = new dao::OrderByConstraintConnector;
+    ptr->orderBy(n...);
+    return ptr;
 }
 
 template<typename... N>
-inline dao::ConditionConstraint _groupBy(const dao::EntityField<N>&... n) {
-    return dao::ConditionConstraint::groupBy(n...);
+inline dao::ConstraintConnector* _groupBy(const dao::EntityField<N>&... n) {
+    auto ptr = new dao::GroupByConstraintConnector;
+    ptr->groupBy(n...);
+    return ptr;
 }
 
-inline dao::ConditionConstraint _having(const dao::EntityCondition& condition) {
-    return dao::ConditionConstraint::having(condition);
+template<typename... T>
+inline dao::HavingGroupConnector* _having(T&&... t) {
+    auto ptr = new dao::HavingGroupConnector;
+    ptr->appends(std::forward<T>(t)...);
+    return ptr;
 }
 
-inline dao::ConditionConstraint _having(const dao::FunctionCondition& condition) {
-    return dao::ConditionConstraint::having(condition);
-}
-
-inline dao::FunctionCondition _fun(const QString& expressions) {
-    return { expressions };
+inline dao::FunctionConnector _fun(const QString& expressions) {
+    return dao::FunctionConnector(expressions);
 }

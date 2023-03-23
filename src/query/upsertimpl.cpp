@@ -7,10 +7,10 @@ QTDAO_BEGIN_NAMESPACE
 bool UpsertImpl::buildInsertBySetSqlStatement() {
 
     auto& sc = setConnector();
-    sc.connect();
+    sc.combine();
 
-    auto usedFieldName = sc.getUsedFieldNames();
-    QVariantList values = sc.getValues();
+    auto usedFieldName = sc.getUsedFields();
+    QVariantList values = sc.getValueList();
     Q_ASSERT(!values.isEmpty());
 
     bool operateBatch = values.at(0).type() == QVariant::List;
@@ -52,8 +52,8 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
 
     const auto usedUpdateFieldNames = [&] {
         auto& updateCols = updateColumnConnector();
-        updateCols.connect();
-        auto usedFieldNames = listMap<QString, FieldInfo>(updateCols.getUsedFieldNames(), [&](const FieldInfo& info) {
+        updateCols.combine();
+        auto usedFieldNames = listMap<QString, FieldInfo>(updateCols.getUsedFields(), [&](const FieldInfo& info) {
             return info.name;
         });
         if (usedFieldNames.isEmpty()) {
@@ -67,10 +67,10 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
 
         //conflict field
         auto& conflictCols = conflictColumnConnector();
-        conflictCols.connect();
+        conflictCols.combine();
         QString conflictFields;
         QSet<QString> conflictFieldNames;
-        for (const auto& field: conflictCols.getUsedFieldNames()) {
+        for (const auto& field: conflictCols.getUsedFields()) {
             conflictFields += field.name + ",";
             conflictFieldNames << field.name;
         }
@@ -86,11 +86,12 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
 
         auto& fc = filterConnector();
         if (!fc.isEmpty()) {
-            fc.connect([&](const QString& tableName) {
+            fc.setFieldPrefixGetter([&](const QString& tableName) {
                 return tableName + '.';
             });
-            updateStr.append(" where ").append(fc.getConditionStr());
-            values << fc.getValues();
+            fc.combine();
+            updateStr.append(" where ").append(fc.getConditionSegment());
+            values << fc.getValueList();
         }
 
         return statementTemplate.arg(getTableName(), usedFieldListStr(), valuePlaceholder(),
@@ -100,9 +101,9 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         QString statementTemplate = "insert into %1 (%2) values(%3) on duplicate key update %4";
 
         auto& conflictCols = conflictColumnConnector();
-        conflictCols.connect();
+        conflictCols.combine();
         QSet<QString> conflictFieldNames;
-        for (const auto& field: conflictCols.getUsedFieldNames()) {
+        for (const auto& field: conflictCols.getUsedFields()) {
             conflictFieldNames << field.name;
         }
 
@@ -136,10 +137,10 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
 
         auto& conflictCols = conflictColumnConnector();
         //on condition
-        conflictCols.connect();
+        conflictCols.combine();
         QString onConditionStr;
         QSet<QString> conflictFieldNames;
-        for (const auto& fieldInfo: conflictCols.getUsedFieldNames()) {
+        for (const auto& fieldInfo: conflictCols.getUsedFields()) {
             onConditionStr += "a." + fieldInfo.name + "=b." + fieldInfo.name + " and ";
             conflictFieldNames << fieldInfo.name;
         }

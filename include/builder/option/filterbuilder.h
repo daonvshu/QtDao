@@ -3,7 +3,6 @@
 #include "../../global.h"
 
 #include "../../condition/entitycondition.h"
-#include "../../condition/connector.h"
 #include "../../condition/functioncondition.h"
 
 QTDAO_BEGIN_NAMESPACE
@@ -13,72 +12,27 @@ class FilterBuilderImpl {
 protected:
     /**
      * use fields to add filter conditions, example: fields.name == "Alice"
-     * @tparam Args condition type, EntityCondition/Connector/FunctionCondition
-     * @param condition field condition
+     * @tparam F condition type, EntityConnector/FunctionConnector/FilterGroupGroupConnector
+     * @tparam Args types
+     * @param condition field/combination/function condition
      * @param args other types of conditions
      */
-    template<typename... Args>
-    void doFilter(const EntityCondition& condition, const Args&... args) {
-        filterCondition.append(condition);
+    template<typename F, typename... Args>
+    void doFilter(F&& condition, Args&&... args) {
+        filterCondition.append(std::forward<F>(condition));
         doFilter(args...);
     }
 
     /**
      * use fields to add filter conditions, using enabled to add optional
+     * @tparam F condition type, EntityConnector/FunctionConnector/FilterGroupGroupConnector
      * @param enabled add condition if enabled
-     * @param condition field condition
+     * @param condition field/combination/function condition
      */
-    void doFilter(bool enabled, const EntityCondition& condition) {
+    template<typename F>
+    void doFilter(bool enabled, F&& condition) {
         if (enabled) {
-            filterCondition.append(condition);
-        }
-    }
-
-    /**
-     * use combination condition to add filter conditions,
-     * example: _and(fields.name == "Alice", fields.age == 1)
-     * @tparam Args condition type, EntityCondition/Connector/FunctionCondition
-     * @param condition combination condition
-     * @param args other types of conditions
-     */
-    template<typename... Args>
-    void doFilter(const Connector& condition, const Args&... args) {
-        filterCondition.append(condition);
-        doFilter(args...);
-    }
-
-    /**
-     * use combination condition to add filter conditions, using enabled to add optional
-     * @param enabled add condition if enabled
-     * @param condition combination condition
-     */
-    void doFilter(bool enabled, const Connector& condition) {
-        if (enabled) {
-            filterCondition.append(condition);
-        }
-    }
-
-    /**
-     * use custom condition to add filter conditions,
-     * example: _fun("%1 + %2 > 100").field(fields.score1, fields.score2)
-     * @tparam Args condition type, EntityCondition/Connector/FunctionCondition
-     * @param condition function condition
-     * @param args other types of conditions
-     */
-    template<typename... Args>
-    void doFilter(const FunctionCondition& condition, const Args&... args) {
-        filterCondition.append(condition);
-        doFilter(args...);
-    }
-
-    /**
-     * use custom condition to add filter conditions, using enabled to add optional
-     * @param enabled add condition if enabled
-     * @param condition function condition
-     */
-    void doFilter(bool enabled, const FunctionCondition& condition) {
-        if (enabled) {
-            filterCondition.append(condition);
+            filterCondition.append(std::forward<F>(condition));
         }
     }
 
@@ -89,7 +43,7 @@ protected:
 
 protected:
     //use 'and' connect conditions
-    Connector filterCondition{"and"};
+    FilterGroupConnector filterCondition;
 };
 
 template<typename T>
@@ -99,26 +53,26 @@ public:
      * add some filter conditions, example:
      * fields.name == "Alice",  _and(fields.name == "Alice", fields.age == 1),
      * _fun("%1 + %2 > 100").field(fields.score1, fields.score2)
-     * @tparam Args condition type, EntityCondition/Connector/FunctionCondition
+     * @tparam Args condition type, EntityConnector/FunctionConnector/FilterGroupGroupConnector
      * @param args conditions
      * @return this
      */
     template<typename...Args>
-    T& filter(const Args &...args) {
-        this->doFilter(args...);
+    T& filter(Args&& ...args) {
+        this->doFilter(std::forward<Args>(args)...);
         return static_cast<T&>(*this);
     }
 
     /**
      * add a filter condition, using enabled to add optional
-     * @tparam Arg condition type, EntityCondition/Connector/FunctionCondition
+     * @tparam Arg condition type, EntityConnector/FunctionConnector/FilterGroupGroupConnector
      * @param enabled add condition if enabled
      * @param arg conditions
      * @return this
      */
     template<typename Arg>
-    T& filter(bool enabled, const Arg &arg) {
-        this->doFilter(enabled, arg);
+    T& filter(bool enabled, Arg&& arg) {
+        this->doFilter(enabled, std::forward<Arg>(arg));
         return static_cast<T&>(*this);
     }
 

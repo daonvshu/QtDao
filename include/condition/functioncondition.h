@@ -9,6 +9,8 @@ QTDAO_BEGIN_NAMESPACE
 
 class FunctionConnector : Connectable, public FromE2SelectBuilder<FunctionConnector> {
 public:
+    explicit FunctionConnector(QString expressions): expressions(std::move(expressions)) {}
+
     template<typename T, typename... E>
     FunctionConnector& field(const EntityField<T>& f, const EntityField<E>&... n) {
         fields << getEntityFieldInfo(f);
@@ -31,10 +33,6 @@ public:
 
     QList<FieldInfo> getUsedFields() override;
 
-    QString getConditionSegment() override;
-
-    QVariantList getValueList() override;
-
     void combine() override;
 
     Connectable* ptr() {
@@ -50,13 +48,8 @@ protected:
 
     void solveFromQueryBuildResult();
 
-    QString getField(int index) const;
-
 private:
     QString expressions;
-    QList<FieldInfo> fields;
-    QVariantList values;
-    QString connectedStr;
 };
 
 QTDAO_END_NAMESPACE

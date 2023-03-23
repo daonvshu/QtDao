@@ -33,16 +33,16 @@ void SelectImpl::buildFilterSqlStatement() {
 
     auto& fc = filterConnector();
     if (!fc.isEmpty()) {
-        fc.connect();
-        sql.append(" where ").append(fc.getConditionStr());
-        values.append(fc.getValues());
+        fc.combine();
+        sql.append(" where ").append(fc.getConditionSegment());
+        values.append(fc.getValueList());
     }
 
     auto& cc = constraintConnector();
     if (!cc.isEmpty()) {
-        cc.connect();
-        sql.append(" ").append(cc.getConditionStr());
-        values.append(cc.getValues());
+        cc.combine();
+        sql.append(" ").append(cc.getConditionSegment());
+        values.append(cc.getValueList());
     }
 
     auto& uc = unionBuildData();
@@ -60,9 +60,9 @@ QString SelectImpl::getBindColumns(QVariantList &values) {
     if (cc.isEmpty()) {
         return "*";
     }
-    cc.connect();
-    values << cc.getValues();
-    return cc.getConditionStr();
+    cc.combine();
+    values << cc.getValueList();
+    return cc.getConditionSegment();
 }
 
 QString SelectImpl::readExplainStatement() {

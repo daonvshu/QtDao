@@ -15,10 +15,11 @@ void JoinImpl::buildJoinSqlStatement() {
     usedColumns.clear();
     auto& cc = columnConnector();
     if (!cc.isEmpty()) {
-        cc.connect(prefixGetter);
-        sql.append(cc.getConditionStr());
-        values.append(cc.getValues());
-        usedColumns = cc.getUsedFieldNames();
+        cc.setFieldPrefixGetter(prefixGetter);
+        cc.combine();
+        sql.append(cc.getConditionSegment());
+        values.append(cc.getValueList());
+        usedColumns = cc.getUsedFields();
     } else {
         sql.append(getAllEntityField());
     }
@@ -61,17 +62,19 @@ void JoinImpl::buildJoinSqlStatement() {
         sql.append(' ').append(prefixGetter(tb.first));
         sql.chop(1);
         if (!joinData.filter.isEmpty()) {
-            joinData.filter.connect(prefixGetter);
-            sql.append(" on ").append(joinData.filter.getConditionStr());
-            values.append(joinData.filter.getValues());
+            joinData.filter.setFieldPrefixGetter(prefixGetter);
+            joinData.filter.combine();
+            sql.append(" on ").append(joinData.filter.getConditionSegment());
+            values.append(joinData.filter.getValueList());
         }
     }
 
     auto& fc = filterConnector();
     if (!fc.isEmpty()) {
-        fc.connect(prefixGetter);
-        sql.append(" where ").append(fc.getConditionStr());
-        values.append(fc.getValues());
+        fc.setFieldPrefixGetter(prefixGetter);
+        fc.combine();
+        sql.append(" where ").append(fc.getConditionSegment());
+        values.append(fc.getValueList());
     }
 
     auto& unionData = unionBuildData();
@@ -84,12 +87,13 @@ void JoinImpl::buildJoinSqlStatement() {
 
     auto& constraint = constraintConnector();
     if (!constraint.isEmpty()) {
-        constraint.connect(
+        constraint.setFieldPrefixGetter(
             unionSelect && !globalConfig->isSqlite() ? std::function<QString(const QString&)>() : prefixGetter
         );
+        constraint.combine();
         sql.append(' ');
-        sql.append(constraint.getConditionStr());
-        values.append(constraint.getValues());
+        sql.append(constraint.getConditionSegment());
+        values.append(constraint.getValueList());
     }
 
     setSqlQueryStatement(sql, values);

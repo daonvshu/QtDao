@@ -21,14 +21,6 @@ QList<FieldInfo> FunctionConnector::getUsedFields() {
     return QList<FieldInfo>() << FieldInfo{ str, fields.at(0).bindTable }; //use first bind table
 }
 
-QString FunctionConnector::getConditionSegment() {
-    return connectedStr;
-}
-
-QVariantList FunctionConnector::getValueList() {
-    return values;
-}
-
 void FunctionConnector::combine() {
     QString str = expressions;
     for (int i = 0; i < fields.size(); i++) {
@@ -56,13 +48,6 @@ void FunctionConnector::solveFromQueryBuildResult() {
     fields << FieldInfo{ fromData.statement.prepend('(').prepend(')'), "" };
     values << fromData.values;
     fromDataClear();
-}
-
-QString FunctionConnector::getField(int index) const {
-    if (fieldPrefixGetter == nullptr) {
-        return fields.at(index).name;
-    }
-    return fieldPrefixGetter(fields.at(index).bindTable) + fields.at(index).name;
 }
 
 QTDAO_END_NAMESPACE

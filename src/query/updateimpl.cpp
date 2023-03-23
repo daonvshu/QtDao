@@ -9,17 +9,17 @@ void UpdateImpl::buildUpdateBySetSqlStatement() {
     QVariantList value;
 
     auto& sc = setConnector();
-    sc.connect();
-    Q_ASSERT(!sc.getConditionStr().isEmpty());
+    sc.combine();
+    Q_ASSERT(!sc.getConditionSegment().isEmpty());
     sql.append(" set ");
-    sql.append(sc.getConditionStr());
-    value << sc.getValues();
+    sql.append(sc.getConditionSegment());
+    value << sc.getValueList();
 
     auto& fc = filterConnector();
     if (!fc.isEmpty()) {
-        fc.connect();
-        sql.append(" where ").append(fc.getConditionStr());
-        value << fc.getValues();
+        fc.combine();
+        sql.append(" where ").append(fc.getConditionSegment());
+        value << fc.getValueList();
     }
     setSqlQueryStatement(sql, value);
 }
@@ -36,12 +36,16 @@ void UpdateImpl::bindUpdateEntitiesCondition(const std::function<QVariantList(co
     QStringList fields = getFields();
     for (const auto& field : fields) {
         auto fieldValue = fieldColValuesReader(field);
-        auto condition =
-            EntityCondition(FieldInfo{ field, getTableName() }, "=", fieldValue.size() == 1 ? fieldValue.at(0) : fieldValue);
+
+        auto condition = new OperatorEntityConnector;
+        condition->setOperator("=");
+        condition->addField(FieldInfo{ field, getTableName() });
+        condition->addValue(fieldValue.size() == 1 ? fieldValue.at(0) : fieldValue);
+
         if (primaryKeys.contains(field)) {
-            fc.append(condition);
+            fc.append(condition->ptr());
         } else {
-            sc.append(condition);
+            sc.append(condition->ptr());
         }
     }
 }

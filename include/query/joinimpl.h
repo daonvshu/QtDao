@@ -18,7 +18,7 @@ enum class JoinType {
 
 struct JoinData {
     JoinType joinType;
-    Connector filter;
+    FilterGroupConnector filter;
     //select from select
     FromBuildData fromBuildData;
 };

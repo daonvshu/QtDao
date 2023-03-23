@@ -17,8 +17,8 @@ public:
      * @return this
      */
     template<typename...Args>
-    T& on(const Args &...args) {
-        this->doFilter(args...);
+    T& on(Args&& ...args) {
+        this->doFilter(std::forward<Args>(args)...);
         return static_cast<T&>(*this);
     }
 
@@ -30,8 +30,8 @@ public:
      * @return this
      */
     template<typename Arg>
-    T& on(bool enabled, const Arg &arg) {
-        this->doFilter(enabled, arg);
+    T& on(bool enabled, Arg&& arg) {
+        this->doFilter(enabled, std::forward<Arg>(arg));
         return static_cast<T&>(*this);
     }
 

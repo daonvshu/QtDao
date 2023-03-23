@@ -13,45 +13,46 @@
 
 QTDAO_BEGIN_NAMESPACE
 
+#pragma warning(push)
+#pragma warning(disable:4312)
 class BuilderReaderInterface {
 protected:
-    virtual Connector& columnConnector() {
-        return *defaultConnector;
+    virtual FieldGroupConnector& columnConnector() {
+        return *reinterpret_cast<FieldGroupConnector*>(c);
     }
 
-    virtual Connector& conflictColumnConnector() {
-        return *defaultConnector;
+    virtual FieldGroupConnector& conflictColumnConnector() {
+        return *reinterpret_cast<FieldGroupConnector*>(c);
     }
 
-    virtual Connector& updateColumnConnector() {
-        return *defaultConnector;
+    virtual FieldGroupConnector& updateColumnConnector() {
+        return *reinterpret_cast<FieldGroupConnector*>(c);
     }
 
-    virtual Connector& setConnector() {
-        return *defaultConnector;
+    virtual SetGroupConnector& setConnector() {
+        return *reinterpret_cast<SetGroupConnector*>(c);
     }
 
-    virtual Connector& filterConnector() {
-        return *defaultConnector;
+    virtual FilterGroupConnector& filterConnector() {
+        return *reinterpret_cast<FilterGroupConnector*>(c);
     }
 
-    virtual Connector& constraintConnector() {
-        return *defaultConnector;
+    virtual ConstraintGroupConnector& constraintConnector() {
+        return *reinterpret_cast<ConstraintGroupConnector*>(c);
     }
 
     virtual FromBuildData& fromBuildData() {
-        return *defaultFd;
+        return *reinterpret_cast<FromBuildData*>(c);
     }
 
     virtual UnionBuildData& unionBuildData() {
-        return *defaultUd;
+        return *reinterpret_cast<UnionBuildData*>(c);
     }
 
 private:
-    Connector* defaultConnector = nullptr;
-    FromBuildData* defaultFd = nullptr;
-    UnionBuildData* defaultUd = nullptr;
+    int c = 0;
 };
+#pragma warning(pop)
 
 template<template<typename> class B, typename E>
 class BuilderReaderProvider;
@@ -67,7 +68,7 @@ class BuilderReaderProvider<DeleteBuilder, E> : protected virtual BuilderReaderI
 public:
     explicit BuilderReaderProvider(DeleteBuilder<E>* builder): builder(builder) {}
 
-    Connector& filterConnector() override {
+    FilterGroupConnector& filterConnector() override {
         return builder->filterCondition;
     }
 
@@ -83,7 +84,7 @@ class BuilderReaderProvider<InsertBuilder, E> : protected virtual BuilderReaderI
 public:
     explicit BuilderReaderProvider(InsertBuilder<E>* builder): builder(builder) {}
 
-    Connector& setConnector() override {
+    SetGroupConnector& setConnector() override {
         return builder->setCondition;
     }
 
@@ -99,7 +100,7 @@ class BuilderReaderProvider<InsertIntoSelectBuilder, E> : protected virtual Buil
 public:
     explicit BuilderReaderProvider(InsertIntoSelectBuilder<E>* builder): builder(builder) {}
 
-    Connector& columnConnector() override {
+    FieldGroupConnector& columnConnector() override {
         return builder->columnCondition;
     }
 
@@ -119,15 +120,15 @@ class BuilderJbReaderProvider<JoinBuilder, E...>: protected virtual BuilderReade
 public:
     explicit BuilderJbReaderProvider(JoinBuilder<E...>* builder): builder(builder) {}
 
-    Connector& columnConnector() override {
+    FieldGroupConnector& columnConnector() override {
         return builder->columnCondition;
     }
 
-    Connector& filterConnector() override {
+    FilterGroupConnector& filterConnector() override {
         return builder->template FilterBuilder<JoinBuilder<E...>>::filterCondition;
     }
 
-    Connector& constraintConnector() override {
+    ConstraintGroupConnector& constraintConnector() override {
         return builder->constraintCondition;
     }
 
@@ -151,15 +152,15 @@ class BuilderReaderProvider<SelectBuilder, E> : protected virtual BuilderReaderI
 public:
     explicit BuilderReaderProvider(SelectBuilder<E>* builder): builder(builder) {}
 
-    Connector& columnConnector() override {
+    FieldGroupConnector& columnConnector() override {
         return builder->columnCondition;
     }
 
-    Connector& filterConnector() override {
+    FilterGroupConnector& filterConnector() override {
         return builder->filterCondition;
     }
 
-    Connector& constraintConnector() override {
+    ConstraintGroupConnector& constraintConnector() override {
         return builder->constraintCondition;
     }
 
@@ -183,11 +184,11 @@ class BuilderReaderProvider<UpdateBuilder, E> : protected virtual BuilderReaderI
 public:
     explicit BuilderReaderProvider(UpdateBuilder<E>* builder): builder(builder) {}
 
-    Connector& setConnector() override {
+    SetGroupConnector& setConnector() override {
         return builder->setCondition;
     }
 
-    Connector& filterConnector() override {
+    FilterGroupConnector& filterConnector() override {
         return builder->filterCondition;
     }
 
@@ -203,19 +204,19 @@ class BuilderReaderProvider<UpsertBuilder, E> : protected virtual BuilderReaderI
 public:
     explicit BuilderReaderProvider(UpsertBuilder<E>* builder): builder(builder) {}
 
-    Connector& conflictColumnConnector() override {
+    FieldGroupConnector& conflictColumnConnector() override {
         return builder->template ConflictColumnBuilder<UpsertBuilder<E>>::columnCondition;
     }
 
-    Connector& updateColumnConnector() override {
+    FieldGroupConnector& updateColumnConnector() override {
         return builder->template UpdateColumnBuilder<UpsertBuilder<E>>::columnCondition;
     }
 
-    Connector& setConnector() override {
+    SetGroupConnector& setConnector() override {
         return builder->setCondition;
     }
 
-    Connector& filterConnector() override {
+    FilterGroupConnector& filterConnector() override {
         return builder->filterCondition;
     }
 

@@ -14,11 +14,12 @@ add_library(${PROJECT_NAME}
     builder/unionbuilder.cpp
 
     condition/conditionconstraint.cpp
-    condition/connectordata.cpp
     condition/entitycondition.cpp
     condition/functioncondition.cpp
 
+    condition/connector/connectable.cpp
     condition/connector/entityconnector.cpp
+    condition/connector/groupconnector.cpp
 
     config/configbuilder.cpp
     config/configsqlite.cpp

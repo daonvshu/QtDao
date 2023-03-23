@@ -31,7 +31,7 @@ private:
     bool customType;
 
 private:
-    FieldInfo getFieldInfo() {
+    FieldInfo getFieldInfo() const {
         return FieldInfo{ name, bindTable };
     }
 

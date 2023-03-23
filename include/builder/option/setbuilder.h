@@ -2,8 +2,7 @@
 
 #include "../../global.h"
 
-#include "../../condition/entitycondition.h"
-#include "../../condition/connector.h"
+#include "../../condition/connector/groupconnector.h"
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -11,64 +10,43 @@ template<typename T>
 class SetBuilder {
 public:
     /**
-     * add some set conditions, example:
-     * fields.name = "Alice", fields.age = 18
-     * @tparam Args condition type, EntityCondition
-     * @param args set conditions
-     * @return this
-     */
-    template<typename...Args>
-    T& set(const Args &...args) {
-        doSet(args...);
-        return static_cast<T&>(*this);
-    }
-
-    /**
-     * add a set condition, using enabled to add optional
-     * @tparam Arg condition type, EntityCondition
-     * @param enabled add condition if enabled
-     * @param args set conditions
-     * @return this
-     */
-    template<typename Arg>
-    T& set(bool enabled, const Arg &arg) {
-        doSet(enabled, arg);
-        return static_cast<T&>(*this);
-    }
-
-private:
-    /**
      * use fields to add set conditions, example:
      * fields.name = "Alice", fields.age = 18
-     * @tparam Args EntityCondition
+     * @tparam E type of EntityConnector or FunctionConnector
+     * @tparam Args types
      * @param condition set conditions
      * @param args other fields of conditions
      */
-    template<typename... Args>
-    void doSet(const EntityCondition& condition, const Args&... args){
-        setCondition.append(condition);
-        return doSet(args...);
+    template<typename E, typename... Args>
+    T& set(E&& condition, Args&&... args){
+        setCondition.append(std::forward<E>(condition));
+        return set(args...);
     }
 
     /**
      * add a set conditions, using enabled to add optional
+     * @tparam E type of EntityConnector or FunctionConnector
      * @param enabled add condition if enabled
      * @param condition set conditions
      */
-    void doSet(bool enabled, const EntityCondition& condition){
+    template<typename E>
+    T& set(bool enabled, E&& condition){
         if (enabled) {
-            setCondition.append(condition);
+            setCondition.append(std::forward<E>(condition));
         }
+        return static_cast<T&>(*this);
     }
 
     /**
      * end function recursion
      */
-    void doSet() {}
+    T& set() {
+        return static_cast<T&>(*this);
+    }
 
 private:
     //use ',' connect conditions
-    Connector setCondition{","};
+    SetGroupConnector setCondition;
 
     template<template<typename> class, typename>
     friend class BuilderReaderProvider;
