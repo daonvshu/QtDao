@@ -11,6 +11,13 @@ struct FromBuildData {
     QVariantList values;
     QString asName;
     bool recursiveQuery = false;
+
+    void clear() {
+        statement = QString();
+        values.clear();
+        asName = QString();
+        recursiveQuery = false;
+    }
 };
 
 class SelectImpl;
@@ -20,7 +27,7 @@ class RecursiveQueryBuilder;
 class FromBuilder {
 public:
     void fromDataClear() {
-        fromData = FromBuildData();
+        fromData.clear();
     }
 
 protected:

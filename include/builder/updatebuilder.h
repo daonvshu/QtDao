@@ -18,7 +18,7 @@ class UpdateBuilder
 {
 public:
     Update <E> build() {
-        return Update<E>(this);
+        return Update<E>(*this);
     }
 };
 

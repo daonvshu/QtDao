@@ -16,7 +16,7 @@ class InsertBuilder
 {
 public:
     Insert <E> build() {
-        return Insert<E>(this);
+        return Insert<E>(*this);
     }
 };
 

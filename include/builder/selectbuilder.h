@@ -27,7 +27,7 @@ class SelectBuilder
 {
 public:
     Select <E> build() {
-        return Select<E>(this);
+        return Select<E>(*this);
     }
 
     friend class CountBuilder<E>;

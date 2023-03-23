@@ -30,7 +30,7 @@ void OrderByConstraintConnector::combine() {
 }
 
 void GroupByConstraintConnector::combine() {
-    connectedStr = "order by ";
+    connectedStr = "group by ";
     for (int i = 0; i < fields.size(); i++) {
         connectedStr.append(getField(i)).append(',');
     }

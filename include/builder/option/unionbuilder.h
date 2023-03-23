@@ -10,6 +10,12 @@ struct UnionBuildData {
     QString statement;
     QVariantList values;
     bool unionAll = false;
+
+    void clear() {
+        statement = QString();
+        values.clear();
+        unionAll = false;
+    }
 };
 
 template<typename E>

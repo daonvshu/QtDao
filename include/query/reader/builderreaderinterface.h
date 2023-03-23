@@ -60,168 +60,236 @@ class BuilderReaderProvider;
 template<template<typename...> class B, typename... E>
 class BuilderJbReaderProvider;
 
+template<typename I, typename B>
+class BuilderInstanceHolder : protected virtual I {
+public:
+    explicit BuilderInstanceHolder(B&& builder): builder(builder) {}
+    virtual ~BuilderInstanceHolder() = default;
+
+protected:
+    virtual void buildClear() = 0;
+    
+protected:
+    B builder;
+};
+
 template<typename E>
 class DeleteBuilder;
 
 template<typename E>
-class BuilderReaderProvider<DeleteBuilder, E> : protected virtual BuilderReaderInterface {
+class BuilderReaderProvider<DeleteBuilder, E> : protected BuilderInstanceHolder<BuilderReaderInterface, DeleteBuilder<E>> {
 public:
-    explicit BuilderReaderProvider(DeleteBuilder<E>* builder): builder(builder) {}
+    using BuilderInstanceHolder<BuilderReaderInterface, DeleteBuilder<E>>::BuilderInstanceHolder;
 
     FilterGroupConnector& filterConnector() override {
-        return builder->filterCondition;
+        return this->builder.filterCondition;
+    }
+
+    ~BuilderReaderProvider() override {
+        buildClear();
     }
 
 protected:
-    DeleteBuilder<E>* builder;
+    void buildClear() override {
+        this->builder.filterCondition.clear();
+    }
 };
 
 template<typename E>
 class InsertBuilder;
 
 template<typename E>
-class BuilderReaderProvider<InsertBuilder, E> : protected virtual BuilderReaderInterface {
+class BuilderReaderProvider<InsertBuilder, E> : protected BuilderInstanceHolder<BuilderReaderInterface, InsertBuilder<E>> {
 public:
-    explicit BuilderReaderProvider(InsertBuilder<E>* builder): builder(builder) {}
+    using BuilderInstanceHolder<BuilderReaderInterface, InsertBuilder<E>>::BuilderInstanceHolder;
 
     SetGroupConnector& setConnector() override {
-        return builder->setCondition;
+        return this->builder.setCondition;
+    }
+
+    ~BuilderReaderProvider() override {
+        buildClear();
     }
 
 protected:
-    InsertBuilder<E>* builder;
+    void buildClear() override {
+        this->builder.setCondition.clear();
+    }
 };
 
 template<typename E>
 class InsertIntoSelectBuilder;
 
 template<typename E>
-class BuilderReaderProvider<InsertIntoSelectBuilder, E> : protected virtual BuilderReaderInterface {
+class BuilderReaderProvider<InsertIntoSelectBuilder, E> : protected BuilderInstanceHolder<BuilderReaderInterface, InsertIntoSelectBuilder<E>> {
 public:
-    explicit BuilderReaderProvider(InsertIntoSelectBuilder<E>* builder): builder(builder) {}
+    using BuilderInstanceHolder<BuilderReaderInterface, InsertIntoSelectBuilder<E>>::BuilderInstanceHolder;
 
     FieldGroupConnector& columnConnector() override {
-        return builder->columnCondition;
+        return this->builder.columnCondition;
     }
 
     FromBuildData& fromBuildData() override {
-        return builder->fromData;
+        return this->builder.fromData;
+    }
+
+    ~BuilderReaderProvider() override {
+        buildClear();
     }
 
 protected:
-    InsertIntoSelectBuilder<E>* builder;
+    void buildClear() override {
+        this->builder.columnCondition.clear();
+        this->builder.fromData.clear();
+    }
 };
 
 template<typename... E>
 class JoinBuilder;
 
 template<typename... E>
-class BuilderJbReaderProvider<JoinBuilder, E...>: protected virtual BuilderReaderInterface {
+class BuilderJbReaderProvider<JoinBuilder, E...>: protected BuilderInstanceHolder<BuilderReaderInterface, JoinBuilder<E...>> {
 public:
-    explicit BuilderJbReaderProvider(JoinBuilder<E...>* builder): builder(builder) {}
+    using BuilderInstanceHolder<BuilderReaderInterface, JoinBuilder<E...>>::BuilderInstanceHolder;
 
     FieldGroupConnector& columnConnector() override {
-        return builder->columnCondition;
+        return this->builder.columnCondition;
     }
 
     FilterGroupConnector& filterConnector() override {
-        return builder->template FilterBuilder<JoinBuilder<E...>>::filterCondition;
+        return this->builder.template FilterBuilder<JoinBuilder<E...>>::filterCondition;
     }
 
     ConstraintGroupConnector& constraintConnector() override {
-        return builder->constraintCondition;
+        return this->builder.constraintCondition;
     }
 
     FromBuildData& fromBuildData() override {
-        return builder->template FromEsSelectBuilder<JoinBuilder, E...>::fromData;
+        return this->builder.template FromEsSelectBuilder<JoinBuilder, E...>::fromData;
     }
 
     UnionBuildData& unionBuildData() override {
-        return builder->unionData;
+        return this->builder.unionData;
+    }
+
+    ~BuilderJbReaderProvider() override {
+        buildClear();
     }
 
 protected:
-    JoinBuilder<E...>* builder;
+    void buildClear() override {
+        this->builder.columnCondition.clear();
+        this->builder.template FilterBuilder<JoinBuilder<E...>>::filterCondition.clear();
+        this->builder.constraintCondition.clear();
+        this->builder.template FromEsSelectBuilder<JoinBuilder, E...>::fromData.clear();
+        this->builder.unionData.clear();
+    }
 };
 
 template<typename E>
 class SelectBuilder;
 
 template<typename E>
-class BuilderReaderProvider<SelectBuilder, E> : protected virtual BuilderReaderInterface {
+class BuilderReaderProvider<SelectBuilder, E> : protected BuilderInstanceHolder<BuilderReaderInterface, SelectBuilder<E>> {
 public:
-    explicit BuilderReaderProvider(SelectBuilder<E>* builder): builder(builder) {}
+    using BuilderInstanceHolder<BuilderReaderInterface, SelectBuilder<E>>::BuilderInstanceHolder;
 
     FieldGroupConnector& columnConnector() override {
-        return builder->columnCondition;
+        return this->builder.columnCondition;
     }
 
     FilterGroupConnector& filterConnector() override {
-        return builder->filterCondition;
+        return this->builder.filterCondition;
     }
 
     ConstraintGroupConnector& constraintConnector() override {
-        return builder->constraintCondition;
+        return this->builder.constraintCondition;
     }
 
     FromBuildData& fromBuildData() override {
-        return builder->fromData;
+        return this->builder.fromData;
     }
 
     UnionBuildData& unionBuildData() override {
-        return builder->unionData;
+        return this->builder.unionData;
+    }
+
+    ~BuilderReaderProvider() override {
+        buildClear();
     }
 
 protected:
-    SelectBuilder<E>* builder;
+    void buildClear() override {
+        this->builder.columnCondition.clear();
+        this->builder.filterCondition.clear();
+        this->builder.constraintCondition.clear();
+        this->builder.fromData.clear();
+        this->builder.unionData.clear();
+    }
 };
 
 template<typename E>
 class UpdateBuilder;
 
 template<typename E>
-class BuilderReaderProvider<UpdateBuilder, E> : protected virtual BuilderReaderInterface {
+class BuilderReaderProvider<UpdateBuilder, E> : protected BuilderInstanceHolder<BuilderReaderInterface, UpdateBuilder<E>> {
 public:
-    explicit BuilderReaderProvider(UpdateBuilder<E>* builder): builder(builder) {}
+    using BuilderInstanceHolder<BuilderReaderInterface, UpdateBuilder<E>>::BuilderInstanceHolder;
 
     SetGroupConnector& setConnector() override {
-        return builder->setCondition;
+        return this->builder.setCondition;
     }
 
     FilterGroupConnector& filterConnector() override {
-        return builder->filterCondition;
+        return this->builder.filterCondition;
+    }
+
+    ~BuilderReaderProvider() override {
+        buildClear();
     }
 
 protected:
-    UpdateBuilder<E>* builder;
+    void buildClear() override {
+        this->builder.setCondition.clear();
+        this->builder.filterCondition.clear();
+    }
 };
 
 template<typename E>
 class UpsertBuilder;
 
 template<typename E>
-class BuilderReaderProvider<UpsertBuilder, E> : protected virtual BuilderReaderInterface {
+class BuilderReaderProvider<UpsertBuilder, E> : protected BuilderInstanceHolder<BuilderReaderInterface, UpsertBuilder<E>> {
 public:
-    explicit BuilderReaderProvider(UpsertBuilder<E>* builder): builder(builder) {}
+    using BuilderInstanceHolder<BuilderReaderInterface, UpsertBuilder<E>>::BuilderInstanceHolder;
 
     FieldGroupConnector& conflictColumnConnector() override {
-        return builder->template ConflictColumnBuilder<UpsertBuilder<E>>::columnCondition;
+        return this->builder.template ConflictColumnBuilder<UpsertBuilder<E>>::columnCondition;
     }
 
     FieldGroupConnector& updateColumnConnector() override {
-        return builder->template UpdateColumnBuilder<UpsertBuilder<E>>::columnCondition;
+        return this->builder.template UpdateColumnBuilder<UpsertBuilder<E>>::columnCondition;
     }
 
     SetGroupConnector& setConnector() override {
-        return builder->setCondition;
+        return this->builder.setCondition;
     }
 
     FilterGroupConnector& filterConnector() override {
-        return builder->filterCondition;
+        return this->builder.filterCondition;
+    }
+
+    ~BuilderReaderProvider() override {
+        buildClear();
     }
 
 protected:
-    UpsertBuilder<E>* builder;
+    void buildClear() override {
+        this->builder.template ConflictColumnBuilder<UpsertBuilder<E>>::columnCondition.clear();
+        this->builder.template UpdateColumnBuilder<UpsertBuilder<E>>::columnCondition.clear();
+        this->builder.setCondition.clear();
+        this->builder.filterCondition.clear();
+    }
 };
 
 QTDAO_END_NAMESPACE

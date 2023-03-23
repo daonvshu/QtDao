@@ -18,7 +18,7 @@ class InsertIntoSelectBuilder
 {
 public:
     InsertIntoSelect <E> build() {
-        return InsertIntoSelect<E>(this);
+        return InsertIntoSelect<E>(*this);
     }
 };
 

@@ -21,7 +21,7 @@ class UpsertBuilder
 {
 public:
     Upsert <E> build() {
-        return Upsert<E>(this);
+        return Upsert<E>(*this);
     }
 };
 

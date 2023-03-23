@@ -48,7 +48,7 @@ inline void JoinBuilder<E...>::doFilter() {
     data.filter = OnConditionBuilder<JoinBuilder<E...>>::filterCondition;
     data.fromBuildData = this->JoinConnectBuilder<JoinBuilder<E...>>::fromData;
     subJoinData.insert(this->tbName, data);
-    OnConditionBuilder<JoinBuilder<E...>>::filterCondition.clear();
+    OnConditionBuilder<JoinBuilder<E...>>::filterCondition.clearByKeepConnectors();
     this->JoinConnectBuilder<JoinBuilder<E...>>::fromDataClear();
 }
 
@@ -64,7 +64,7 @@ inline Join<E...> JoinBuilder<E...>::build() {
     if (mainTable.isEmpty()) {
         mainTable = this->FromEsSelectBuilder<JoinBuilder, E...>::fromData.asName;
     }
-    return Join<E...>(mainTable, subJoinData, this);
+    return Join<E...>(mainTable, subJoinData, *this);
 }
 
 QTDAO_END_NAMESPACE

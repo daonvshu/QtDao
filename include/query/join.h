@@ -30,9 +30,9 @@ public:
 private:
     friend class JoinBuilder<E...>;
 
-    Join(const QString& mainTable, const QHash<QString, JoinData>& subJoinData, JoinBuilder<E...> *builder)
+    Join(const QString& mainTable, const QHash<QString, JoinData>& subJoinData, JoinBuilder<E...> builder)
         : JoinImpl(mainTable, subJoinData)
-        , BuilderJbReaderProvider<JoinBuilder, E...>(builder)
+        , BuilderJbReaderProvider<JoinBuilder, E...>(std::move(builder))
     {}
 
 private:

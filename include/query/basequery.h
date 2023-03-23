@@ -46,8 +46,8 @@ protected:
     void setDebug(bool fatalEnabled, LoggingCategoryPtr logging);
 
     template<typename T>
-    void setDebug(DebugBuilder<T>* builder) {
-        setDebug(builder->setFatalEnabled, builder->loggingCategoryPtr);
+    void setDebug(const DebugBuilder<T>& builder) {
+        setDebug(builder.setFatalEnabled, builder.loggingCategoryPtr);
     }
 
     /**

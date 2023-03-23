@@ -16,7 +16,7 @@ class DeleteBuilder
 {
 public:
     Delete<E> build() {
-        return Delete<E>(this);
+        return Delete<E>(*this);
     }
 };
 

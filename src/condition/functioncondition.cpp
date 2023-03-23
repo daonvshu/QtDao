@@ -45,7 +45,7 @@ void FunctionConnector::fromBuilder(RecursiveQueryBuilder& builder) {
 }
 
 void FunctionConnector::solveFromQueryBuildResult() {
-    fields << FieldInfo{ fromData.statement.prepend('(').prepend(')'), "" };
+    fields << FieldInfo{ fromData.statement.prepend('(').append(')'), "" };
     values << fromData.values;
     fromDataClear();
 }

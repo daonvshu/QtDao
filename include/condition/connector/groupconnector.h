@@ -7,45 +7,23 @@
 #include "constraintconnector.h"
 #include "../functioncondition.h"
 
-#include <qshareddata.h>
-
 QTDAO_BEGIN_NAMESPACE
-
-struct GroupConnectorData : QSharedData {
-public:
-    GroupConnectorData() = default;
-
-    GroupConnectorData(const GroupConnectorData& other): QSharedData(other) {
-        connectors << other.connectors;
-    }
-
-    ~GroupConnectorData() {
-        qDeleteAll(connectors);
-    }
-
-    void clear() {
-        qDeleteAll(connectors);
-        connectors.clear();
-    }
-
-    QList<Connectable*> connectors;
-};
 
 class GroupConnector : public Connectable {
 public:
-    GroupConnector() {
-        d = new GroupConnectorData;
-    }
-
     void combine() override;
 
     void clear();
+
+    void clearByKeepConnectors();
+
+    bool isEmpty() override;
 
 protected:
     virtual QString connectSymbol() = 0;
 
 protected:
-    QSharedDataPointer<GroupConnectorData> d;
+    QList<Connectable*> connectors;
 };
 
 class FieldGroupConnector : public GroupConnector {
@@ -62,17 +40,17 @@ public:
     void append(const EntityField<E>& field) {
         auto connector = new FieldConnector;
         connector->setField(field);
-        d->connectors << connector;
+        connectors << connector;
     }
 
     void append(const FieldInfo& fieldInfo) {
         auto connector = new FieldConnector;
         connector->setField(fieldInfo);
-        d->connectors << connector;
+        connectors << connector;
     }
 
     void append(const FunctionConnector& connector) {
-        d->connectors << (new FunctionConnector(connector))->ptr();
+        connectors << (new FunctionConnector(connector))->ptr();
     }
 
 
@@ -93,11 +71,11 @@ public:
     void appends() {}
 
     void append(EntityConnector* connector) {
-        d->connectors << connector;
+        connectors << connector;
     }
 
     void append(const FunctionConnector& connector) {
-        d->connectors << (new FunctionConnector(connector))->ptr();
+        connectors << (new FunctionConnector(connector))->ptr();
     }
 
 protected:
@@ -118,11 +96,11 @@ public:
     void appends() {}
 
     void append(EntityConnector* connector) {
-        d->connectors << connector;
+        connectors << connector;
     }
 
     void append(const FunctionConnector& connector) {
-        d->connectors << (new FunctionConnector(connector))->ptr();
+        connectors << (new FunctionConnector(connector))->ptr();
     }
 
     void append(FilterGroupGroupConnector* connector);
@@ -137,7 +115,7 @@ class FilterGroupGroupConnector : public FilterGroupConnector {
 };
 
 inline void FilterGroupConnector::append(FilterGroupGroupConnector* connector) {
-    d->connectors << connector;
+    connectors << connector;
 }
 
 class AndFilterGroupConnector : public FilterGroupGroupConnector {
@@ -163,7 +141,7 @@ public:
     void appends() {}
 
     void append(ConstraintConnector* connector) {
-        d->connectors << connector->ptr();
+        connectors << connector->ptr();
     }
 
     void append(ConstraintGroupGroupConnector* connector);
@@ -172,7 +150,7 @@ public:
 
 protected:
     QString connectSymbol() override {
-        return ",";
+        return " ";
     }
 };
 
@@ -180,21 +158,16 @@ class ConstraintGroupGroupConnector : public ConstraintGroupConnector {
 };
 
 inline void ConstraintGroupConnector::append(ConstraintGroupGroupConnector* connector) {
-    d->connectors << connector;
+    connectors << connector;
 }
 
 class HavingGroupConnector : public FilterGroupConnector {
 public:
     void combine() override;
-
-protected:
-    QString connectSymbol() override {
-        return "";
-    }
 };
 
 inline void ConstraintGroupConnector::append(HavingGroupConnector* connector) {
-    d->connectors << connector;
+    connectors << connector;
 }
 
 QTDAO_END_NAMESPACE
