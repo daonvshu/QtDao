@@ -5,6 +5,7 @@
 #include <qobject.h>
 #include <qvariant.h>
 #include <functional>
+#include <qshareddata.h>
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -22,10 +23,27 @@ typedef std::function<QString(const QString& tbName)> FieldPrefixGetter;
 template<typename T>
 class EntityField;
 
+struct ConnectableData : QSharedData {
+    FieldPrefixGetter fieldPrefixGetter;
+    QList<FieldInfo> fields;
+    QVariantList values;
+    QString connectedStr;
+
+    void clear() {
+        fields.clear();
+        values.clear();
+        connectedStr = QString();
+    }
+};
+
 class Connectable {
 public:
+    Connectable() {
+        d = new ConnectableData;
+    }
+
     void setFieldPrefixGetter(const FieldPrefixGetter& getter) {
-        this->fieldPrefixGetter = getter;
+        d->fieldPrefixGetter = getter;
     }
 
     virtual void combine() = 0;
@@ -44,10 +62,7 @@ protected:
     QString getField(int index) const;
 
 protected:
-    FieldPrefixGetter fieldPrefixGetter;
-    QList<FieldInfo> fields;
-    QVariantList values;
-    QString connectedStr;
+    QExplicitlySharedDataPointer<ConnectableData> d;
 
     template<typename T>
     FieldInfo getEntityFieldInfo(const EntityField<T>& entityField);

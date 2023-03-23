@@ -19,8 +19,7 @@ public:
 protected:
     using Connectable::getField;
     using Connectable::getEntityFieldInfo;
-    using Connectable::fields;
-    using Connectable::connectedStr;
+    using Connectable::d;
 };
 
 QTDAO_END_NAMESPACE

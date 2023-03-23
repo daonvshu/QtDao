@@ -40,6 +40,8 @@ private:
 template<typename E>
 void Upsert<E>::insert() {
     bool operateBatch = buildInsertBySetSqlStatement();
+    setDebug(this->builder);
+
     operateBatch ? execBatch() : exec();
 }
 

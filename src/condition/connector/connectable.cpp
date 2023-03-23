@@ -3,26 +3,26 @@
 QTDAO_BEGIN_NAMESPACE
 
 QList<FieldInfo> Connectable::getUsedFields() {
-    return fields;
+    return d->fields;
 }
 
 QVariantList Connectable::getValueList() {
-    return values;
+    return d->values;
 }
 
 QString Connectable::getConditionSegment() {
-    return connectedStr;
+    return d->connectedStr;
 }
 
 bool Connectable::isEmpty() {
-    return fields.isEmpty();
+    return d->fields.isEmpty();
 }
 
 QString Connectable::getField(int index) const {
-    if (fieldPrefixGetter == nullptr) {
-        return fields.at(index).name;
+    if (d->fieldPrefixGetter == nullptr) {
+        return d->fields.at(index).name;
     }
-    return fieldPrefixGetter(fields.at(index).bindTable) + fields.at(index).name;
+    return d->fieldPrefixGetter(d->fields.at(index).bindTable) + d->fields.at(index).name;
 }
 
 QTDAO_END_NAMESPACE

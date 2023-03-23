@@ -10,15 +10,15 @@ class FieldConnector : public Connectable {
 public:
     template<typename E>
     void setField(const EntityField<E>& field) {
-        fields << getEntityFieldInfo(field);
+        d->fields << getEntityFieldInfo(field);
     }
 
     void setField(const FieldInfo& fieldInfo) {
-        fields << fieldInfo;
+        d->fields << fieldInfo;
     }
 
     void combine() override {
-        connectedStr = getField(0);
+        d->connectedStr = getField(0);
     }
 };
 

@@ -3,46 +3,24 @@
 QTDAO_BEGIN_NAMESPACE
 
 void GroupConnector::combine() {
+    d->clear();
     auto symbol = connectSymbol();
-    for (auto* connector : connectors) {
-        connector->setFieldPrefixGetter(this->fieldPrefixGetter);
+    for (auto* connector : p->connectors) {
+        connector->setFieldPrefixGetter(d->fieldPrefixGetter);
         connector->combine();
-        fields << connector->getUsedFields();
-        values << connector->getValueList();
+        d->fields << connector->getUsedFields();
+        d->values << connector->getValueList();
         auto segment = connector->getConditionSegment();
         if (dynamic_cast<FilterGroupGroupConnector*>(connector) != nullptr ||
             dynamic_cast<ConstraintGroupGroupConnector*>(connector) != nullptr) {
-            connectedStr += '(' + segment + ')';
+            d->connectedStr += '(' + segment + ')';
         } else {
-            connectedStr += segment;
+            d->connectedStr += segment;
         }
 
-        connectedStr += symbol;
+        d->connectedStr += symbol;
     }
-    connectedStr = connectedStr.left(connectedStr.length() - symbol.length());
-}
-
-void GroupConnector::clear() {
-    for (auto* connector : connectors) {
-        auto* ptr = dynamic_cast<GroupConnector*>(connector);
-        if (ptr != nullptr) {
-            ptr->clear();
-        }
-    }
-    qDeleteAll(connectors);
-    connectors.clear();
-
-    fields.clear();
-    values.clear();
-    connectedStr = "";
-}
-
-void GroupConnector::clearByKeepConnectors() {
-    connectors.clear();
-
-    fields.clear();
-    values.clear();
-    connectedStr = "";
+    d->connectedStr = d->connectedStr.left(d->connectedStr.length() - symbol.length());
 }
 
 bool GroupConnector::isEmpty() {
@@ -51,7 +29,7 @@ bool GroupConnector::isEmpty() {
         return isAllEmpty;
     }
 
-    for (auto* connector : connectors) {
+    for (auto* connector : p->connectors) {
         isAllEmpty = connector->isEmpty() && isAllEmpty;
     }
 
@@ -60,7 +38,7 @@ bool GroupConnector::isEmpty() {
 
 void HavingGroupConnector::combine() {
     GroupConnector::combine();
-    connectedStr.prepend("having ");
+    d->connectedStr.prepend("having ");
 }
 
 QTDAO_END_NAMESPACE

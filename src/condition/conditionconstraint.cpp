@@ -11,9 +11,9 @@ LimitConstraintConnector::LimitConstraintConnector(int offset, int rows) {
 }
 
 void LimitConstraintConnector::combine() {
-    connectedStr = "limit ?";
+    d->connectedStr = "limit ?";
     if (values.size() > 1) {
-        connectedStr += ",?";
+        d->connectedStr += ",?";
     }
 }
 
@@ -22,19 +22,19 @@ QVariantList LimitConstraintConnector::getValueList() {
 }
 
 void OrderByConstraintConnector::combine() {
-    connectedStr = "order by ";
-    for (int i = 0; i < fields.size(); i++) {
-        connectedStr.append(getField(i)).append(',');
+    d->connectedStr = "order by ";
+    for (int i = 0; i < d->fields.size(); i++) {
+        d->connectedStr.append(getField(i)).append(',');
     }
-    connectedStr.chop(1);
+    d->connectedStr.chop(1);
 }
 
 void GroupByConstraintConnector::combine() {
-    connectedStr = "group by ";
-    for (int i = 0; i < fields.size(); i++) {
-        connectedStr.append(getField(i)).append(',');
+    d->connectedStr = "group by ";
+    for (int i = 0; i < d->fields.size(); i++) {
+        d->connectedStr.append(getField(i)).append(',');
     }
-    connectedStr.chop(1);
+    d->connectedStr.chop(1);
 }
 
 QTDAO_END_NAMESPACE

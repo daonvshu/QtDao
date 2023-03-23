@@ -28,7 +28,7 @@ protected:
     QString connectorOp;
 
     using Connectable::getField;
-    using Connectable::connectedStr;
+    using Connectable::d;
 };
 
 class SelfOperatorEntityConnector : public OperatorEntityConnector {
@@ -85,7 +85,7 @@ protected:
     QString connectorOp;
 
     using Connectable::getField;
-    using Connectable::connectedStr;
+    using Connectable::d;
 };
 
 class SelfFieldOperatorEntityConnector : public FieldOperatorEntityConnector {

@@ -48,7 +48,7 @@ inline void JoinBuilder<E...>::doFilter() {
     data.filter = OnConditionBuilder<JoinBuilder<E...>>::filterCondition;
     data.fromBuildData = this->JoinConnectBuilder<JoinBuilder<E...>>::fromData;
     subJoinData.insert(this->tbName, data);
-    OnConditionBuilder<JoinBuilder<E...>>::filterCondition.clearByKeepConnectors();
+    OnConditionBuilder<JoinBuilder<E...>>::filterCondition = FilterGroupConnector();
     this->JoinConnectBuilder<JoinBuilder<E...>>::fromDataClear();
 }
 

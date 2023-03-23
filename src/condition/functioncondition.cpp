@@ -5,28 +5,28 @@ QTDAO_BEGIN_NAMESPACE
 QList<FieldInfo> FunctionConnector::getUsedFields() {
     int asIndex = expressions.indexOf(" as ");
     if (asIndex != -1) {
-        if (fields.isEmpty()) {
+        if (d->fields.isEmpty()) {
             return QList<FieldInfo>() << FieldInfo{ expressions.mid(asIndex + 4), "" }; //empty tablename
         } else {
-            return QList<FieldInfo>() << FieldInfo{ expressions.mid(asIndex + 4), fields.at(0).bindTable }; //use first bind table
+            return QList<FieldInfo>() << FieldInfo{ expressions.mid(asIndex + 4), d->fields.at(0).bindTable }; //use first bind table
         }
     }
-    if (fields.isEmpty()) {
+    if (d->fields.isEmpty()) {
         return QList<FieldInfo>() << FieldInfo{ expressions, "" }; //empty tablename
     }
     QString str = expressions;
-    for (int i = 0; i < fields.size(); i++) {
+    for (int i = 0; i < d->fields.size(); i++) {
         str = str.arg(getField(i));
     }
-    return QList<FieldInfo>() << FieldInfo{ str, fields.at(0).bindTable }; //use first bind table
+    return QList<FieldInfo>() << FieldInfo{ str, d->fields.at(0).bindTable }; //use first bind table
 }
 
 void FunctionConnector::combine() {
     QString str = expressions;
-    for (int i = 0; i < fields.size(); i++) {
+    for (int i = 0; i < d->fields.size(); i++) {
         str = str.arg(getField(i));
     }
-    connectedStr = str;
+    d->connectedStr = str;
 }
 
 void FunctionConnector::fromSelect(SelectImpl& select) {
@@ -45,8 +45,8 @@ void FunctionConnector::fromBuilder(RecursiveQueryBuilder& builder) {
 }
 
 void FunctionConnector::solveFromQueryBuildResult() {
-    fields << FieldInfo{ fromData.statement.prepend('(').append(')'), "" };
-    values << fromData.values;
+    d->fields << FieldInfo{ fromData.statement.prepend('(').append(')'), "" };
+    d->values << fromData.values;
     fromDataClear();
 }
 

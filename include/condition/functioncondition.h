@@ -13,7 +13,7 @@ public:
 
     template<typename T, typename... E>
     FunctionConnector& field(const EntityField<T>& f, const EntityField<E>&... n) {
-        fields << getEntityFieldInfo(f);
+        d->fields << getEntityFieldInfo(f);
         return field(n...);
     }
 
@@ -23,7 +23,7 @@ public:
 
     template<typename... Args>
     FunctionConnector& value(const QVariant& v, Args... args) {
-        values << v;
+        d->values << v;
         return value(args...);
     }
 

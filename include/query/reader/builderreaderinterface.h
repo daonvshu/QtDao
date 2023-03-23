@@ -67,9 +67,6 @@ public:
     virtual ~BuilderInstanceHolder() = default;
 
 protected:
-    virtual void buildClear() = 0;
-    
-protected:
     B builder;
 };
 
@@ -84,15 +81,6 @@ public:
     FilterGroupConnector& filterConnector() override {
         return this->builder.filterCondition;
     }
-
-    ~BuilderReaderProvider() override {
-        buildClear();
-    }
-
-protected:
-    void buildClear() override {
-        this->builder.filterCondition.clear();
-    }
 };
 
 template<typename E>
@@ -105,15 +93,6 @@ public:
 
     SetGroupConnector& setConnector() override {
         return this->builder.setCondition;
-    }
-
-    ~BuilderReaderProvider() override {
-        buildClear();
-    }
-
-protected:
-    void buildClear() override {
-        this->builder.setCondition.clear();
     }
 };
 
@@ -131,16 +110,6 @@ public:
 
     FromBuildData& fromBuildData() override {
         return this->builder.fromData;
-    }
-
-    ~BuilderReaderProvider() override {
-        buildClear();
-    }
-
-protected:
-    void buildClear() override {
-        this->builder.columnCondition.clear();
-        this->builder.fromData.clear();
     }
 };
 
@@ -171,19 +140,6 @@ public:
     UnionBuildData& unionBuildData() override {
         return this->builder.unionData;
     }
-
-    ~BuilderJbReaderProvider() override {
-        buildClear();
-    }
-
-protected:
-    void buildClear() override {
-        this->builder.columnCondition.clear();
-        this->builder.template FilterBuilder<JoinBuilder<E...>>::filterCondition.clear();
-        this->builder.constraintCondition.clear();
-        this->builder.template FromEsSelectBuilder<JoinBuilder, E...>::fromData.clear();
-        this->builder.unionData.clear();
-    }
 };
 
 template<typename E>
@@ -213,19 +169,6 @@ public:
     UnionBuildData& unionBuildData() override {
         return this->builder.unionData;
     }
-
-    ~BuilderReaderProvider() override {
-        buildClear();
-    }
-
-protected:
-    void buildClear() override {
-        this->builder.columnCondition.clear();
-        this->builder.filterCondition.clear();
-        this->builder.constraintCondition.clear();
-        this->builder.fromData.clear();
-        this->builder.unionData.clear();
-    }
 };
 
 template<typename E>
@@ -242,16 +185,6 @@ public:
 
     FilterGroupConnector& filterConnector() override {
         return this->builder.filterCondition;
-    }
-
-    ~BuilderReaderProvider() override {
-        buildClear();
-    }
-
-protected:
-    void buildClear() override {
-        this->builder.setCondition.clear();
-        this->builder.filterCondition.clear();
     }
 };
 
@@ -277,18 +210,6 @@ public:
 
     FilterGroupConnector& filterConnector() override {
         return this->builder.filterCondition;
-    }
-
-    ~BuilderReaderProvider() override {
-        buildClear();
-    }
-
-protected:
-    void buildClear() override {
-        this->builder.template ConflictColumnBuilder<UpsertBuilder<E>>::columnCondition.clear();
-        this->builder.template UpdateColumnBuilder<UpsertBuilder<E>>::columnCondition.clear();
-        this->builder.setCondition.clear();
-        this->builder.filterCondition.clear();
     }
 };
 
