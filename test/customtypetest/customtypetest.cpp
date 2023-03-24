@@ -38,6 +38,13 @@ void CustomTypeTest::testInsert() {
     QCOMPARE(instance, typeInstance);
 }
 
+void CustomTypeTest::testSelect() {
+    auto customData = MyStruct{"name3", 30, QDateTime::fromString("2022-02-25 12:22:25", "yyyy-MM-dd HH:mm:dd")};
+    CustomTypes::Fields cf;
+    auto data = dao::_select<CustomTypes>().filter(cf.myStruct == customData).build().one();
+    QCOMPARE(data.getTestName(), "test1");
+}
+
 void CustomTypeTest::cleanup() {
 
 }

@@ -42,6 +42,27 @@ private:
     friend class Connectable;
 
 private:
+    template<typename E>
+    QVariant getSupportedValue(const typename std::enable_if<std::is_constructible<QVariant, E>::value, QVariant>::type& v) {
+        return v;
+    }
+
+    template<typename E>
+    QVariant getSupportedValue(const typename std::enable_if<!std::is_constructible<QVariant, E>::value, T>::type& v) {
+        qFatal("used error type!");
+        return {};
+    }
+
+    template<typename EC>
+    void setConnectorValue(EC* connector, const T& v) {
+        connector->addValue(getSupportedValue<T>(v));
+    }
+
+    template<typename EC>
+    void setConnectorValues(EC* connector, const QList<T>& v) {
+        connector->addValues(getSupportedValue<QList<T>>(v));
+    }
+
     EntityConnector* setValue(const char* op, const T& v) {
         auto connector = new OperatorEntityConnector;
         connector->setOperator(op);
@@ -49,7 +70,7 @@ private:
         if (customType) {
             connector->addCustomValue(v);
         } else {
-            connector->addValue(v);
+            setConnectorValue(connector, v);
         }
         return connector->ptr();
     }
@@ -61,7 +82,7 @@ private:
         if (customType) {
             connector->addCustomValue(v);
         } else {
-            connector->addValue(v);
+            setConnectorValue(connector, v);
         }
         return connector->ptr();
     }
@@ -73,7 +94,7 @@ private:
         if (customType) {
             connector->addCustomValues(v);
         } else {
-            connector->addValues(v);
+            setConnectorValue(connector, v);
         }
         return connector->ptr();
     }
@@ -85,7 +106,7 @@ private:
         if (customType) {
             connector->addCustomValues(v);
         } else {
-            connector->addValues(v);
+            setConnectorValue(connector, v);
         }
         return connector->ptr();
     }
@@ -265,7 +286,7 @@ public:
         if (customType) {
             connector->addCustomValues(value);
         } else {
-            connector->addValues(value);
+            setConnectorValues(connector, value);
         }
         return connector->ptr();
     }
