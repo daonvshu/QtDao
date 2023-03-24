@@ -14,10 +14,12 @@ enum class JoinType {
     LeftJoin,
     RightJoin,
     FullJoin,
+
+    Unset,
 };
 
 struct JoinData {
-    JoinType joinType;
+    JoinType joinType = JoinType::Unset;
     FilterGroupConnector filter;
     //select from select
     FromBuildData fromBuildData;

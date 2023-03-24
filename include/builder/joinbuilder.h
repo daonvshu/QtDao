@@ -33,16 +33,21 @@ public:
 
     Join<E...> build();
 
-protected:
-    void doFilter() override;
+    void solveLastJoinData() override;
 
 private:
     QString mainTable;
     QHash<QString, JoinData> subJoinData;
+
+private:
+    QString getFirstJoinTbName();
 };
 
 template<typename ...E>
-inline void JoinBuilder<E...>::doFilter() {
+inline void JoinBuilder<E...>::solveLastJoinData() {
+    if (this->tbName.isEmpty() || this->joinType == JoinType::Unset) {
+        return;
+    }
     JoinData data;
     data.joinType = this->joinType;
     data.filter = OnConditionBuilder<JoinBuilder<E...>>::filterCondition;
@@ -50,6 +55,9 @@ inline void JoinBuilder<E...>::doFilter() {
     subJoinData.insert(this->tbName, data);
     OnConditionBuilder<JoinBuilder<E...>>::filterCondition = FilterGroupConnector();
     this->JoinConnectBuilder<JoinBuilder<E...>>::fromDataClear();
+
+    this->joinType = JoinType::Unset;
+    this->tbName = QString();
 }
 
 template<typename ...E>
@@ -61,10 +69,17 @@ inline JoinBuilder<E...>& JoinBuilder<E...>::from() {
 
 template<typename ...E>
 inline Join<E...> JoinBuilder<E...>::build() {
+    solveLastJoinData();
     if (mainTable.isEmpty()) {
-        mainTable = this->FromEsSelectBuilder<JoinBuilder, E...>::fromData.asName;
+        mainTable = getFirstJoinTbName();
     }
     return Join<E...>(mainTable, subJoinData, *this);
+}
+
+template<typename... E>
+QString JoinBuilder<E...>::getFirstJoinTbName() {
+    auto tbNames = JoinEUnpackHelper<E...>::getTbName();
+    return tbNames.first().first;
 }
 
 QTDAO_END_NAMESPACE

@@ -103,6 +103,9 @@ inline QString Join<E...>::getJoinTypeName(JoinType type) {
             return "right join";
         case JoinType::FullJoin:
             return "full join";
+        case JoinType::Unset:
+            qFatal("sub table join type unset!");
+            break;
     }
     return {};
 }

@@ -39,7 +39,7 @@ protected:
     /**
      * end function recursion
      */
-    virtual void doFilter() {}
+    void doFilter() {}
 
 protected:
     //use 'and' connect conditions

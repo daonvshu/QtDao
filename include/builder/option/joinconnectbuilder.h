@@ -122,9 +122,12 @@ public:
         return fullJoin(builder);
     }
 
+    virtual void solveLastJoinData() = 0;
+
 private:
     template<typename E, JoinType JT>
     T& connectJoin() {
+        solveLastJoinData();
         joinType = JT;
         tbName = E::Info::getTableName();
         return static_cast<T&>(*this);
@@ -132,12 +135,14 @@ private:
 
     template<typename E, JoinType JT>
     T& connectJoin(Select<E>& select) {
+        solveLastJoinData();
         fromSelect(static_cast<SelectImpl&>(select));
         return connectJoin<E, JT>();
     }
 
     template<JoinType JT>
     T& connectJoin(RecursiveQueryBuilder& builder) {
+        solveLastJoinData();
         fromBuilder(builder);
         joinType = JT;
         tbName = fromData.asName;
@@ -148,7 +153,7 @@ protected:
     using FromBuilder::fromDataClear;
 
 protected:
-    JoinType joinType = JoinType::CrossJoin;
+    JoinType joinType = JoinType::Unset;
     QString tbName;
 };
 

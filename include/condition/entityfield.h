@@ -14,7 +14,7 @@ QTDAO_BEGIN_NAMESPACE
 template<typename T>
 class EntityField {
 public:
-    explicit EntityField(QString fieldName, QString bindTable, bool isCustomType = false)
+    EntityField(QString fieldName, QString bindTable, bool isCustomType = false)
         : name(std::move(fieldName))
         , bindTable(std::move(bindTable))
         , customType(isCustomType)
@@ -23,6 +23,10 @@ public:
     /*get name*/
     QString operator()() const {
         return name;
+    }
+
+    void resetTb(const QString& tbName) {
+        this->bindTable = tbName;
     }
 
 private:
