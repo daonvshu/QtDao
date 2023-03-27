@@ -3,9 +3,12 @@
 #include "../global.h"
 #include "../builder/option/fromselectbuilder.h"
 
-#include "entityfield.h"
+#include "connector/connectable.h"
 
 QTDAO_BEGIN_NAMESPACE
+
+template<typename T>
+class EntityField;
 
 class FunctionConnector : Connectable, public FromE2SelectBuilder<FunctionConnector> {
 public:

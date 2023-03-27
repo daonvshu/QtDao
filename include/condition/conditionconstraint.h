@@ -3,11 +3,12 @@
 #include "../global.h"
 
 #include "connector/constraintconnector.h"
-
-#include "entityfield.h"
 #include "functioncondition.h"
 
 QTDAO_BEGIN_NAMESPACE
+
+template<typename T>
+class EntityField;
 
 class LimitConstraintConnector : public ConstraintConnector {
 public:

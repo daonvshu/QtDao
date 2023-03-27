@@ -126,7 +126,7 @@ public:
     }
 
     FilterGroupConnector& filterConnector() override {
-        return this->builder.template FilterBuilder<JoinBuilder<E...>>::filterCondition;
+        return this->builder.FilterBuilder<JoinBuilder<E...>>::filterCondition;
     }
 
     ConstraintGroupConnector& constraintConnector() override {
@@ -134,7 +134,7 @@ public:
     }
 
     FromBuildData& fromBuildData() override {
-        return this->builder.template FromEsSelectBuilder<JoinBuilder, E...>::fromData;
+        return this->builder.FromEsSelectBuilder<JoinBuilder, E...>::fromData;
     }
 
     UnionBuildData& unionBuildData() override {
@@ -197,11 +197,11 @@ public:
     using BuilderInstanceHolder<BuilderReaderInterface, UpsertBuilder<E>>::BuilderInstanceHolder;
 
     FieldGroupConnector& conflictColumnConnector() override {
-        return this->builder.template ConflictColumnBuilder<UpsertBuilder<E>>::columnCondition;
+        return this->builder.ConflictColumnBuilder<UpsertBuilder<E>>::columnCondition;
     }
 
     FieldGroupConnector& updateColumnConnector() override {
-        return this->builder.template UpdateColumnBuilder<UpsertBuilder<E>>::columnCondition;
+        return this->builder.UpdateColumnBuilder<UpsertBuilder<E>>::columnCondition;
     }
 
     SetGroupConnector& setConnector() override {
