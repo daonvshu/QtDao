@@ -43,12 +43,34 @@ private:
 
 private:
     template<typename E>
-    QVariant getSupportedValue(const typename std::enable_if<std::is_constructible<QVariant, E>::value, QVariant>::type& v) {
+    QVariant getSupportedValue(const typename std::enable_if<std::is_constructible<QVariant, E>::value, E>::type& v) {
         return v;
     }
 
     template<typename E>
-    QVariant getSupportedValue(const typename std::enable_if<!std::is_constructible<QVariant, E>::value, T>::type& v) {
+    QVariant getSupportedValue(const typename std::enable_if<!std::is_constructible<QVariant, E>::value, E>::type& v) {
+        qFatal("used error type!");
+        return {};
+    }
+
+    template<typename E>
+    QVariant getSupportedValue(const typename std::enable_if<std::is_constructible<QVariant, E>::value, QList<E>>::type& v) {
+        return v;
+    }
+
+    template<typename E>
+    QVariant getSupportedValue(const typename std::enable_if<!std::is_constructible<QVariant, E>::value, QList<E>>::type& v) {
+        qFatal("used error type!");
+        return {};
+    }
+
+    template<typename E>
+    const QList<E>& getSupportedValues(const typename std::enable_if<std::is_constructible<QVariant, E>::value, QList<E>>::type& v) {
+        return v;
+    }
+
+    template<typename E>
+    QList<E> getSupportedValues(const typename std::enable_if<!std::is_constructible<QVariant, E>::value, QList<E>>::type& v) {
         qFatal("used error type!");
         return {};
     }
@@ -59,8 +81,13 @@ private:
     }
 
     template<typename EC>
-    void setConnectorValues(EC* connector, const QList<T>& v) {
-        connector->addValues(getSupportedValue<QList<T>>(v));
+    void setConnectorValue(EC* connector, const QList<T>& v) {
+        connector->addValue(getSupportedValue<T>(v));
+    }
+
+    template<typename EC>
+    void setConnectorBatchValue(EC* connector, const QList<T>& v) {
+        connector->addValues(getSupportedValues<T>(v));
     }
 
     EntityConnector* setValue(const char* op, const T& v) {
@@ -94,7 +121,7 @@ private:
         if (customType) {
             connector->addCustomValues(v);
         } else {
-            setConnectorValue(connector, v);
+            setConnectorBatchValue(connector, v);
         }
         return connector->ptr();
     }
@@ -106,7 +133,7 @@ private:
         if (customType) {
             connector->addCustomValues(v);
         } else {
-            setConnectorValue(connector, v);
+            setConnectorBatchValue(connector, v);
         }
         return connector->ptr();
     }
@@ -286,7 +313,7 @@ public:
         if (customType) {
             connector->addCustomValues(value);
         } else {
-            setConnectorValues(connector, value);
+            setConnectorBatchValue(connector, value);
         }
         return connector->ptr();
     }

@@ -18,6 +18,8 @@ void CustomTypeTest::initTestCase() {
         Q_UNUSED(validDrivers)
         qFatal("setup database fail!");
     }
+
+    dao::_truncate<CustomTypes>();
 }
 
 void CustomTypeTest::testInsert() {
