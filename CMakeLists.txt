@@ -1,7 +1,14 @@
 cmake_minimum_required(VERSION 3.2)
-project(QtDao)
+project(qtdao)
 
 add_subdirectory(src)
-add_subdirectory(test/corelibtest)
-add_subdirectory(test/keywordstest)
-add_subdirectory(test/customtypetest)
+
+option(BUILD_TEST "enable test projects" OFF)
+
+if (BUILD_TEST)
+  message("config qtdao unit tests!")
+
+  add_subdirectory(test/corelibtest)
+  add_subdirectory(test/keywordstest)
+  add_subdirectory(test/customtypetest)
+endif ()
