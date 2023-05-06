@@ -64,6 +64,10 @@ void Upsert<E>::insert(E &entity) {
 template<typename E>
 void Upsert<E>::insert(const QList<E> &entities) {
 
+    if (entities.isEmpty()) {
+        return;
+    }
+
     QVector<QVariantList> values(fieldSize());
     int usedValueSize = 0;
     for (const auto& entity : entities) {

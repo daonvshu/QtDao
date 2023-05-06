@@ -150,6 +150,9 @@ inline void Insert<E>::insert(E& entity) {
 
 template<typename E>
 inline void Insert<E>::insert(const QList<E>& entities) {
+    if (entities.isEmpty()) {
+        return;
+    }
     auto sqlStatement = buildInsertObjectsSqlStatement();
     QVector<QVariantList> values(fieldSize());
     int usedValueSize = 0;
@@ -172,7 +175,9 @@ inline void Insert<E>::insert(const QList<E>& entities) {
 template<typename E>
 inline void Insert<E>::insert2(const QList<E>& entities) {
     int entitySize = entities.size();
-    Q_ASSERT(entitySize != 0);
+    if (entitySize == 0) {
+        return;
+    }
     auto sqlStatement = buildInsertObjects2SqlStatement(entitySize);
     QVariantList values;
     for (const auto& entity: entities) {

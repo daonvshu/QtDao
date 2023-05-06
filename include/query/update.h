@@ -70,6 +70,9 @@ inline int Update<E>::update(const E& entity) {
 
 template<typename E>
 inline int Update<E>::updateBatch(const QList<E>& entities) {
+    if (entities.isEmpty()) {
+        return 0;
+    }
     bindUpdateEntitiesCondition(entities);
     return updateBatch();
 }

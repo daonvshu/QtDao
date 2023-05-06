@@ -64,6 +64,9 @@ inline void Delete<E>::deleteBy(const E& entity) {
 
 template<typename E>
 inline void Delete<E>::deleteBatch(const QList<E>& entities) {
+    if (entities.isEmpty()) {
+        return;
+    }
     buildDeleteEntitiesCondition(entities);
     return deleteBatch();
 }
