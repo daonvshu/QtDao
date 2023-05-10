@@ -670,7 +670,6 @@ void JoinTest::cleanup() {
 }
 
 void JoinTest::cleanupTestCase() {
-    ConnectionPool::release();
     globalConfig->getClient()->dropDatabase();
 }
 

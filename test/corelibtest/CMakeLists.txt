@@ -20,8 +20,7 @@ add_executable(${PROJECT_NAME}
   ConnectionPoolTest.h
   ConnectionPoolTest.cpp
   EngineModelSelector.h
-  RunnableHandler.h
-  main.cpp
+    main.cpp
     ${CONDITION_TEST}
     ${LOADER_TEST}
     ${QUERY_TEST}

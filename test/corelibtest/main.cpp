@@ -19,9 +19,20 @@
 #include <qfile.h>
 #include <iostream>
 
+static bool currentIsDebugging() {
 #ifdef Q_CC_MSVC
 #include <Windows.h>
+
+#ifdef _M_X64
+    void *PEB = (void*)(__readgsqword(0x60));
+#elif _M_IX86
+    void *PEB = (void*)(__readfsdword(0x30));
 #endif
+    return (bool)*(unsigned char*)((unsigned char*)PEB + 0x002);
+#else
+    return false;
+#endif
+}
 
 void setColor() {
     QFile file(QDir::currentPath() + "/test.txt");
@@ -65,8 +76,14 @@ struct TestRunner<T, Arg...> : TestRunner<Arg...> {
 #else
     static int run(EngineModel model) {
         T t(model);
-        int result = QTest::qExec(&t, QStringList() << "qtdaocoretest.exe" << "-o" << "test.txt");
-        setColor();
+        int result;
+        if (currentIsDebugging()) {
+            result = QTest::qExec(&t, QStringList() << "qtdaocoretest.exe");
+        } else {
+            result = QTest::qExec(&t, QStringList() << "qtdaocoretest.exe" << "-o" << "test.txt");
+            setColor();
+        }
+
         result += TestRunner<Arg...>::run(model);
         return result;
     }

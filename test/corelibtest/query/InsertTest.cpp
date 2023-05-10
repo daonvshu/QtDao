@@ -423,7 +423,6 @@ void InsertTest::cleanup() {
 }
 
 void InsertTest::cleanupTestCase() {
-    ConnectionPool::release();
     globalConfig->getClient()->dropDatabase();
 }
 

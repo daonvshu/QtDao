@@ -161,7 +161,6 @@ void UpdateTest::cleanup() {
 }
 
 void UpdateTest::cleanupTestCase() {
-    ConnectionPool::release();
     globalConfig->getClient()->dropDatabase();
 }
 

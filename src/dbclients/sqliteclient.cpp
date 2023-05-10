@@ -7,6 +7,7 @@
 #include "config/configsqlite.h"
 #include "dbexception.h"
 #include "query/basequery.h"
+#include "connectionpool.h"
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -43,6 +44,8 @@ void SqliteClient::createDatabase() {
 }
 
 void SqliteClient::dropDatabase() {
+    ConnectionPool::closeAllConnection();
+
     auto appLocal = dynamic_cast<ConfigSqliteBuilder*>(globalConfig.get())->getDbStoreDirectory();
     QFile file(dynamic_cast<ConfigSqliteBuilder*>(globalConfig.get())->getDbStorePath());
     if (file.exists()) {

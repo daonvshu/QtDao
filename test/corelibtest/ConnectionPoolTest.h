@@ -15,10 +15,10 @@ private slots:
 
     void testConnect();
     void testReuseConnection();
-    void testMultiThreadOpenConnection();
-    void testReuseConnectionInOtherThread();
-
-    void testAutoClose();
+    void testSerialThread();
+    void testParallelThread();
+    void testSerialThreadPool();
+    void testParallelThreadPool();
 
     void testGoneAway();
 

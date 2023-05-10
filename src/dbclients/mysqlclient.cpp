@@ -58,6 +58,7 @@ void MysqlClient::createDatabase() {
 }
 
 void MysqlClient::dropDatabase() {
+    ConnectionPool::closeAllConnection();
     QSqlError lastErr;
     [&] {
         auto db = ConnectionPool::prepareConnect("dropconnection", "mysql");

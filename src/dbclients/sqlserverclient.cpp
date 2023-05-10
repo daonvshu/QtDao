@@ -72,6 +72,8 @@ void SqlServerClient::createDatabase() {
 }
 
 void SqlServerClient::dropDatabase() {
+    ConnectionPool::closeAllConnection();
+
     QSqlError lastErr;
     [&] {
         auto db = ConnectionPool::prepareConnect("dropconnection", "master");

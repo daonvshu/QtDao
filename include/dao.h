@@ -157,7 +157,3 @@ public:
 };
 
 QTDAO_END_NAMESPACE
-
-#define SCOPE_CONNECTION \
-auto connectionCleanUp = qScopeGuard([] { ConnectionPool::closeConnection(); }); \
-Q_UNUSED(connectionCleanUp)

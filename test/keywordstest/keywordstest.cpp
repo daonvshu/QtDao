@@ -123,6 +123,5 @@ void KeywordsTest::cleanup() {
 }
 
 void KeywordsTest::cleanupTestCase() {
-    ConnectionPool::release();
     dao::globalConfig->getClient()->dropDatabase();
 }

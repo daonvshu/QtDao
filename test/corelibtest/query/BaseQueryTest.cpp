@@ -54,7 +54,6 @@ void BaseQueryTest::cleanup() {
 }
 
 void BaseQueryTest::cleanupTestCase() {
-    ConnectionPool::release();
     globalConfig->getClient()->dropDatabase();
 }
 

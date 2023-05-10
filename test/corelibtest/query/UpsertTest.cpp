@@ -393,6 +393,5 @@ void UpsertTest::cleanup() {
 }
 
 void UpsertTest::cleanupTestCase() {
-    ConnectionPool::release();
     globalConfig->getClient()->dropDatabase();
 }

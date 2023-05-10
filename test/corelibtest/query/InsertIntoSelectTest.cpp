@@ -142,6 +142,5 @@ void InsertIntoSelectTest::cleanup() {
 }
 
 void InsertIntoSelectTest::cleanupTestCase() {
-    ConnectionPool::release();
     globalConfig->getClient()->dropDatabase();
 }

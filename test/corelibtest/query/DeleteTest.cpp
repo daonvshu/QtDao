@@ -181,7 +181,6 @@ void DeleteTest::cleanup() {
 }
 
 void DeleteTest::cleanupTestCase() {
-    ConnectionPool::release();
     globalConfig->getClient()->dropDatabase();
 }
 

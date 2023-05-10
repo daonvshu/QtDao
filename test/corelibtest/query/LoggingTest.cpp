@@ -112,7 +112,6 @@ void LoggingTest::cleanup() {
 }
 
 void LoggingTest::cleanupTestCase() {
-    ConnectionPool::release();
     globalConfig->getClient()->dropDatabase();
 }
 

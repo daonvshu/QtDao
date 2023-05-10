@@ -56,6 +56,5 @@ void DbLoaderTest::cleanup() {
 }
 
 void DbLoaderTest::cleanupTestCase() {
-    ConnectionPool::release();
     globalConfig->getClient()->dropDatabase();
 }

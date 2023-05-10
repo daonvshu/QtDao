@@ -467,7 +467,6 @@ void SelectTest::cleanup() {
 }
 
 void SelectTest::cleanupTestCase() {
-    ConnectionPool::release();
     globalConfig->getClient()->dropDatabase();
 }
 
