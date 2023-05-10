@@ -60,6 +60,9 @@ CMake
 #添加qtdao库子项目
 add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/qtdao/src)
 
+#或者使用CPM添加
+#CPMAddPackage("gh:daonvshu/QtDao@2.x.x")
+
 #添加entity文件列表，entity.cmake由vscode-qtdao插件自动生成
 include(${CMAKE_CURRENT_SOURCE_DIR}/entity/entity.cmake)
 
