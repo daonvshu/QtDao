@@ -19,10 +19,12 @@
 #include <qfile.h>
 #include <iostream>
 
-static bool currentIsDebugging() {
 #ifdef Q_CC_MSVC
 #include <Windows.h>
+#endif
 
+static bool currentIsDebugging() {
+#ifdef Q_CC_MSVC
 #ifdef _M_X64
     void *PEB = (void*)(__readgsqword(0x60));
 #elif _M_IX86

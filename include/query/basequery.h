@@ -5,6 +5,7 @@
 #include <qvariant.h>
 #include <qsqlquery.h>
 #include <qsqlrecord.h>
+#include <functional>
 
 #include "../query/explaininfo.h"
 #include "../builder/option/debugbuilder.h"
@@ -22,7 +23,23 @@ public:
      * @param debugFatalEnabled use qFatal in debug mode
      * @return
      */
-    static QSqlQuery queryPrimitive(const QString& statement, const QVariantList& values = QVariantList(), LoggingCategoryPtr logging = nullptr, bool debugFatalEnabled = true);
+    static QSqlQuery queryPrimitive(const QString& statement,
+                                    const QVariantList& values = QVariantList(),
+                                    LoggingCategoryPtr logging = nullptr,
+                                    bool debugFatalEnabled = true);
+
+    /**
+     * execute sql statement directly, and use temporary database connection without connection pool,
+     * throw 'DaoException' when execute fail
+     * @param statement sql query statement
+     * @param databaseName database name default to config database
+     * @param connectionName connection name
+     * @param resultReader query result reader
+     */
+    static void executePrimitiveQuery(const QString& statement,
+                                      QString databaseName = QString(),
+                                      QString connectionName = QString(),
+                                      const std::function<void(QSqlQuery&)>& resultReader = nullptr);
 
     /**
      * use default logging category if not set 'LoggingCategoryPtr'

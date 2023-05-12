@@ -29,6 +29,8 @@ public:
 
     virtual ConfigBuilder& options(const QString& options) = 0;
 
+    ConfigBuilder& setDatabaseUpgrader(DatabaseUpgrader* databaseUpgrader);
+
     virtual QSqlDatabase getConnection(const QString& connectionName, const QString& databaseName) = 0;
 
     void disableCreateDatabase() {
@@ -56,10 +58,10 @@ public:
     }
 
     QSharedPointer<AbstractClient> getClient() const {
-        return dbInitClient;
+        return dbClient;
     }
 
-    int getLocalVersion();
+    static int getLocalVersion();
 
 protected:
     ConfigType configType;
@@ -74,23 +76,16 @@ protected:
 
     bool createTableEnabled = true;
 
-    QSharedPointer<AbstractClient> dbInitClient;
+    QSharedPointer<AbstractClient> dbClient;
+    QSharedPointer<DatabaseUpgrader> dbUpgrader;
 
-    friend class SqliteClient;
-    friend class MysqlClient;
-    friend class SqlServerClient;
+    friend class AbstractClient;
+    friend class BaseQuery;
     friend class ::ConnectionPool;
+    friend class VersionControl;
 
 protected:
     void setupDatabase();
-
-    void updateLocalVersion();
-
-    void invokeCreateTables();
-
-    void invokeTableUpgrade();
-
-    QByteArray getDelegateStr();
 };
 
 extern QScopedPointer<ConfigBuilder> globalConfig;

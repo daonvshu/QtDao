@@ -3,11 +3,15 @@
 #include "global.h"
 #include "utils/listutils.h"
 
+#include <qvariant.h>
+
 #pragma warning(disable:4250)
 QTDAO_BEGIN_NAMESPACE
 
 class EntityReaderInterface {
-protected:
+public:
+    virtual ~EntityReaderInterface() = default;
+
     virtual int fieldSize() = 0;
     
     virtual QString getTableName() = 0;
@@ -23,11 +27,31 @@ protected:
     virtual QStringList getPrimaryKeys() = 0;
 
     virtual bool isAutoIncrement(const QString& fieldName) = 0;
+
+    //extra info reader
+
+    virtual QList<QStringList> getIndexFields() = 0; //sqlite/mysql
+
+    virtual QList<QStringList> getUniqueIndexFields() = 0; //sqlite/mysql
+
+    virtual QString getTableEngine() = 0; //mysql
+
+    virtual QStringList getFieldsWithoutTimestamp() = 0; //sqlserver
+
+    virtual QList<QStringList> getClusteredIndexFields() = 0; //sqlserver
+
+    virtual QList<QStringList> getUniqueClusteredIndexFields() = 0; //sqlserver
+
+    virtual QList<QStringList> getNonClusteredIndexFields() = 0; //sqlserver
+
+    virtual QList<QStringList> getUniqueNonClusteredIndexFields() = 0; //sqlserver
+
+    virtual QString getIndexOption(const QString& name) = 0; //sqlserver
 };
 
 template<typename E>
-class EntityReaderProvider : protected virtual EntityReaderInterface {
-protected:
+class EntityReaderProvider : public virtual EntityReaderInterface {
+public:
     int fieldSize() override {
         return E::Info::fieldSize();
     }
@@ -76,14 +100,98 @@ protected:
         E::Tool::bindValue(entity, target, value);
     }
 
-    //mysql
-    QString getTableEngine() {
-        return E::Info::getTableEngine();
+    //extra
+
+    QList<QStringList> getIndexFields() override {
+        return {};
     }
 
-    //sqlserver
-    QStringList getFieldsWithoutTimestamp() {
+    QList<QStringList> getUniqueIndexFields() override {
+        return {};
+    }
+
+    QString getTableEngine() override {
+        return {};
+    }
+
+    QStringList getFieldsWithoutTimestamp() override {
+        return {};
+    }
+
+    QList<QStringList> getClusteredIndexFields() override {
+        return {};
+    }
+
+    QList<QStringList> getUniqueClusteredIndexFields() override {
+        return {};
+    }
+
+    QList<QStringList> getNonClusteredIndexFields() override {
+        return {};
+    }
+
+    QList<QStringList> getUniqueNonClusteredIndexFields() override {
+        return {};
+    }
+
+    QString getIndexOption(const QString& name) override {
+        return {};
+    }
+};
+
+template<typename E>
+class SqliteEntityReaderProvider : public EntityReaderProvider<E> {
+public:
+    QList<QStringList> getIndexFields() override {
+        return E::Info::getIndexFields();
+    }
+
+    QList<QStringList> getUniqueIndexFields() override {
+        return E::Info::getUniqueIndexFields();
+    }
+};
+
+template<typename E>
+class MysqlEntityReaderProvider : public EntityReaderProvider<E> {
+public:
+    QList<QStringList> getIndexFields() override {
+        return E::Info::getIndexFields();
+    }
+
+    QList<QStringList> getUniqueIndexFields() override {
+        return E::Info::getUniqueIndexFields();
+    }
+
+    QString getTableEngine() override {
+        return E::Info::getTableEngine();
+    }
+};
+
+template<typename E>
+class SqlServerEntityReaderProvider : public EntityReaderProvider<E> {
+public:
+    QStringList getFieldsWithoutTimestamp() override {
         return E::Info::getFieldsWithoutTimestamp();
+    }
+
+    QList<QStringList> getClusteredIndexFields() override {
+        return E::Info::getClusteredIndexFields();
+    }
+
+    QList<QStringList> getUniqueClusteredIndexFields() override {
+        return E::Info::getUniqueClusteredIndexFields();
+    }
+
+    QList<QStringList> getNonClusteredIndexFields() override {
+        return E::Info::getNonClusteredIndexFields();
+    }
+
+    QList<QStringList> getUniqueNonClusteredIndexFields() override {
+        return E::Info::getUniqueNonClusteredIndexFields();
+    }
+
+    QString getIndexOption(const QString& name) override {
+        return E::Info::getIndexOption(name);
     }
 };
 

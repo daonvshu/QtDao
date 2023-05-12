@@ -1,39 +1,24 @@
 ﻿#include "dbclients/sqliteclient.h"
 
+#include "dbexception.h"
+#include "connectionpool.h"
+#include "query/basequery.h"
+#include "config/configsqlite.h"
+
 #include <qstandardpaths.h>
 #include <qdir.h>
 #include <qfileinfo.h>
-
-#include "config/configsqlite.h"
-#include "dbexception.h"
-#include "query/basequery.h"
-#include "connectionpool.h"
+#include <qstringbuilder.h>
 
 QTDAO_BEGIN_NAMESPACE
 
 #define SQLITE_KEYWORDS_ESCAPES {"\""}
 
-bool createPath(QString path) {
-    QDir dir;
-    QFileInfo info(path);
-    if (!info.exists(path)) {
-        if (!dir.mkdir(path)) {
-            int index = path.lastIndexOf('/');
-            auto target = path.mid(0, index);
-            if (!createPath(target)) {
-                return false;
-            }
-            return dir.mkdir(path);
-        }
-    }
-    return true;
-}
-
 void SqliteClient::testConnect() {
     auto appLocal = dynamic_cast<ConfigSqliteBuilder*>(globalConfig.get())->getDbStoreDirectory();
     QDir dir;
     if (!dir.exists(appLocal)) {
-        if (!createPath(appLocal)) { // create directories recursively
+        if (!dir.mkpath(appLocal)) {
             throw DaoException("cannot create sqlite store path! applocal = " + appLocal);
         }
     }
@@ -67,64 +52,19 @@ bool SqliteClient::checkTableExist(const QString& tbName) {
     return query.next();
 }
 
-void SqliteClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType, QStringList primaryKeys) {
-    QString str = "create table if not exists %1(";
-    str = str.arg(tbName);
-    for (const auto& ft : fieldsType) {
-        str.append(ft).append(",");
-    }
-    if (primaryKeys.size() <= 1) {
-        str.chop(1);
-    } else {
-        str.append("primary key(");
-        for (const auto& key : primaryKeys) {
-            str.append(key).append(",");
-        }
-        str.chop(1);
-        str.append(")");
-    }
-    str.append(")");
-
-    BaseQuery::queryPrimitive(str);
-}
-
-void SqliteClient::createIndex(const QString& tbName, QStringList fields, IndexType type) {
-    QString str = "create %1 index %2 on %3 (";
-    QString indexName = "index";
-    for (const auto& field : fields) {
-        indexName.append("_").append(checkAndRemoveKeywordEscapes(field.split(" ").at(0), SQLITE_KEYWORDS_ESCAPES));
-        str.append(field).append(",");
-    }
-    QString typeStr = "";
-    switch (type) {
-    case AbstractClient::INDEX_UNIQUE:
-        typeStr = "unique";
-        break;
-    default:
-        break;
-    }
-    str = str.chopped(1).arg(typeStr,indexName, tbName);
-    str.append(")");
-
-    BaseQuery::queryPrimitive(str);
-}
-
 void SqliteClient::renameTable(const QString& oldName, const QString& newName) {
-    auto str = QString("alter table %1 rename to %2").arg(oldName, newName);
-    BaseQuery::queryPrimitive(str);
+    BaseQuery::queryPrimitive("alter table " % oldName % " rename to " % newName);
 }
 
 void SqliteClient::dropTable(const QString& tbName) {
-    auto str = QString("drop table if exists %1").arg(tbName);
-    BaseQuery::queryPrimitive(str);
+    BaseQuery::queryPrimitive("drop table if exists " % tbName);
 }
 
 void SqliteClient::truncateTable(const QString& tbName) {
-    auto str = QString("delete from %1").arg(tbName);
-    BaseQuery::queryPrimitive(str);
+    BaseQuery::queryPrimitive("delete from " % tbName);
 
     if (checkTableExist("sqlite_sequence")) {
-        str = QString("delete from sqlite_sequence where name = '%1'").arg(checkAndRemoveKeywordEscapes(tbName, SQLITE_KEYWORDS_ESCAPES));
+        auto str = QString("delete from sqlite_sequence where name = '%1'").arg(checkAndRemoveKeywordEscapes(tbName, SQLITE_KEYWORDS_ESCAPES));
         BaseQuery::queryPrimitive(str);
     }
 }
@@ -154,10 +94,46 @@ void SqliteClient::dropAllIndexOnTable(const QString& tbName) {
     }
 
     for (const auto& name : indexNames) {
-        BaseQuery::queryPrimitive(
-            QString("drop index %1").arg(name)
-        );
+        BaseQuery::queryPrimitive("drop index " % name);
     }
+}
+
+void SqliteClient::createTable(dao::EntityReaderInterface *reader) {
+    createTableIfNotExist(reader->getTableName(), reader->getFieldsType(), reader->getPrimaryKeys());
+
+    auto indexes = reader->getIndexFields();
+    for (const auto& i : indexes) {
+        createIndex(reader->getTableName(), i, INDEX_NORMAL);
+    }
+
+    indexes = reader->getUniqueIndexFields();
+    for (const auto& i : indexes) {
+        createIndex(reader->getTableName(), i, INDEX_UNIQUE);
+    }
+}
+
+void SqliteClient::createTableIfNotExist(const QString& tbName, const QStringList& fieldsType, const QStringList& primaryKeys) {
+    QString str = "create table if not exists " % tbName % "(" % fieldsType.join(",");
+    if (primaryKeys.size() > 1) {
+        str = str % ", primary key(" % primaryKeys.join(",") % ")";
+    }
+    str.append(")");
+
+    BaseQuery::queryPrimitive(str);
+}
+
+void SqliteClient::createIndex(const QString& tbName, const QStringList& fields, IndexType type) {
+    QString indexName = "index";
+    for (const auto& field : fields) {
+        indexName.append("_").append(checkAndRemoveKeywordEscapes(field.split(" ").at(0), SQLITE_KEYWORDS_ESCAPES));
+    }
+    QString typeStr = "";
+    if (type == AbstractClient::INDEX_UNIQUE) {
+        typeStr = "unique ";
+    }
+
+    QString str = "create " % typeStr % "index " % indexName % " on " % tbName % " (" % fields.join(",") % ")";
+    BaseQuery::queryPrimitive(str);
 }
 
 QTDAO_END_NAMESPACE

@@ -24,6 +24,39 @@ QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList
     return executor.exec();
 }
 
+void BaseQuery::executePrimitiveQuery(const QString &statement, QString databaseName, QString connectionName, const std::function<void(QSqlQuery&)>& resultReader) {
+    if (databaseName.isEmpty()) {
+        databaseName = globalConfig->mDatabaseName;
+    }
+
+    if (connectionName.isEmpty()) {
+        connectionName = "temp_execute_query";
+    }
+
+    QSqlError lastErr;
+    do {
+        auto db = ConnectionPool::prepareConnect(connectionName, databaseName);
+        if (!db.open()) {
+            lastErr = db.lastError();
+            break;
+        }
+        QSqlQuery query(statement, db);
+        lastErr = query.lastError();
+        if (resultReader) {
+            if (lastErr.type() == QSqlError::NoError) {
+                resultReader(query);
+            }
+        }
+        db.close();
+    } while (false);
+
+    QSqlDatabase::removeDatabase(connectionName);
+
+    if (lastErr.type() != QSqlError::NoError) {
+        throw DaoException(lastErr);
+    }
+}
+
 void BaseQuery::useDefaultLoggingIfNull(bool useDefault) {
     useDefaultLogging = useDefault;
 }

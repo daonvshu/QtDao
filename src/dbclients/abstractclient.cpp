@@ -1,19 +1,19 @@
 ﻿#include "dbclients/abstractclient.h"
 
 #include "query/basequery.h"
+#include "config/configbuilder.h"
 
 #include "dbexception.h"
 
 QTDAO_BEGIN_NAMESPACE
 
-void AbstractClient::restoreData2NewTable(const QString& tbname, QStringList fields) {
-    auto oldTbFields = getTagTableFields("tmp_" + tbname);
+void AbstractClient::restoreData2NewTable(const QString& tbName, const QStringList& fields) {
+    auto oldTbFields = getTagTableFields("tmp_" + tbName);
     if (oldTbFields.isEmpty()) {
         return;
     }
     QString fieldsStr;
-    for (int i = 0; i < oldTbFields.size(); i++) {
-        const auto& field = oldTbFields.at(i);
+    for (const auto & field : oldTbFields) {
         if (fields.contains(field)) {
             fieldsStr.append(field).append(",");
         }
@@ -21,37 +21,11 @@ void AbstractClient::restoreData2NewTable(const QString& tbname, QStringList fie
     if (!fieldsStr.isEmpty()) {
         fieldsStr.chop(1);
         auto sql = QString("insert into %1(%2) select %2 from %3")
-            .arg(tbname, fieldsStr, "tmp_" + tbname);
-        restoreDataBefore(tbname);
+            .arg(tbName, fieldsStr, "tmp_" + tbName);
+        restoreDataBefore(tbName);
         BaseQuery::queryPrimitive(sql);
-        restoreDataAfter(tbname);
+        restoreDataAfter(tbName);
     }
-}
-
-void AbstractClient::createTableIfNotExist(const QString& tbName, QStringList fieldsType, QStringList primaryKeys) {
-    Q_UNUSED(tbName);
-    Q_UNUSED(fieldsType);
-    Q_UNUSED(primaryKeys);
-}
-
-void AbstractClient::createTableIfNotExist(const QString& tbName, const QString& engine, QStringList fieldsType, QStringList primaryKeys) {
-    Q_UNUSED(tbName);
-    Q_UNUSED(engine);
-    Q_UNUSED(fieldsType);
-    Q_UNUSED(primaryKeys);
-}
-
-void AbstractClient::createIndex(const QString& tbName, QStringList fields, IndexType type) {
-    Q_UNUSED(tbName);
-    Q_UNUSED(fields);
-    Q_UNUSED(type);
-}
-
-void AbstractClient::createIndex(const QString& tbName, QStringList fields, IndexType type, const std::function<QString(const QString&)>& optionGet) {
-    Q_UNUSED(tbName);
-    Q_UNUSED(fields);
-    Q_UNUSED(type);
-    Q_UNUSED(optionGet);
 }
 
 void AbstractClient::restoreDataBefore(const QString& tbName) { Q_UNUSED(tbName) }
@@ -89,4 +63,15 @@ QString AbstractClient::checkAndRemoveKeywordEscapes(const QString& tbOrFieldNam
     }
     return name;
 }
+
+QString AbstractClient::currentDatabaseName() {
+    return globalConfig->mDatabaseName;
+}
+
+void AbstractClient::tableUpgrade(EntityReaderInterface *reader, int oldVersion, int curVersion) {
+    auto upgrader = globalConfig->dbUpgrader;
+    upgrader->setEntityReader(reader);
+    upgrader->onUpgrade(oldVersion, curVersion);
+}
+
 QTDAO_END_NAMESPACE

@@ -41,6 +41,9 @@ add_library(${PROJECT_NAME}
     query/upsertimpl.cpp
 
     utils/logging.cpp
+    utils/dbupgrader.cpp
+
+    versionctl/versioncontrol.cpp
 
     connectionpool.cpp
     qtdao.cpp
