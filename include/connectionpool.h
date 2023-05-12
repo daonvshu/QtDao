@@ -26,7 +26,7 @@ private:
 class ConnectionPool {
 public:
     static QSqlDatabase getConnection(); // get current thread connection
-    static void closeAllConnection(); // close current thread opened connection
+    static void closeAllConnection(); // close all opened connection
     static int getUsedConnectionSize();// get current used connection names
 
     static QSqlDatabase prepareConnect(const QString & connectName, const QString & dbName);

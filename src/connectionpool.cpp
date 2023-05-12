@@ -79,29 +79,28 @@ ConnectionPool& ConnectionPool::getInstance() {
 QSqlDatabase ConnectionPool::getConnection() {
 
     if (!localConnection.hasLocalData()) {
-        auto& pool = ConnectionPool::getInstance();
-        QMutexLocker locker(&pool.mutex);
-
         QString connectionName;
-        bool hasMoreUnusedNames = !pool.unusedConnectionNames.empty();
-        if (hasMoreUnusedNames) {
-            //use unused connection
-            connectionName = pool.unusedConnectionNames.dequeue();
-            MESSAGE_DEBUG("use recycled connection:", connectionName);
-        } else {
-            //create new connection name
-            connectionName = QString("Connection-%1").arg(pool.usedConnectionSize + 1);
-            MESSAGE_DEBUG("use new connection:", connectionName);
+
+        { //locked only read connection name
+            auto &pool = ConnectionPool::getInstance();
+            QMutexLocker locker(&pool.mutex);
+            if (!pool.unusedConnectionNames.empty()) {
+                //use unused connection
+                connectionName = pool.unusedConnectionNames.dequeue();
+                MESSAGE_DEBUG("use recycled connection:", connectionName);
+            } else {
+                //create new connection name
+                connectionName = QString("Connection-%1").arg(++pool.usedConnectionSize);
+                MESSAGE_DEBUG("use new connection:", connectionName);
+            }
         }
 
+        ConnectionData* data;
         try {
-            auto data = new ConnectionData(connectionName);
+            data = new ConnectionData(connectionName);
             localConnection.setLocalData(data);
-            if (!hasMoreUnusedNames) {
-                pool.usedConnectionSize++;
-                MESSAGE_DEBUG("used size changed:", pool.usedConnectionSize);
-            }
         } catch (DaoException& e) {
+            delete data; //will recycle this connection name
             throw e;
         }
     }
@@ -139,7 +138,9 @@ void ConnectionPool::closeConnection(const QString& connectionName) {
     QMutexLocker locker(&pool.mutex);
 
     pool.unusedConnectionNames.enqueue(connectionName);
-    QSqlDatabase::removeDatabase(connectionName);
+    if (QSqlDatabase::contains(connectionName)) {
+        QSqlDatabase::removeDatabase(connectionName);
+    }
 
     MESSAGE_DEBUG("recycle connection:", connectionName);
 }
