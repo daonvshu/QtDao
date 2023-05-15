@@ -33,12 +33,14 @@ public:
 
     virtual QSqlDatabase getConnection(const QString& connectionName, const QString& databaseName) = 0;
 
-    void disableCreateDatabase() {
+    ConfigBuilder& disableCreateDatabase() {
         createDbEnabled = false;
+        return *this;
     }
 
-    void disableCreateTables() {
+    ConfigBuilder&  disableCreateTables() {
         createTableEnabled = false;
+        return *this;
     }
 
     virtual void initializeDatabase() = 0;
