@@ -46,6 +46,48 @@ protected:
 
     virtual void initSequenceTbName() = 0;
 
+    //----- caster -----
+    template<typename T>
+    static T readFromQuery(const QHash<FieldInfo, int>& columnIndex,
+                           const QSqlQuery& query,
+                           const EntityField<T>& field) {
+        int index = columnIndex.value(field.getFieldInfo(), -1);
+        Q_ASSERT(index != -1);
+        return query.value(index).template value<T>();
+    }
+
+    template<typename T, typename K>
+    static QPair<T, K> readFromQuery(const QHash<FieldInfo, int>& columnIndex,
+                                     const QSqlQuery& query,
+                                     const EntityField<T>& field1,
+                                     const EntityField<K>& field2) {
+        return qMakePair(readFromQuery(columnIndex, query, field1), readFromQuery(columnIndex, query, field2));
+    }
+
+    template<typename T, typename... Args>
+    static std::tuple<T, typename Args::Type...> readFromQueries(const QHash<FieldInfo, int>& columnIndex,
+                                                               const QSqlQuery& query,
+                                                               const EntityField<T>& field,
+                                                               const Args&... args) {
+        auto d = readFromQuery(columnIndex, query, field);
+        return std::tuple_cat(std::tie(d), readFromQueries(columnIndex, query, args...));
+    }
+
+    template<typename T>
+    static std::tuple<T> readFromQueries(const QHash<FieldInfo, int>& columnIndex,
+                                       const QSqlQuery& query,
+                                       const EntityField<T>& field) {
+        return std::make_tuple(readFromQuery(columnIndex, query, field));
+    }
+
+    QHash<FieldInfo, int> usedColumnToIndex() {
+        QHash<FieldInfo, int> indexMap;
+        for (int i = 0; i < usedColumns.size(); i++) {
+            indexMap[usedColumns.at(i)] = i;
+        }
+        return indexMap;
+    }
+
 protected:
     QString mainTable;
     QHash<QString, JoinData> subJoinData;

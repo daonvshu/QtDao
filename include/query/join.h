@@ -4,6 +4,7 @@
 
 #include <QVector>
 #include <QPair>
+#include <QHash>
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -15,9 +16,30 @@ class Join
 public:
     /**
      * get select result list
-     * @return
+     * @return QList<std::tuple<E...>>, E is type if entity
      */
     QList<std::tuple<E...>> list();
+
+    /**
+     * get select result list
+     * @return QList<T>, T is type if field value
+     */
+    template<typename T>
+    QList<T> list(const EntityField<T>& field);
+
+    /**
+     * get select result list
+     * @return QList<QPair<T, K>>, T is type of field1 value, K is type of field2 value
+     */
+    template<typename T, typename K>
+    QList<QPair<T, K>> list(const EntityField<T>& field1, const EntityField<K>& field2);
+
+    /**
+     * get select result list
+     * @return QList<std::tuple<T, ...>>, multiply type of fields value
+     */
+    template<typename T, typename... Args>
+    QList<std::tuple<T, typename Args::Type...>> list(const EntityField<T>& field, const Args&... args);
 
     /**
      * explain query statement
@@ -80,6 +102,54 @@ inline QList<std::tuple<E...>> Join<E...>::list() {
 }
 
 template<typename ...E>
+template<typename T>
+inline QList<T> Join<E...>::list(const EntityField<T>& field) {
+    buildJoinSqlStatement();
+    setDebug(this->builder);
+
+    QList<T> results;
+    auto query = exec();
+
+    auto columnIndex = usedColumnToIndex();
+    while (query.next()) {
+        results << readFromQuery(columnIndex, query, field);
+    }
+    return results;
+}
+
+template<typename ...E>
+template<typename T, typename K>
+inline QList<QPair<T, K>> Join<E...>::list(const EntityField<T>& field1, const EntityField<K>& field2) {
+    buildJoinSqlStatement();
+    setDebug(this->builder);
+
+    QList<QPair<T, K>> results;
+    auto query = exec();
+
+    auto columnIndex = usedColumnToIndex();
+    while (query.next()) {
+        results << readFromQuery(columnIndex, query, field1, field2);
+    }
+    return results;
+}
+
+template<typename ...E>
+template<typename T, typename... Args>
+inline QList<std::tuple<T, typename Args::Type...>> Join<E...>::list(const EntityField<T>& field, const Args&... args) {
+    buildJoinSqlStatement();
+    setDebug(this->builder);
+
+    QList<std::tuple<T, typename Args::Type...>> results;
+    auto query = exec();
+
+    auto columnIndex = usedColumnToIndex();
+    while (query.next()) {
+        results << readFromQueries(columnIndex, query, field, args...);
+    }
+    return results;
+}
+
+template<typename ...E>
 inline void Join<E...>::setTableOrder() {
     tableOrder.clear();
     JoinEUnpackHelper<E...>::setOrder(tableOrder, 0);
@@ -118,16 +188,15 @@ inline void Join<E...>::initSequenceTbName() {
 template<typename ...E>
 inline void Join<E...>::resultBind(std::tuple<E...>& result, QSqlQuery& query) {
     QVector<QList<QPair<QString, QVariant>>> resultValues(sequenceTableNames.size());
+
+    QHash<QString, int> tbIndex;
+    for (int i = 0; i < sequenceTableNames.size(); i++) {
+        tbIndex[sequenceTableNames.at(i).first] = i;
+    }
+
     for (int i = 0; i < usedColumns.size(); i++) {
         auto tb = usedColumns.at(i).bindTable;
-        int tbIndex = 0;
-        for (int j = 0; j < sequenceTableNames.size(); j++) {
-            if (tb == sequenceTableNames.at(j).first) {
-                tbIndex = j;
-                break;
-            }
-        }
-        resultValues[tbIndex] << qMakePair(usedColumns.at(i).name, query.value(i));
+        resultValues[tbIndex[tb]] << qMakePair(usedColumns.at(i).name, query.value(i));
     }
     JoinEUnpackHelper<E...>::template bindTupleValue<0, E...>(result, resultValues);
 }

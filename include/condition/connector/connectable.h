@@ -18,6 +18,10 @@ struct FieldInfo {
     }
 };
 
+inline uint qHash(const FieldInfo& type, uint seed) {
+    return ::qHash(type.name, seed) ^ ::qHash(type.bindTable, seed);
+}
+
 typedef std::function<QString(const QString& tbName)> FieldPrefixGetter;
 
 template<typename T>

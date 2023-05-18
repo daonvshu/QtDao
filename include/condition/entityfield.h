@@ -29,6 +29,8 @@ public:
         this->bindTable = tbName;
     }
 
+    using Type = T;
+
 private:
     QString name;
     QString bindTable;
@@ -40,6 +42,7 @@ private:
     }
 
     friend class Connectable;
+    friend class JoinImpl;
 
 private:
     template<typename E>

@@ -99,6 +99,47 @@ void runTestJoinTable() {
             <<"func" << "abc" << "func group1" << 10 << 10
             <<"func" << "abc" << "func group2" << 10 << 50
     );
+
+    auto v1 = dao::_join<E1, E3, E2>()
+            .column(sf2.name, sf1.name, sf3.name, sf1.number, sf2.number)
+            .template from<E1>()
+            .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+            .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
+            .build().list(sf3.name);
+
+    QStringList expectV1 = {"bob group", "client group1", "client group2", "func group1", "func group2"};
+    QCOMPARE(v1, expectV1);
+
+    auto v2 = dao::_join<E1, E3, E2>()
+            .column(sf2.name, sf1.name, sf3.name, sf2.number)
+            .template from<E1>()
+            .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+            .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
+            .filter(sf1.number > 10)
+            .build().list(sf1.name, sf2.number);
+
+    QList<QPair<QString, int>> expectV2;
+    expectV2 << qMakePair(QString("bob"), 9)
+             << qMakePair(QString("client"), 9999)
+             << qMakePair(QString("client"), 9999);
+    QCOMPARE(v2, expectV2);
+
+    auto v3 = dao::_join<E1, E3, E2>()
+            .column(sf2.name, sf1.name, sf3.name, sf2.number)
+            .template from<E1>()
+            .template innerJoin<E3>().on(sf3.tbi1 == sf1.id)
+            .template innerJoin<E2>().on(sf2.id == sf3.tbi2)
+            .filter(sf1.number > 10)
+            .build().list(sf2.name, sf1.name, sf3.name, sf2.number);
+
+    auto expectV3 = QVariantList() << "bob" << "bob" << "bob group" << 9
+                   << "joker" << "client" << "client group1" << 9999
+                   << "joker" << "client" << "client group2" << 9999;
+    QVariantList dataV3;
+    for (const auto& d : v3) {
+        dataV3 << std::get<0>(d) << std::get<1>(d) << std::get<2>(d) << std::get<3>(d);
+    }
+    QCOMPARE(dataV3, expectV3);
 }
 
 void JoinTest::testJoinTable() {

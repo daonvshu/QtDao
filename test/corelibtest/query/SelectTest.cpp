@@ -74,6 +74,28 @@ void runUniqueSelectTest(EngineModel model) {
     QVERIFY(d1.getId() != -1);
     QCOMPARE(sft1.getValueWithoutAutoIncrement(data1.at(4)), sft1.getValueWithoutAutoIncrement(d1));
 
+    auto v1 = dao::_select<E>()
+            .filter(sf1.id == 2)
+            .build()
+            .one(sf1.name);
+    QCOMPARE(v1, "alice");
+
+    auto v2 = dao::_select<E>()
+            .filter(sf1.id == 2)
+            .build()
+            .one(sf1.name, sf1.number);
+    QCOMPARE(v2.first, "alice");
+    QCOMPARE(v2.second, 11);
+
+    auto v3 = dao::_select<E>()
+            .filter(sf1.id == 2)
+            .build()
+            .one(sf1.id, sf1.name, sf1.number, sf1.hex);
+    QCOMPARE(std::get<0>(v3), 2);
+    QCOMPARE(std::get<1>(v3), "alice");
+    QCOMPARE(std::get<2>(v3), 11);
+    QCOMPARE(std::get<3>(v3), "alice1");
+
     E d2;
     if (model == Engine_SqlServer) {
         d2 = dao::_select<E>()
@@ -102,6 +124,28 @@ void runUniqueSelectTest(EngineModel model) {
         .filter(sf1.name == "joker")
         .build().unique();
     QVERIFY(d4.getId() == -1);
+
+    auto uv1 = dao::_select<E>()
+            .filter(sf1.id == 2)
+            .build()
+            .unique(sf1.name);
+    QCOMPARE(uv1, "alice");
+
+    auto uv2 = dao::_select<E>()
+            .filter(sf1.id == 2)
+            .build()
+            .unique(sf1.name, sf1.number);
+    QCOMPARE(uv2.first, "alice");
+    QCOMPARE(uv2.second, 11);
+
+    auto uv3 = dao::_select<E>()
+            .filter(sf1.id == 2)
+            .build()
+            .unique(sf1.id, sf1.name, sf1.number, sf1.hex);
+    QCOMPARE(std::get<0>(uv3), 2);
+    QCOMPARE(std::get<1>(uv3), "alice");
+    QCOMPARE(std::get<2>(uv3), 11);
+    QCOMPARE(std::get<3>(uv3), "alice1");
 }
 
 void SelectTest::uniqueSelectTest() {
@@ -144,6 +188,31 @@ void runListSelectTest() {
     expectValue << sft1.getValueWithoutAutoIncrement(data1.at(2));
     expectValue << sft1.getValueWithoutAutoIncrement(data1.at(4));
     QCOMPARE(actualValues, expectValue);
+
+    auto v1 = dao::_select<E>()
+            .filter(sf1.number == 12)
+            .build()
+            .list(sf1.name);
+    QList<QString> expectNames = { "bob", "client" };
+    QCOMPARE(v1, expectNames);
+
+    auto v2 = dao::_select<E>()
+            .filter(sf1.number == 12)
+            .build()
+            .list(sf1.name, sf1.number);
+    QList<QPair<QString, qreal>> expectV2;
+    expectV2 << qMakePair(data1.at(2).getName(), data1.at(2).getNumber());
+    expectV2 << qMakePair(data1.at(4).getName(), data1.at(4).getNumber());
+    QCOMPARE(v2, expectV2);
+
+    auto v3 = dao::_select<E>()
+            .filter(sf1.number == 12)
+            .build()
+            .list(sf1.id, sf1.name, sf1.number, sf1.hex);
+    QList<std::tuple<qint64, QString, qreal, QByteArray>> expectV3;
+    expectV3 << std::make_tuple(data1.at(2).getId(), data1.at(2).getName(), data1.at(2).getNumber(), data1.at(2).getHex());
+    expectV3 << std::make_tuple(data1.at(4).getId(), data1.at(4).getName(), data1.at(4).getNumber(), data1.at(4).getHex());
+    QCOMPARE(v3, expectV3);
 
     auto d2 = dao::_selectAll<E>();
     QCOMPARE(d2.size(), data1.size());

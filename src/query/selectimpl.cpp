@@ -76,14 +76,19 @@ void SelectImpl::recordBind(const QSqlRecord& record, const EntityBinder& entity
     }
 }
 
-void SelectImpl::uniqueExec(const EntityBinder& entityBinder) {
+void SelectImpl::uniqueExec(const EntityBinder& entityBinder, const RecordBinder& recordHandler) {
     buildFilterSqlStatement();
 
     auto query = exec();
 
     int resultSize = 0;
     while (query.next()) {
-        recordBind(query.record(), entityBinder);
+        if (entityBinder) {
+            recordBind(query.record(), entityBinder);
+        }
+        if (recordHandler) {
+            recordHandler(query.record());
+        }
         resultSize++;
     }
     if (resultSize > 1) {
@@ -91,16 +96,21 @@ void SelectImpl::uniqueExec(const EntityBinder& entityBinder) {
     }
 }
 
-void SelectImpl::oneExec(const EntityBinder& entityBinder) {
+void SelectImpl::oneExec(const EntityBinder& entityBinder, const RecordBinder& recordHandler) {
     buildFilterSqlStatement();
 
     auto query = exec();
     if (query.next()) {
-        recordBind(query.record(), entityBinder);
+        if (entityBinder) {
+            recordBind(query.record(), entityBinder);
+        }
+        if (recordHandler) {
+            recordHandler(query.record());
+        }
     }
 }
 
-void SelectImpl::listExec(const std::function<void(const QSqlRecord &)> &recordHandler) {
+void SelectImpl::listExec(const RecordBinder& recordHandler) {
     buildFilterSqlStatement();
 
     auto query = exec();
