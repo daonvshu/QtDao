@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dao prefix="ts_" db="sqlite">
+  <tb name="TestTb1" declaremetatype="true">
+    <item name="field1" type="long" constraints="primary key" autoincrement="true" default="1" />
+    <item name="field2" type="text" constraints="not null"/>
+    <item name="field3" type="int" constraints="unique"/>
+    <item name="field4" type="int" default="10" />
+    <item name="field5" type="variant" />
+    <item name="field6" type="text" />
+    <index>
+      <field>field2</field>
+    </index>
+    <index>
+      <field>field3</field>
+      <field>field4</field>
+    </index>
+    <index type="unique index">
+      <field seq="asc">field2</field>
+      <field seq="desc">field6</field>
+    </index>
+  </tb>
+  <tb name="TestTb2" declaremetatype="true">
+    <item name="field1" type="long" constraints="primary key" autoincrement="true" default="1" />
+    <item name="field3" type="int" constraints="unique"/>
+    <item name="field4" type="int" />
+    <item name="fieldEx" type="int" default="20" />
+    <index>
+      <field>field3</field>
+      <field>field4</field>
+    </index>
+  </tb>
+</dao>
