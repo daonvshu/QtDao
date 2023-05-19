@@ -30,7 +30,7 @@ void runSetInsertTest() {
         numbers << query.value("number");
     }
     QCOMPARE(names, QVariantList() << "test");
-    QCOMPARE(numbers, QVariantList() << 1);
+    QCOMPARE(numbers, QVariantList() << 1.0);
 }
 
 void InsertTest::setInsertTest() {
@@ -144,7 +144,10 @@ void runInsertObjectTest() {
                 data << query.value(f);
             }
         }
-        QCOMPARE(data, E2::Tool::getValueWithoutAutoIncrement(test3));
+        auto expect = E2::Tool::getValueWithoutAutoIncrement(test3);
+        auto date = expect.takeLast().toString();
+        expect << date;
+        QCOMPARE(data, expect);
     }
 }
 

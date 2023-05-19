@@ -17,7 +17,11 @@ QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList
     executor.setDebug(debugFatalEnabled, logging);
 
     if (!values.isEmpty()) {
+#if QT_VERSION_MAJOR >= 6
+        if (values.first().typeId() == QMetaType::QVariantList) {
+#else
         if (values.first().type() == QVariant::List) {
+#endif
             return executor.execBatch();
         }
     }
@@ -116,7 +120,11 @@ QSqlQuery BaseQuery::getQuery(bool& prepareOk, bool batchExecMode) {
 
 void BaseQuery::bindQueryValues(QSqlQuery& query) {
     for (const auto& d : values) {
+#if QT_VERSION_MAJOR >= 6
+        query.addBindValue(d, d.typeId() == QMetaType::QByteArray ? QSql::Binary : QSql::In);
+#else
         query.addBindValue(d, d.type() == QVariant::ByteArray ? QSql::Binary : QSql::In);
+#endif
     }
 }
 

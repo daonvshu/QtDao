@@ -79,7 +79,7 @@ void runSetUpdateTest() {
     auto result = dao::_select<E>().filter(sf1.number == 18).build().unique();
     QVariantList resultData = tool1.getValueWithoutAutoIncrement(result);
     QCOMPARE(resultData,
-        QVariantList() << 3 << "bob" << 18 << "test update"
+        QVariantList() << 3 << "bob" << 18 << QByteArray("test update")
     );
 
     QList<qreal> numbersSet;
@@ -99,9 +99,9 @@ void runSetUpdateTest() {
         resultsData << tool1.getValueWithoutAutoIncrement(r);
     }
     QList<QVariantList> expectValues;
-    expectValues << (QVariantList() << 3 << "bob" << 21 << "test1");
-    expectValues << (QVariantList() << 4 << "client" << 22 << "test2");
-    expectValues << (QVariantList() << 5 << "client" << 22 << "test2");
+    expectValues << (QVariantList() << 3 << "bob" << 21 << QByteArray("test1"));
+    expectValues << (QVariantList() << 4 << "client" << 22 << QByteArray("test2"));
+    expectValues << (QVariantList() << 5 << "client" << 22 << QByteArray("test2"));
     QCOMPARE(resultsData, expectValues);
 }
 

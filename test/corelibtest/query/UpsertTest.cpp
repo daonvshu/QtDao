@@ -165,7 +165,7 @@ void UpsertTest::upsertObjectTest_data() {
         QTest::addColumn<SqliteTest2>("test2");
         QTest::addColumn<SqliteTest2>("test3");
         QTest::newRow("sqlite test data")
-                << SqliteTest2("name1", 23, 233, QDate(2022, 10, 20))
+                << SqliteTest2("name1", 23, 233, QString("2022-10-20"))
                 << SqliteTest2("name2", 23, 2333, 1)
                 << SqliteTest2("name2", 23, 433, "aws");
     } else if (engineModel == Engine_Mysql) {
@@ -260,7 +260,7 @@ void UpsertTest::upsertObjectTest() {
 void UpsertTest::upsertObjectsTest_data() {
     if (engineModel == Engine_Sqlite) {
         QList<SqliteTest2> test;
-        test << SqliteTest2("name1", 23, 233, QDate(2022, 10, 20));
+        test << SqliteTest2("name1", 23, 233, QString("2022-10-20"));
         test << SqliteTest2("name2", 23, 2333, 1);
         test << SqliteTest2("name2", 23, 433, "aws");
 

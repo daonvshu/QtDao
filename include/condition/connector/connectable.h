@@ -18,9 +18,15 @@ struct FieldInfo {
     }
 };
 
+#if QT_VERSION_MAJOR >= 6
+inline size_t qHash(const FieldInfo& type, size_t seed) {
+    return qHashMulti(seed, type.name, type.bindTable);
+}
+#else
 inline uint qHash(const FieldInfo& type, uint seed) {
     return ::qHash(type.name, seed) ^ ::qHash(type.bindTable, seed);
 }
+#endif
 
 typedef std::function<QString(const QString& tbName)> FieldPrefixGetter;
 

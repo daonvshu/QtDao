@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.2)
 project(qtdaolib)
 
-set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5 COMPONENTS Core Sql REQUIRED)
+find_package(QT NAMES Qt6 Qt5 REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Sql REQUIRED)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
@@ -53,4 +53,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ../include)
 
 add_library(qtdao::lib ALIAS ${PROJECT_NAME})
 
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Sql)
+target_link_libraries(${PROJECT_NAME}
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Sql
+    )

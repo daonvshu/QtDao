@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5 COMPONENTS Core Sql Test REQUIRED)
+find_package(QT NAMES Qt6 Qt5 REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Sql Test REQUIRED)
 
 file(GLOB CONDITION_TEST condition/*.h condition/*.cpp)
 file(GLOB LOADER_TEST loader/*.h loader/*.cpp)
@@ -29,4 +30,8 @@ add_executable(${PROJECT_NAME}
     ${ENTITY_SQLSERVER}
 )
 
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Sql Qt5::Test qtdao::lib)
+target_link_libraries(${PROJECT_NAME}
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::Test
+    qtdao::lib)

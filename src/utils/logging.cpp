@@ -17,6 +17,23 @@ const QString logStatementValuesTemplate = "\n>>>-------------------------------
                                            "--------------------------------------------------------------\n";
 
 QString variantTypeFormat(const QVariant& v) {
+#if QT_VERSION_MAJOR >= 6
+    switch (v.typeId()) {
+        //case QVariant::Double:
+        //    break;
+        case QMetaType::Char:
+            return '\'' + v.toString() + '\'';
+        case QMetaType::QByteArray:
+            return "<" + QString::number(v.toByteArray().size()) + "bits>";
+        case QMetaType::QString:
+        case QMetaType::QDate:
+        case QMetaType::QTime:
+        case QMetaType::QDateTime:
+            return '"' + v.toString() + '"';
+        default:
+            return v.toString();
+    }
+#else
     switch (v.type()) {
         //case QVariant::Double:
         //    break;
@@ -32,9 +49,26 @@ QString variantTypeFormat(const QVariant& v) {
         default:
             return v.toString();
     }
+#endif
 }
 
 QString variantTypeFormatSql(const QVariant& v) {
+#if QT_VERSION_MAJOR >= 6
+    switch (v.typeId()) {
+        //case QVariant::Double:
+        //    break;
+        case QMetaType::QByteArray:
+            return "<" + QString::number(v.toByteArray().size()) + "bits>";
+        case QMetaType::QString:
+        case QMetaType::QDate:
+        case QMetaType::QTime:
+        case QMetaType::QDateTime:
+        case QMetaType::Char:
+            return '\'' + v.toString() + '\'';
+        default:
+            return v.toString();
+    }
+#else
     switch (v.type()) {
         //case QVariant::Double:
         //    break;
@@ -49,6 +83,7 @@ QString variantTypeFormatSql(const QVariant& v) {
         default:
             return v.toString();
     }
+#endif
 }
 
 void printStatement(LoggingCategoryPtr loggingPtr, const QString& statement) {
@@ -65,8 +100,13 @@ void printStatementValues(LoggingCategoryPtr loggingPtr, const QString& statemen
     valueStr += "]";
 
     QString translatedStr = statement;
+#if QT_VERSION_MAJOR >= 6
+    qsizetype index;
+    qsizetype offset = 0;
+#else
     int index;
     int offset = 0;
+#endif
     int valueIndex = 0;
     while ((index = translatedStr.indexOf("?", offset)) != -1) {
         auto valueFormatted = variantTypeFormatSql(values.at(valueIndex++));
@@ -105,8 +145,13 @@ void printStatementValuesBatch(LoggingCategoryPtr loggingPtr, const QString& sta
 
     QStringList translatedStrList;
 
+#if QT_VERSION_MAJOR >= 6
+    qsizetype index;
+    qsizetype offset = 0;
+#else
     int index;
-    int offset;
+    int offset = 0;
+#endif
     int valueRowIndex = 0, valueColIndex;
     while (true) {
         QString translatedStr = statement;

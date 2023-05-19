@@ -79,11 +79,18 @@ struct TestRunner<T, Arg...> : TestRunner<Arg...> {
     static int run(EngineModel model) {
         T t(model);
         int result;
-        if (currentIsDebugging()) {
-            result = QTest::qExec(&t, QStringList() << "qtdaocoretest.exe");
-        } else {
-            result = QTest::qExec(&t, QStringList() << "qtdaocoretest.exe" << "-o" << "test.txt");
-            setColor();
+        try {
+            if (currentIsDebugging()) {
+                result = QTest::qExec(&t, QStringList() << "qtdaocoretest.exe");
+            } else {
+                result = QTest::qExec(&t, QStringList() << "qtdaocoretest.exe" << "-o" << "test.txt");
+                setColor();
+            }
+        } catch (DaoException& e) {
+            Q_UNUSED(e)
+            auto validDrivers = QSqlDatabase::drivers();
+            Q_UNUSED(validDrivers)
+            qFatal("run testcase fail!");
         }
 
         result += TestRunner<Arg...>::run(model);

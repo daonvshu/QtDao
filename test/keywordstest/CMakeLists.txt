@@ -5,15 +5,16 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5 COMPONENTS Core Sql Test REQUIRED)
+find_package(QT NAMES Qt6 Qt5 REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Sql Test REQUIRED)
 
 set(TEST_TYPE "sqlite" CACHE STRING "test type string")
 message("test type: ${TEST_TYPE}")
 
-string(TOUPPER ${TEST_TYPE} _TEST_TYPE)
-
 include(${CMAKE_CURRENT_SOURCE_DIR}/${TEST_TYPE}/entity.cmake)
-add_definitions(-DTEST_${_TEST_TYPE})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/${TEST_TYPE})
+
+add_compile_definitions(TEST_DB="${TEST_TYPE}")
 
 add_executable(${PROJECT_NAME}
   main.cpp
@@ -22,4 +23,8 @@ add_executable(${PROJECT_NAME}
   keywordstest.cpp
   )
 
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Sql Qt5::Test qtdao::lib)
+target_link_libraries(${PROJECT_NAME}
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Sql
+    Qt${QT_VERSION_MAJOR}::Test
+    qtdao::lib)

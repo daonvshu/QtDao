@@ -13,7 +13,11 @@ bool UpsertImpl::buildInsertBySetSqlStatement() {
     QVariantList values = sc.getValueList();
     Q_ASSERT(!values.isEmpty());
 
+#if QT_VERSION_MAJOR >= 6
+    bool operateBatch = values.at(0).typeId() == QMetaType::QVariantList;
+#else
     bool operateBatch = values.at(0).type() == QVariant::List;
+#endif
 
     QStringList usedFields;
     for (int i = 0; i < usedFieldName.size(); ) {

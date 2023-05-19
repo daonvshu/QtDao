@@ -17,40 +17,33 @@ public:
     }
 
     void setupDatabase(int version = 1) {
-        try {
-            if (engineModel == Engine_Sqlite) {
-                dao::_config<dao::ConfigSqliteBuilder>()
-                        .version(version)
-                        .databaseName("sqlitetest")
-                        //.driver("SQLITECIPHER")
-                        //.password("H*u1RhdJW&tbmHCU*FPZ#58KcL1q@ZXP")
-                        .options("QSQLITE_BUSY_TIMEOUT=100")
-                        .saveDir(QDir::currentPath())
-                        .initializeDatabase();
-            } else if (engineModel == Engine_Mysql) {
-                dao::_config<dao::ConfigMysqlBuilder>()
-                        .version(version)
-                        .databaseName("mysqltest")
-                        .host("localhost")
-                        .port(3306)
-                        .user("root")
-                        .password("root")
-                        .options("MYSQL_OPT_CONNECT_TIMEOUT=3;MYSQL_OPT_READ_TIMEOUT=3;MYSQL_OPT_WRITE_TIMEOUT=3")
-                        .initializeDatabase();
-            } else if (engineModel == Engine_SqlServer) {
-                dao::_config<dao::ConfigSqlServerBuilder>()
-                        .version(version)
-                        .databaseName("sqlservertest")
-                        .host("localhost")
-                        .user("sa")
-                        .password("root")
-                        .initializeDatabase();
-            }
-        } catch (dao::DaoException& e) {
-            Q_UNUSED(e)
-            auto validDrivers = QSqlDatabase::drivers();
-            Q_UNUSED(validDrivers)
-            qFatal("setup database fail!");
+        if (engineModel == Engine_Sqlite) {
+            dao::_config<dao::ConfigSqliteBuilder>()
+                    .version(version)
+                    .databaseName("sqlitetest")
+                    //.driver("SQLITECIPHER")
+                    //.password("H*u1RhdJW&tbmHCU*FPZ#58KcL1q@ZXP")
+                    .options("QSQLITE_BUSY_TIMEOUT=100")
+                    .saveDir(QDir::currentPath())
+                    .initializeDatabase();
+        } else if (engineModel == Engine_Mysql) {
+            dao::_config<dao::ConfigMysqlBuilder>()
+                    .version(version)
+                    .databaseName("mysqltest")
+                    .host("localhost")
+                    .port(3306)
+                    .user("root")
+                    .password("root")
+                    .options("MYSQL_OPT_CONNECT_TIMEOUT=3;MYSQL_OPT_READ_TIMEOUT=3;MYSQL_OPT_WRITE_TIMEOUT=3")
+                    .initializeDatabase();
+        } else if (engineModel == Engine_SqlServer) {
+            dao::_config<dao::ConfigSqlServerBuilder>()
+                    .version(version)
+                    .databaseName("sqlservertest")
+                    .host("localhost")
+                    .user("sa")
+                    .password("root")
+                    .initializeDatabase();
         }
     }
 

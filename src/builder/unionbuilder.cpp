@@ -3,9 +3,35 @@
 #include "query/selectimpl.h"
 #include "query/joinimpl.h"
 
+#if QT_VERSION_MAJOR >= 6
+#include "config/configbuilder.h"
+
 QTDAO_BEGIN_NAMESPACE
 
-void dao::UnionBuilderImpl::unionWithSelect(SelectImpl &select, bool unionAll) {
+void UnionBuilderImpl::unionWithSelect(SelectImpl &select, bool unionAll) {
+    if (globalConfig->isSqlServer()) {
+        qFatal("The current version of the union query in Qt6 fails the test case when using SQLServer.");
+    }
+    select.buildFilterSqlStatement();
+    unionData.statement = select.statement;
+    unionData.values = select.values;
+    unionData.unionAll = unionAll;
+}
+
+void UnionBuilderImpl::unionWithJoin(JoinImpl &join, bool unionAll) {
+    if (globalConfig->isSqlServer()) {
+        qFatal("The current version of the union query in Qt6 fails the test case when using SQLServer.");
+    }
+    join.buildJoinSqlStatement();
+    unionData.statement = join.statement;
+    unionData.values = join.values;
+    unionData.unionAll = unionAll;
+}
+#else
+
+QTDAO_BEGIN_NAMESPACE
+
+void UnionBuilderImpl::unionWithSelect(SelectImpl &select, bool unionAll) {
     select.buildFilterSqlStatement();
     unionData.statement = select.statement;
     unionData.values = select.values;
@@ -18,6 +44,7 @@ void UnionBuilderImpl::unionWithJoin(JoinImpl &join, bool unionAll) {
     unionData.values = join.values;
     unionData.unionAll = unionAll;
 }
+#endif
 
 QTDAO_END_NAMESPACE
 

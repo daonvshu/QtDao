@@ -11,7 +11,7 @@ QTDAO_BEGIN_NAMESPACE
 void VersionControl::checkLocalVersion() {
 
     auto versionTbReader = new SqliteEntityReaderProvider<Version>; //same suitable for mysql/sqlserver
-    globalConfig->dbClient->createTable(versionTbReader);
+    globalConfig->dbClient->createTableIfNotExist(versionTbReader);
     delete versionTbReader;
 
     int localVersion = getLocalVersion();
@@ -44,7 +44,11 @@ void VersionControl::updateLocalVersion() {
 }
 
 void VersionControl::invokeCreateTables() {
+#if QT_VERSION_MAJOR >= 6
+    const auto metaObj = QMetaType::fromName(getDelegateStr()).metaObject();
+#else
     const auto metaObj = QMetaType::metaObjectForType(QMetaType::type(getDelegateStr()));
+#endif
     Q_ASSERT_X(metaObj != nullptr, "database initialize fail", "cannot invoke table delegate, use plugin vscode-qtdao in VSCODE to create entities");
     QObject* obj = metaObj->newInstance();
     QMetaObject::invokeMethod(obj, "createEntityTables");
@@ -52,7 +56,11 @@ void VersionControl::invokeCreateTables() {
 }
 
 void VersionControl::invokeTableUpgrade(int oldVer, int newVer) {
+#if QT_VERSION_MAJOR >= 6
+    const auto metaObj = QMetaType::fromName(getDelegateStr()).metaObject();
+#else
     const auto metaObj = QMetaType::metaObjectForType(QMetaType::type(getDelegateStr()));
+#endif
     Q_ASSERT_X(metaObj != nullptr, "database initialize fail", "cannot invoke table delegate, use plugin vscode-qtdao in VSCODE to create entities");
     QObject* obj = metaObj->newInstance();
     QMetaObject::invokeMethod(obj, "entityTablesUpgrade", Q_ARG(int, oldVer), Q_ARG(int, newVer));

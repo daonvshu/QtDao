@@ -3,6 +3,7 @@
 #include "../global.h"
 
 #include <qdatastream.h>
+#include <qiodevice.h>
 
 QTDAO_BEGIN_NAMESPACE
 
