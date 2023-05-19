@@ -36,8 +36,6 @@ public:
 
     virtual QString getTableEngine() = 0; //mysql
 
-    virtual QStringList getFieldsWithoutTimestamp() = 0; //sqlserver
-
     virtual QList<QStringList> getClusteredIndexFields() = 0; //sqlserver
 
     virtual QList<QStringList> getUniqueClusteredIndexFields() = 0; //sqlserver
@@ -47,6 +45,13 @@ public:
     virtual QList<QStringList> getUniqueNonClusteredIndexFields() = 0; //sqlserver
 
     virtual QString getIndexOption(const QString& name) = 0; //sqlserver
+
+    //extra functions
+
+    template<typename E>
+    bool isTable() {
+        return getTableName() == E::Info::getTableName();
+    }
 };
 
 template<typename E>
@@ -114,10 +119,6 @@ public:
         return {};
     }
 
-    QStringList getFieldsWithoutTimestamp() override {
-        return {};
-    }
-
     QList<QStringList> getClusteredIndexFields() override {
         return {};
     }
@@ -170,10 +171,6 @@ public:
 template<typename E>
 class SqlServerEntityReaderProvider : public EntityReaderProvider<E> {
 public:
-    QStringList getFieldsWithoutTimestamp() override {
-        return E::Info::getFieldsWithoutTimestamp();
-    }
-
     QList<QStringList> getClusteredIndexFields() override {
         return E::Info::getClusteredIndexFields();
     }

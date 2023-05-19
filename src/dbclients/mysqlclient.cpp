@@ -11,6 +11,8 @@ QTDAO_BEGIN_NAMESPACE
 
 #define MYSQL_KEYWORDS_ESCAPES {"`"}
 
+#define RL_TB(tb) checkAndRemoveKeywordEscapes(tb, MYSQL_KEYWORDS_ESCAPES)
+
 void MysqlClient::testConnect() {
     BaseQuery::executePrimitiveQuery("select 1", "mysql");
 }
@@ -25,72 +27,27 @@ void MysqlClient::dropDatabase() {
     BaseQuery::executePrimitiveQuery("drop database if exists " % currentDatabaseName(), "mysql");
 }
 
-bool MysqlClient::checkTableExist(const QString& tbName) {
-    auto str = QString("select table_name from information_schema.TABLES where table_name ='%1' and table_schema = '%2'")
-        .arg(checkAndRemoveKeywordEscapes(tbName, MYSQL_KEYWORDS_ESCAPES), currentDatabaseName());
+QStringList MysqlClient::exportAllTables() {
+    auto query = BaseQuery::queryPrimitive("select table_name from information_schema.tables where table_schema = '"
+                                           % currentDatabaseName() % "'");
+    QStringList tableNames;
+    while (query.next()) {
+        tableNames << query.value(0).toString();
+    }
+    return tableNames;
+}
 
-    auto query = BaseQuery::queryPrimitive(str);
+bool MysqlClient::checkTableExist(const QString& tbName) {
+    auto query = BaseQuery::queryPrimitive("select table_name from information_schema.TABLES where table_name ='"
+                                           % RL_TB(tbName) % "' and table_schema = '" % currentDatabaseName() % "'");
     return query.next();
 }
 
-void MysqlClient::renameTable(const QString& oldName, const QString& newName) {
-    BaseQuery::queryPrimitive("rename table " % oldName % " to " % newName);
-}
-
-void MysqlClient::dropTable(const QString& tbName) {
-    BaseQuery::queryPrimitive("drop table if exists " % tbName);
-}
-
-void MysqlClient::truncateTable(const QString& tbName) {
-    BaseQuery::queryPrimitive("truncate table " % tbName);
-}
-
-QStringList MysqlClient::getTagTableFields(const QString& tbName) {
-    auto str = 
-        QString("select COLUMN_NAME from information_schema.COLUMNS where table_name = '%1' and table_schema = '%2';")
-    .arg(checkAndRemoveKeywordEscapes(tbName, MYSQL_KEYWORDS_ESCAPES), currentDatabaseName());
-
-    QStringList fields;
-
-    auto query = BaseQuery::queryPrimitive(str);
-    while (query.next()) {
-        fields << query.value(0).toString();
-    }
-    return fields;
-}
-
-void MysqlClient::dropAllIndexOnTable(const QString& tbName) {
-    auto query = BaseQuery::queryPrimitive(
-        QString("SELECT index_name FROM information_schema.statistics where TABLE_SCHEMA = '%1' and TABLE_NAME = '%2' GROUP BY index_name")
-        .arg(currentDatabaseName(), checkAndRemoveKeywordEscapes(tbName, MYSQL_KEYWORDS_ESCAPES))
-    );
-    QStringList indexNames;
-    while (query.next()) {
-        QString indexName = query.value(0).toString();
-        if (!indexName.startsWith("index_"))
-            continue;
-        indexNames << indexName;
-    }
-    for (const auto& name : indexNames) {
-        BaseQuery::queryPrimitive("drop index " % name % " on " % tbName);
-    }
-}
-
-void MysqlClient::createTable(dao::EntityReaderInterface *reader) {
-    createTableIfNotExist(reader->getTableName(), reader->getTableEngine(), reader->getFieldsType(), reader->getPrimaryKeys());
-
-    auto indexes = reader->getIndexFields();
-    for (const auto& i : indexes) {
-        createIndex(reader->getTableName(), i, INDEX_NORMAL);
-    }
-
-    indexes = reader->getUniqueIndexFields();
-    for (const auto& i : indexes) {
-        createIndex(reader->getTableName(), i, INDEX_UNIQUE);
-    }
-}
-
-void MysqlClient::createTableIfNotExist(const QString& tbName, const QString& engine, const QStringList& fieldsType, const QStringList& primaryKeys) {
+void MysqlClient::createTableIfNotExist(const QString &tbName,
+                                        const QStringList &fieldsType,
+                                        const QStringList &primaryKeys,
+                                        const QString &engine)
+{
     QString str = "create table if not exists " % tbName % "(" % fieldsType.join(",");
     if (primaryKeys.size() > 1) {
         str = str % ", primary key(" % primaryKeys.join(",") % ")";
@@ -105,18 +62,80 @@ void MysqlClient::createTableIfNotExist(const QString& tbName, const QString& en
     BaseQuery::queryPrimitive(str);
 }
 
-void MysqlClient::createIndex(const QString& tbName, const QStringList& fields, IndexType type) {
-    QString indexName = "index";
-    for (const auto& field : fields) {
-        indexName.append("_").append(checkAndRemoveKeywordEscapes(field.split(" ").at(0), MYSQL_KEYWORDS_ESCAPES));
+void MysqlClient::renameTable(const QString& oldName, const QString& newName) {
+    BaseQuery::queryPrimitive("rename table " % oldName % " to " % newName);
+}
+
+void MysqlClient::dropTable(const QString& tbName) {
+    BaseQuery::queryPrimitive("drop table if exists " % tbName);
+}
+
+void MysqlClient::truncateTable(const QString& tbName) {
+    BaseQuery::queryPrimitive("truncate table " % tbName);
+}
+
+QList<QPair<QString, QString>> MysqlClient::exportAllFields(const QString& tbName) {
+    QList<QPair<QString, QString>> fields;
+
+    auto query = BaseQuery::queryPrimitive("select COLUMN_NAME, DATA_TYPE from information_schema.COLUMNS where "
+                                           "table_name = '" % RL_TB(tbName) % "' and table_schema = '" % currentDatabaseName() % "'");
+    while (query.next()) {
+        fields << qMakePair(
+                query.value(0).toString(),
+                query.value(1).toString().toUpper()
+                );
     }
+    return fields;
+}
+
+void MysqlClient::addField(const QString &tbName, const QString &field) {
+    BaseQuery::queryPrimitive("alter table " % tbName % " add " % field);
+}
+
+void MysqlClient::dropField(const QString &tbName, const QString &fieldName) {
+    BaseQuery::queryPrimitive("alter table " % tbName % " drop " % fieldName);
+}
+
+void MysqlClient::renameField(const QString &tbName, const QString &oldFieldName, const QString &newFieldName) {
+    BaseQuery::queryPrimitive("alter table " % tbName % " rename column " % oldFieldName % " to " % newFieldName);
+}
+
+QHash<IndexType, QStringList> MysqlClient::exportAllIndexes(const QString &tbName) {
+    QHash<IndexType, QStringList> indexes;
+
+    auto query = BaseQuery::queryPrimitive("SELECT INDEX_NAME, NON_UNIQUE FROM INFORMATION_SCHEMA.STATISTICS "
+                                           "WHERE TABLE_NAME = '" % RL_TB(tbName) % "' AND TABLE_SCHEMA = '"
+                                            % currentDatabaseName() % "' GROUP BY INDEX_NAME, NON_UNIQUE");
+    while (query.next()) {
+        auto indexName = query.value(0).toString();
+        if (indexName.startsWith("index_")) {
+            indexes[IndexType(1 - query.value(1).toInt())] << indexName;
+        }
+    }
+
+    return indexes;
+}
+
+void MysqlClient::createIndex(const QString &tbName,
+                              const QString &indexName,
+                              const QStringList& fields,
+                              dao::IndexType type,
+                              const QString&) {
     QString typeStr = "";
-    if (type == AbstractClient::INDEX_UNIQUE) {
+    if (type == IndexType::INDEX_UNIQUE) {
         typeStr = "unique ";
     }
 
     QString str = "create " % typeStr % "index " % indexName % " on " % tbName % " (" % fields.join(",") % ")";
     BaseQuery::queryPrimitive(str);
+}
+
+void MysqlClient::dropIndex(const QString& tbName, const QString& indexName) {
+    BaseQuery::queryPrimitive("drop index " % indexName % " on " % tbName);
+}
+
+QString MysqlClient::getIndexFromFields(const QStringList &fields) {
+    return AbstractClient::getIndexFromFields(fields, MYSQL_KEYWORDS_ESCAPES);
 }
 
 QTDAO_END_NAMESPACE

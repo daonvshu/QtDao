@@ -5,43 +5,139 @@
 
 #include "dbexception.h"
 
+#include <qset.h>
+#include <qstringbuilder.h>
+
 QTDAO_BEGIN_NAMESPACE
 
-void AbstractClient::restoreData2NewTable(const QString& tbName, const QStringList& fields) {
-    auto oldTbFields = getTagTableFields("tmp_" + tbName);
-    if (oldTbFields.isEmpty()) {
-        return;
+void AbstractClient::createTableIfNotExist(dao::EntityReaderInterface *reader) {
+    createTableIfNotExist(reader->getTableName(), reader->getFieldsType(), reader->getPrimaryKeys(),
+                          reader->getTableEngine());
+}
+
+void AbstractClient::dropAllIndexOnTable(const QString &tbName) {
+    auto indexGroup = exportAllIndexes(tbName);
+    for (const auto& indexes : indexGroup) {
+        for (const auto& i : indexes) {
+            dropIndex(tbName, i);
+        }
     }
+}
+
+void AbstractClient::createIndex(dao::EntityReaderInterface *reader) {
+    //sqlite/mysql
+    auto normalIndexFields = reader->getIndexFields();
+    for (const auto& i : normalIndexFields) {
+        createIndex(reader->getTableName(), i, IndexType::INDEX_NORMAL);
+    }
+
+    auto uniqueIndexFields = reader->getUniqueIndexFields();
+    for (const auto& i : uniqueIndexFields) {
+        createIndex(reader->getTableName(), i, IndexType::INDEX_UNIQUE);
+    }
+
+    auto optionGetter = [=] (const QString& indexName) {
+        return reader->getIndexOption(indexName);
+    };
+
+    //sqlserver
+    auto clusteredIndexFields = reader->getClusteredIndexFields();
+    for (const auto& i : clusteredIndexFields) {
+        createIndex(reader->getTableName(), i, IndexType::INDEX_CLUSTERED, optionGetter);
+    }
+    //create unique clustered index
+    auto uniqueClusteredIndexFields = reader->getUniqueClusteredIndexFields();
+    for (const auto& i : uniqueClusteredIndexFields) {
+        createIndex(reader->getTableName(), i, IndexType::INDEX_UNIQUE_CLUSTERED, optionGetter);
+    }
+    //create non-clustered index
+    auto nonclusteredIndexFields = reader->getNonClusteredIndexFields();
+    for (const auto& i : nonclusteredIndexFields) {
+        createIndex(reader->getTableName(), i, IndexType::INDEX_NONCLUSTERED, optionGetter);
+    }
+    //create unique non-clustered index
+    auto uniqueNonclusteredIndexFields = reader->getUniqueNonClusteredIndexFields();
+    for (const auto& i : uniqueNonclusteredIndexFields) {
+        createIndex(reader->getTableName(), i, IndexType::INDEX_UNIQUE_NONCLUSTERED, optionGetter);
+    }
+}
+
+void AbstractClient::createIndex(const QString &tbName, const QStringList &fields, IndexType type,
+                                 const std::function<QString(const QString &)> &indexOption)
+ {
+    auto indexName = getIndexFromFields(fields);
+    createIndex(tbName, indexName, fields, type, indexOption == nullptr ? "" : indexOption(indexName));
+}
+
+void AbstractClient::dropIndex(const QString &tbName, const QStringList &fields) {
+    dropIndex(tbName, getIndexFromFields(fields));
+}
+
+QStringList AbstractClient::getIndexArrayFromFields(const QList<QStringList> &fieldArray) {
+    QStringList names;
+    for (const auto& fields : fieldArray) {
+        names << getIndexFromFields(fields);
+    }
+    return names;
+}
+
+void AbstractClient::transferData(const QString& fromTb, const QString& toTb) {
+    auto oldTbFields = exportAllFields(fromTb);
+    Q_ASSERT(!oldTbFields.isEmpty());
+
+    auto newTbFields = exportAllFields(toTb);
+    QSet<QString> newTbFieldSet;
+    for (const auto& field : newTbFields) {
+        newTbFieldSet.insert(field.first);
+    }
+
     QString fieldsStr;
     for (const auto & field : oldTbFields) {
-        if (fields.contains(field)) {
-            fieldsStr.append(field).append(",");
+        if (newTbFieldSet.contains(field.first)) {
+            if (field.second.toUpper() != "TIMESTAMP") { //ignore timestamp of sqlserver
+                fieldsStr.append(field.first).append(",");
+            }
         }
     }
     if (!fieldsStr.isEmpty()) {
         fieldsStr.chop(1);
-        auto sql = QString("insert into %1(%2) select %2 from %3")
-            .arg(tbName, fieldsStr, "tmp_" + tbName);
-        restoreDataBefore(tbName);
-        BaseQuery::queryPrimitive(sql);
-        restoreDataAfter(tbName);
+        BaseQuery::queryPrimitive("insert into " % toTb % "(" % fieldsStr % ") select " % fieldsStr % " from " % fromTb);
     }
 }
 
-void AbstractClient::restoreDataBefore(const QString& tbName) { Q_UNUSED(tbName) }
-
-void AbstractClient::restoreDataAfter(const QString& tbName) { Q_UNUSED(tbName) }
-
 QString AbstractClient::translateSqlStatement(const QString& statement, const QVariantList& values) {
     QString tmp = statement;
-    int placeholdIndex;
     int vi = 0;
+
+#if QT_VERSION_MAJOR >= 6
+    qsizetype placeHoldIndex;
+
+    QList<QMetaType::Type> stringType;
+    stringType << QMetaType::QString;
+    stringType << QMetaType::QDate;
+    stringType << QMetaType::QDateTime;
+    stringType << QMetaType::Char;
+    while ((placeHoldIndex = tmp.indexOf('?')) != -1) {
+        const QVariant& value = values.at(vi++);
+        QString valueStr;
+        if (stringType.contains(value.typeId())) {
+            valueStr = " '" + value.toString() + "' ";
+        } else if (value.typeId() == QMetaType::QByteArray) {
+            valueStr = "0x" + value.toByteArray().toHex();
+        } else {
+            valueStr = value.toString();
+        }
+        tmp.replace(placeHoldIndex, 1, valueStr);
+    }
+#else
+    int placeHoldIndex;
+
     QList<QVariant::Type> stringType;
     stringType << QVariant::String;
     stringType << QVariant::Date;
     stringType << QVariant::DateTime;
     stringType << QVariant::Char;
-    while ((placeholdIndex = tmp.indexOf('?')) != -1) {
+    while ((placeHoldIndex = tmp.indexOf('?')) != -1) {
         const QVariant& value = values.at(vi++);
         QString valueStr;
         if (stringType.contains(value.type())) {
@@ -51,8 +147,9 @@ QString AbstractClient::translateSqlStatement(const QString& statement, const QV
         } else {
             valueStr = value.toString();
         }
-        tmp.replace(placeholdIndex, 1, valueStr);
+        tmp.replace(placeHoldIndex, 1, valueStr);
     }
+#endif
     return tmp;
 }
 
@@ -62,6 +159,14 @@ QString AbstractClient::checkAndRemoveKeywordEscapes(const QString& tbOrFieldNam
         name.remove(s);
     }
     return name;
+}
+
+QString AbstractClient::getIndexFromFields(const QStringList &fields, const QStringList &escapeSymbols) {
+    QString indexName = "index";
+    for (const auto& field : fields) {
+        indexName.append("_").append(checkAndRemoveKeywordEscapes(field.split(" ").at(0), escapeSymbols));
+    }
+    return indexName;
 }
 
 QString AbstractClient::currentDatabaseName() {

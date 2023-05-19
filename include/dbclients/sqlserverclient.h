@@ -14,9 +14,14 @@ public:
 
     void dropDatabase() override;
 
+    QStringList exportAllTables() override;
+
     bool checkTableExist(const QString& tbName) override;
 
-    void createTable(dao::EntityReaderInterface *reader) override;
+    void createTableIfNotExist(const QString &tbName,
+                               const QStringList &fieldsType,
+                               const QStringList &primaryKeys,
+                               const QString &engine) override;
 
     void renameTable(const QString& oldName, const QString& newName) override;
 
@@ -24,26 +29,33 @@ public:
 
     void truncateTable(const QString& tbName) override;
 
-    QStringList getTagTableFields(const QString& tbName) override;
+    QList<QPair<QString, QString>> exportAllFields(const QString &tbName) override;
 
-    void restoreDataBefore(const QString& tbName) override;
+    void addField(const QString &tbName, const QString &field) override;
 
-    void restoreDataAfter(const QString& tbName) override;
+    void dropField(const QString &tbName, const QString &fieldName) override;
 
-    void dropAllIndexOnTable(const QString& tbName) override;
+    static void dropConstraint(const QString& tbName, const QString& constraintName);
 
-    static void createTableIfNotExist(
-        const QString& tbName,
-        const QStringList& fieldsType,
-        const QStringList& primaryKeys
-    );
+    void renameField(const QString &tbName, const QString &oldFieldName, const QString &newFieldName) override;
 
-    static void createIndex(
-        const QString& tbName,
-        const QStringList& fields,
-        IndexType type,
-        const std::function<QString(const QString&)>& optionGet
-    );
+    QHash<IndexType, QStringList> exportAllIndexes(const QString &tbName) override;
+
+    void createIndex(const QString &tbName,
+                     const QString &indexName,
+                     const QStringList& fields,
+                     dao::IndexType type,
+                     const QString &indexOption) override;
+
+    void dropIndex(const QString& tbName, const QString& indexName) override;
+
+    QString getIndexFromFields(const QStringList &fields) override;
+
+    void transferData(const QString &fromTb, const QString &toTb) override;
+
+    static void transferDataBefore(const QString& tbName);
+
+    static void transferDataAfter(const QString& tbName);
 };
 
 QTDAO_END_NAMESPACE

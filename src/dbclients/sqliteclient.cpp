@@ -14,6 +14,8 @@ QTDAO_BEGIN_NAMESPACE
 
 #define SQLITE_KEYWORDS_ESCAPES {"\""}
 
+#define RL_TB(tb) checkAndRemoveKeywordEscapes(tb, SQLITE_KEYWORDS_ESCAPES)
+
 void SqliteClient::testConnect() {
     auto appLocal = dynamic_cast<ConfigSqliteBuilder*>(globalConfig.get())->getDbStoreDirectory();
     QDir dir;
@@ -38,18 +40,34 @@ void SqliteClient::dropDatabase() {
             throw DaoException("unable remove database file!");
         }
     }
-    QDir dir(appLocal);
-    if (dir.exists()) {
-        dir.rmdir(appLocal);
+}
+
+QStringList SqliteClient::exportAllTables() {
+    auto query = BaseQuery::queryPrimitive("select name from sqlite_master where type = 'table' and name not like 'sqlite_%'");
+    QStringList tableNames;
+    while (query.next()) {
+        tableNames << query.value(0).toString();
     }
+    return tableNames;
 }
 
 bool SqliteClient::checkTableExist(const QString& tbName) {
-    auto str = QString("select *from sqlite_master where type='table' and name = '%1'").arg(
-        checkAndRemoveKeywordEscapes(tbName, SQLITE_KEYWORDS_ESCAPES));
-
-    auto query = BaseQuery::queryPrimitive(str);
+    auto query = BaseQuery::queryPrimitive("select *from sqlite_master where type='table' and name = '" % RL_TB(tbName) % "'");
     return query.next();
+}
+
+void SqliteClient::createTableIfNotExist(const QString &tbName,
+                                         const QStringList &fieldsType,
+                                         const QStringList &primaryKeys,
+                                         const QString&)
+{
+    QString str = "create table if not exists " % tbName % "(" % fieldsType.join(",");
+    if (primaryKeys.size() > 1) {
+        str = str % ", primary key(" % primaryKeys.join(",") % ")";
+    }
+    str.append(")");
+
+    BaseQuery::queryPrimitive(str);
 }
 
 void SqliteClient::renameTable(const QString& oldName, const QString& newName) {
@@ -64,76 +82,104 @@ void SqliteClient::truncateTable(const QString& tbName) {
     BaseQuery::queryPrimitive("delete from " % tbName);
 
     if (checkTableExist("sqlite_sequence")) {
-        auto str = QString("delete from sqlite_sequence where name = '%1'").arg(checkAndRemoveKeywordEscapes(tbName, SQLITE_KEYWORDS_ESCAPES));
-        BaseQuery::queryPrimitive(str);
+        BaseQuery::queryPrimitive("delete from sqlite_sequence where name = '" % RL_TB(tbName) % "'");
     }
 }
 
-QStringList SqliteClient::getTagTableFields(const QString& tbName) {
-    QStringList fields;
+QList<QPair<QString, QString>> SqliteClient::exportAllFields(const QString& tbName) {
+    QList<QPair<QString, QString>> fields;
 
-    auto query = BaseQuery::queryPrimitive(QString("pragma table_info('%1')")
-        .arg(checkAndRemoveKeywordEscapes(tbName, SQLITE_KEYWORDS_ESCAPES)));
+    auto query = BaseQuery::queryPrimitive("select name, type from pragma_table_info('" % RL_TB(tbName) % "')");
+
     while (query.next()) {
-        fields << query.value(1).toString();
+        fields << qMakePair(
+                query.value(0).toString(),
+                query.value(1).toString().toUpper()
+                );
     }
     return fields;
 }
 
-void SqliteClient::dropAllIndexOnTable(const QString& tbName) {
-    auto query = BaseQuery::queryPrimitive(
-        QString("select *from sqlite_master where type='index' and tbl_name = '%1'")
-            .arg(checkAndRemoveKeywordEscapes(tbName, SQLITE_KEYWORDS_ESCAPES))
-    );
-    QStringList indexNames;
+void SqliteClient::addField(const QString &tbName, const QString &field) {
+    BaseQuery::queryPrimitive("alter table " % tbName % " add column " % field);
+}
+
+void SqliteClient::dropField(const QString &tbName, const QString &fieldName) {
+    Q_ASSERT(dropColumnSupported());
+    BaseQuery::queryPrimitive("alter table " % tbName % " drop column " % fieldName);
+}
+
+bool SqliteClient::dropColumnSupported() {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 4)
+    return true;
+#else
+    return false;
+#endif
+    /*auto query = BaseQuery::queryPrimitive("select sqlite_version()");
+    if (query.next()) {
+        auto versionStr = query.value(0).toString();
+        auto versions = versionStr.split(".");
+        if (versions[0].toInt() >= 3 && versions[1].toInt() >= 35) {
+            return true;
+        }
+    }
+    return false;*/
+}
+
+void SqliteClient::renameField(const QString &tbName, const QString &oldFieldName, const QString &newFieldName) {
+    Q_ASSERT(renameColumnSupported());
+    BaseQuery::queryPrimitive("alter table " % tbName % " rename column " % oldFieldName % " to " % newFieldName);
+}
+
+bool SqliteClient::renameColumnSupported() {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 1)
+    return true;
+#else
+    return false;
+#endif
+    /*auto query = BaseQuery::queryPrimitive("select sqlite_version()");
+    if (query.next()) {
+        auto versionStr = query.value(0).toString();
+        auto versions = versionStr.split(".");
+        if (versions[0].toInt() >= 3 && versions[1].toInt() >= 25) {
+            return true;
+        }
+    }
+    return false;*/
+}
+
+QHash<IndexType, QStringList> SqliteClient::exportAllIndexes(const QString &tbName) {
+    QHash<IndexType, QStringList> indexes;
+
+    auto query = BaseQuery::queryPrimitive("select name, `unique` from pragma_index_list('" % RL_TB(tbName) % "') where origin = 'c'");
     while (query.next()) {
-        QString indexName = query.value(1).toString();
-        if (!indexName.startsWith("index_"))
-            continue;
-        indexNames << indexName;
+        indexes[IndexType(query.value(1).toInt())] << query.value(0).toString();
     }
 
-    for (const auto& name : indexNames) {
-        BaseQuery::queryPrimitive("drop index " % name);
-    }
+    return indexes;
 }
 
-void SqliteClient::createTable(dao::EntityReaderInterface *reader) {
-    createTableIfNotExist(reader->getTableName(), reader->getFieldsType(), reader->getPrimaryKeys());
-
-    auto indexes = reader->getIndexFields();
-    for (const auto& i : indexes) {
-        createIndex(reader->getTableName(), i, INDEX_NORMAL);
-    }
-
-    indexes = reader->getUniqueIndexFields();
-    for (const auto& i : indexes) {
-        createIndex(reader->getTableName(), i, INDEX_UNIQUE);
-    }
-}
-
-void SqliteClient::createTableIfNotExist(const QString& tbName, const QStringList& fieldsType, const QStringList& primaryKeys) {
-    QString str = "create table if not exists " % tbName % "(" % fieldsType.join(",");
-    if (primaryKeys.size() > 1) {
-        str = str % ", primary key(" % primaryKeys.join(",") % ")";
-    }
-    str.append(")");
-
-    BaseQuery::queryPrimitive(str);
-}
-
-void SqliteClient::createIndex(const QString& tbName, const QStringList& fields, IndexType type) {
-    QString indexName = "index";
-    for (const auto& field : fields) {
-        indexName.append("_").append(checkAndRemoveKeywordEscapes(field.split(" ").at(0), SQLITE_KEYWORDS_ESCAPES));
-    }
+void SqliteClient::createIndex(const QString &tbName,
+                               const QString &indexName,
+                               const QStringList& fields,
+                               IndexType type,
+                               const QString&)
+{
     QString typeStr = "";
-    if (type == AbstractClient::INDEX_UNIQUE) {
+    if (type == IndexType::INDEX_UNIQUE) {
         typeStr = "unique ";
     }
 
     QString str = "create " % typeStr % "index " % indexName % " on " % tbName % " (" % fields.join(",") % ")";
     BaseQuery::queryPrimitive(str);
+}
+
+void SqliteClient::dropIndex(const QString& tbName, const QString& indexName) {
+    BaseQuery::queryPrimitive("drop index " % indexName);
+}
+
+QString SqliteClient::getIndexFromFields(const QStringList &fields) {
+    return AbstractClient::getIndexFromFields(fields, SQLITE_KEYWORDS_ESCAPES);
 }
 
 QTDAO_END_NAMESPACE

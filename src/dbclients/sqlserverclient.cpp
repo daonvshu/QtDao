@@ -6,13 +6,14 @@
 #include "config/configbuilder.h"
 
 #include <qcoreapplication.h>
-#include <qdir.h>
 #include <qstandardpaths.h>
 #include <qstringbuilder.h>
 
 QTDAO_BEGIN_NAMESPACE
 
 #define SQLSERVER_KEYWORDS_ESCAPES {"[", "]"}
+
+#define RL_TB(tb) checkAndRemoveKeywordEscapes(tb, SQLSERVER_KEYWORDS_ESCAPES)
 
 void SqlServerClient::testConnect() {
     BaseQuery::executePrimitiveQuery("select 1", "master");
@@ -32,7 +33,8 @@ void SqlServerClient::createDatabase() {
     });
 
     if (storePath.isEmpty()) {
-        throw DaoException("cannot create sqlserver store path! path = " % storePath % " , cannot read master table physical path!");
+        throw DaoException("cannot create sqlserver store path! path = " % storePath %
+                           " , cannot read master table physical path!");
     }
 
     QString sql = ""
@@ -66,16 +68,37 @@ void SqlServerClient::dropDatabase() {
                                      "') drop database " % currentDatabaseName(), "master");
 }
 
-bool SqlServerClient::checkTableExist(const QString& tbName) {
-    auto str = QString("select * from sys.tables where name = '%1' and type = 'U'")
-        .arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES));
+QStringList SqlServerClient::exportAllTables() {
+    auto query = BaseQuery::queryPrimitive("select table_name from information_schema.tables where table_catalog = '"
+                                           % currentDatabaseName() % "' and table_type = 'BASE TABLE'");
+    QStringList tableNames;
+    while (query.next()) {
+        tableNames << query.value(0).toString();
+    }
+    return tableNames;
+}
 
-    auto query = BaseQuery::queryPrimitive(str);
+bool SqlServerClient::checkTableExist(const QString& tbName) {
+    auto query = BaseQuery::queryPrimitive("select * from sys.tables where name = '" % RL_TB(tbName) % "' and type = 'U'");
     return query.next();
 }
 
+void SqlServerClient::createTableIfNotExist(const QString &tbName,
+                                            const QStringList &fieldsType,
+                                            const QStringList &primaryKeys,
+                                            const QString &) {
+    QString str = "if not exists (select * from sys.tables where name = '" % RL_TB(tbName) % "' and type = 'U') "
+                  "create table " % tbName % "(" % fieldsType.join(",");
+    if (primaryKeys.size() > 1) {
+        str = str % ", primary key(" % primaryKeys.join(",") % ")";
+    }
+    str.append(")");
+
+    BaseQuery::queryPrimitive(str);
+}
+
 void SqlServerClient::renameTable(const QString& oldName, const QString& newName) {
-    BaseQuery::queryPrimitive("exec sp_rename '" % oldName % "','" % newName % "'");
+    BaseQuery::queryPrimitive("exec sp_rename '" % RL_TB(oldName) % "','" % RL_TB(newName) % "'");
 }
 
 void SqlServerClient::dropTable(const QString& tbName) {
@@ -86,22 +109,100 @@ void SqlServerClient::truncateTable(const QString& tbName) {
     BaseQuery::queryPrimitive("truncate table " % tbName);
 }
 
-QStringList SqlServerClient::getTagTableFields(const QString& tbName) {
-    auto str = QString("select COLUMN_NAME from information_schema.COLUMNS where table_name = '%1'")
-        .arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES));
+QList<QPair<QString, QString>> SqlServerClient::exportAllFields(const QString& tbName) {
+    QList<QPair<QString, QString>> fields;
 
-    QStringList fields;
-
-    auto query = BaseQuery::queryPrimitive(str);
+    auto query = BaseQuery::queryPrimitive("select COLUMN_NAME, DATA_TYPE from information_schema.COLUMNS "
+                                           "where table_name = '" % RL_TB(tbName) % "'");
     while (query.next()) {
-        fields << query.value(0).toString();
+        fields << qMakePair(
+                query.value(0).toString(),
+                query.value(1).toString().toUpper()
+                );
     }
     return fields;
 }
 
-void SqlServerClient::restoreDataBefore(const QString& tbName) {
-    QSqlQuery query = BaseQuery::queryPrimitive(QString("select objectproperty(object_id('%1'),'TableHasIdentity')")
-        .arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES)));
+void SqlServerClient::addField(const QString &tbName, const QString &field) {
+    BaseQuery::queryPrimitive("alter table " % tbName % " add " % field);
+}
+
+void SqlServerClient::dropField(const QString &tbName, const QString &fieldName) {
+    QStringList constraint;
+    //search primary key / unique index constraint
+    {
+        QString sql = "select\n"
+                      "    k.name\n"
+                      "from\n"
+                      "    sys.columns AS c\n"
+                      "    inner join sys.tables as t on c.object_id = t.object_id\n"
+                      "    inner join sys.index_columns as i on i.column_id = c.column_id and i.object_id = c.object_id\n"
+                      "    inner join sys.key_constraints as k on k.unique_index_id = i.index_id and k.parent_object_id = c.object_id\n"
+                      "where\n"
+                      "    t.name = '" % RL_TB(tbName) % "' and c.name = '" % RL_TB(fieldName) % "' and k.type in ('PK', 'UQ')";
+        auto query = BaseQuery::queryPrimitive(sql);
+        while (query.next()) {
+            constraint << query.value(0).toString();
+        }
+    }
+
+    //search default constraint
+    {
+        QString sql = "select\n"
+                      "    d.name\n"
+                      "from\n"
+                      "    sys.columns as c\n"
+                      "    inner join sys.tables as t on c.object_id = t.object_id\n"
+                      "    inner join sys.default_constraints as d on d.parent_column_id = c.column_id and d.parent_object_id = c.object_id\n"
+                      "where\n"
+                      "    t.name = '" % RL_TB(tbName) % "' and c.name = '" % RL_TB(fieldName) % "'";
+        auto query = BaseQuery::queryPrimitive(sql);
+        while (query.next()) {
+            constraint << query.value(0).toString();
+        }
+    }
+
+    for (const auto& c : constraint) {
+        dropConstraint(tbName, c);
+    }
+
+    BaseQuery::queryPrimitive("alter table " % tbName % " drop column " % fieldName);
+}
+
+void SqlServerClient::dropConstraint(const QString &tbName, const QString &constraintName) {
+    BaseQuery::queryPrimitive("alter table " % tbName % " drop constraint " % constraintName);
+}
+
+void SqlServerClient::renameField(const QString &tbName, const QString &oldFieldName, const QString &newFieldName) {
+    BaseQuery::queryPrimitive("exec sp_rename '" % RL_TB(tbName) % "." % RL_TB(oldFieldName) % "', '"
+                              % RL_TB(newFieldName) % "', 'COLUMN'");
+}
+
+QHash<IndexType, QStringList> SqlServerClient::exportAllIndexes(const QString &tbName) {
+    QHash<IndexType, QStringList> indexes;
+    auto query = BaseQuery::queryPrimitive("select name, type_desc, is_unique from sys.indexes where object_id = "
+                                           "OBJECT_ID('" % RL_TB(tbName) % "') and is_primary_key = 0 and is_unique_constraint = 0 "
+                                           "and name like 'index_%'");
+    while (query.next()) {
+        auto indexName = query.value(0).toString();
+        if (indexName.startsWith("index_")) {
+            auto desc = query.value(1).toString();
+            auto unique = query.value(2).toInt();
+            IndexType indexType;
+            if (desc == "CLUSTERED") {
+                indexType = unique == 0 ? IndexType::INDEX_CLUSTERED : IndexType::INDEX_UNIQUE_CLUSTERED;
+            } else if (desc == "NONCLUSTERED") {
+                indexType = unique == 0 ? IndexType::INDEX_NONCLUSTERED : IndexType::INDEX_UNIQUE_NONCLUSTERED;
+            }
+            indexes[indexType] << indexName;
+        }
+    }
+
+    return indexes;
+}
+
+void SqlServerClient::transferDataBefore(const QString& tbName) {
+    QSqlQuery query = BaseQuery::queryPrimitive("select objectproperty(object_id('" % RL_TB(tbName) %  "'),'TableHasIdentity')");
     if (query.next()) {
         if (query.value(0).toInt() == 1) {
             BaseQuery::queryPrimitive("set identity_insert " % tbName % " on");
@@ -109,9 +210,8 @@ void SqlServerClient::restoreDataBefore(const QString& tbName) {
     }
 }
 
-void SqlServerClient::restoreDataAfter(const QString& tbName) {
-    QSqlQuery query = BaseQuery::queryPrimitive(QString("select objectproperty(object_id('%1'),'TableHasIdentity')")
-        .arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES)));
+void SqlServerClient::transferDataAfter(const QString& tbName) {
+    QSqlQuery query = BaseQuery::queryPrimitive("select objectproperty(object_id('" % RL_TB(tbName) %  "'),'TableHasIdentity')");
     if (query.next()) {
         if (query.value(0).toInt() == 1) {
             BaseQuery::queryPrimitive("set identity_insert " % tbName % " off");
@@ -119,77 +219,23 @@ void SqlServerClient::restoreDataAfter(const QString& tbName) {
     }
 }
 
-void SqlServerClient::dropAllIndexOnTable(const QString& tbName) {
-    auto query = BaseQuery::queryPrimitive(
-        QString("select a.name from sys.indexes a join sys.tables c ON (a.object_id = c.object_id) where c.name='%1' and a.name like 'index_%' group by a.name")
-            .arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES))
-    );
-    QStringList indexNames;
-    while (query.next()) {
-        indexNames << query.value(0).toString();
-    }
-    for (const auto& name : indexNames) {
-        BaseQuery::queryPrimitive("drop index " % name % " on " % tbName);
-    }
-}
-
-void SqlServerClient::createTable(dao::EntityReaderInterface *reader) {
-    createTableIfNotExist(reader->getTableName(), reader->getFieldsType(), reader->getPrimaryKeys());
-
-    auto optionGetter = [=](const QString& indexName) {
-        return reader->getIndexOption(indexName);
-    };
-    //create clustered index
-    auto clusteredIndexFields = reader->getClusteredIndexFields();
-    for (const auto& i : clusteredIndexFields) {
-        createIndex(reader->getTableName(), i, INDEX_CLUSTERED, optionGetter);
-    }
-    //create unique clustered index
-    auto uniqueClusteredIndexFields = reader->getUniqueClusteredIndexFields();
-    for (const auto& i : uniqueClusteredIndexFields) {
-        createIndex(reader->getTableName(), i, INDEX_UNIQUE_CLUSTERED, optionGetter);
-    }
-    //create non-clustered index
-    auto nonclusteredIndexFields = reader->getNonClusteredIndexFields();
-    for (const auto& i : nonclusteredIndexFields) {
-        createIndex(reader->getTableName(), i, INDEX_NONCLUSTERED, optionGetter);
-    }
-    //create unique non-clustered index
-    auto uniqueNonclusteredIndexFields = reader->getUniqueNonClusteredIndexFields();
-    for (const auto& i : uniqueNonclusteredIndexFields) {
-        createIndex(reader->getTableName(), i, INDEX_UNIQUE_NONCLUSTERED, optionGetter);
-    }
-}
-
-void SqlServerClient::createTableIfNotExist(const QString& tbName, const QStringList& fieldsType, const QStringList& primaryKeys) {
-    QString str = "if not exists (select * from sys.tables where name = '%1' and type = 'U') create table %2(";
-    str = str.arg(checkAndRemoveKeywordEscapes(tbName, SQLSERVER_KEYWORDS_ESCAPES), tbName);
-    str.append(fieldsType.join(","));
-    if (primaryKeys.size() > 1) {
-        str = str % ", primary key(" % primaryKeys.join(",") % ")";
-    }
-    str.append(")");
-
-    BaseQuery::queryPrimitive(str);
-}
-
-void SqlServerClient::createIndex(const QString& tbName, const QStringList& fields, IndexType type, const std::function<QString(const QString&)>& optionGet) {
-    QString indexName = "index";
-    for (const auto& field : fields) {
-        indexName.append("_").append(checkAndRemoveKeywordEscapes(field.split(" ").at(0), SQLSERVER_KEYWORDS_ESCAPES));
-    }
+void SqlServerClient::createIndex(const QString &tbName,
+                                  const QString &indexName,
+                                  const QStringList& fields,
+                                  dao::IndexType type,
+                                  const QString &indexOption) {
     QString typeStr = "nonclustered";
     switch (type) {
-        case AbstractClient::INDEX_CLUSTERED:
+        case IndexType::INDEX_CLUSTERED:
             typeStr = "clustered";
             break;
-        case AbstractClient::INDEX_UNIQUE_CLUSTERED:
+        case IndexType::INDEX_UNIQUE_CLUSTERED:
             typeStr = "unique clustered";
             break;
-        case AbstractClient::INDEX_NONCLUSTERED:
+        case IndexType::INDEX_NONCLUSTERED:
             typeStr = "nonclustered";
             break;
-        case AbstractClient::INDEX_UNIQUE_NONCLUSTERED:
+        case IndexType::INDEX_UNIQUE_NONCLUSTERED:
             typeStr = "unique nonclustered";
             break;
         default:
@@ -197,12 +243,30 @@ void SqlServerClient::createIndex(const QString& tbName, const QStringList& fiel
     }
 
     QString str = "create " % typeStr % " index " % indexName % " on " % tbName % " (" % fields.join(",") % ")";
-    auto option = optionGet(indexName);
-    if (!option.isEmpty()) {
-        str.append(" with (" % option % ")");
+    if (!indexOption.isEmpty()) {
+        str.append(" with (" % indexOption % ")");
     }
 
     BaseQuery::queryPrimitive(str);
+}
+
+void SqlServerClient::dropIndex(const QString &tbName, const QString& indexName) {
+    BaseQuery::queryPrimitive("drop index " % indexName % " on " % tbName);
+}
+
+QString SqlServerClient::getIndexFromFields(const QStringList &fields) {
+    return AbstractClient::getIndexFromFields(fields, SQLSERVER_KEYWORDS_ESCAPES);
+}
+
+void SqlServerClient::transferData(const QString &fromTb, const QString &toTb) {
+    try {
+        transferDataBefore(toTb);
+        AbstractClient::transferData(fromTb, toTb);
+        transferDataAfter(toTb);
+    } catch (DaoException& e) {
+        transferDataAfter(toTb);
+        throw e;
+    }
 }
 
 QTDAO_END_NAMESPACE

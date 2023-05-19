@@ -14,9 +14,14 @@ public:
 
     void dropDatabase() override;
 
+    QStringList exportAllTables() override;
+
     bool checkTableExist(const QString& tbName) override;
 
-    void createTable(dao::EntityReaderInterface *reader) override;
+    void createTableIfNotExist(const QString &tbName,
+                               const QStringList &fieldsType,
+                               const QStringList &primaryKeys,
+                               const QString &engine) override;
 
     void renameTable(const QString& oldName, const QString& newName) override;
 
@@ -24,21 +29,29 @@ public:
 
     void truncateTable(const QString& tbName) override;
 
-    QStringList getTagTableFields(const QString& tbName) override;
+    QList<QPair<QString, QString>> exportAllFields(const QString &tbName) override;
 
-    void dropAllIndexOnTable(const QString& tbName) override;
+    void addField(const QString &tbName, const QString &field) override;
 
-    static void createTableIfNotExist(
-            const QString& tbName,
-            const QStringList& fieldsType,
-            const QStringList& primaryKeys
-    );
+    void dropField(const QString &tbName, const QString &fieldName) override;
 
-    static void createIndex(
-            const QString& tbName,
-            const QStringList& fields,
-            IndexType type
-    );
+    static bool dropColumnSupported();
+
+    void renameField(const QString &tbName, const QString &oldFieldName, const QString &newFieldName) override;
+
+    static bool renameColumnSupported();
+
+    QHash<IndexType, QStringList> exportAllIndexes(const QString &tbName) override;
+
+    void createIndex(const QString &tbName,
+                     const QString &indexName,
+                     const QStringList& fields,
+                     dao::IndexType type,
+                     const QString &indexOption) override;
+
+    void dropIndex(const QString& tbName, const QString& indexName) override;
+
+    QString getIndexFromFields(const QStringList &fields) override;
 };
 
 QTDAO_END_NAMESPACE
