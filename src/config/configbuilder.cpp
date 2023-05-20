@@ -36,7 +36,8 @@ void ConfigBuilder::setupDatabase() {
     if (globalConfig->dbUpgrader.isNull()) {
         globalConfig->dbUpgrader = QSharedPointer<DatabaseUpgrader>(new DatabaseUpgrader);
     }
-    globalConfig->dbUpgrader->setConfigType(configType);
+    globalConfig->dbUpgrader->setCurClient(globalConfig->dbClient.get());
+    globalConfig->dbUpgrader->setCurConfig(globalConfig.get());
 
     if (createDbEnabled) {
         globalConfig->dbClient->createDatabase();

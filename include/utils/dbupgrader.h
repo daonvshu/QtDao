@@ -2,9 +2,13 @@
 
 #include "../global.h"
 #include "../query/reader/entityreaderinterface.h"
-#include "../config/configtype.h"
+
+#include <qsharedpointer.h>
 
 QTDAO_BEGIN_NAMESPACE
+
+class AbstractClient;
+class ConfigBuilder;
 
 class DatabaseUpgrader {
 public:
@@ -12,13 +16,20 @@ public:
 
     void setEntityReader(EntityReaderInterface* reader);
 
-    void setConfigType(ConfigType type);
+    void setCurClient(AbstractClient* curClient);
+
+    void setCurConfig(ConfigBuilder* curConfig);
 
     virtual void onUpgrade(int oldVersion, int curVersion);
 
 protected:
+    void upgradeWithDataRecovery();
+
+protected:
     EntityReaderInterface* entityReader;
-    ConfigType currentDatabaseType;
+
+    AbstractClient* client = nullptr;
+    ConfigBuilder* config = nullptr;
 };
 
 QTDAO_END_NAMESPACE

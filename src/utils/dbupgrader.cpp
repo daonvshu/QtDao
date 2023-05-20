@@ -1,46 +1,60 @@
 #include "utils/dbupgrader.h"
 
+#include "dao.h"
+
 #include "config/configbuilder.h"
 
 QTDAO_BEGIN_NAMESPACE
 
 DatabaseUpgrader::DatabaseUpgrader()
     : entityReader(nullptr)
-    , currentDatabaseType(ConfigType::Sqlite)
 {
 
 }
 
-void DatabaseUpgrader::setEntityReader(dao::EntityReaderInterface *reader) {
+void DatabaseUpgrader::setEntityReader(EntityReaderInterface *reader) {
     entityReader = reader;
 }
 
-void DatabaseUpgrader::setConfigType(ConfigType type) {
-    currentDatabaseType = type;
+void DatabaseUpgrader::setCurClient(dao::AbstractClient *curClient) {
+    client = curClient;
+}
+
+void DatabaseUpgrader::setCurConfig(dao::ConfigBuilder *curConfig) {
+    config = curConfig;
 }
 
 void DatabaseUpgrader::onUpgrade(int oldVersion, int curVersion) {
-    //
+    //default upgrade strategy
+    upgradeWithDataRecovery();
+}
+
+void DatabaseUpgrader::upgradeWithDataRecovery() {
     QString tmpTableName = "tmp_" + entityReader->getTableName();
-    //current config client
-    auto client = globalConfig->getClient();
-    //drop tmp table if exist
-    client->dropTable(tmpTableName);
-    //clear current table index
-    client->dropAllIndexOnTable(entityReader->getTableName());
-    //rename current table to temporary table
-    client->renameTable(entityReader->getTableName(), tmpTableName);
-    //create new table
-    client->createTable(entityReader);
-    //move temporary table data to new table
-    if (currentDatabaseType == ConfigType::SqlServer) {
-        //remove timestamp fields, cannot insert directly
-        client->restoreData2NewTable(entityReader->getTableName(), entityReader->getFieldsWithoutTimestamp());
-    } else {
-        client->restoreData2NewTable(entityReader->getTableName(), entityReader->getFields());
+
+    dao::transcation();
+    try {
+        //drop tmp table if exist
+        client->dropTable(tmpTableName);
+        //create a tmp table
+        client->createTableIfNotExist(tmpTableName,
+                                      entityReader->getFieldsType(),
+                                      entityReader->getPrimaryKeys(),
+                                      entityReader->getTableEngine());
+        //copy data
+        client->transferData(entityReader->getTableName(), tmpTableName);
+        //remove old table
+        client->dropTable(entityReader->getTableName());
+        //rename tmp table into target table
+        client->renameTable(tmpTableName, entityReader->getTableName());
+        //create index for new table
+        client->createIndex(entityReader);
+
+        dao::commit();
+    } catch (DaoException& e) {
+        dao::rollback();
+        throw e;
     }
-    //drop temporary table
-    client->dropTable(tmpTableName);
 }
 
 QTDAO_END_NAMESPACE
