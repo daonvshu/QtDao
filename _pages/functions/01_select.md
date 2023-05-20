@@ -327,6 +327,42 @@ UserList user = dao::_select<User>()
     .build().list();
 ```
 
+按列读取结果
+-------------
+
+Select查询的 `unique`、`one`、`list` 和Join查询的 `list` 函数添加了使用列提取结果的重载函数，例如`list`的声明如下：
+```cpp
+template<typename T>
+QList<T> list(const EntityField<T>& field);
+
+template<typename T, typename K>
+QList<QPair<T, K>> list(const EntityField<T>& field1, const EntityField<K>& field2);
+
+template<typename T, typename... Args>
+QList<std::tuple<T, typename Args::Type...>> list(const EntityField<T>& field, const Args&... args);
+```
+
+使用时如下所示：
+```cpp
+User::Fields field;
+QList<QString> user = dao::_select<User>()
+    .filter(field.score > 100)
+    .with(_limit(5, 20))
+    .build().list(field.name);
+
+QList<QPair<QString, int>> user = dao::_select<User>()
+    .filter(field.score > 100)
+    .with(_limit(5, 20))
+    .build().list(field.name, field.age);
+
+QList<std::tuple<QString, int, int>> user = dao::_select<User>()
+    .filter(field.score > 100)
+    .with(_limit(5, 20))
+    .build().list(field.name, field.age, field.score);
+```
+
+按列读取结果与返回一个对象的查询相比，减少了对象的创建，通常情况下这并不会带来过多的效率提升，仅仅是简化了返回的结果集，在大量数据读取时考虑配合使用`column()`函数以提升查询效率。
+
 读取表所有数据
 -------------
 
