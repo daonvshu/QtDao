@@ -11,7 +11,16 @@ HEADERS += ../include/connectionpool.h \
     ../include/dbconfig.h \
     ../include/dbexception.h \
     ../include/global.h \
-    ../include/builder/basequerybuilder.h \
+    ../include/builder/option/columnbuilder.h \
+    ../include/builder/option/constraintbuilder.h \
+    ../include/builder/option/debugbuilder.h \
+    ../include/builder/option/filterbuilder.h \
+    ../include/builder/option/frombuilder.h \
+    ../include/builder/option/fromselectbuilder.h \
+    ../include/builder/option/joinconnectbuilder.h \
+    ../include/builder/option/onconditionbuilder.h \
+    ../include/builder/option/setbuilder.h \
+    ../include/builder/option/unionbuilder.h \
     ../include/builder/countbuilder.h \
     ../include/builder/deletebuilder.h \
     ../include/builder/insertbuilder.h \
@@ -21,13 +30,16 @@ HEADERS += ../include/connectionpool.h \
     ../include/builder/selectbuilder.h \
     ../include/builder/updatebuilder.h \
     ../include/builder/upsertbuilder.h \
+    ../include/condition/connector/connectable.h \
+    ../include/condition/connector/constraintconnector.h \
+    ../include/condition/connector/entityconnector.h \
+    ../include/condition/connector/fieldconnector.h \
+    ../include/condition/connector/groupconnector.h \
     ../include/condition/conditionconstraint.h \
     ../include/condition/conditionoperator.h \
-    ../include/condition/connectordata.h \
     ../include/condition/entitycondition.h \
     ../include/condition/entityfield.h \
     ../include/condition/functioncondition.h \
-    ../include/condition/functionconditiondata.h \
     ../include/config/configbuilder.h \
     ../include/config/configmysql.h \
     ../include/config/configsqlite.h \
@@ -38,10 +50,11 @@ HEADERS += ../include/connectionpool.h \
     ../include/dbclients/sqliteclient.h \
     ../include/dbclients/sqlserverclient.h \
     ../include/macro/macro.h \
+    ../include/query/reader/builderreaderinterface.h \
+    ../include/query/reader/entityreaderinterface.h \
     ../include/query/basequery.h \
     ../include/query/delete.h \
     ../include/query/deleteimpl.h \
-    ../include/query/entityreaderinterface.h \
     ../include/query/explaininfo.h \
     ../include/query/insert.h \
     ../include/query/insertimpl.h \
@@ -53,17 +66,23 @@ HEADERS += ../include/connectionpool.h \
     ../include/query/selectimpl.h \
     ../include/query/update.h \
     ../include/query/updateimpl.h \
-    ../include/utils/logging.h \
     ../include/query/upsert.h \
     ../include/query/upsertimpl.h \
+    ../include/utils/dbupgrader.h \
+    ../include/utils/logging.h \
     ../include/utils/listutils.h \
-    ../include/utils/serializing.h
+    ../include/utils/serializing.h \
+    ../include/versionctl/version.h \
+    ../include/versionctl/versioncontrol.h
 
 SOURCES += ../src/connectionpool.cpp \
     ../src/qtdao.cpp \
-    ../src/builder/basequerybuilder.cpp \
+    ../src/builder/frombuilder.cpp \
+    ../src/builder/unionbuilder.cpp \
+    ../src/condition/connector/connectable.cpp \
+    ../src/condition/connector/entityconnector.cpp \
+    ../src/condition/connector/groupconnector.cpp \
     ../src/condition/conditionconstraint.cpp \
-    ../src/condition/connectordata.cpp \
     ../src/condition/entitycondition.cpp \
     ../src/condition/functioncondition.cpp \
     ../src/config/configbuilder.cpp \
@@ -82,5 +101,7 @@ SOURCES += ../src/connectionpool.cpp \
     ../src/query/selectimpl.cpp \
     ../src/query/updateimpl.cpp \
     ../src/query/upsertimpl.cpp
-    ../src/utils/logging.cpp
+    ../src/utils/logging.cpp \
+    ../src/utils/dbupgrader.cpp \
+    ../src/versionctl/versioncontrol.cpp
 
