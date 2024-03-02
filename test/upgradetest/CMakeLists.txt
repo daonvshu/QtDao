@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.12)
 project(qtdaoupgradetest)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -10,7 +10,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Sql Test REQUIRED)
 
 set(TEST_TYPE "sqlite" CACHE STRING "test type string")
 set(TEST_VER "v1" CACHE STRING "test version")
-message("test type: ${TEST_TYPE}, version: ${TEST_VER}")
+message("upgrade test -> test type: ${TEST_TYPE}, version: ${TEST_VER}")
 
 add_compile_definitions(TEST_DB="${TEST_TYPE}")
 

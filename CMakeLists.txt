@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.12)
 project(qtdao)
 
 add_subdirectory(src)
@@ -13,4 +13,5 @@ if (BUILD_TEST)
   add_subdirectory(test/customtypetest)
   add_subdirectory(test/clienttest)
   add_subdirectory(test/upgradetest)
+  add_subdirectory(test/foreignkeytest)
 endif ()

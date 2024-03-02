@@ -39,6 +39,31 @@
                   <xs:attribute name="transient" type="xs:boolean" use="optional"/>
                   <xs:attribute name="jsonkey" type="xs:string" use="optional" />
                   <xs:attribute name="jsontimeformat" type="xs:string" use="optional" />
+                  <xs:attribute name="reftb" type="xs:string" use="optional" />
+                  <xs:attribute name="refitem" type="xs:string" use="optional" />
+                  <xs:attribute name="deferrable" type="xs:boolean" use="optional" />
+                  <xs:attribute name="refonupdate" use="optional">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="no_action" />
+                        <xs:enumeration value="restrict" />
+                        <xs:enumeration value="set_null" />
+                        <xs:enumeration value="set_default" />
+                        <xs:enumeration value="cascade" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="refondelete" use="optional">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="no_action" />
+                        <xs:enumeration value="restrict" />
+                        <xs:enumeration value="set_null" />
+                        <xs:enumeration value="set_default" />
+                        <xs:enumeration value="cascade" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
                 </xs:complexType>
               </xs:element>
               <xs:element minOccurs="0" maxOccurs="unbounded" name="index">
@@ -66,6 +91,41 @@
                       <xs:restriction base="xs:string">
                         <xs:enumeration value="index" />
                         <xs:enumeration value="unique index" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                </xs:complexType>
+              </xs:element>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="foreignkey">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="field" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="refitem" type="xs:string" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="reftb" type="xs:string" use="required" />
+                  <xs:attribute name="refonupdate" use="optional">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="no_action" />
+                        <xs:enumeration value="restrict" />
+                        <xs:enumeration value="set_null" />
+                        <xs:enumeration value="set_default" />
+                        <xs:enumeration value="cascade" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="refondelete" use="optional">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:enumeration value="no_action" />
+                        <xs:enumeration value="restrict" />
+                        <xs:enumeration value="set_null" />
+                        <xs:enumeration value="set_default" />
+                        <xs:enumeration value="cascade" />
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:attribute>

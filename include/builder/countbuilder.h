@@ -29,7 +29,7 @@ public:
         if (data.isEmpty()) {
             return 0;
         } 
-        return data[0].__getExtra("__selectcount").toInt();
+        return data[0].template __getExtra<int>("__selectcount");
     }
 };
 

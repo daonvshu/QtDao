@@ -12,7 +12,7 @@ QTDAO_BEGIN_NAMESPACE
 
 void AbstractClient::createTableIfNotExist(dao::EntityReaderInterface *reader) {
     createTableIfNotExist(reader->getTableName(), reader->getFieldsType(), reader->getPrimaryKeys(),
-                          reader->getTableEngine());
+                          reader->getForeignKeys(), reader->getTableEngine());
 }
 
 void AbstractClient::dropAllIndexOnTable(const QString &tbName) {
@@ -177,6 +177,45 @@ void AbstractClient::tableUpgrade(EntityReaderInterface *reader, int oldVersion,
     auto upgrader = globalConfig->dbUpgrader;
     upgrader->setEntityReader(reader);
     upgrader->onUpgrade(oldVersion, curVersion);
+}
+
+QString AbstractClient::translateForeignKeyStatement(const ForeignKey &key) {
+    QString str = QLatin1String("foreign key(%1) references %2(%3)");
+    str = str.arg(key.fieldKeys.join(','), key.referenceTb, key.referenceKeys.join(','));
+    QList<ForeignKey::Action> actions = { key.onUpdate, key.onDelete };
+    for (int i = 0; i < actions.size(); i++) {
+        const auto& action = actions[i];
+        if (action != ForeignKey::FK_NotSet) {
+            if (i == 0) {
+                str += " on update ";
+            } else {
+                str += " on delete ";
+            }
+            switch (action) {
+                case ForeignKey::FK_NO_ACTION:
+                    str += "no action";
+                    break;
+                case ForeignKey::FK_RESTRICT:
+                    str += "restrict";
+                    break;
+                case ForeignKey::FK_SET_NULL:
+                    str += "set null";
+                    break;
+                case ForeignKey::FK_SET_DEFAULT:
+                    str += "set default";
+                    break;
+                case ForeignKey::FK_CASCADE:
+                    str += "cascade";
+                    break;
+                case ForeignKey::FK_NotSet:
+                    break;
+            }
+        }
+    }
+    if (key.deferrable) {
+        str += " DEFERRABLE INITIALLY DEFERRED"; //deferred foreign key constraint
+    }
+    return str;
 }
 
 QTDAO_END_NAMESPACE

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.12)
 project(qtdaoclienttest)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -9,7 +9,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Sql Test REQUIRED)
 
 set(TEST_TYPE "sqlite" CACHE STRING "test type string")
-message("test type: ${TEST_TYPE}")
+message("client test -> test type: ${TEST_TYPE}")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/${TEST_TYPE}/entity.cmake)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/${TEST_TYPE})

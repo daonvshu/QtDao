@@ -28,6 +28,7 @@ void SqliteClient::testConnect() {
 
 void SqliteClient::createDatabase() {
     //auto create when connect database
+    enableForeignKey(QString(), true); //enable foreign key
 }
 
 void SqliteClient::dropDatabase() {
@@ -59,9 +60,13 @@ bool SqliteClient::checkTableExist(const QString& tbName) {
 void SqliteClient::createTableIfNotExist(const QString &tbName,
                                          const QStringList &fieldsType,
                                          const QStringList &primaryKeys,
+                                         const QList<ForeignKey>& foreignKeys,
                                          const QString&)
 {
     QString str = "create table if not exists " % tbName % "(" % fieldsType.join(",");
+    for (const auto& key : foreignKeys) {
+        str = str % ", " % translateForeignKeyStatement(key);
+    }
     if (primaryKeys.size() > 1) {
         str = str % ", primary key(" % primaryKeys.join(",") % ")";
     }
@@ -84,6 +89,13 @@ void SqliteClient::truncateTable(const QString& tbName) {
     if (checkTableExist("sqlite_sequence")) {
         BaseQuery::queryPrimitive("delete from sqlite_sequence where name = '" % RL_TB(tbName) % "'");
     }
+}
+
+void SqliteClient::enableForeignKey(const QString &tbName, bool enabled) {
+    if (!tbName.isEmpty()) {
+        return;
+    }
+    BaseQuery::queryPrimitive(QLatin1String("PRAGMA foreign_keys = ") % (enabled ? "ON" : "OFF"));
 }
 
 QList<QPair<QString, QString>> SqliteClient::exportAllFields(const QString& tbName) {

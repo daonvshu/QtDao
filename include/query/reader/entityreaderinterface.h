@@ -1,7 +1,9 @@
 #pragma once
 
 #include "global.h"
+
 #include "utils/listutils.h"
+#include "condition/foreignkey.h"
 
 #include <qvariant.h>
 
@@ -27,6 +29,8 @@ public:
     virtual QStringList getPrimaryKeys() = 0;
 
     virtual bool isAutoIncrement(const QString& fieldName) = 0;
+
+    virtual QList<ForeignKey> getForeignKeys() = 0;
 
     //extra info reader
 
@@ -87,6 +91,10 @@ public:
 
     bool isAutoIncrement(const QString& name) override {
         return E::Info::isAutoIncrement(name);
+    }
+
+    QList<ForeignKey> getForeignKeys() override {
+        return E::Info::getForeignKeys();
     }
 
     QVariantList getValueWithoutAutoIncrement(const E& entity) {

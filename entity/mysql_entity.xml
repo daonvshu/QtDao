@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dao SYSTEM "mysql_entity.xsd">
 <dao prefix="ts_" db="mysql">
   <tb name="MysqlTest1" engine="MyISAM" declaremetatype="true">
     <item name="id" type="bigint" default="-1" constraints="primary key" note="主键"/>

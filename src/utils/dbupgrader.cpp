@@ -26,12 +26,15 @@ void DatabaseUpgrader::setCurConfig(dao::ConfigBuilder *curConfig) {
 
 void DatabaseUpgrader::onUpgrade(int oldVersion, int curVersion) {
     //default upgrade strategy
+    client->enableForeignKey(QString(), false);
     upgradeWithDataRecovery();
+    client->enableForeignKey(QString(), true);
 }
 
 void DatabaseUpgrader::upgradeWithDataRecovery() {
     QString tmpTableName = "tmp_" + entityReader->getTableName();
 
+    client->enableForeignKey(entityReader->getTableName(), false);
     dao::transcation();
     try {
         //drop tmp table if exist
@@ -40,6 +43,7 @@ void DatabaseUpgrader::upgradeWithDataRecovery() {
         client->createTableIfNotExist(tmpTableName,
                                       entityReader->getFieldsType(),
                                       entityReader->getPrimaryKeys(),
+                                      entityReader->getForeignKeys(),
                                       entityReader->getTableEngine());
         //copy data
         client->transferData(entityReader->getTableName(), tmpTableName);
@@ -53,8 +57,10 @@ void DatabaseUpgrader::upgradeWithDataRecovery() {
         dao::commit();
     } catch (DaoException& e) {
         dao::rollback();
+        client->enableForeignKey(entityReader->getTableName(), true);
         throw e;
     }
+    client->enableForeignKey(entityReader->getTableName(), true);
 }
 
 QTDAO_END_NAMESPACE

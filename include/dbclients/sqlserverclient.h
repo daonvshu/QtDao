@@ -21,6 +21,7 @@ public:
     void createTableIfNotExist(const QString &tbName,
                                const QStringList &fieldsType,
                                const QStringList &primaryKeys,
+                               const QList<ForeignKey>& foreignKeys,
                                const QString &engine) override;
 
     void renameTable(const QString& oldName, const QString& newName) override;
@@ -28,6 +29,8 @@ public:
     void dropTable(const QString& tbName) override;
 
     void truncateTable(const QString& tbName) override;
+
+    void enableForeignKey(const QString &tbName, bool enabled) override;
 
     QList<QPair<QString, QString>> exportAllFields(const QString &tbName) override;
 

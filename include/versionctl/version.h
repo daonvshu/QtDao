@@ -10,6 +10,7 @@
 #include <qjsonobject.h>
 
 #include "condition/entityfield.h"
+#include "condition/foreignkey.h"
 
 #include "../global.h"
 
@@ -79,15 +80,19 @@ public:
         }
 
         static QStringList getPrimaryKeys() {
-            return QStringList();
+            return {};
         }
 
         static QList<QStringList> getIndexFields() {
-            return QList<QStringList>();
+            return {};
         }
 
         static QList<QStringList> getUniqueIndexFields() {
-            return QList<QStringList>();
+            return {};
+        }
+
+        static QList<ForeignKey> getForeignKeys() {
+            return {};
         }
 
         static bool isAutoIncrement(const QString& name) {

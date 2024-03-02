@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dao SYSTEM "sqlite_entity.xsd">
 <dao prefix="ts_" db="sqlite">
   <tb name="SqliteTest1" declaremetatype="true">
     <item name="id" type="long" default="-1" constraints="primary key" note="主键" />
@@ -27,10 +28,14 @@
   </tb>
   <tb name="SqliteTest3" declaremetatype="true">
     <item name="id" type="long" default="-1" constraints="primary key" autoincrement="true" />
-    <item name="tbi1" type="long" default="-1" note="绑定到SqliteTest1 id"/>
-    <item name="tbi2" type="long" default="-1" note="绑定到SqliteTest2 id"/>
+    <item name="tbi1" type="long" default="-1" reftb="SqliteTest1" refitem="id" refondelete="restrict" refonupdate="set_default" note="绑定到SqliteTest1 id"/>
+    <item name="tbi2" type="long" default="-1" reftb="SqliteTest2" deferrable="true" refitem="id" note="绑定到SqliteTest2 id"/>
     <item name="name" type="text"/>
     <item name="size" type="int"/>
+    <foreignkey reftb="SqliteTest1" refondelete="restrict" refonupdate="set_default">
+      <field name="tbi1" refitem="id" />
+      <field name="name" refitem="name" />
+    </foreignkey>
   </tb>
   <tb name="SqliteDefaultTestInt" declaremetatype="true">
     <!--integer type-->

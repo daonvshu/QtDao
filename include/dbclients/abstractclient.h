@@ -84,6 +84,7 @@ public:
             const QString& tbName,
             const QStringList& fieldsType,
             const QStringList& primaryKeys,
+            const QList<ForeignKey>& foreignKeys,
             const QString& engine
     ) = 0;
 
@@ -105,6 +106,13 @@ public:
      * @param tbName table name
      */
     virtual void truncateTable(const QString& tbName) = 0;
+
+    /**
+     * enable or disable foreign key check
+     * @param tbName table name(used by sqlserver), enable/disable all table foreign key check if table name is empty(use by sqlite/mysql)
+     * @param enabled
+     */
+    virtual void enableForeignKey(const QString& tbName, bool enabled) = 0;
 
     /////////////// table field process ///////////////
 
@@ -280,6 +288,8 @@ protected:
     static QString currentDatabaseName();
 
     friend class ConfigBuilder;
+
+    virtual QString translateForeignKeyStatement(const ForeignKey& key);
 };
 
 template<int Type, typename E>

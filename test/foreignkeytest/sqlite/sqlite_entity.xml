@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dao SYSTEM "../../../entity/sqlite_entity.xsd">
+<dao prefix="ts_" db="sqlite">
+    <tb name="Artist" declaremetatype="true">
+        <item name="id" type="long" constraints="primary key" />
+        <item name="name" type="text" />
+        <item name="size" type="int" />
+    </tb>
+    <tb name="Track">
+        <item name="id" type="long" />
+        <item name="name" type="text" />
+        <item name="pkArtist" type="long" reftb="Artist" refitem="id"
+              refonupdate="cascade" refondelete="cascade" deferrable="true" />
+    </tb>
+    <tb name="Customer">
+        <item name="id" type="long" />
+        <item name="name" type="text" />
+        <item name="pkArtistId" type="long" />
+        <item name="pkArtistSize" type="int" />
+        <foreignkey reftb="Artist" refonupdate="cascade" refondelete="cascade">
+            <field name="pkArtistId" refitem="id"/>
+            <field name="pkArtistSize" refitem="size"/>
+        </foreignkey>
+    </tb>
+</dao>

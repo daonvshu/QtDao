@@ -86,9 +86,13 @@ bool SqlServerClient::checkTableExist(const QString& tbName) {
 void SqlServerClient::createTableIfNotExist(const QString &tbName,
                                             const QStringList &fieldsType,
                                             const QStringList &primaryKeys,
+                                            const QList<ForeignKey>& foreignKeys,
                                             const QString &) {
     QString str = "if not exists (select * from sys.tables where name = '" % RL_TB(tbName) % "' and type = 'U') "
                   "create table " % tbName % "(" % fieldsType.join(",");
+    for (const auto& key : foreignKeys) {
+        str = str % ", " % translateForeignKeyStatement(key);
+    }
     if (primaryKeys.size() > 1) {
         str = str % ", primary key(" % primaryKeys.join(",") % ")";
     }
@@ -107,6 +111,13 @@ void SqlServerClient::dropTable(const QString& tbName) {
 
 void SqlServerClient::truncateTable(const QString& tbName) {
     BaseQuery::queryPrimitive("truncate table " % tbName);
+}
+
+void SqlServerClient::enableForeignKey(const QString &tbName, bool enabled) {
+    if (tbName.isEmpty()) {
+        return;
+    }
+    BaseQuery::queryPrimitive(QLatin1String("ALTER TABLE %1 %2 CONSTRAINT ALL").arg(tbName, enabled ? "CHECK" : "NOCHECK"));
 }
 
 QList<QPair<QString, QString>> SqlServerClient::exportAllFields(const QString& tbName) {

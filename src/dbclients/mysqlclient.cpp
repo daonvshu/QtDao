@@ -46,9 +46,13 @@ bool MysqlClient::checkTableExist(const QString& tbName) {
 void MysqlClient::createTableIfNotExist(const QString &tbName,
                                         const QStringList &fieldsType,
                                         const QStringList &primaryKeys,
+                                        const QList<ForeignKey>& foreignKeys,
                                         const QString &engine)
 {
     QString str = "create table if not exists " % tbName % "(" % fieldsType.join(",");
+    for (const auto& key : foreignKeys) {
+        str = str % ", " % translateForeignKeyStatement(key);
+    }
     if (primaryKeys.size() > 1) {
         str = str % ", primary key(" % primaryKeys.join(",") % ")";
     }
@@ -72,6 +76,13 @@ void MysqlClient::dropTable(const QString& tbName) {
 
 void MysqlClient::truncateTable(const QString& tbName) {
     BaseQuery::queryPrimitive("truncate table " % tbName);
+}
+
+void MysqlClient::enableForeignKey(const QString &tbName, bool enabled) {
+    if (!tbName.isEmpty()) {
+        return;
+    }
+    BaseQuery::queryPrimitive(QLatin1String("SET FOREIGN_KEY_CHECKS = ") % (enabled ? "1" : "0"));
 }
 
 QList<QPair<QString, QString>> MysqlClient::exportAllFields(const QString& tbName) {
