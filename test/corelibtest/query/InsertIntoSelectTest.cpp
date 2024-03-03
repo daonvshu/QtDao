@@ -60,13 +60,13 @@ void runTestInsertIntoSelect() {
     auto test2 = dao::_selectAll<E2>();
     QVariantList data;
     for (const auto& r : test2) {
-        data << r.getName() << r.getNumber();
+        data << r.name << r.number;
     }
     QVariantList expected;
     QFETCH(QList<E1>, data1);
     for (const auto& r : data1) {
-        if (r.getNumber() < 12) {
-            expected << r.getName() << r.getNumber();
+        if (r.number < 12) {
+            expected << r.name << r.number;
         }
     }
     QCOMPARE(data, expected);
@@ -113,14 +113,14 @@ void runTestInsertIntoJoin() {
     auto test2 = dao::_selectAll<E2>();
     QVariantList data;
     for (const auto& r : test2) {
-        data << r.getName() << r.getNumber();
+        data << r.name << r.number;
     }
     QVariantList expected;
     QFETCH(QList<E1>, data1);
     for (int i = 0; i <= 10; i += 10) {
         for (const auto& r : data1) {
-            if (r.getNumber() < 12) {
-                expected << r.getName() << (r.getNumber() + i);
+            if (r.number < 12) {
+                expected << r.name << (r.number + i);
             }
         }
     }

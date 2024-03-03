@@ -89,7 +89,7 @@ void runTestJoinTable() {
         auto s1 = std::get<0>(r);
         auto s3 = std::get<1>(r);
         auto s2 = std::get<2>(r);
-        data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
+        data << s2.name << s1.name << s3.name << s1.number << s2.number;
     }
     QCOMPARE(
         data,
@@ -167,8 +167,8 @@ void runTestJoinTableUseWith() {
         .build().list();
     QVariantList data;
     for (const auto& r : result2) {
-        data << std::get<2>(r).getName();
-        data << std::get<0>(r).__getExtra("sumn");
+        data << std::get<2>(r).name;
+        data << std::get<0>(r).template __getExtra<int>("sumn");
     }
     QCOMPARE(
         data,
@@ -201,9 +201,9 @@ void runTestJoinTableFilterOn() {
     for (const auto& r : result3) {
         data << E1::Tool::getValueWithoutAutoIncrement(std::get<0>(r));
         auto e1 = std::get<2>(r);
-        data << e1.getName() << e1.getNumber() << e1.getNumber2();
+        data << e1.name << e1.number << e1.number2;
         auto e2 = std::get<1>(r);
-        data << e2.getTbi1() << e2.getTbi2() << e2.getName() << e2.getSize();
+        data << e2.tbi1 << e2.tbi2 << e2.name << e2.size;
     }
     QCOMPARE(
         data,
@@ -234,8 +234,8 @@ void runTestJoinSelfTable() {
         .build().list();
     QVariantList data;
     for (const auto& r : result) {
-        data << std::get<0>(r).getName();
-        data << std::get<1>(r).getName();
+        data << std::get<0>(r).name;
+        data << std::get<1>(r).name;
     }
     QCOMPARE(
         data,
@@ -253,9 +253,9 @@ void runTestJoinSelfTable() {
         .build().list();
     data.clear();
     for (const auto& r : result2) {
-        data << std::get<0>(r).getName();
-        data << std::get<1>(r).getName();
-        data << std::get<2>(r).getName();
+        data << std::get<0>(r).name;
+        data << std::get<1>(r).name;
+        data << std::get<2>(r).name;
     }
     QCOMPARE(
         data,
@@ -328,7 +328,7 @@ void runTestJoinFromSelect() {
         auto s1 = std::get<0>(r);
         auto s2 = std::get<2>(r);
         auto s3 = std::get<1>(r);
-        data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
+        data << s2.name << s1.name << s3.name << s1.number << s2.number;
     }
     QCOMPARE(
         data,
@@ -368,7 +368,7 @@ void runTestJoinOnSelect() {
         auto s1 = std::get<0>(r);
         auto s2 = std::get<2>(r);
         auto s3 = std::get<1>(r);
-        data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
+        data << s2.name << s1.name << s3.name << s1.number << s2.number;
     }
     QCOMPARE(
         data,
@@ -409,7 +409,7 @@ void runTestSelectUnionJoin() {
 
     QVariantList results;
     for (const auto& r : select) {
-        results << r.getName() << r.getNumber();
+        results << r.name << r.number;
     }
     QCOMPARE(
         results,
@@ -462,7 +462,7 @@ void runTestJoinUnionSelect() {
         auto s1 = std::get<0>(r);
         auto s2 = std::get<2>(r);
         auto s3 = std::get<1>(r);
-        results << s1.getName() << s2.getNumber();
+        results << s1.name << s2.number;
     }
     QCOMPARE(
         results,
@@ -519,7 +519,7 @@ void runTestJoinUnionJoin() {
         auto s1 = std::get<0>(r);
         auto s2 = std::get<2>(r);
         auto s3 = std::get<1>(r);
-        results << s1.getName() << s2.getNumber();
+        results << s1.name << s2.number;
     }
     QCOMPARE(
         results,
@@ -567,7 +567,7 @@ void runRecursiveQueryTest() {
         .column(sfs2.number).with(_orderBy(sfs2.number)).build().list();
     QVariantList numbers;
     for (const auto& r : select) {
-        numbers << r.getNumber();
+        numbers << r.number;
     }
     QCOMPARE(numbers, QVariantList() << 9 << 10 << 50 << 9999);
 
@@ -583,7 +583,7 @@ void runRecursiveQueryTest() {
         auto s2 = std::get<0>(r);
         auto s3 = std::get<1>(r);
         auto s1 = std::get<2>(r);
-        data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
+        data << s2.name << s1.name << s3.name << s1.number << s2.number;
     }
     QCOMPARE(
         data,
@@ -604,7 +604,7 @@ void runRecursiveQueryTest() {
         auto s1 = std::get<0>(r);
         auto s3 = std::get<1>(r);
         auto s2 = std::get<2>(r);
-        data << s2.getName() << s1.getName() << s3.getName() << s1.getNumber() << s2.getNumber();
+        data << s2.name << s1.name << s3.name << s1.number << s2.number;
     }
     QCOMPARE(
         data,
@@ -662,7 +662,7 @@ void runFunctionSubJoinTest() {
     QVariantList expected;
     QFETCH(QList<E1>, data1);
     for (const auto& d : data1) {
-        if (d.getNumber() != 12 && d.getNumber() != 14)
+        if (d.number != 12 && d.number != 14)
             continue;
         expected << E1::Tool::getValueWithoutAutoIncrement(d);
     }

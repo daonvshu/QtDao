@@ -97,7 +97,7 @@ void runObjectDeleteTest() {
     auto result1 = dao::_select<E>().filter(sf2.name == "joker").build().unique();
     dao::_delete<E>().build().deleteBy(result1);
     result1 = dao::_select<E>().filter(sf2.name == "joker").build().unique();
-    QVERIFY(result1.getId() == -1);
+    QVERIFY(result1.id == -1);
 
     auto result2 = dao::_selectAll<E>();
     dao::_delete<E>().build().deleteBatch(result2);
@@ -163,7 +163,7 @@ void runTruncateTest() {
 
     QFETCH(E, entity);
     dao::_insert<E>().build().insert(entity);
-    QVERIFY(entity.getId() == 1);
+    QVERIFY(entity.id == 1);
 }
 
 void DeleteTest::truncateTest() {

@@ -71,7 +71,7 @@ void runUniqueSelectTest(EngineModel model) {
     auto d1 = dao::_select<E>()
         .filter(sf1.name == "client", _or(sf1.number == 12, sf1.name == "bob"))
         .build().one();
-    QVERIFY(d1.getId() != -1);
+    QVERIFY(d1.id != -1);
     QCOMPARE(sft1.getValueWithoutAutoIncrement(data1.at(4)), sft1.getValueWithoutAutoIncrement(d1));
 
     auto v1 = dao::_select<E>()
@@ -108,7 +108,7 @@ void runUniqueSelectTest(EngineModel model) {
             .with(_orderBy(sf1.name.desc()), _limit(1))
             .build().unique();
     }
-    QVERIFY(d2.getId() != -1);
+    QVERIFY(d2.id != -1);
     QCOMPARE(sft1.getValueWithoutAutoIncrement(data1.at(2)), sft1.getValueWithoutAutoIncrement(d2));
 
     try {
@@ -123,7 +123,7 @@ void runUniqueSelectTest(EngineModel model) {
     auto d4 = dao::_select<E>()
         .filter(sf1.name == "joker")
         .build().unique();
-    QVERIFY(d4.getId() == -1);
+    QVERIFY(d4.id == -1);
 
     auto uv1 = dao::_select<E>()
             .filter(sf1.id == 2)
@@ -201,8 +201,8 @@ void runListSelectTest() {
             .build()
             .list(sf1.name, sf1.number);
     QList<QPair<QString, qreal>> expectV2;
-    expectV2 << qMakePair(data1.at(2).getName(), data1.at(2).getNumber());
-    expectV2 << qMakePair(data1.at(4).getName(), data1.at(4).getNumber());
+    expectV2 << qMakePair(data1.at(2).name, data1.at(2).number);
+    expectV2 << qMakePair(data1.at(4).name, data1.at(4).number);
     QCOMPARE(v2, expectV2);
 
     auto v3 = dao::_select<E>()
@@ -210,8 +210,8 @@ void runListSelectTest() {
             .build()
             .list(sf1.id, sf1.name, sf1.number, sf1.hex);
     QList<std::tuple<qint64, QString, qreal, QByteArray>> expectV3;
-    expectV3 << std::make_tuple(data1.at(2).getId(), data1.at(2).getName(), data1.at(2).getNumber(), data1.at(2).getHex());
-    expectV3 << std::make_tuple(data1.at(4).getId(), data1.at(4).getName(), data1.at(4).getNumber(), data1.at(4).getHex());
+    expectV3 << std::make_tuple(data1.at(2).id, data1.at(2).name, data1.at(2).number, data1.at(2).hex);
+    expectV3 << std::make_tuple(data1.at(4).id, data1.at(4).name, data1.at(4).number, data1.at(4).hex);
     QCOMPARE(v3, expectV3);
 
     auto d2 = dao::_selectAll<E>();
@@ -291,7 +291,7 @@ void runFuntionSelectTest() {
         .column(_fun("sum(%1) + ? as sumnumber").field(sf1.number).value(5))
         .filter(_or(sf1.name.like("a%"), _fun("%1 > case when %2 = ? then ? else ? end").field(sf1.number, sf1.name).value("client", 12, 10)))
         .build().one();
-    QCOMPARE(data.__getExtra("sumnumber").toInt(), 52);
+    QCOMPARE(data.__getExtra<int>("sumnumber"), 52);
 }
 
 void SelectTest::funtionSelectTest() {
@@ -421,19 +421,19 @@ void runUnionSelectTest() {
 
     QVariantList results;
     for (const auto& r : select2) {
-        results << r.getName() << r.getNumber();
+        results << r.name << r.number;
     }
     QVariantList expected;
     QList<QPair<QString, qreal>> expectList;
     for (const auto& d : data1) {
-        if (d.getNumber() < 12)
+        if (d.number < 12)
             continue;
-        expectList << qMakePair(d.getName(), d.getNumber());
+        expectList << qMakePair(d.name, d.number);
     }
     for (const auto& d : data2) {
-        if (d.getNumber() < 13)
+        if (d.number < 13)
             continue;
-        expectList << qMakePair(d.getName(), d.getNumber());
+        expectList << qMakePair(d.name, d.number);
     }
     std::sort(expectList.begin(), expectList.end());
     for (const auto& d : expectList) {
@@ -485,7 +485,7 @@ void runFuntionSubSelectTest() {
     }
     QVariantList expected;
     for (const auto& d : data1) {
-        if (d.getNumber() != 10 && d.getNumber() != 12)
+        if (d.number != 10 && d.number != 12)
             continue;
         expected << E1::Tool::getValueWithoutAutoIncrement(d);
     }

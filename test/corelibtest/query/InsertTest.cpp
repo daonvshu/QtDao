@@ -110,7 +110,7 @@ template<typename E1, typename E2>
 void runInsertObjectTest() {
     QFETCH(E1, test1);
     dao::_insert<E1>().build().insert(test1);
-    QCOMPARE(test1.getId(), 2);
+    QCOMPARE(test1.id, 2);
 
     {
         auto query = BaseQuery::queryPrimitive(QString("select *from %1 where id = 2").arg(E1::Info::getTableName()));
@@ -134,7 +134,7 @@ void runInsertObjectTest() {
 
     QFETCH(E2, test3);
     dao::_insert<E2>().build().insert(test3);
-    QCOMPARE(test3.getId(), 3);
+    QCOMPARE(test3.id, 3);
 
     {
         auto query = BaseQuery::queryPrimitive(QString("select *from %1 where id = 3").arg(E2::Info::getTableName()));
@@ -294,7 +294,7 @@ void runInsertOrReplaceTest() {
     QFETCH(E, entity);
     dao::_insert<E>().build().insertOrReplace(entity);
 
-    entity.setNumber2(100);
+    entity.number2 = 100;
     dao::_insert<E>().build().insertOrReplace(entity);
     auto query = BaseQuery::queryPrimitive(QString("select * from %1 where name = 'testinsertorreplace'").arg(E::Info::getTableName()));
     int count = 0;
@@ -331,7 +331,7 @@ void runInsertOrIgnoreTest() {
     QFETCH(E, entity);
     dao::_insert<E>().build().insertOrIgnore(entity);
 
-    entity.setNumber2(150);
+    entity.number2 = 150;
     dao::_insert<E>().build().insertOrIgnore(entity);
     auto query = BaseQuery::queryPrimitive(QString("select * from %1 where name = 'testinsertorreplace'").arg(E::Info::getTableName()));
     int count = 0;

@@ -119,7 +119,7 @@ template<typename E>
 void runObjectUpdateTest() {
     typename E::Fields sf2;
     auto t2test = dao::_select<E>().filter(sf2.name == "bob").build().unique();
-    t2test.setNumber(50);
+    t2test.number = 50;
     bool success = dao::_update<E>().build().update(t2test);
     QVERIFY(success);
     auto t2result = dao::_select<E>().filter(sf2.name == "bob").build().unique();
@@ -130,7 +130,7 @@ void runObjectUpdateTest() {
 
     auto t2stest = dao::_select<E>().filter(sf2.number < 100).with(_orderBy(sf2.id)).build().list();
     for (auto& t2 : t2stest) {
-        t2.setNumber2(10000);
+        t2.number2 = 10000;
     }
     success = dao::_update<E>().build().updateBatch(t2stest);
     QVERIFY(success);
