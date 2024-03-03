@@ -80,8 +80,8 @@ void KeywordsTest::testSelect() {
     QList<int> columns;
     QStringList groups;
     for (const auto& r : result) {
-        columns << r.getColumn();
-        groups << r.getGroup();
+        columns << r.column;
+        groups << r.group;
     }
     QCOMPARE(columns, QList<int>() << 2 << 1);
     QCOMPARE(groups, QStringList() << "group_ku2" << "group_num1");
