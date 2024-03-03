@@ -57,6 +57,7 @@ void ClientMysqlTest::tableProcessTest() {
             "TestTb4",
             { "id bigint", "name varchar(100)", "number real default 10.0" },
             { "id", "name" },
+            {},
             "");
     QVERIFY(client->checkTableExist("TestTb4"));
 

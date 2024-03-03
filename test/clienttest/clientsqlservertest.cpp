@@ -55,6 +55,7 @@ void ClientSqlServerTest::tableProcessTest() {
             "TestTb6",
             { "id bigint", "name varchar(100)", "number real default 10.0" },
             { "id", "name" },
+            {},
             "");
     QVERIFY(client->checkTableExist("TestTb6"));
 

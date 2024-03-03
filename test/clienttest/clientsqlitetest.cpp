@@ -55,6 +55,7 @@ void ClientSqliteTest::tableProcessTest() {
             "testtb2",
             { "id long", "name text default 'text'", "number real default 10.0" },
             { "id", "name" },
+            {},
             "");
     QVERIFY(client->checkTableExist("testtb2"));
 

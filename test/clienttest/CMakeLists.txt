@@ -19,6 +19,20 @@ add_compile_definitions(TEST_DB="${TEST_TYPE}")
 add_executable(${PROJECT_NAME}
     main.cpp
     ${ENTITY_FILE_LIST}
+
+    sqlite/testtb1.h
+    sqlite/testtb1.cpp
+    sqlite/testtb2.h
+    sqlite/testtb2.cpp
+    mysql/testtb3.h
+    mysql/testtb3.cpp
+    mysql/testtb4.h
+    mysql/testtb4.cpp
+    sqlserver/testtb5.h
+    sqlserver/testtb5.cpp
+    sqlserver/testtb6.h
+    sqlserver/testtb6.cpp
+
     clientsqlitetest.h
     clientsqlitetest.cpp
     clientmysqltest.h
