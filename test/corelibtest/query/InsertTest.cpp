@@ -353,22 +353,22 @@ void InsertTest::insertOrIgnoreTest() {
     }
 }
 
-void InsertTest::testTranscation_data() {
+void InsertTest::testTransaction_data() {
     if (engineModel == Engine_Sqlite) {
         QTest::addColumn<SqliteTest2>("entity");
-        QTest::addRow("sqlite test data") << SqliteTest2("test transcation", 10000, 10000, "666");
+        QTest::addRow("sqlite test data") << SqliteTest2("test transaction", 10000, 10000, "666");
     } else if (engineModel == Engine_Mysql) {
         QTest::addColumn<MysqlTest2>("entity");
-        QTest::addRow("mysql test data") << MysqlTest2("test transcation", 10000, 10000);
+        QTest::addRow("mysql test data") << MysqlTest2("test transaction", 10000, 10000);
     } else if (engineModel == Engine_SqlServer) {
         QTest::addColumn<SqlServerTest2>("entity");
-        QTest::addRow("sqlserver test data") << SqlServerTest2("test transcation", 10000, 10000);
+        QTest::addRow("sqlserver test data") << SqlServerTest2("test transaction", 10000, 10000);
     }
 }
 
 template<typename E>
-void runTestTranscation() {
-    dao::transcation();
+void runTestTransaction() {
+    dao::transaction();
     QFETCH(E, entity);
     dao::_insert<E>().build().insert(entity);
     try {
@@ -379,21 +379,21 @@ void runTestTranscation() {
         dao::rollback();
     }
     typename E::Fields sf;
-    int count = dao::_count<E>().filter(sf.name == "test transcation").count();
+    int count = dao::_count<E>().filter(sf.name == "test transaction").count();
     QCOMPARE(count, 0);
 }
 
-void InsertTest::testTranscation() {
+void InsertTest::testTransaction() {
     if (engineModel == Engine_Sqlite) {
-        runTestTranscation<SqliteTest2>();
+        runTestTransaction<SqliteTest2>();
     } else if (engineModel == Engine_Mysql) {
-        runTestTranscation<MysqlTest2>();
+        runTestTransaction<MysqlTest2>();
     } else if (engineModel == Engine_SqlServer) {
-        runTestTranscation<SqlServerTest2>();
+        runTestTransaction<SqlServerTest2>();
     }
 }
 
-void InsertTest::testMysqlMyISAMTranscation_data() {
+void InsertTest::testMysqlMyISAMTransaction_data() {
     PASSSQLITE;
     PASSSQLSERVER;
     QTest::addColumn<MysqlTest1>("data1");
@@ -403,12 +403,12 @@ void InsertTest::testMysqlMyISAMTranscation_data() {
         << MysqlTest1(10, QString(), 2, "");
 }
 
-void InsertTest::testMysqlMyISAMTranscation() {
+void InsertTest::testMysqlMyISAMTransaction() {
     PASSSQLITE;
     PASSSQLSERVER;
     QFETCH(MysqlTest1, data1);
     QFETCH(MysqlTest1, data2);
-    dao::transcation();
+    dao::transaction();
     dao::_insert<MysqlTest1>().build().insert(data1);
     try {
         dao::_insert<MysqlTest1>().disableFatalMsg().build().insert(data2); //null of name will case error
@@ -418,7 +418,7 @@ void InsertTest::testMysqlMyISAMTranscation() {
     }
     MysqlTest1::Fields sf;
     int count = dao::_count<MysqlTest1>().filter(sf.id == 10).count();
-    QCOMPARE(count, 1); //MyISAM engine not support transcation
+    QCOMPARE(count, 1); //MyISAM engine not support transaction
 }
 
 void InsertTest::cleanup() {

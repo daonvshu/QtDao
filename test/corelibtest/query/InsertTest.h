@@ -31,11 +31,11 @@ private slots:
     void insertOrIgnoreTest_data();
     void insertOrIgnoreTest();
 
-    void testTranscation_data();
-    void testTranscation();
+    void testTransaction_data();
+    void testTransaction();
 
-    void testMysqlMyISAMTranscation_data();
-    void testMysqlMyISAMTranscation();
+    void testMysqlMyISAMTransaction_data();
+    void testMysqlMyISAMTransaction();
 
     void cleanup();
 

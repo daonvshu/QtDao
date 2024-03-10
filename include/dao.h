@@ -100,13 +100,13 @@ static void _truncate() {
     globalConfig->getClient()->truncateTable(E::Info::getTableName());
 }
 
-extern void transcation();
+extern void transaction(LoggingCategoryPtr logging = nullptr);
 
-extern void commit();
+extern void commit(LoggingCategoryPtr logging = nullptr);
 
-extern void transcation_save(const QString& savePoint);
+extern void transaction_save(const QString& savePoint, LoggingCategoryPtr logging = nullptr);
 
-extern void rollback(const QString& savePoint = QString());
+extern void rollback(const QString& savePoint = QString(), LoggingCategoryPtr logging = nullptr);
 
 extern void loggingUseDefault(bool useDefault = true);
 

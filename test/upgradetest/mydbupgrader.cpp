@@ -21,7 +21,7 @@ void MyDbUpgrader::upgrade1To2() {
         upgradeWithDataRecovery();
         return;
     }
-    dao::transcation();
+    dao::transaction();
     try {
         //drop index
         client->dropIndex(entityReader->getTableName(), "index_number2");
@@ -50,7 +50,7 @@ void MyDbUpgrader::upgrade2To3() {
         upgradeWithDataRecovery();
         return;
     }
-    dao::transcation();
+    dao::transaction();
     try {
         //drop index
         client->dropIndex(entityReader->getTableName(), "index_name_number");
