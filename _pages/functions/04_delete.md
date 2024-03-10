@@ -18,7 +18,7 @@ Delete<E> dao::_delete<E>().build()
 
 ```cpp
 User::Fields field;
-bool success = dao::_delete<User>()
+dao::_delete<User>()
     .filter(field.name == "Alice")
     .build().deleteBy();
 ```
@@ -38,7 +38,7 @@ delete from User where name = 'Alice'
 User::Fields field;
 auto user = dao::_select<User>().filter(field.name == "Alice").build().unique();
 
-bool success = dao::_delete<User>().build().deleteBy(user);
+dao::_delete<User>().build().deleteBy(user);
 ```
 
 > 注意：按实体对象删除时内部将自动提取表`primary key`字段作为条件，因此，使用实体对象删除方法时，必须确保操作的表设置了`primary key`字段。
@@ -52,7 +52,7 @@ bool success = dao::_delete<User>().build().deleteBy(user);
 auto userNames = QStringList() << "Alice" << "Bob";
 
 User::Fields field;
-bool success = dao::_delete<User>()
+dao::_delete<User>()
     .filter(field.name == userNames)
     .build().deleteBatch();
 ```

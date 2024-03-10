@@ -70,10 +70,17 @@ layout: post
 |`constraints`|为字段添加限制，只能为以下3种：`'not null'`限制字段不能存储null类型值，`'unique'`限制字段不可重复，`'primary key'`声明字段为主键。|可选|
 |`bitsize`|设置类型宽度，对应字符串类似于`varchar(100)`，浮点数类似于`decimal(5,3)`。|可选|
 |`decimal-d`|配合`bitsize`设置浮点数小数位宽度，类似于`decimal(5,3)`，其中bitsize=5, decimal-d=3。|可选|
-|`note`|设置字段备注，在c++模型成员变量和`get/set`方法上添加相应注释，对于`mysql`还将作为comment写入到表结构中。|可选|
+|`note`|设置字段备注，在c++模型成员变量上添加相应注释，对于`mysql`还将作为comment写入到表结构中。|可选|
 |`jsonkey`|将c++模型类与json相互转换时显示指定转换的key，默认使用字段名。|可选|
 |`jsontimeformat`|与json相互转换时，时间日期相关类型显示使用格式化字符串。|可选|
 |`transient`|c++模型临时成员变量，将不参与数据库数据转换，用于保存用户临时数据。|可选|
+|`reftb`|当前字段作为外键链接到的主表表名称。|可选|
+|`refitem`|当前字段作为外键链接的目标字段。|可选|
+|`refonupdate`|当前字段作为外键，其链接的主表字段进行更新时的表现行为。可选的有：`'no_action'`,`'restrict'`,`'set_null'`,`'set_default'`,`'cascade'`。|可选|
+|`refondelete`|当前字段作为外键，其链接的主表字段进行删除时的表现行为。|可选|
+|`deferrable`|当前字段作为外键，事务操作时是否延迟检查外键约束，目前仅sqlite支持。|可选|
+
+> 注意：当使用外键约束时，其链接目标字段需要添加primary key或unique约束以保证唯一性。
 
 
 `<index>`标签
@@ -105,6 +112,39 @@ layout: post
 ```
 
 `<index>`可指定`type`属性，对应sqlite/mysql，可以选择使用`'index'`（默认）或`'unique index'`，用于指定索引唯一限制，对于`sqlserver`，可选择使用的有：`'clustered'`、`'unique clustered'`、`'nonclustered'`（默认）、`'unique nonclustered'`同时显式指定唯一与聚集性限制。`allow_row_locks`、`allow_page_locks`、`data_compression`属性为`sqlserver`特有的属性。使用`<field>`标签指定创建索引用到的字段。
+
+
+`<foreignkey>`标签
+-------------
+
+`<foreignkey>`标签用于配置组合外键约束，示例：
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<dao prefix="ts_" db="sqlserver">
+    <tb name="Artist" declaremetatype="true">
+        <item name="id" type="long" constraints="primary key" />
+        <item name="name" type="text" />
+        <item name="size" type="int" />
+        <index type="unique index">
+            <field>id</field>
+            <field>size</field>
+        </index>
+    </tb>
+    <tb name="Customer">
+        <item name="id" type="long" default="-1" constraints="primary key" />
+        <item name="name" type="text" />
+        <item name="pkArtistId" type="long" />
+        <item name="pkArtistSize" type="int" />
+        <foreignkey reftb="Artist" refonupdate="cascade" refondelete="cascade">
+            <field name="pkArtistId" refitem="id"/>
+            <field name="pkArtistSize" refitem="size"/>
+        </foreignkey>
+    </tb>
+</dao>
+```
+
+与字段定义为外键时一样，`<foreignkey>`需要指定链接的主表表名和更新删除时的行为。使用`<field>`标签定义本表字段（`<name>`）与主表字段（`<refitem>`）的链接关系。目前仅支持单表的组合外键约束的定义。与单字段外键约束一样，被引用的外键字段需要保证唯一性，需要创建一个唯一索引。
 
 
 `<constructor>`标签

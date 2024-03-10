@@ -72,7 +72,7 @@ select sum(score) as sumscore from User
 `_fun()`的使用后面将做详细说明，在这里，函数作为字段设置时，其`as`别名将设置到实体对象的`__extra`变量中，如下读取上述的总分数：
 
 ```cpp
-int score = user.__getExtra("sumscore").toInt();
+int score = user.__getExtra<int>("sumscore");
 ```
 
 - #### 混合字段
@@ -225,7 +225,7 @@ SelectBuilder<E> dao::_select<E>().filter(const FunctionCondition& function, ...
 
 ```cpp
 User::Fields field;
-UserList user = dao::_select<User>()
+User user = dao::_select<User>()
     .filter(field.name == "Alice"))
     .filter(_fun("sum(%1) as sumscore").field(field.score))
     .build().one();

@@ -18,7 +18,7 @@ Insert<E> dao::_update<E>().build()
 
 ```cpp
 User::Fields field;
-bool success = dao::_update<User>()
+int effectRows = dao::_update<User>()
     .set(field.age = 19, field.score = 120)
     .filter(field.name == "Alice")
     .build().update();
@@ -41,7 +41,7 @@ auto user = dao::_select<User>().filter(field.name == "Alice").build().unique();
 
 user.setAge(19);
 user.setScore(120);
-bool success = dao::_update<User>().build().update(user);
+int effectRows = dao::_update<User>().build().update(user);
 ```
 
 > 注意：按实体对象更新采用的方法和条件更新一致，不同的是，按实体对象更新时内部将自动提取表`primary key`字段作为更新条件，其他字段作为更新的字段，因此，使用实体对象更新方法时，必须确保操作的表设置了`primary key`字段。
@@ -58,7 +58,7 @@ auto ages = QList<int>() << 19 << 20;
 auto scores = QList<int>() << 120 << 130;
 
 User::Fields field;
-bool success = dao::_update<User>()
+int effectRows = dao::_update<User>()
     .set(field.age = ages, field.score = scores)
     .filter(field.name == userNames)
     .build().updateBatch();
