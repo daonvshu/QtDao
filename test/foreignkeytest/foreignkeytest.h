@@ -2,7 +2,7 @@
 
 #include <qobject.h>
 
-class KeywordsTest : public QObject {
+class ForeignKeyTest : public QObject {
     Q_OBJECT
 
 public:
@@ -11,15 +11,15 @@ public:
 private slots:
     void initTestCase();
 
-    void testStep();
-
     void testInsert();
-
-    void testSelect();
 
     void testUpdate();
 
-    void testJoin();
+    void testDelete();
+
+    void testTransaction();
+
+    void testVersionUpgrade();
 
     void cleanup();
 

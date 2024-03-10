@@ -37,8 +37,8 @@ void setColor() {
 int main(int argc, char** argv) {
     QCoreApplication a(argc, argv);
 
-    KeywordsTest tester;
-    int result = QTest::qExec(&tester, QStringList() << "qtdaokeywordtest.exe" << "-o" << "test.txt");
+    ForeignKeyTest tester;
+    int result = QTest::qExec(&tester, QStringList() << "qtdaoforeignkeytest.exe" << "-o" << "test.txt");
     setColor();
 
     return result;
