@@ -40,6 +40,7 @@ HEADERS += ../include/connectionpool.h \
     ../include/condition/entitycondition.h \
     ../include/condition/entityfield.h \
     ../include/condition/functioncondition.h \
+    ../include/condition/foreignkey.h \
     ../include/config/configbuilder.h \
     ../include/config/configmysql.h \
     ../include/config/configsqlite.h \
