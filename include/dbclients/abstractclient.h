@@ -114,6 +114,12 @@ public:
      */
     virtual void enableForeignKey(const QString& tbName, bool enabled) = 0;
 
+    /**
+     * drop the table referenced foreign key by child tables, only supported by mysql/sqlserver
+     * @param tbName
+     */
+    virtual void dropReferencedForeignKey(const QString& tbName) = 0;
+
     /////////////// table field process ///////////////
 
     /**

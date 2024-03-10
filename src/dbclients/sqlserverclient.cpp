@@ -117,7 +117,44 @@ void SqlServerClient::enableForeignKey(const QString &tbName, bool enabled) {
     if (tbName.isEmpty()) {
         return;
     }
-    BaseQuery::queryPrimitive(QLatin1String("ALTER TABLE %1 %2 CONSTRAINT ALL").arg(tbName, enabled ? "CHECK" : "NOCHECK"));
+    QStringList referenceChildTbName, foreignKeyName;
+    {
+        auto query = BaseQuery::queryPrimitive(
+                QLatin1String("select QUOTENAME(OBJECT_SCHEMA_NAME(parent_object_id)), "
+                              "QUOTENAME(OBJECT_NAME(parent_object_id)), name "
+                              "from sys.foreign_keys where referenced_object_id=OBJECT_ID('%1')").arg(tbName));
+        while (query.next()) {
+            referenceChildTbName.append(query.value(0).toString() + "." + query.value(1).toString());
+            foreignKeyName.append(query.value(2).toString());
+        }
+    }
+
+    for (int i = 0; i < referenceChildTbName.size(); i++) {
+        BaseQuery::queryPrimitive(QLatin1String("ALTER TABLE %1 %2 CONSTRAINT %3")
+            .arg(referenceChildTbName[i], enabled ? "CHECK" : "NOCHECK", foreignKeyName[i]));
+    }
+}
+
+void SqlServerClient::dropReferencedForeignKey(const QString &tbName) {
+    if (tbName.isEmpty()) {
+        return;
+    }
+    QStringList referenceChildTbName, foreignKeyName;
+    {
+        auto query = BaseQuery::queryPrimitive(
+                QLatin1String("select QUOTENAME(OBJECT_SCHEMA_NAME(parent_object_id)), "
+                              "QUOTENAME(OBJECT_NAME(parent_object_id)), name "
+                              "from sys.foreign_keys where referenced_object_id=OBJECT_ID('%1')").arg(tbName));
+        while (query.next()) {
+            referenceChildTbName.append(query.value(0).toString() + "." + query.value(1).toString());
+            foreignKeyName.append(query.value(2).toString());
+        }
+    }
+
+    for (int i = 0; i < referenceChildTbName.size(); i++) {
+        BaseQuery::queryPrimitive(QLatin1String("ALTER TABLE %1 DROP CONSTRAINT %2")
+                                          .arg(referenceChildTbName[i], foreignKeyName[i]));
+    }
 }
 
 QList<QPair<QString, QString>> SqlServerClient::exportAllFields(const QString& tbName) {

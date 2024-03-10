@@ -82,7 +82,28 @@ void MysqlClient::enableForeignKey(const QString &tbName, bool enabled) {
     if (!tbName.isEmpty()) {
         return;
     }
-    BaseQuery::queryPrimitive(QLatin1String("SET FOREIGN_KEY_CHECKS = ") % (enabled ? "1" : "0"));
+    BaseQuery::queryPrimitive(QLatin1String("SET FOREIGN_KEY_CHECKS=") % (enabled ? "1" : "0"));
+}
+
+void MysqlClient::dropReferencedForeignKey(const QString &tbName) {
+    if (tbName.isEmpty()) {
+        return;
+    }
+    QStringList referenceChildTbName, foreignKeyName;
+    {
+        auto query = BaseQuery::queryPrimitive(
+                QLatin1String("select table_name, constraint_name from information_schema.KEY_COLUMN_USAGE "
+                              "where referenced_table_name='%1' group by table_name, constraint_name").arg(tbName));
+        while (query.next()) {
+            referenceChildTbName.append(query.value(0).toString());
+            foreignKeyName.append(query.value(1).toString());
+        }
+    }
+
+    for (int i = 0; i < referenceChildTbName.size(); i++) {
+        BaseQuery::queryPrimitive(QLatin1String("ALTER TABLE %1 DROP FOREIGN KEY %2")
+                                          .arg(referenceChildTbName[i], foreignKeyName[i]));
+    }
 }
 
 QList<QPair<QString, QString>> MysqlClient::exportAllFields(const QString& tbName) {

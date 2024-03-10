@@ -58,6 +58,52 @@ public:
     }
 };
 
+class TableProxyEntityReader : public EntityReaderInterface {
+public:
+    TableProxyEntityReader(const QString& tbName, EntityReaderInterface* reader)
+        : tbName(tbName), reader(reader) {}
+
+    int fieldSize() override { return reader->fieldSize(); }
+
+    QString getTableName() override { return tbName; }
+
+    QString getSourceName() override { return tbName; }
+
+    QStringList getFields() override { return reader->getFields(); }
+
+    QStringList getFieldsWithoutAutoIncrement() override { return reader->getFieldsWithoutAutoIncrement(); }
+
+    QStringList getFieldsType() override { return reader->getFieldsType(); }
+
+    QStringList getPrimaryKeys() override { return reader->getPrimaryKeys(); }
+
+    bool isAutoIncrement(const QString& fieldName) override { return reader->isAutoIncrement(fieldName); }
+
+    QList<ForeignKey> getForeignKeys() override { return reader->getForeignKeys(); }
+
+    //extra info reader
+
+    QList<QStringList> getIndexFields() override { return reader->getIndexFields(); } //sqlite/mysql
+
+    QList<QStringList> getUniqueIndexFields() override { return reader->getUniqueIndexFields(); } //sqlite/mysql
+
+    QString getTableEngine() override { return reader->getTableEngine(); } //mysql
+
+    QList<QStringList> getClusteredIndexFields() override { return reader->getClusteredIndexFields(); } //sqlserver
+
+    QList<QStringList> getUniqueClusteredIndexFields() override { return reader->getUniqueClusteredIndexFields(); } //sqlserver
+
+    QList<QStringList> getNonClusteredIndexFields() override { return reader->getNonClusteredIndexFields(); } //sqlserver
+
+    QList<QStringList> getUniqueNonClusteredIndexFields() override { return reader->getUniqueNonClusteredIndexFields(); } //sqlserver
+
+    QString getIndexOption(const QString& name) override { return reader->getIndexOption(name); } //sqlserver
+
+private:
+    QString tbName;
+    EntityReaderInterface* reader;
+};
+
 template<typename E>
 class EntityReaderProvider : public virtual EntityReaderInterface {
 public:

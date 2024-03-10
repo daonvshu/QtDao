@@ -34,9 +34,10 @@ void DatabaseUpgrader::onUpgrade(int oldVersion, int curVersion) {
 void DatabaseUpgrader::upgradeWithDataRecovery() {
     QString tmpTableName = "tmp_" + entityReader->getTableName();
 
-    client->enableForeignKey(entityReader->getTableName(), false);
-    dao::transcation();
+    dao::transaction();
     try {
+        //drop the child foreign key referencing this table, they will be recreated in the future
+        client->dropReferencedForeignKey(entityReader->getTableName());
         //drop tmp table if exist
         client->dropTable(tmpTableName);
         //create a tmp table
@@ -45,22 +46,24 @@ void DatabaseUpgrader::upgradeWithDataRecovery() {
                                       entityReader->getPrimaryKeys(),
                                       entityReader->getForeignKeys(),
                                       entityReader->getTableEngine());
+        //drop old table all index
+        client->dropAllIndexOnTable(entityReader->getTableName());
+        //create index for new table
+        auto proxyReader = new TableProxyEntityReader(tmpTableName, entityReader);
+        client->createIndex(proxyReader);
+        delete proxyReader;
         //copy data
         client->transferData(entityReader->getTableName(), tmpTableName);
         //remove old table
         client->dropTable(entityReader->getTableName());
         //rename tmp table into target table
         client->renameTable(tmpTableName, entityReader->getTableName());
-        //create index for new table
-        client->createIndex(entityReader);
 
         dao::commit();
     } catch (DaoException& e) {
         dao::rollback();
-        client->enableForeignKey(entityReader->getTableName(), true);
         throw e;
     }
-    client->enableForeignKey(entityReader->getTableName(), true);
 }
 
 QTDAO_END_NAMESPACE

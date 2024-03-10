@@ -32,6 +32,8 @@ public:
 
     void enableForeignKey(const QString &tbName, bool enabled) override;
 
+    void dropReferencedForeignKey(const QString &tbName) override;
+
     QList<QPair<QString, QString>> exportAllFields(const QString &tbName) override;
 
     void addField(const QString &tbName, const QString &field) override;

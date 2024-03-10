@@ -98,6 +98,10 @@ void SqliteClient::enableForeignKey(const QString &tbName, bool enabled) {
     BaseQuery::queryPrimitive(QLatin1String("PRAGMA foreign_keys = ") % (enabled ? "ON" : "OFF"));
 }
 
+void SqliteClient::dropReferencedForeignKey(const QString &) {
+    //not implement
+}
+
 QList<QPair<QString, QString>> SqliteClient::exportAllFields(const QString& tbName) {
     QList<QPair<QString, QString>> fields;
 
