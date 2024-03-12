@@ -194,6 +194,7 @@
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:attribute>
+                  <xs:attribute name="deferrable" type="xs:boolean" use="optional" />
                 </xs:complexType>
               </xs:element>
               <xs:element minOccurs="0" maxOccurs="unbounded" name="constructor">
