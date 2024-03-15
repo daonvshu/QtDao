@@ -80,21 +80,32 @@ try {
 附加查询函数
 -------------
 
-如上面例子中，在两个子表中配置了对`Artist`主表的外键引用，`vscode-qtdao`插件将为主表`Artist`创建两个通过被引用的字段读取子表数据的附加函数：
+如上面例子中，在两个子表中配置了对`Artist`主表的外键引用，`vscode-qtdao`插件将为外键关联的表对象之间创建一些附加函数：
 ```cpp
 class Artist {
 public:
     //...
+    //读取
+    TrackList getTrackById() const;
+    Track getTrackUniqueById() const;
+    //插入
+    void insertTrackWithId(QList<Track>& entities) const;
+    void insertTrackWithId(Track& entity) const;
+    //删除
+    void clearTrackById() const;
+    //...
+}
 
-    TrackList getTrackById();
-
-    CustomerList getCustomerByIdSize();
-
+class Track {
+public:
+    //...
+    //加载
+    static Track loadByPkArtist(const qint64& pkArtist);
     //...
 }
 ```
 
-当我们查询出一个`Artist`数据时，可直接读取相关联的子表数据：
+当我们查询出一个`Artist`数据时，可直接操作相关联的子表数据：
 
 ```cpp
 Artist::Field af;
@@ -103,7 +114,53 @@ auto artist = dao::_select<Artist>().filter(af.id == 3).build().unique();
 if (artist.id != -1) {
     //通过id读取track表数据
     auto tracks = artist.getTrackById();
+    //通过id获取唯一一条track关联数据
+    auto track = artist.getTrackUniqueById();
     //通过id、size读取customer表数据
     auto customers = artist.getCustomerByIdSize();
+    //添加track，将track中的pid设置为artist的id并插入到数据库中
+    QList<Track> tracks;
+    artist.insertTrackWithId(tracks);
+    //通过外键字段清除相关联的track数据
+    artist.clearTrackById();
 }
+
+//Track表数据可以通过pid加载数据
+auto track = Track::loadByPkArtist(1);
+```
+
+虚拟外键引用
+-------------
+
+某些情况下，如果在可预见的未来，对拥有外键引用的表频繁的增加和删除或大量的数据插入，可能会影响操作效率。添加`refvirtual`属性，可以设置该外键是虚拟的，外键相关不会定义到数据库当中，所有的外键关联需要手动管理。这时候生成器插件同样会生成外键关联的相关附加函数，表示仅逻辑上维持引用关系，方便手动管理引用。
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dao SYSTEM "../../../entity/sqlite_entity.xsd">
+<dao prefix="ts_" db="sqlite">
+    <tb name="Artist" declaremetatype="true">
+        <item name="id" type="long" constraints="primary key" />
+        <item name="name" type="text" />
+        <item name="size" type="int" />
+        <index type="unique index">
+            <field>id</field>
+            <field>size</field>
+        </index>
+    </tb>
+    <tb name="Track">
+        <item name="id" type="long" default="-1" constraints="primary key" />
+        <item name="name" type="text" />
+        <item name="pkArtist" type="long" reftb="Artist" refitem="id" refvirtual="true" />
+    </tb>
+    <tb name="Customer">
+        <item name="id" type="long" default="-1" constraints="primary key" />
+        <item name="name" type="text" />
+        <item name="pkArtistId" type="long" />
+        <item name="pkArtistSize" type="int" />
+        <foreignkey reftb="Artist" refvirtual="true">
+            <field name="pkArtistId" refitem="id"/>
+            <field name="pkArtistSize" refitem="size"/>
+        </foreignkey>
+    </tb>
+</dao>
 ```

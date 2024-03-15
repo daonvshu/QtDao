@@ -79,6 +79,7 @@ layout: post
 |`refonupdate`|当前字段作为外键，其链接的主表字段进行更新时的表现行为。可选的有：`'no_action'`,`'restrict'`,`'set_null'`,`'set_default'`,`'cascade'`。|可选|
 |`refondelete`|当前字段作为外键，其链接的主表字段进行删除时的表现行为。|可选|
 |`deferrable`|当前字段作为外键，事务操作时是否延迟检查外键约束，目前仅sqlite支持。|可选|
+|`refvirtual`|虚拟外键引用。|可选|
 
 > 注意：当使用外键约束时，其链接目标字段需要添加primary key或unique约束以保证唯一性。
 
