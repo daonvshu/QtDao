@@ -291,7 +291,7 @@ void runFuntionSelectTest() {
         .column(_fun("sum(%1) + ? as sumnumber").field(sf1.number).value(5))
         .filter(_or(sf1.name.like("a%"), _fun("%1 > case when %2 = ? then ? else ? end").field(sf1.number, sf1.name).value("client", 12, 10)))
         .build().one();
-    QCOMPARE(data.__getExtra<int>("sumnumber"), 52);
+    QCOMPARE(data.template __getExtra<int>("sumnumber"), 52);
 }
 
 void SelectTest::funtionSelectTest() {

@@ -92,7 +92,7 @@ void MysqlClient::dropReferencedForeignKey(const QString &tbName) {
     QStringList referenceChildTbName, foreignKeyName;
     {
         auto query = BaseQuery::queryPrimitive(
-                QLatin1String("select table_name, constraint_name from information_schema.KEY_COLUMN_USAGE "
+                QStringLiteral("select table_name, constraint_name from information_schema.KEY_COLUMN_USAGE "
                               "where referenced_table_name='%1' group by table_name, constraint_name").arg(tbName));
         while (query.next()) {
             referenceChildTbName.append(query.value(0).toString());
@@ -101,7 +101,7 @@ void MysqlClient::dropReferencedForeignKey(const QString &tbName) {
     }
 
     for (int i = 0; i < referenceChildTbName.size(); i++) {
-        BaseQuery::queryPrimitive(QLatin1String("ALTER TABLE %1 DROP FOREIGN KEY %2")
+        BaseQuery::queryPrimitive(QStringLiteral("ALTER TABLE %1 DROP FOREIGN KEY %2")
                                           .arg(referenceChildTbName[i], foreignKeyName[i]));
     }
 }

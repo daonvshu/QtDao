@@ -120,7 +120,7 @@ void SqlServerClient::enableForeignKey(const QString &tbName, bool enabled) {
     QStringList referenceChildTbName, foreignKeyName;
     {
         auto query = BaseQuery::queryPrimitive(
-                QLatin1String("select QUOTENAME(OBJECT_SCHEMA_NAME(parent_object_id)), "
+                QStringLiteral("select QUOTENAME(OBJECT_SCHEMA_NAME(parent_object_id)), "
                               "QUOTENAME(OBJECT_NAME(parent_object_id)), name "
                               "from sys.foreign_keys where referenced_object_id=OBJECT_ID('%1')").arg(tbName));
         while (query.next()) {
@@ -130,7 +130,7 @@ void SqlServerClient::enableForeignKey(const QString &tbName, bool enabled) {
     }
 
     for (int i = 0; i < referenceChildTbName.size(); i++) {
-        BaseQuery::queryPrimitive(QLatin1String("ALTER TABLE %1 %2 CONSTRAINT %3")
+        BaseQuery::queryPrimitive(QStringLiteral("ALTER TABLE %1 %2 CONSTRAINT %3")
             .arg(referenceChildTbName[i], enabled ? "CHECK" : "NOCHECK", foreignKeyName[i]));
     }
 }
@@ -142,7 +142,7 @@ void SqlServerClient::dropReferencedForeignKey(const QString &tbName) {
     QStringList referenceChildTbName, foreignKeyName;
     {
         auto query = BaseQuery::queryPrimitive(
-                QLatin1String("select QUOTENAME(OBJECT_SCHEMA_NAME(parent_object_id)), "
+                QStringLiteral("select QUOTENAME(OBJECT_SCHEMA_NAME(parent_object_id)), "
                               "QUOTENAME(OBJECT_NAME(parent_object_id)), name "
                               "from sys.foreign_keys where referenced_object_id=OBJECT_ID('%1')").arg(tbName));
         while (query.next()) {
@@ -152,7 +152,7 @@ void SqlServerClient::dropReferencedForeignKey(const QString &tbName) {
     }
 
     for (int i = 0; i < referenceChildTbName.size(); i++) {
-        BaseQuery::queryPrimitive(QLatin1String("ALTER TABLE %1 DROP CONSTRAINT %2")
+        BaseQuery::queryPrimitive(QStringLiteral("ALTER TABLE %1 DROP CONSTRAINT %2")
                                           .arg(referenceChildTbName[i], foreignKeyName[i]));
     }
 }
