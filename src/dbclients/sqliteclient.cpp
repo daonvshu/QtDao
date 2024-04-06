@@ -17,7 +17,7 @@ QTDAO_BEGIN_NAMESPACE
 #define RL_TB(tb) checkAndRemoveKeywordEscapes(tb, SQLITE_KEYWORDS_ESCAPES)
 
 void SqliteClient::testConnect() {
-    auto appLocal = dynamic_cast<ConfigSqliteBuilder*>(globalConfig.get())->getDbStoreDirectory();
+    auto appLocal = dynamic_cast<ConfigSqliteBuilder*>(config)->getDbStoreDirectory();
     QDir dir;
     if (!dir.exists(appLocal)) {
         if (!dir.mkpath(appLocal)) {
@@ -34,8 +34,7 @@ void SqliteClient::createDatabase() {
 void SqliteClient::dropDatabase() {
     ConnectionPool::closeAllConnection();
 
-    auto appLocal = dynamic_cast<ConfigSqliteBuilder*>(globalConfig.get())->getDbStoreDirectory();
-    QFile file(dynamic_cast<ConfigSqliteBuilder*>(globalConfig.get())->getDbStorePath());
+    QFile file(dynamic_cast<ConfigSqliteBuilder*>(config)->getDbStorePath());
     if (file.exists()) {
         if (!file.remove()) {
             throw DaoException("unable remove database file!");
@@ -44,7 +43,7 @@ void SqliteClient::dropDatabase() {
 }
 
 QStringList SqliteClient::exportAllTables() {
-    auto query = BaseQuery::queryPrimitive("select name from sqlite_master where type = 'table' and name not like 'sqlite_%'");
+    auto query = BaseQuery::queryPrimitive("select name from sqlite_master where type = 'table' and name not like 'sqlite_%'", {}, currentSessionId());
     QStringList tableNames;
     while (query.next()) {
         tableNames << query.value(0).toString();
@@ -53,7 +52,7 @@ QStringList SqliteClient::exportAllTables() {
 }
 
 bool SqliteClient::checkTableExist(const QString& tbName) {
-    auto query = BaseQuery::queryPrimitive("select *from sqlite_master where type='table' and name = '" % RL_TB(tbName) % "'");
+    auto query = BaseQuery::queryPrimitive("select *from sqlite_master where type='table' and name = '" % RL_TB(tbName) % "'", {}, currentSessionId());
     return query.next();
 }
 
@@ -72,22 +71,22 @@ void SqliteClient::createTableIfNotExist(const QString &tbName,
     }
     str.append(")");
 
-    BaseQuery::queryPrimitive(str);
+    BaseQuery::queryPrimitive(str, {}, currentSessionId());
 }
 
 void SqliteClient::renameTable(const QString& oldName, const QString& newName) {
-    BaseQuery::queryPrimitive("alter table " % oldName % " rename to " % newName);
+    BaseQuery::queryPrimitive("alter table " % oldName % " rename to " % newName, {}, currentSessionId());
 }
 
 void SqliteClient::dropTable(const QString& tbName) {
-    BaseQuery::queryPrimitive("drop table if exists " % tbName);
+    BaseQuery::queryPrimitive("drop table if exists " % tbName, {}, currentSessionId());
 }
 
 void SqliteClient::truncateTable(const QString& tbName) {
-    BaseQuery::queryPrimitive("delete from " % tbName);
+    BaseQuery::queryPrimitive("delete from " % tbName, {}, currentSessionId());
 
     if (checkTableExist("sqlite_sequence")) {
-        BaseQuery::queryPrimitive("delete from sqlite_sequence where name = '" % RL_TB(tbName) % "'");
+        BaseQuery::queryPrimitive("delete from sqlite_sequence where name = '" % RL_TB(tbName) % "'", {}, currentSessionId());
     }
 }
 
@@ -95,7 +94,7 @@ void SqliteClient::enableForeignKey(const QString &tbName, bool enabled) {
     if (!tbName.isEmpty()) {
         return;
     }
-    BaseQuery::queryPrimitive(QLatin1String("PRAGMA foreign_keys = ") % (enabled ? "ON" : "OFF"));
+    BaseQuery::queryPrimitive(QLatin1String("PRAGMA foreign_keys = ") % (enabled ? "ON" : "OFF"), {}, currentSessionId());
 }
 
 void SqliteClient::dropReferencedForeignKey(const QString &) {
@@ -105,7 +104,7 @@ void SqliteClient::dropReferencedForeignKey(const QString &) {
 QList<QPair<QString, QString>> SqliteClient::exportAllFields(const QString& tbName) {
     QList<QPair<QString, QString>> fields;
 
-    auto query = BaseQuery::queryPrimitive("select name, type from pragma_table_info('" % RL_TB(tbName) % "')");
+    auto query = BaseQuery::queryPrimitive("select name, type from pragma_table_info('" % RL_TB(tbName) % "')", {}, currentSessionId());
 
     while (query.next()) {
         fields << qMakePair(
@@ -117,12 +116,12 @@ QList<QPair<QString, QString>> SqliteClient::exportAllFields(const QString& tbNa
 }
 
 void SqliteClient::addField(const QString &tbName, const QString &field) {
-    BaseQuery::queryPrimitive("alter table " % tbName % " add column " % field);
+    BaseQuery::queryPrimitive("alter table " % tbName % " add column " % field, {}, currentSessionId());
 }
 
 void SqliteClient::dropField(const QString &tbName, const QString &fieldName) {
     Q_ASSERT(dropColumnSupported());
-    BaseQuery::queryPrimitive("alter table " % tbName % " drop column " % fieldName);
+    BaseQuery::queryPrimitive("alter table " % tbName % " drop column " % fieldName, {}, currentSessionId());
 }
 
 bool SqliteClient::dropColumnSupported() {
@@ -131,7 +130,7 @@ bool SqliteClient::dropColumnSupported() {
 #else
     return false;
 #endif
-    /*auto query = BaseQuery::queryPrimitive("select sqlite_version()");
+    /*auto query = BaseQuery::queryPrimitive("select sqlite_version()", {}, currentSessionId());
     if (query.next()) {
         auto versionStr = query.value(0).toString();
         auto versions = versionStr.split(".");
@@ -144,7 +143,7 @@ bool SqliteClient::dropColumnSupported() {
 
 void SqliteClient::renameField(const QString &tbName, const QString &oldFieldName, const QString &newFieldName) {
     Q_ASSERT(renameColumnSupported());
-    BaseQuery::queryPrimitive("alter table " % tbName % " rename column " % oldFieldName % " to " % newFieldName);
+    BaseQuery::queryPrimitive("alter table " % tbName % " rename column " % oldFieldName % " to " % newFieldName, {}, currentSessionId());
 }
 
 bool SqliteClient::renameColumnSupported() {
@@ -153,7 +152,7 @@ bool SqliteClient::renameColumnSupported() {
 #else
     return false;
 #endif
-    /*auto query = BaseQuery::queryPrimitive("select sqlite_version()");
+    /*auto query = BaseQuery::queryPrimitive("select sqlite_version()", {}, currentSessionId());
     if (query.next()) {
         auto versionStr = query.value(0).toString();
         auto versions = versionStr.split(".");
@@ -167,7 +166,7 @@ bool SqliteClient::renameColumnSupported() {
 QHash<IndexType, QStringList> SqliteClient::exportAllIndexes(const QString &tbName) {
     QHash<IndexType, QStringList> indexes;
 
-    auto query = BaseQuery::queryPrimitive("select name, `unique` from pragma_index_list('" % RL_TB(tbName) % "') where origin = 'c'");
+    auto query = BaseQuery::queryPrimitive("select name, `unique` from pragma_index_list('" % RL_TB(tbName) % "') where origin = 'c'", {}, currentSessionId());
     while (query.next()) {
         indexes[IndexType(query.value(1).toInt())] << query.value(0).toString();
     }
@@ -187,11 +186,11 @@ void SqliteClient::createIndex(const QString &tbName,
     }
 
     QString str = "create " % typeStr % "index " % indexName % " on " % tbName % " (" % fields.join(",") % ")";
-    BaseQuery::queryPrimitive(str);
+    BaseQuery::queryPrimitive(str, {}, currentSessionId());
 }
 
 void SqliteClient::dropIndex(const QString& tbName, const QString& indexName) {
-    BaseQuery::queryPrimitive("drop index " % indexName);
+    BaseQuery::queryPrimitive("drop index " % indexName, {}, currentSessionId());
 }
 
 QString SqliteClient::getIndexFromFields(const QStringList &fields) {

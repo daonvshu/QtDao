@@ -253,7 +253,7 @@ public:
     void tableUpgrade(int oldVersion, int curVersion);
 
 private:
-    static void tableUpgrade(EntityReaderInterface* reader, int oldVersion, int curVersion);
+    void tableUpgrade(EntityReaderInterface* reader, int oldVersion, int curVersion);
 
     template<int Type, typename E>
     typename std::enable_if<Type == 0, EntityReaderInterface*>::type
@@ -291,11 +291,16 @@ public:
     static QString getIndexFromFields(const QStringList& fields, const QStringList& escapeSymbols);
 
 protected:
-    static QString currentDatabaseName();
+    QString currentDatabaseName() const;
+
+    qint64 currentSessionId() const;
 
     friend class ConfigBuilder;
 
     virtual QString translateForeignKeyStatement(const ForeignKey& key);
+
+protected:
+    class ConfigBuilder* config = nullptr;
 };
 
 template<int Type, typename E>

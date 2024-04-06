@@ -1,6 +1,8 @@
 #include "query/insertimpl.h"
 
 #include "config/configbuilder.h"
+#include "config/configmanager.h"
+
 #include "dbexception.h"
 
 QTDAO_BEGIN_NAMESPACE
@@ -98,9 +100,10 @@ QString InsertImpl::buildInsertPrefix() {
             break;
         case InsertMode::INSERT_OR_REPLACE:
         {
-            if (globalConfig->isSqlite()) {
+            auto config = ConfigManager::getConfig(getSessionId());
+            if (config->isSqlite()) {
                 sql = "insert or replace into %1 (";
-            } else if (globalConfig->isMysql()) {
+            } else if (config->isMysql()) {
                 sql = "replace into %1 (";
             } else {
                 throw DaoException("sqlserver insert or replace unsupported!");
@@ -109,9 +112,10 @@ QString InsertImpl::buildInsertPrefix() {
             break;
         case InsertMode::INSERT_OR_IGNORE:
         {
-            if (globalConfig->isSqlite()) {
+            auto config = ConfigManager::getConfig(getSessionId());
+            if (config->isSqlite()) {
                 sql = "insert or ignore into %1 (";
-            } else if (globalConfig->isMysql()) {
+            } else if (config->isMysql()) {
                 sql = "insert ignore into %1 (";
             } else {
                 throw DaoException("sqlserver insert or ignore unsupported!");

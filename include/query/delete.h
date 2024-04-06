@@ -46,14 +46,14 @@ template<typename E>
 inline void Delete<E>::deleteBy() {
     buildDeleteByFilterSqlStatement();
     setDebug(this->builder);
-    exec();
+    exec(getSessionId());
 }
 
 template<typename E>
 inline void Delete<E>::deleteBatch() {
     buildDeleteByFilterSqlStatement();
     setDebug(this->builder);
-    execBatch();
+    execBatch(getSessionId());
 }
 
 template<typename E>

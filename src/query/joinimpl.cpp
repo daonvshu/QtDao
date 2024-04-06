@@ -1,5 +1,7 @@
 #include "query/joinimpl.h"
+
 #include "config/configbuilder.h"
+#include "config/configmanager.h"
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -87,8 +89,9 @@ void JoinImpl::buildJoinSqlStatement() {
 
     auto& constraint = constraintConnector();
     if (!constraint.isEmpty()) {
+        auto config = ConfigManager::getConfig(getSessionId());
         constraint.setFieldPrefixGetter(
-            unionSelect && !globalConfig->isSqlite() ? std::function<QString(const QString&)>() : prefixGetter
+            unionSelect && !config->isSqlite() ? std::function<QString(const QString&)>() : prefixGetter
         );
         constraint.combine();
         sql.append(' ');
@@ -101,7 +104,8 @@ void JoinImpl::buildJoinSqlStatement() {
 
 QString JoinImpl::readExplainStatement() {
     buildJoinSqlStatement();
-    return globalConfig->getClient()->translateSqlStatement(statement, values);
+    auto config = ConfigManager::getConfig(getSessionId());
+    return config->getClient()->translateSqlStatement(statement, values);
 }
 
 QTDAO_END_NAMESPACE

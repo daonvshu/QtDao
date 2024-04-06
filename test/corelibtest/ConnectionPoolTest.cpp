@@ -172,6 +172,6 @@ void ConnectionPoolTest::cleanup() {
 }
 
 void ConnectionPoolTest::cleanupTestCase() {
-    globalConfig->getClient()->dropDatabase();
+    ConfigManager::getConfig()->getClient()->dropDatabase();
 }
 

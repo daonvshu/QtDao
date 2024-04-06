@@ -14,6 +14,10 @@ public:
 
     ConfigSqlServerBuilder& databaseName(const QString& name) override;
 
+    ConfigBuilder & configAlias(const QString &alias) override;
+
+    ConfigBuilder & session(qint64 sessionId) override;
+
     ConfigSqlServerBuilder& password(const QString& password) override;
 
     ConfigSqlServerBuilder& options(const QString& options) override;

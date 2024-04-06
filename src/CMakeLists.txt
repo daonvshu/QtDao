@@ -25,6 +25,7 @@ add_library(${PROJECT_NAME}
     config/configsqlite.cpp
     config/configmysql.cpp
     config/configsqlserver.cpp
+    config/configmanager.cpp
 
     dbclients/abstractclient.cpp
     dbclients/mysqlclient.cpp
@@ -47,6 +48,7 @@ add_library(${PROJECT_NAME}
 
     connectionpool.cpp
     qtdao.cpp
+    configselector.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ../include)

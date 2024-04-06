@@ -1,6 +1,8 @@
 #include "query/selectimpl.h"
 
 #include "config/configbuilder.h"
+#include "config/configmanager.h"
+
 #include "dbexception.h"
 
 QTDAO_BEGIN_NAMESPACE
@@ -9,7 +11,8 @@ void SelectImpl::buildFilterSqlStatement() {
     QString sql = "select %1%2 from %3";
     QVariantList values;
 
-    if (topSize != 0 && globalConfig->isSqlServer()) {
+    auto config = ConfigManager::getConfig(getSessionId());
+    if (topSize != 0 && config->isSqlServer()) {
         sql = sql.arg("top " + QString::number(topSize) + (topPercent ? " percent " : " "));
     } else {
         sql = sql.arg("");
@@ -67,7 +70,8 @@ QString SelectImpl::getBindColumns(QVariantList &values) {
 
 QString SelectImpl::readExplainStatement() {
     buildFilterSqlStatement();
-    return globalConfig->getClient()->translateSqlStatement(statement, values);
+    auto config = ConfigManager::getConfig(getSessionId());
+    return config->getClient()->translateSqlStatement(statement, values);
 }
 
 void SelectImpl::recordBind(const QSqlRecord& record, const EntityBinder& entityBinder) {
@@ -79,7 +83,7 @@ void SelectImpl::recordBind(const QSqlRecord& record, const EntityBinder& entity
 void SelectImpl::uniqueExec(const EntityBinder& entityBinder, const RecordBinder& recordHandler) {
     buildFilterSqlStatement();
 
-    auto query = exec();
+    auto query = exec(getSessionId());
 
     int resultSize = 0;
     while (query.next()) {
@@ -99,7 +103,7 @@ void SelectImpl::uniqueExec(const EntityBinder& entityBinder, const RecordBinder
 void SelectImpl::oneExec(const EntityBinder& entityBinder, const RecordBinder& recordHandler) {
     buildFilterSqlStatement();
 
-    auto query = exec();
+    auto query = exec(getSessionId());
     if (query.next()) {
         if (entityBinder) {
             recordBind(query.record(), entityBinder);
@@ -113,7 +117,7 @@ void SelectImpl::oneExec(const EntityBinder& entityBinder, const RecordBinder& r
 void SelectImpl::listExec(const RecordBinder& recordHandler) {
     buildFilterSqlStatement();
 
-    auto query = exec();
+    auto query = exec(getSessionId());
     while (query.next()) {
         recordHandler(query.record());
     }

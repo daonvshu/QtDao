@@ -3,9 +3,9 @@ project(qtdao)
 
 add_subdirectory(src)
 
-option(BUILD_TEST "enable test projects" OFF)
+option(QTDAO_BUILD_TEST "enable qtdao test projects" OFF)
 
-if (BUILD_TEST)
+if (QTDAO_BUILD_TEST)
   message("config qtdao unit tests!")
 
   add_subdirectory(test/corelibtest)

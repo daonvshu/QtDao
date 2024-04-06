@@ -8,18 +8,16 @@ QTDAO_BEGIN_NAMESPACE
 
 class VersionControl {
 public:
-    static void checkLocalVersion();
+    static void checkLocalVersion(qint64 sessionId);
 
-    static int getLocalVersion();
+    static int getLocalVersion(qint64 sessionId);
 
 private:
-    static void updateLocalVersion();
+    static void updateLocalVersion(qint64 sessionId);
 
-    static void invokeCreateTables();
+    static void invokeCreateTables(qint64 sessionId);
 
-    static void invokeTableUpgrade(int oldVer, int newVer);
-
-    static QByteArray getDelegateStr();
+    static void invokeTableUpgrade(int oldVer, int newVer, qint64 sessionId);
 };
 
 QTDAO_END_NAMESPACE

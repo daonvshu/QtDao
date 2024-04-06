@@ -142,5 +142,5 @@ void InsertIntoSelectTest::cleanup() {
 }
 
 void InsertIntoSelectTest::cleanupTestCase() {
-    globalConfig->getClient()->dropDatabase();
+    ConfigManager::getConfig()->getClient()->dropDatabase();
 }

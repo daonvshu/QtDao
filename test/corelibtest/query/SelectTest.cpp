@@ -540,6 +540,6 @@ void SelectTest::cleanup() {
 }
 
 void SelectTest::cleanupTestCase() {
-    globalConfig->getClient()->dropDatabase();
+    ConfigManager::getConfig()->getClient()->dropDatabase();
 }
 

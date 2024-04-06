@@ -42,7 +42,7 @@ void Upsert<E>::insert() {
     bool operateBatch = buildInsertBySetSqlStatement();
     setDebug(this->builder);
 
-    operateBatch ? execBatch() : exec();
+    operateBatch ? execBatch(getSessionId()) : exec(getSessionId());
 }
 
 template<typename E>
@@ -57,7 +57,7 @@ void Upsert<E>::insert(E &entity) {
     setSqlQueryStatement(sqlStatement, values);
     setDebug(this->builder);
 
-    QSqlQuery query = exec();
+    QSqlQuery query = exec(getSessionId());
     EntityReaderProvider<E>::bindAutoIncrementId(entity, query.lastInsertId());
 }
 
@@ -91,7 +91,7 @@ void Upsert<E>::insert(const QList<E> &entities) {
     setSqlQueryStatement(sqlStatement, tagValues);
     setDebug(this->builder);
 
-    execBatch();
+    execBatch(getSessionId());
 }
 
 QTDAO_END_NAMESPACE

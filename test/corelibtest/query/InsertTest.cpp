@@ -426,6 +426,6 @@ void InsertTest::cleanup() {
 }
 
 void InsertTest::cleanupTestCase() {
-    globalConfig->getClient()->dropDatabase();
+    ConfigManager::getConfig()->getClient()->dropDatabase();
 }
 

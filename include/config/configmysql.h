@@ -14,6 +14,10 @@ public:
 
     ConfigMysqlBuilder& databaseName(const QString& name) override;
 
+    ConfigBuilder & configAlias(const QString &alias) override;
+
+    ConfigBuilder & session(qint64 sessionId) override;
+
     ConfigMysqlBuilder& password(const QString& password) override;
 
     ConfigMysqlBuilder& options(const QString& options) override;

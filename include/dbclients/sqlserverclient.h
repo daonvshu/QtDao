@@ -40,7 +40,7 @@ public:
 
     void dropField(const QString &tbName, const QString &fieldName) override;
 
-    static void dropConstraint(const QString& tbName, const QString& constraintName);
+    void dropConstraint(const QString& tbName, const QString& constraintName);
 
     void renameField(const QString &tbName, const QString &oldFieldName, const QString &newFieldName) override;
 
@@ -58,9 +58,9 @@ public:
 
     void transferData(const QString &fromTb, const QString &toTb) override;
 
-    static void transferDataBefore(const QString& tbName);
+    void transferDataBefore(const QString& tbName);
 
-    static void transferDataAfter(const QString& tbName);
+    void transferDataAfter(const QString& tbName);
 };
 
 QTDAO_END_NAMESPACE

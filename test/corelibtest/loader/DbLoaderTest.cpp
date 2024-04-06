@@ -21,34 +21,36 @@ void DbLoaderTest::initTestCase() {
 
 void DbLoaderTest::loadConfigTest() {
     setupDatabase();
+    auto config = ConfigManager::getConfig();
     if (engineModel == Engine_Sqlite) {
-        QVERIFY(globalConfig->getClient()->checkTableExist(SqliteTest1::Info::getTableName()));
-        QVERIFY(globalConfig->getClient()->checkTableExist(SqliteTest2::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(SqliteTest1::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(SqliteTest2::Info::getTableName()));
     } else if (engineModel == Engine_Mysql) {
-        QVERIFY(globalConfig->getClient()->checkTableExist(MysqlTest1::Info::getTableName()));
-        QVERIFY(globalConfig->getClient()->checkTableExist(MysqlTest2::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(MysqlTest1::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(MysqlTest2::Info::getTableName()));
     } else if (engineModel == Engine_SqlServer) {
-        QVERIFY(globalConfig->getClient()->checkTableExist(SqlServerTest1::Info::getTableName()));
-        QVERIFY(globalConfig->getClient()->checkTableExist(SqlServerTest2::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(SqlServerTest1::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(SqlServerTest2::Info::getTableName()));
     }
-    QCOMPARE(globalConfig->getLocalVersion(), 1);
+    QCOMPARE(config->getLocalVersion(), 1);
 }
 
 void DbLoaderTest::upgradeTest() {
     //reinit
     setupDatabase(3);
+    auto config = ConfigManager::getConfig();
     if (engineModel == Engine_Sqlite) {
-        QVERIFY(globalConfig->getClient()->checkTableExist(SqliteTest1::Info::getTableName()));
-        QVERIFY(globalConfig->getClient()->checkTableExist(SqliteTest2::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(SqliteTest1::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(SqliteTest2::Info::getTableName()));
     } else if (engineModel == Engine_Mysql) {
-        QVERIFY(globalConfig->getClient()->checkTableExist(MysqlTest1::Info::getTableName()));
-        QVERIFY(globalConfig->getClient()->checkTableExist(MysqlTest2::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(MysqlTest1::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(MysqlTest2::Info::getTableName()));
     } else if (engineModel == Engine_SqlServer) {
-        QVERIFY(globalConfig->getClient()->checkTableExist(SqlServerTest1::Info::getTableName()));
-        QVERIFY(globalConfig->getClient()->checkTableExist(SqlServerTest2::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(SqlServerTest1::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(SqlServerTest2::Info::getTableName()));
     }
     //test version
-    QCOMPARE(globalConfig->getLocalVersion(), 3);
+    QCOMPARE(config->getLocalVersion(), 3);
 }
 
 void DbLoaderTest::cleanup() {
@@ -56,5 +58,5 @@ void DbLoaderTest::cleanup() {
 }
 
 void DbLoaderTest::cleanupTestCase() {
-    globalConfig->getClient()->dropDatabase();
+    ConfigManager::getConfig()->getClient()->dropDatabase();
 }

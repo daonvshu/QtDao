@@ -14,6 +14,10 @@ public:
 
     ConfigSqliteBuilder& databaseName(const QString& name) override;
 
+    ConfigBuilder & configAlias(const QString &alias) override;
+
+    ConfigBuilder & session(qint64 sessionId) override;
+
     ConfigSqliteBuilder& password(const QString& password) override;
 
     ConfigSqliteBuilder& options(const QString& options) override;

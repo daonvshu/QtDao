@@ -19,12 +19,14 @@ public:
      * execute sql statement directly
      * @param statement sql query statement
      * @param values bound the values to prepared statement
+     * @param sessionId session for different database config
      * @param logging current logging category function ptr
      * @param debugFatalEnabled use qFatal in debug mode
      * @return
      */
     static QSqlQuery queryPrimitive(const QString& statement,
                                     const QVariantList& values = QVariantList(),
+                                    qint64 sessionId = -1,
                                     LoggingCategoryPtr logging = nullptr,
                                     bool debugFatalEnabled = true);
 
@@ -32,11 +34,13 @@ public:
      * execute sql statement directly, and use temporary database connection without connection pool,
      * throw 'DaoException' when execute fail
      * @param statement sql query statement
+     * @param sessionId session for different database config
      * @param databaseName database name default to config database
      * @param connectionName connection name
      * @param resultReader query result reader
      */
     static void executePrimitiveQuery(const QString& statement,
+                                      qint64 sessionId = -1,
                                       QString databaseName = QString(),
                                       QString connectionName = QString(),
                                       const std::function<void(QSqlQuery&)>& resultReader = nullptr);
@@ -69,15 +73,17 @@ protected:
 
     /**
      * execute prepared sql query
+     * @param sessionId session for different database config
      * @return
      */
-    QSqlQuery exec();
+    QSqlQuery exec(qint64 sessionId);
 
     /**
      * execute prepared sql query in a batch
+     * @param sessionId session for different database config
      * @return
      */
-    QSqlQuery execBatch();
+    QSqlQuery execBatch(qint64 sessionId);
 
 protected:
     //sql statement
@@ -100,11 +106,12 @@ private:
 private:
     /**
      * get a sql connection from connection pool
+     * @param sessionId session for different database config
      * @param prepareOk set prepare statement result
      * @param batchExecMode current execute in batch mode
      * @return opened query connection
      */
-    QSqlQuery getQuery(bool& prepareOk, bool batchExecMode);
+    QSqlQuery getQuery(qint64 sessionId, bool& prepareOk, bool batchExecMode);
 
     /**
      * bound values to prepared query
@@ -150,7 +157,7 @@ struct BaseQuery::ExplainTool<SqliteExplainInfo> {
         Valid = 1
     };
 
-    static QList<SqliteExplainInfo> toExplain(const QString& statement);
+    static QList<SqliteExplainInfo> toExplain(const QString& statement, qint64 sessionId = -1);
 };
 
 template <>
@@ -159,7 +166,7 @@ struct BaseQuery::ExplainTool<SqliteExplainQueryPlanInfo> {
         Valid = 1
     };
 
-    static QList<SqliteExplainQueryPlanInfo> toExplain(const QString& statement);
+    static QList<SqliteExplainQueryPlanInfo> toExplain(const QString& statement, qint64 sessionId = -1);
 };
 
 template <>
@@ -168,7 +175,7 @@ struct BaseQuery::ExplainTool<MysqlExplainInfo> {
         Valid = 1
     };
 
-    static QList<MysqlExplainInfo> toExplain(const QString& statement);
+    static QList<MysqlExplainInfo> toExplain(const QString& statement, qint64 sessionId = -1);
 };
 
 template<>
@@ -177,7 +184,7 @@ struct BaseQuery::ExplainTool<SqlServerExplainInfo> {
         Valid = 1
     };
 
-    static QList<SqlServerExplainInfo> toExplain(const QString& statement);
+    static QList<SqlServerExplainInfo> toExplain(const QString& statement, qint64 sessionId = -1);
 };
 
 QTDAO_END_NAMESPACE

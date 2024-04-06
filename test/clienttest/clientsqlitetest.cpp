@@ -6,6 +6,8 @@
 #include <dao.h>
 #include <qtest.h>
 
+using namespace CT;
+
 void ClientSqliteTest::initTestCase() {
     dao::_config<dao::ConfigSqliteBuilder>()
             .version(1)

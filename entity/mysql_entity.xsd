@@ -181,6 +181,8 @@
         </xs:element>
       </xs:sequence>
       <xs:attribute name="prefix" type="xs:string" use="optional" />
+      <xs:attribute name="namespace" type="xs:string" use="optional" />
+      <xs:attribute name="alias" type="xs:string" use="optional" />
       <xs:attribute name="db" use="required">
         <xs:simpleType>
           <xs:restriction base="xs:string">

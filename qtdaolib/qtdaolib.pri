@@ -8,7 +8,6 @@
 
 HEADERS += ../include/connectionpool.h \
     ../include/dao.h \
-    ../include/dbconfig.h \
     ../include/dbexception.h \
     ../include/global.h \
     ../include/builder/option/columnbuilder.h \

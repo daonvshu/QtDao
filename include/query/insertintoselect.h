@@ -29,7 +29,7 @@ template<typename E>
 inline void InsertIntoSelect<E>::insert() {
     buildSqlStatement();
     setDebug(this->builder);
-    exec();
+    exec(getSessionId());
 }
 
 QTDAO_END_NAMESPACE

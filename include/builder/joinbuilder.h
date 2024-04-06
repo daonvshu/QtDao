@@ -9,6 +9,7 @@
 #include "option/constraintbuilder.h"
 #include "option/unionbuilder.h"
 #include "option/joinconnectbuilder.h"
+#include "option/sessionbuilder.h"
 
 #include "../macro/macro.h"
 
@@ -16,16 +17,18 @@ QTDAO_BEGIN_NAMESPACE
 
 template<typename... E>
 class JoinBuilder
-        : public DebugBuilder<JoinBuilder<E...>>
-        , public ColumnBuilder<JoinBuilder<E...>>
-        , public FilterBuilder<JoinBuilder<E...>>
-        , public OnConditionBuilder<JoinBuilder<E...>>
-        , public ConstraintBuilder<JoinBuilder<E...>>
-        , public UnionBuilder<JoinBuilder<E...>>
-        , public JoinConnectBuilder<JoinBuilder<E...>>
-        , public FromEsSelectBuilder<JoinBuilder, E...>
+    : public DebugBuilder<JoinBuilder<E...>>
+    , public ColumnBuilder<JoinBuilder<E...>>
+    , public FilterBuilder<JoinBuilder<E...>>
+    , public OnConditionBuilder<JoinBuilder<E...>>
+    , public ConstraintBuilder<JoinBuilder<E...>>
+    , public UnionBuilder<JoinBuilder<E...>>
+    , public JoinConnectBuilder<JoinBuilder<E...>>
+    , public FromEsSelectBuilder<JoinBuilder, E...>
+    , public SessionBuilder<JoinBuilder<E...>>
 {
 public:
+    using SessionBuilder<JoinBuilder<E...>>::SessionBuilder;
     using FromEsSelectBuilder<JoinBuilder, E...>::from;
 
     template<typename E2>

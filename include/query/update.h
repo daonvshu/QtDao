@@ -50,7 +50,7 @@ template<typename E>
 inline int Update<E>::update() {
     buildUpdateBySetSqlStatement();
     setDebug(this->builder);
-    auto query = exec();
+    auto query = exec(getSessionId());
     return query.numRowsAffected();
 }
 
@@ -58,7 +58,7 @@ template<typename E>
 inline int Update<E>::updateBatch() {
     buildUpdateBySetSqlStatement();
     setDebug(this->builder);
-    auto query = execBatch();
+    auto query = execBatch(getSessionId());
     return query.numRowsAffected();
 }
 

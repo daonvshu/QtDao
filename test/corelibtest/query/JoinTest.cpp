@@ -723,6 +723,6 @@ void JoinTest::cleanup() {
 }
 
 void JoinTest::cleanupTestCase() {
-    globalConfig->getClient()->dropDatabase();
+    ConfigManager::getConfig()->getClient()->dropDatabase();
 }
 

@@ -169,12 +169,16 @@ QString AbstractClient::getIndexFromFields(const QStringList &fields, const QStr
     return indexName;
 }
 
-QString AbstractClient::currentDatabaseName() {
-    return globalConfig->mDatabaseName;
+QString AbstractClient::currentDatabaseName() const {
+    return config->mDatabaseName;
+}
+
+qint64 AbstractClient::currentSessionId() const {
+    return config->mSessionId;
 }
 
 void AbstractClient::tableUpgrade(EntityReaderInterface *reader, int oldVersion, int curVersion) {
-    auto upgrader = globalConfig->dbUpgrader;
+    auto upgrader = config->dbUpgrader;
     upgrader->setEntityReader(reader);
     upgrader->onUpgrade(oldVersion, curVersion);
 }

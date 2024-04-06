@@ -1,6 +1,5 @@
 ﻿#include "config/configsqlserver.h"
-
-#include "config/configbuilder.h"
+#include "config/configmanager.h"
 
 QTDAO_BEGIN_NAMESPACE
 ConfigSqlServerBuilder::ConfigSqlServerBuilder()
@@ -24,6 +23,16 @@ ConfigSqlServerBuilder& ConfigSqlServerBuilder::driver(const QString& driver) {
 
 ConfigSqlServerBuilder& ConfigSqlServerBuilder::databaseName(const QString& name) {
     mDatabaseName = name;
+    return *this;
+}
+
+ConfigBuilder &ConfigSqlServerBuilder::configAlias(const QString &alias) {
+    mAlias = alias;
+    return *this;
+}
+
+ConfigBuilder &ConfigSqlServerBuilder::session(qint64 sessionId) {
+    mSessionId = sessionId;
     return *this;
 }
 
@@ -53,11 +62,6 @@ ConfigSqlServerBuilder& ConfigSqlServerBuilder::port(int port) {
 }
 
 QSqlDatabase ConfigSqlServerBuilder::getConnection(const QString& connectionName, const QString& databaseName) {
-    auto dbName = databaseName;
-    if (dbName.isEmpty()) {
-        dbName = mDatabaseName;
-    }
-
     auto db = QSqlDatabase::addDatabase(mDriver, connectionName);
     db.setDatabaseName(QString("DRIVER={SQL SERVER};"
         "SERVER=%1,%2;"
@@ -67,7 +71,7 @@ QSqlDatabase ConfigSqlServerBuilder::getConnection(const QString& connectionName
     )
         .arg(mHost)
         .arg(mPort)
-        .arg(dbName, mUser, mPassword)
+        .arg(databaseName, mUser, mPassword)
     );
 
     if (!mOptions.isEmpty()) {
@@ -78,8 +82,9 @@ QSqlDatabase ConfigSqlServerBuilder::getConnection(const QString& connectionName
 }
 
 void ConfigSqlServerBuilder::initializeDatabase() {
-    globalConfig.reset(new ConfigSqlServerBuilder(*this));
-    setupDatabase();
+    auto config = new ConfigSqlServerBuilder(*this);
+    ConfigManager::registerConfig(config);
+    config->setupDatabase();
 }
 
 QTDAO_END_NAMESPACE

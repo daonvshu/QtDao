@@ -393,5 +393,5 @@ void UpsertTest::cleanup() {
 }
 
 void UpsertTest::cleanupTestCase() {
-    globalConfig->getClient()->dropDatabase();
+    ConfigManager::getConfig()->getClient()->dropDatabase();
 }

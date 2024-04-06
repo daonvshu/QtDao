@@ -6,6 +6,13 @@
 
 #define QTDAO_USING_NAMESPACE using namespace dao;
 
+#define QTDAO_VERSION_MAJOR 2
+#define QTDAO_VERSION_MINOR 2
+#define QTDAO_VERSION_PATCH 0
+
+#define QTDAO_VERSION_CHECK(major, minor, patch) ((major<<16)|(minor<<8)|(patch))
+#define QTDAO_VERSION QTDAO_VERSION_CHECK(QTDAO_VERSION_MAJOR, QTDAO_VERSION_MINOR, QTDAO_VERSION_PATCH)
+
 //#define QTDAO_DEBUG
 
 #ifdef QTDAO_DEBUG

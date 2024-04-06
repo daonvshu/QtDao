@@ -1,15 +1,17 @@
 ﻿#include "config/configbuilder.h"
+#include "config/configmanager.h"
 
 #include "dbclients/mysqlclient.h"
 #include "dbclients/sqliteclient.h"
 #include "dbclients/sqlserverclient.h"
+
 #include "dbexception.h"
 #include "query/basequery.h"
 #include "versionctl/versioncontrol.h"
 
-QTDAO_BEGIN_NAMESPACE
+#include "connectionpool.h"
 
-QScopedPointer<ConfigBuilder> globalConfig;
+QTDAO_BEGIN_NAMESPACE
 
 ConfigBuilder::ConfigBuilder(ConfigType type)
     : configType(type)
@@ -31,30 +33,40 @@ ConfigBuilder::ConfigBuilder(ConfigType type)
 }
 
 void ConfigBuilder::setupDatabase() {
-    globalConfig->dbClient->testConnect();
+    dbClient->config = this;
+    dbClient->testConnect();
 
-    if (globalConfig->dbUpgrader.isNull()) {
-        globalConfig->dbUpgrader = QSharedPointer<DatabaseUpgrader>(new DatabaseUpgrader);
+    if (dbUpgrader.isNull()) {
+        dbUpgrader = QSharedPointer<DatabaseUpgrader>(new DatabaseUpgrader);
     }
-    globalConfig->dbUpgrader->setCurClient(globalConfig->dbClient.get());
-    globalConfig->dbUpgrader->setCurConfig(globalConfig.get());
+    dbUpgrader->setCurClient(dbClient.get());
+    dbUpgrader->setCurConfig(this);
 
     if (createDbEnabled) {
-        globalConfig->dbClient->createDatabase();
+        dbClient->createDatabase();
     }
 
     if (createTableEnabled) {
-        VersionControl::checkLocalVersion();
+        if (mSessionId == -1) {
+            VersionControl::checkLocalVersion(mSessionId);
+        } else {
+            DAO_SCOPED_SESSION_BEGIN(mSessionId);
+            VersionControl::checkLocalVersion(mSessionId);
+        }
     }
 }
 
-int ConfigBuilder::getLocalVersion() {
-    return VersionControl::getLocalVersion();
+int ConfigBuilder::getLocalVersion(qint64 sessionId) {
+    return VersionControl::getLocalVersion(sessionId);
 }
 
 ConfigBuilder &ConfigBuilder::setDatabaseUpgrader(DatabaseUpgrader *databaseUpgrader) {
     dbUpgrader = QSharedPointer<DatabaseUpgrader>(databaseUpgrader);
     return *this;
+}
+
+QSqlDatabase ConfigBuilder::getConnection(const QString &connectionName) {
+    return getConnection(connectionName, mDatabaseName);
 }
 
 QTDAO_END_NAMESPACE

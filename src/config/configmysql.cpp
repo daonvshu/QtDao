@@ -1,4 +1,5 @@
 ﻿#include "config/configmysql.h"
+#include "config/configmanager.h"
 
 #include "dao.h"
 
@@ -24,6 +25,16 @@ ConfigMysqlBuilder& ConfigMysqlBuilder::driver(const QString& driver) {
 
 ConfigMysqlBuilder& ConfigMysqlBuilder::databaseName(const QString& name) {
     mDatabaseName = name;
+    return *this;
+}
+
+ConfigBuilder &ConfigMysqlBuilder::configAlias(const QString &alias) {
+    mAlias = alias;
+    return *this;
+}
+
+ConfigBuilder &ConfigMysqlBuilder::session(qint64 sessionId) {
+    mSessionId = sessionId;
     return *this;
 }
 
@@ -53,13 +64,8 @@ ConfigMysqlBuilder& ConfigMysqlBuilder::port(int port) {
 }
 
 QSqlDatabase ConfigMysqlBuilder::getConnection(const QString& connectionName, const QString& databaseName) {
-    auto dbName = databaseName;
-    if (dbName.isEmpty()) {
-        dbName = mDatabaseName;
-    }
-
     auto db = QSqlDatabase::addDatabase(mDriver, connectionName);
-    db.setDatabaseName(dbName);
+    db.setDatabaseName(databaseName);
     db.setUserName(mUser);
     db.setPassword(mPassword);
     db.setHostName(mHost);
@@ -73,8 +79,9 @@ QSqlDatabase ConfigMysqlBuilder::getConnection(const QString& connectionName, co
 }
 
 void ConfigMysqlBuilder::initializeDatabase() {
-    globalConfig.reset(new ConfigMysqlBuilder(*this));
-    setupDatabase();
+    auto config = new ConfigMysqlBuilder(*this);
+    ConfigManager::registerConfig(config);
+    config->setupDatabase();
 }
 
 QTDAO_END_NAMESPACE

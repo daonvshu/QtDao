@@ -7,7 +7,7 @@
 
 void BaseQueryTest::initTestCase() {
     configDb();
-    globalConfig->getClient()->testConnect();
+    ConfigManager::getConfig()->getClient()->testConnect();
 }
 
 void BaseQueryTest::testPrimitiveQuery() {
@@ -42,7 +42,7 @@ void BaseQueryTest::testPrimitiveQueryWithValue() {
 
 void BaseQueryTest::testPrimitiveQueryFail() {
     try {
-        BaseQuery::queryPrimitive("select?+?", QVariantList(), nullptr, false);
+        BaseQuery::queryPrimitive("select?+?", QVariantList(), -1, nullptr, false);
         QFAIL("primitive query should fail!");
     }
     catch (DaoException&) {
@@ -54,6 +54,6 @@ void BaseQueryTest::cleanup() {
 }
 
 void BaseQueryTest::cleanupTestCase() {
-    globalConfig->getClient()->dropDatabase();
+    ConfigManager::getConfig()->getClient()->dropDatabase();
 }
 

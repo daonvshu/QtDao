@@ -11,6 +11,8 @@
 #include "../../builder/option/frombuilder.h"
 #include "../../builder/option/unionbuilder.h"
 
+#include "../../builder/option/sessionbuilder.h"
+
 QTDAO_BEGIN_NAMESPACE
 
 #pragma warning(push)
@@ -49,6 +51,11 @@ protected:
         return *reinterpret_cast<UnionBuildData*>(c);
     }
 
+    virtual qint64 getSessionId() {
+        qFatal("not implement!");
+        return -1;
+    }
+
 private:
     int c = 0;
 };
@@ -81,6 +88,10 @@ public:
     FilterGroupConnector& filterConnector() override {
         return this->builder.filterCondition;
     }
+
+    qint64 getSessionId() override {
+        return this->builder.querySessionId;
+    }
 };
 
 template<typename E>
@@ -93,6 +104,10 @@ public:
 
     SetGroupConnector& setConnector() override {
         return this->builder.setCondition;
+    }
+
+    qint64 getSessionId() override {
+        return this->builder.querySessionId;
     }
 };
 
@@ -110,6 +125,10 @@ public:
 
     FromBuildData& fromBuildData() override {
         return this->builder.fromData;
+    }
+
+    qint64 getSessionId() override {
+        return this->builder.querySessionId;
     }
 };
 
@@ -140,6 +159,10 @@ public:
     UnionBuildData& unionBuildData() override {
         return this->builder.unionData;
     }
+
+    qint64 getSessionId() override {
+        return this->builder.querySessionId;
+    }
 };
 
 template<typename E>
@@ -169,6 +192,10 @@ public:
     UnionBuildData& unionBuildData() override {
         return this->builder.unionData;
     }
+
+    qint64 getSessionId() override {
+        return this->builder.querySessionId;
+    }
 };
 
 template<typename E>
@@ -185,6 +212,10 @@ public:
 
     FilterGroupConnector& filterConnector() override {
         return this->builder.filterCondition;
+    }
+
+    qint64 getSessionId() override {
+        return this->builder.querySessionId;
     }
 };
 
@@ -210,6 +241,10 @@ public:
 
     FilterGroupConnector& filterConnector() override {
         return this->builder.filterCondition;
+    }
+
+    qint64 getSessionId() override {
+        return this->builder.querySessionId;
     }
 };
 

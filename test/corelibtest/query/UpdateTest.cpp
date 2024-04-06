@@ -161,6 +161,6 @@ void UpdateTest::cleanup() {
 }
 
 void UpdateTest::cleanupTestCase() {
-    globalConfig->getClient()->dropDatabase();
+    ConfigManager::getConfig()->getClient()->dropDatabase();
 }
 

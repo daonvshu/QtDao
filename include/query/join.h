@@ -92,7 +92,7 @@ inline QList<std::tuple<E...>> Join<E...>::list() {
     buildJoinSqlStatement();
     QList<std::tuple<E...>> results;
     setDebug(this->builder);
-    auto query = exec();
+    auto query = exec(getSessionId());
     while (query.next()) {
         std::tuple<E...> result;
         resultBind(result, query);
@@ -108,7 +108,7 @@ inline QList<T> Join<E...>::list(const EntityField<T>& field) {
     setDebug(this->builder);
 
     QList<T> results;
-    auto query = exec();
+    auto query = exec(getSessionId());
 
     auto columnIndex = usedColumnToIndex();
     while (query.next()) {
@@ -124,7 +124,7 @@ inline QList<QPair<T, K>> Join<E...>::list(const EntityField<T>& field1, const E
     setDebug(this->builder);
 
     QList<QPair<T, K>> results;
-    auto query = exec();
+    auto query = exec(getSessionId());
 
     auto columnIndex = usedColumnToIndex();
     while (query.next()) {
@@ -140,7 +140,7 @@ inline QList<std::tuple<T, typename Args::Type...>> Join<E...>::list(const Entit
     setDebug(this->builder);
 
     QList<std::tuple<T, typename Args::Type...>> results;
-    auto query = exec();
+    auto query = exec(getSessionId());
 
     auto columnIndex = usedColumnToIndex();
     while (query.next()) {

@@ -4,6 +4,7 @@
 #include "dbexception.h"
 
 #include "config/configbuilder.h"
+#include "config/configmanager.h"
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -11,7 +12,7 @@ Q_LOGGING_CATEGORY(loggingDefault, "qtdao.query")
 
 bool BaseQuery::useDefaultLogging = false;
 
-QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, LoggingCategoryPtr logging, bool debugFatalEnabled) {
+QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, qint64 sessionId, LoggingCategoryPtr logging, bool debugFatalEnabled) {
     BaseQuery executor;
     executor.setSqlQueryStatement(statement, values);
     executor.setDebug(debugFatalEnabled, logging);
@@ -22,16 +23,14 @@ QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList
 #else
         if (values.first().type() == QVariant::List) {
 #endif
-            return executor.execBatch();
+            return executor.execBatch(sessionId);
         }
     }
-    return executor.exec();
+    return executor.exec(sessionId);
 }
 
-void BaseQuery::executePrimitiveQuery(const QString &statement, QString databaseName, QString connectionName, const std::function<void(QSqlQuery&)>& resultReader) {
-    if (databaseName.isEmpty()) {
-        databaseName = globalConfig->mDatabaseName;
-    }
+void BaseQuery::executePrimitiveQuery(const QString &statement, qint64 sessionId, QString databaseName, QString connectionName, const std::function<void(QSqlQuery&)>& resultReader) {
+    Q_ASSERT(!databaseName.isEmpty());
 
     if (connectionName.isEmpty()) {
         connectionName = "temp_execute_query";
@@ -39,7 +38,7 @@ void BaseQuery::executePrimitiveQuery(const QString &statement, QString database
 
     QSqlError lastErr;
     do {
-        auto db = ConnectionPool::prepareConnect(connectionName, databaseName);
+        auto db = ConfigManager::getConfig(sessionId)->getConnection(connectionName, databaseName);
         if (!db.open()) {
             lastErr = db.lastError();
             break;
@@ -75,26 +74,26 @@ void BaseQuery::setDebug(bool fatalEnabled, LoggingCategoryPtr logging) {
     this->loggingCategoryPtr = logging;
 }
 
-QSqlQuery BaseQuery::exec() {
+QSqlQuery BaseQuery::exec(qint64 sessionId) {
     bool prepareOk;
-    auto query = getQuery(prepareOk, false);
+    auto query = getQuery(sessionId, prepareOk, false);
     if (!prepareOk || !execByCheckEmptyValue(query, this)) {
         postError(query, debugFatalEnabled, !prepareOk);
     }
     return query;
 }
 
-QSqlQuery BaseQuery::execBatch() {
+QSqlQuery BaseQuery::execBatch(qint64 sessionId) {
     bool prepareOk;
-    auto query = getQuery(prepareOk, true);
+    auto query = getQuery(sessionId, prepareOk, true);
     if (!prepareOk || !query.execBatch()) {
         postError(query, debugFatalEnabled, !prepareOk);
     }
     return query;
 }
 
-QSqlQuery BaseQuery::getQuery(bool& prepareOk, bool batchExecMode) {
-    auto db = ConnectionPool::getConnection();
+QSqlQuery BaseQuery::getQuery(qint64 sessionId, bool& prepareOk, bool batchExecMode) {
+    auto db = ConnectionPool::getConnection(sessionId);
     QSqlQuery query(db);
     if (batchExecMode || !values.isEmpty()) {
         if (!query.prepare(statement)) {
@@ -157,8 +156,9 @@ bool BaseQuery::execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executo
     return query.exec(executor->statement);
 }
 
-QList<SqliteExplainInfo> BaseQuery::ExplainTool<SqliteExplainInfo>::toExplain(const QString& statement) {
-    Q_ASSERT_X(globalConfig->isSqlite(), "ExplainTool<SqliteExplainInfo>", "need config sqlite");
+QList<SqliteExplainInfo> BaseQuery::ExplainTool<SqliteExplainInfo>::toExplain(const QString& statement, qint64 sessionId) {
+    auto config = ConfigManager::getConfig(sessionId);
+    Q_ASSERT_X(config->isSqlite(), "ExplainTool<SqliteExplainInfo>", "need config sqlite");
     QSqlQuery query = BaseQuery::queryPrimitive("explain " + statement);
     QList<SqliteExplainInfo> result;
     while (query.next()) {
@@ -176,9 +176,9 @@ QList<SqliteExplainInfo> BaseQuery::ExplainTool<SqliteExplainInfo>::toExplain(co
     return result;
 }
 
-QList<SqliteExplainQueryPlanInfo> BaseQuery::ExplainTool<SqliteExplainQueryPlanInfo>::toExplain(
-    const QString& statement) {
-    Q_ASSERT_X(globalConfig->isSqlite(), "ExplainTool<SqliteExplainQueryPlanInfo>", "need config sqlite");
+QList<SqliteExplainQueryPlanInfo> BaseQuery::ExplainTool<SqliteExplainQueryPlanInfo>::toExplain(const QString& statement, qint64 sessionId) {
+    auto config = ConfigManager::getConfig(sessionId);
+    Q_ASSERT_X(config->isSqlite(), "ExplainTool<SqliteExplainQueryPlanInfo>", "need config sqlite");
     QSqlQuery query = BaseQuery::queryPrimitive("explain query plan " + statement);
     QList<SqliteExplainQueryPlanInfo> result;
     while (query.next()) {
@@ -192,8 +192,9 @@ QList<SqliteExplainQueryPlanInfo> BaseQuery::ExplainTool<SqliteExplainQueryPlanI
     return result;
 }
 
-QList<MysqlExplainInfo> BaseQuery::ExplainTool<MysqlExplainInfo>::toExplain(const QString& statement) {
-    Q_ASSERT_X(globalConfig->isMysql(), "ExplainTool<MysqlExplainInfo>", "need config mysql");
+QList<MysqlExplainInfo> BaseQuery::ExplainTool<MysqlExplainInfo>::toExplain(const QString& statement, qint64 sessionId) {
+    auto config = ConfigManager::getConfig(sessionId);
+    Q_ASSERT_X(config->isMysql(), "ExplainTool<MysqlExplainInfo>", "need config mysql");
     QSqlQuery query = BaseQuery::queryPrimitive("explain " + statement);
     QList<MysqlExplainInfo> result;
     while (query.next()) {
@@ -216,8 +217,9 @@ QList<MysqlExplainInfo> BaseQuery::ExplainTool<MysqlExplainInfo>::toExplain(cons
 }
 
 //TODO
-QList<SqlServerExplainInfo> BaseQuery::ExplainTool<SqlServerExplainInfo>::toExplain(const QString& statement) {
-    Q_ASSERT_X(globalConfig->isSqlServer(), "ExplainTool<SqlServerExplainInfo>", "need config sqlserver");
+QList<SqlServerExplainInfo> BaseQuery::ExplainTool<SqlServerExplainInfo>::toExplain(const QString& statement, qint64 sessionId) {
+    auto config = ConfigManager::getConfig(sessionId);
+    Q_ASSERT_X(config->isSqlServer(), "ExplainTool<SqlServerExplainInfo>", "need config sqlserver");
     QList<SqlServerExplainInfo> result;
     try {
         QSqlQuery query = BaseQuery::queryPrimitive("SET STATISTICS PROFILE ON;" + statement + ";SET STATISTICS PROFILE OFF");

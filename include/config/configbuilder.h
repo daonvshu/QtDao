@@ -25,6 +25,10 @@ public:
 
     virtual ConfigBuilder& databaseName(const QString& name) = 0;
 
+    virtual ConfigBuilder& configAlias(const QString& alias) = 0;
+
+    virtual ConfigBuilder& session(qint64 sessionId) = 0;
+
     virtual ConfigBuilder& password(const QString& password) = 0;
 
     virtual ConfigBuilder& options(const QString& options) = 0;
@@ -32,6 +36,8 @@ public:
     ConfigBuilder& setDatabaseUpgrader(DatabaseUpgrader* databaseUpgrader);
 
     virtual QSqlDatabase getConnection(const QString& connectionName, const QString& databaseName) = 0;
+
+    QSqlDatabase getConnection(const QString& connectionName);
 
     ConfigBuilder& disableCreateDatabase() {
         createDbEnabled = false;
@@ -63,7 +69,7 @@ public:
         return dbClient;
     }
 
-    static int getLocalVersion();
+    static int getLocalVersion(qint64 sessionId = -1);
 
 protected:
     ConfigType configType;
@@ -73,6 +79,8 @@ protected:
     QString mDatabaseName;
     QString mPassword;
     QString mOptions;
+    QString mAlias;
+    qint64 mSessionId = -1;
 
     bool createDbEnabled = true;
 
@@ -85,11 +93,10 @@ protected:
     friend class BaseQuery;
     friend class ::ConnectionPool;
     friend class VersionControl;
+    friend class ConfigManager;
 
 protected:
     void setupDatabase();
 };
-
-extern QScopedPointer<ConfigBuilder> globalConfig;
 
 QTDAO_END_NAMESPACE

@@ -6,6 +6,7 @@
 #include "option/constraintbuilder.h"
 #include "option/fromselectbuilder.h"
 #include "option/unionbuilder.h"
+#include "option/sessionbuilder.h"
 
 #include "../macro/macro.h"
 
@@ -18,14 +19,17 @@ class CountBuilder;
 
 template<typename E>
 class SelectBuilder
-        : public DebugBuilder<SelectBuilder<E>>
-        , public ColumnBuilder<SelectBuilder<E>>
-        , public FilterBuilder<SelectBuilder<E>>
-        , public ConstraintBuilder<SelectBuilder<E>>
-        , public FromSelfSelectBuilder<SelectBuilder, E>
-        , public UnionBuilder<SelectBuilder<E>>
+    : public DebugBuilder<SelectBuilder<E>>
+    , public ColumnBuilder<SelectBuilder<E>>
+    , public FilterBuilder<SelectBuilder<E>>
+    , public ConstraintBuilder<SelectBuilder<E>>
+    , public FromSelfSelectBuilder<SelectBuilder, E>
+    , public UnionBuilder<SelectBuilder<E>>
+    , public SessionBuilder<SelectBuilder<E>>
 {
 public:
+    using SessionBuilder<SelectBuilder<E>>::SessionBuilder;
+
     Select <E> build() {
         return Select<E>(*this);
     }

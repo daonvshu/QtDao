@@ -1,8 +1,8 @@
 ﻿#include "config/configsqlite.h"
+#include "config/configmanager.h"
 
 #include <qstandardpaths.h>
 
-#include "config/configbuilder.h"
 
 QTDAO_BEGIN_NAMESPACE
     ConfigSqliteBuilder::ConfigSqliteBuilder()
@@ -23,6 +23,16 @@ ConfigSqliteBuilder& ConfigSqliteBuilder::driver(const QString& driver) {
 
 ConfigSqliteBuilder& ConfigSqliteBuilder::databaseName(const QString& name) {
     mDatabaseName = name;
+    return *this;
+}
+
+ConfigBuilder &ConfigSqliteBuilder::configAlias(const QString &alias) {
+    mAlias = alias;
+    return *this;
+}
+
+ConfigBuilder &ConfigSqliteBuilder::session(qint64 sessionId) {
+    mSessionId = sessionId;
     return *this;
 }
 
@@ -69,8 +79,9 @@ QString ConfigSqliteBuilder::getDbStorePath() const {
 }
 
 void ConfigSqliteBuilder::initializeDatabase() {
-    globalConfig.reset(new ConfigSqliteBuilder(*this));
-    setupDatabase();
+    auto config = new ConfigSqliteBuilder(*this);
+    ConfigManager::registerConfig(config);
+    config->setupDatabase();
 }
 
 QTDAO_END_NAMESPACE

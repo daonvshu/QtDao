@@ -112,6 +112,6 @@ void LoggingTest::cleanup() {
 }
 
 void LoggingTest::cleanupTestCase() {
-    globalConfig->getClient()->dropDatabase();
+    ConfigManager::getConfig()->getClient()->dropDatabase();
 }
 

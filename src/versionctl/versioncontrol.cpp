@@ -2,85 +2,70 @@
 #include "versionctl/version.h"
 
 #include "config/configbuilder.h"
+#include "config/configmanager.h"
 
 #include "dbexception.h"
 #include "dao.h"
 
 QTDAO_BEGIN_NAMESPACE
 
-void VersionControl::checkLocalVersion() {
+void VersionControl::checkLocalVersion(qint64 sessionId) {
 
+    auto config = ConfigManager::getConfig(sessionId);
     auto versionTbReader = new SqliteEntityReaderProvider<Version>; //same suitable for mysql/sqlserver
-    globalConfig->dbClient->createTableIfNotExist(versionTbReader);
+    config->dbClient->createTableIfNotExist(versionTbReader);
     delete versionTbReader;
 
-    int localVersion = getLocalVersion();
-    if (localVersion > globalConfig->mVersion) {
+    int localVersion = getLocalVersion(sessionId);
+    if (localVersion > config->mVersion) {
         throw DaoException("The config version is smaller than the local version!");
     }
 
-    if (localVersion == globalConfig->mVersion) {
+    if (localVersion == config->mVersion) {
         return;
     }
 
-    invokeCreateTables();
+    invokeCreateTables(sessionId);
     if (localVersion != -1) {
-        invokeTableUpgrade(localVersion, globalConfig->mVersion);
+        invokeTableUpgrade(localVersion, config->mVersion, sessionId);
     }
-    updateLocalVersion();
+    updateLocalVersion(sessionId);
 }
 
-int VersionControl::getLocalVersion() {
-    auto d = dao::_select<Version>().build().one();
+int VersionControl::getLocalVersion(qint64 sessionId) {
+    auto d = dao::_select<Version>(sessionId).build().one();
     return d.getVer();
 }
 
-void VersionControl::updateLocalVersion() {
+void VersionControl::updateLocalVersion(qint64 sessionId) {
 
-    dao::_delete<Version>().build().deleteBy();
+    dao::_delete<Version>(sessionId).build().deleteBy();
 
-    auto v = Version(globalConfig->mVersion);
-    dao::_insert<Version>().build().insert(v);
+    auto config = ConfigManager::getConfig(sessionId);
+    auto v = Version(config->mVersion);
+    dao::_insert<Version>(sessionId).build().insert(v);
 }
 
-void VersionControl::invokeCreateTables() {
-#if QT_VERSION_MAJOR >= 6
-    const auto metaObj = QMetaType::fromName(getDelegateStr()).metaObject();
-#else
-    const auto metaObj = QMetaType::metaObjectForType(QMetaType::type(getDelegateStr()));
-#endif
-    Q_ASSERT_X(metaObj != nullptr, "database initialize fail", "cannot invoke table delegate, use plugin vscode-qtdao in VSCODE to create entities");
-    QObject* obj = metaObj->newInstance();
-    QMetaObject::invokeMethod(obj, "createEntityTables");
-    delete obj;
-}
-
-void VersionControl::invokeTableUpgrade(int oldVer, int newVer) {
-#if QT_VERSION_MAJOR >= 6
-    const auto metaObj = QMetaType::fromName(getDelegateStr()).metaObject();
-#else
-    const auto metaObj = QMetaType::metaObjectForType(QMetaType::type(getDelegateStr()));
-#endif
-    Q_ASSERT_X(metaObj != nullptr, "database initialize fail", "cannot invoke table delegate, use plugin vscode-qtdao in VSCODE to create entities");
-    QObject* obj = metaObj->newInstance();
-    QMetaObject::invokeMethod(obj, "entityTablesUpgrade", Q_ARG(int, oldVer), Q_ARG(int, newVer));
-    delete obj;
-}
-
-QByteArray VersionControl::getDelegateStr() {
-    QByteArray entityDelegate;
-    switch (globalConfig->configType) {
+QString getAliasKeyPrefix(ConfigType configType) {
+    switch (configType) {
         case ConfigType::Sqlite:
-            entityDelegate = "DaoSqlite::SqliteEntityDelegate*";
-            break;
+            return "sqlite_";
         case ConfigType::Mysql:
-            entityDelegate = "DaoMysql::MysqlEntityDelegate*";
-            break;
+            return "mysql_";
         case ConfigType::SqlServer:
-            entityDelegate = "DaoSqlServer::SqlServerEntityDelegate*";
-            break;
+            return "sqlserver_";
     }
-    return entityDelegate;
+    return {};
+}
+
+void VersionControl::invokeCreateTables(qint64 sessionId) {
+    auto config = ConfigManager::getConfig(sessionId);
+    ConfigSelector::getConfig(getAliasKeyPrefix(config->configType) + config->mAlias)->createEntityTables(config.data());
+}
+
+void VersionControl::invokeTableUpgrade(int oldVer, int newVer, qint64 sessionId) {
+    auto config = ConfigManager::getConfig(sessionId);
+    ConfigSelector::getConfig(getAliasKeyPrefix(config->configType) + config->mAlias)->entityTablesUpgrade(config.data(), oldVer, newVer);
 }
 
 QTDAO_END_NAMESPACE

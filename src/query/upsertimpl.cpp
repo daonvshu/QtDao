@@ -1,6 +1,7 @@
 #include "query/upsertimpl.h"
 
 #include "config/configbuilder.h"
+#include "config/configmanager.h"
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -66,7 +67,8 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         return usedFieldNames;
     };
 
-    if (globalConfig->isSqlite()) {
+    auto config = ConfigManager::getConfig(getSessionId());
+    if (config->isSqlite()) {
         QString statementTemplate = "insert into %1 (%2) values(%3) on conflict(%4) do update set %5";
 
         //conflict field
@@ -101,7 +103,7 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         return statementTemplate.arg(getTableName(), usedFieldListStr(), valuePlaceholder(),
                                      conflictFields, updateStr);
 
-    } else if (globalConfig->isMysql()) {
+    } else if (config->isMysql()) {
         QString statementTemplate = "insert into %1 (%2) values(%3) on duplicate key update %4";
 
         auto& conflictCols = conflictColumnConnector();
@@ -123,7 +125,7 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         return statementTemplate.arg(getTableName(), usedFieldListStr(), valuePlaceholder(),
                                      updateStr);
 
-    } else if (globalConfig->isSqlServer()) {
+    } else if (config->isSqlServer()) {
         QString statementTemplate = "merge into %1 a\n"
                                     "using (select %2) b\n"
                                     "on %3\n"

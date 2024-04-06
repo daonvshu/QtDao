@@ -288,7 +288,7 @@ template<typename E>
 inline void Select<E>::raw(const std::function<void(QSqlQuery&)>& callback) {
     buildFilterSqlStatement();
     setDebug(this->builder);
-    auto query = exec();
+    auto query = exec(getSessionId());
     callback(query);
 }
 
