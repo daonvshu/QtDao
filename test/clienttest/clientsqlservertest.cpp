@@ -17,7 +17,7 @@ void ClientSqlServerTest::initTestCase() {
             .disableCreateDatabase()
             .initializeDatabase();
 
-    client = dao::globalConfig->getClient();
+    client = dao::ConfigManager::getConfig()->getClient();
 }
 
 void ClientSqlServerTest::cleanup() {

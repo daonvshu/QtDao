@@ -19,7 +19,7 @@ void ClientMysqlTest::initTestCase() {
             .disableCreateDatabase()
             .initializeDatabase();
 
-    client = dao::globalConfig->getClient();
+    client = dao::ConfigManager::getConfig()->getClient();
 }
 
 void ClientMysqlTest::cleanup() {

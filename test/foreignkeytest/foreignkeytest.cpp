@@ -259,5 +259,5 @@ void ForeignKeyTest::cleanup() {
 }
 
 void ForeignKeyTest::cleanupTestCase() {
-    dao::globalConfig->getClient()->dropDatabase();
+    dao::ConfigManager::getConfig()->getClient()->dropDatabase();
 }

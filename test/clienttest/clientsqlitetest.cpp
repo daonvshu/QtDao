@@ -16,7 +16,7 @@ void ClientSqliteTest::initTestCase() {
             .disableCreateTables()
             .initializeDatabase();
 
-    client = dao::globalConfig->getClient();
+    client = dao::ConfigManager::getConfig()->getClient();
 }
 
 void ClientSqliteTest::cleanup() {
@@ -37,7 +37,7 @@ void ClientSqliteTest::databaseProcessTest() {
 
     dao::BaseQuery::queryPrimitive("select 1");
 
-    auto appLocal = dynamic_cast<dao::ConfigSqliteBuilder*>(dao::globalConfig.get())->getDbStorePath();
+    auto appLocal = dynamic_cast<dao::ConfigSqliteBuilder*>(dao::ConfigManager::getConfig().get())->getDbStorePath();
     QVERIFY(QFile::exists(appLocal));
 }
 

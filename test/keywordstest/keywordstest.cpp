@@ -116,5 +116,5 @@ void KeywordsTest::cleanup() {
 }
 
 void KeywordsTest::cleanupTestCase() {
-    dao::globalConfig->getClient()->dropDatabase();
+    dao::ConfigManager::getConfig()->getClient()->dropDatabase();
 }

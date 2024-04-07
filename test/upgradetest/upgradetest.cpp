@@ -49,7 +49,7 @@ void UpgradeTest::upgradeTest() {
                 .initializeDatabase();
     }
 
-    dao::globalConfig->getClient()->dropDatabase();
+    dao::ConfigManager::getConfig()->getClient()->dropDatabase();
 #else
     if (TEST_DB == QLatin1String("sqlite")) {
         dao::_config<dao::ConfigSqliteBuilder>()
@@ -84,7 +84,7 @@ void UpgradeTest::fieldTest() {
 #ifndef TEST_DB_CLEAR
     auto expected = Table1::Info::getFields();
     std::sort(expected.begin(), expected.end());
-    auto fields = dao::globalConfig->getClient()->exportAllFields(Table1::Info::getTableName());
+    auto fields = dao::ConfigManager::getConfig()->getClient()->exportAllFields(Table1::Info::getTableName());
     std::sort(fields.begin(), fields.end());
     QStringList actualFields;
     for (const auto& f : fields) {
@@ -94,7 +94,7 @@ void UpgradeTest::fieldTest() {
 
     expected = Table2::Info::getFields();
     std::sort(expected.begin(), expected.end());
-    fields = dao::globalConfig->getClient()->exportAllFields(Table2::Info::getTableName());
+    fields = dao::ConfigManager::getConfig()->getClient()->exportAllFields(Table2::Info::getTableName());
     std::sort(fields.begin(), fields.end());
     actualFields.clear();
     for (const auto& f : fields) {

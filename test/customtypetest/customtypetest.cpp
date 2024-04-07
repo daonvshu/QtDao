@@ -52,5 +52,5 @@ void CustomTypeTest::cleanup() {
 }
 
 void CustomTypeTest::cleanupTestCase() {
-    dao::globalConfig->getClient()->dropDatabase();
+    dao::ConfigManager::getConfig()->getClient()->dropDatabase();
 }
