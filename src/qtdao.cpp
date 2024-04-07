@@ -55,4 +55,12 @@ void loggingUseDefault(bool useDefault) {
     BaseQuery::useDefaultLoggingIfNull(useDefault);
 }
 
+void _beginSession(qint64 sessionId) {
+    ConnectionPool::scopeSessionBegin(sessionId);
+}
+
+void _endSession() {
+    ConnectionPool::scopeSessionEnd();
+}
+
 QTDAO_END_NAMESPACE

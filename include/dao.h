@@ -111,6 +111,10 @@ extern void rollback(const QString& savePoint = QString(), qint64 sessionId = -1
 
 extern void loggingUseDefault(bool useDefault = true);
 
+extern void _beginSession(qint64 sessionId);
+
+extern void _endSession();
+
 template<typename E>
 class self : public E {
 public:

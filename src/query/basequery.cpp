@@ -29,7 +29,7 @@ QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList
     return executor.exec(sessionId);
 }
 
-void BaseQuery::executePrimitiveQuery(const QString &statement, qint64 sessionId, QString databaseName, QString connectionName, const std::function<void(QSqlQuery&)>& resultReader) {
+void BaseQuery::executePrimitiveQuery(const QString &statement, qint64 sessionId, const QString& databaseName, QString connectionName, const std::function<void(QSqlQuery&)>& resultReader) {
     Q_ASSERT(!databaseName.isEmpty());
 
     if (connectionName.isEmpty()) {

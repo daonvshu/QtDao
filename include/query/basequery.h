@@ -41,7 +41,7 @@ public:
      */
     static void executePrimitiveQuery(const QString& statement,
                                       qint64 sessionId = -1,
-                                      QString databaseName = QString(),
+                                      const QString& databaseName = QString(),
                                       QString connectionName = QString(),
                                       const std::function<void(QSqlQuery&)>& resultReader = nullptr);
 
