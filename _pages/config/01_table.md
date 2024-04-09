@@ -13,7 +13,7 @@ layout: post
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<dao prefix="ts_" db="sqlite">
+<dao prefix="ts_" db="sqlite" namespace="MySpc" alias="dbconfig1">
 </dao>
 ```
 
@@ -21,6 +21,8 @@ layout: post
 |:--:|:--|:--|
 |`prefix`|表示数据表前缀，每个表名称前都将添加`prefix`前缀用于区分其他表（如系统表），在使用QtDao查询时不必关心前缀，在生成sql语句时将自动使用带有前缀的表名。|
 |`db`|表示使用的数据库类型，目前只能为3种：`sqlite`,`mysql`,`sqlserver`。|
+|`namespace`|对每个生成的实体类添加一个命名空间。|可选|
+|`alias`|为当前配置绑定一个别名，可在多数据连接初始化时进行配置的选择。|可选|
 
 
 `<tb>`标签
