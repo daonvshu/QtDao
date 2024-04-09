@@ -21,7 +21,10 @@ void ConfigManager::registerConfig(ConfigBuilder *config) {
 QSharedPointer<ConfigBuilder> ConfigManager::getConfig(qint64 sessionId) {
     QMutexLocker locker(&configAccessLocker);
     if (!configs.contains(sessionId)) {
-        throw DaoException("session is not register:" + QString::number(sessionId));
+        sessionId = ConnectionPool::scopeCurrentSessionId();
+        if (!configs.contains(sessionId)) {
+            throw DaoException("session is not register:" + QString::number(sessionId));
+        }
     }
     return configs[sessionId];
 }

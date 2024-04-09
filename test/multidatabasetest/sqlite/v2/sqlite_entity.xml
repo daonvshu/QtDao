@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE dao SYSTEM "../../../../entity/sqlite_entity.xsd">
+<dao prefix="ts_" db="sqlite" namespace="SqlV2" alias="sql2">
+    <tb name="Track">
+        <item name="id" type="long" default="-1" constraints="primary key" />
+        <item name="name" type="text" />
+    </tb>
+</dao>

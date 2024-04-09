@@ -31,14 +31,13 @@ ConnectionData::~ConnectionData() {
  * @return opened connection
  */
 QSqlDatabase ConnectionData::getOpenedConnection(qint64 sessionId) {
-    if (sessionId == -1) {
-        if (!holdSessionIdStack.isEmpty()) {
-            currentProcessSessionId = holdSessionIdStack.top();
-        }
+    if (sessionId == -1 && !holdSessionIdStack.isEmpty()) {
+        currentProcessSessionId = holdSessionIdStack.top();
+    } else {
+        currentProcessSessionId = sessionId;
     }
-    currentProcessSessionId = sessionId;
     testConnection();
-    return QSqlDatabase::database(usedConnectionNames.value(sessionId));
+    return QSqlDatabase::database(usedConnectionNames.value(currentProcessSessionId));
 }
 
 /**
@@ -56,6 +55,16 @@ void ConnectionData::endSession() {
     if (!holdSessionIdStack.isEmpty()) {
         holdSessionIdStack.pop();
     }
+}
+
+/**
+ * read top session id
+ */
+qint64 ConnectionData::stackTopSession() {
+    if (holdSessionIdStack.isEmpty()) {
+        return -1;
+    }
+    return holdSessionIdStack.top();
 }
 
 /**
@@ -134,6 +143,15 @@ void ConnectionPool::scopeSessionBegin(qint64 sessionId) {
 void ConnectionPool::scopeSessionEnd() {
     initializeLocalData();
     localConnection.localData()->endSession();
+}
+
+/**
+ * get current thread session id, it is in top of session id stack, or return -1 if is empty
+ * @return
+ */
+qint64 ConnectionPool::scopeCurrentSessionId() {
+    initializeLocalData();
+    return localConnection.localData()->stackTopSession();
 }
 
 /**

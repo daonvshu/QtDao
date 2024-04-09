@@ -19,6 +19,7 @@ public:
 
     void beginSession(qint64 sessionId);
     void endSession();
+    qint64 stackTopSession();
 
 private:
     QString baseConnectionName;
@@ -40,6 +41,7 @@ public:
 
     static void scopeSessionBegin(qint64 sessionId); // begin use session id in current thread
     static void scopeSessionEnd(); // end use session id in current thread
+    static qint64 scopeCurrentSessionId(); // read current thread session id
 
     static void closeAllConnection(); // close all opened connection
     static void closeConnection(qint64 sessionId = -1); // close all connections reference to the session id
