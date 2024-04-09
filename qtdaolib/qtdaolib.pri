@@ -10,6 +10,7 @@ HEADERS += ../include/connectionpool.h \
     ../include/dao.h \
     ../include/dbexception.h \
     ../include/global.h \
+    ../include/configselector.h \
     ../include/builder/option/columnbuilder.h \
     ../include/builder/option/constraintbuilder.h \
     ../include/builder/option/debugbuilder.h \
@@ -20,6 +21,7 @@ HEADERS += ../include/connectionpool.h \
     ../include/builder/option/onconditionbuilder.h \
     ../include/builder/option/setbuilder.h \
     ../include/builder/option/unionbuilder.h \
+    ../include/builder/option/sessionbuilder.h \
     ../include/builder/countbuilder.h \
     ../include/builder/deletebuilder.h \
     ../include/builder/insertbuilder.h \
@@ -44,6 +46,7 @@ HEADERS += ../include/connectionpool.h \
     ../include/config/configmysql.h \
     ../include/config/configsqlite.h \
     ../include/config/configsqlserver.h \
+    ../include/config/configmanager.h \
     ../include/config/configtype.h \
     ../include/dbclients/abstractclient.h \
     ../include/dbclients/mysqlclient.h \
@@ -77,6 +80,7 @@ HEADERS += ../include/connectionpool.h \
 
 SOURCES += ../src/connectionpool.cpp \
     ../src/qtdao.cpp \
+    ../src/configselector.cpp \
     ../src/builder/frombuilder.cpp \
     ../src/builder/unionbuilder.cpp \
     ../src/condition/connector/connectable.cpp \
@@ -89,6 +93,7 @@ SOURCES += ../src/connectionpool.cpp \
     ../src/config/configmysql.cpp \
     ../src/config/configsqlite.cpp \
     ../src/config/configsqlserver.cpp \
+    ../src/config/configmanager.cpp \
     ../src/dbclients/abstractclient.cpp \
     ../src/dbclients/mysqlclient.cpp \
     ../src/dbclients/sqliteclient.cpp \
