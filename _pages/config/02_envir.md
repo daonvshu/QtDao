@@ -60,6 +60,9 @@ CMake
 #添加qtdao库子项目
 add_subdirectory(${CMAKE_SOURCE_DIR}/3rdparty/qtdao/src)
 
+#或者编译执行cmake install之后使用find_package添加
+#find_package(QtDao 2.x.x REQUIRED)
+
 #或者使用CPM添加
 #CPMAddPackage("gh:daonvshu/QtDao@2.x.x")
 
@@ -77,6 +80,6 @@ target_link_libraries(${PROJECT_NAME}
     #...
 
     #静态链接到qtdao库
-    qtdao::lib
+    qtdao
 )
 ```
