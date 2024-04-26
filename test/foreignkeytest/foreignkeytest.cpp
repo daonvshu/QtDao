@@ -55,7 +55,7 @@ void ForeignKeyTest::testInsert() {
 
     try {
         Track track(1, "Yesterday", 4);
-        dao::_insert<Track>().disableFatalMsg().build().insert(track);
+        dao::_insert<Track>().build().insert(track);
         QFAIL("the track should not be inserted success here!");
     } catch (dao::DaoException&) {}
 
@@ -137,7 +137,7 @@ void ForeignKeyTest::testTransaction() {
         step = 1;
 
         Customer customer2(4, "Bob", 4, 5);
-        dao::_insert<Customer>().disableFatalMsg().build().insert(customer2);
+        dao::_insert<Customer>().build().insert(customer2);
         step = 2;
 
         Customer customer3(5, "Charlie", 3, 5);
@@ -164,7 +164,7 @@ void ForeignKeyTest::testTransaction() {
             step = 1;
 
             Track track2(2, "Stairway to Heaven", 2);
-            dao::_insert<Track>().disableFatalMsg().build().insert(track2);
+            dao::_insert<Track>().build().insert(track2);
             step = 2;
 
             Track track3(3, "Another Brick in the Wall", 3);
@@ -192,7 +192,7 @@ void ForeignKeyTest::testVersionUpgrade() {
 
     try {
         Track track(1, "Yesterday", 4);
-        dao::_insert<Track>().disableFatalMsg().build().insert(track);
+        dao::_insert<Track>().build().insert(track);
         QFAIL("the track should not be inserted success here!");
     } catch (dao::DaoException&) {}
 
@@ -247,7 +247,7 @@ void ForeignKeyTest::testVersionUpgrade() {
     //check foreign key exist
     try {
         Track track(1, "Yesterday", 4);
-        dao::_insert<Track>().disableFatalMsg().build().insert(track);
+        dao::_insert<Track>().build().insert(track);
         QFAIL("the track should not be inserted success here!");
     } catch (dao::DaoException&) {}
 }
