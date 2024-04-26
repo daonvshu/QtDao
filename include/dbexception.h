@@ -11,15 +11,19 @@ QTDAO_BEGIN_NAMESPACE
 
 class DaoException : public QException {
 public:
-    explicit DaoException(const QSqlError& error)
+    explicit DaoException(const QSqlError& error, QString sql = QString(), QVariantList values = QVariantList())
         : reason(error.text())
         , errorType(error.type())
         , nativeCode(error.nativeErrorCode())
+        , sql(std::move(sql))
+        , values(std::move(values))
     {}
 
-    explicit DaoException(QString  reason)
+    explicit DaoException(QString reason, QString sql = QString(), QVariantList values = QVariantList())
         : reason(std::move(reason))
         , errorType(QSqlError::ConnectionError)
+        , sql(std::move(sql))
+        , values(std::move(values))
     {}
 
     void raise() const override { throw* this; }
@@ -28,6 +32,9 @@ public:
     QString reason;
     QSqlError::ErrorType errorType;
     QString nativeCode;
+
+    QString sql;
+    QVariantList values;
 };
 
 QTDAO_END_NAMESPACE

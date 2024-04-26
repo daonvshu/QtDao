@@ -10,16 +10,6 @@ template<typename T>
 class DebugBuilder {
 public:
     /**
-     * disable qFatal error
-     * fatal mode only works in debug mode
-     * @return this
-     */
-    T& disableFatalMsg() {
-        setFatalEnabled = false;
-        return static_cast<T&>(*this);
-    }
-
-    /**
      * set current query logging category, call 'dao::loggingUseDefault' to use default category 'qtdao.query'
      * @param ptr new logging category function pointer
      * @return this
@@ -30,8 +20,6 @@ public:
     }
 
 protected:
-    //when the query fails, call qFatal to stop program, work only in debug mode
-    bool setFatalEnabled = true;
     //print sql query log use target category
     LoggingCategoryPtr loggingCategoryPtr = nullptr;
 

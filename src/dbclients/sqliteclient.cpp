@@ -38,7 +38,7 @@ void SqliteClient::dropDatabase() {
     QFile file(dynamic_cast<ConfigSqliteBuilder*>(config)->getDbStorePath());
     if (file.exists()) {
         if (!file.remove()) {
-            throw DaoException("unable remove database file!");
+            throw DaoException("unable remove database file:" + QFileInfo(file).absoluteFilePath());
         }
     }
 }

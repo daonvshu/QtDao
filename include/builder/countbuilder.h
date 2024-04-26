@@ -24,7 +24,6 @@ public:
     int count() {
         SelectBuilder<E> builder;
         builder.column(FunctionConnector("count(*) as __selectcount"));
-        builder.setFatalEnabled = this->setFatalEnabled;
         builder.loggingCategoryPtr = this->loggingCategoryPtr;
         builder.filterCondition = this->filterCondition;
         builder.fromData = this->fromData;

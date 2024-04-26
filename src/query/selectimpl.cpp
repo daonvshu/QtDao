@@ -96,7 +96,7 @@ void SelectImpl::uniqueExec(const EntityBinder& entityBinder, const RecordBinder
         resultSize++;
     }
     if (resultSize > 1) {
-        throw DaoException("unique result size > 1, actual is " + QString::number(resultSize));
+        throw DaoException("unique result size > 1, actual is " + QString::number(resultSize), this->statement, this->values);
     }
 }
 

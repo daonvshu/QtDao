@@ -126,7 +126,7 @@ void runInsertObjectTest() {
     //test multi primary key insert
     QFETCH(E1, test2);
     try {
-        dao::_insert<E1>().disableFatalMsg().build().insert(test2);
+        dao::_insert<E1>().build().insert(test2);
         QFAIL("insert should be fail!");
     }
     catch (DaoException&) {
@@ -372,7 +372,7 @@ void runTestTransaction() {
     QFETCH(E, entity);
     dao::_insert<E>().build().insert(entity);
     try {
-        dao::_insert<E>().disableFatalMsg().build().insert(entity);
+        dao::_insert<E>().build().insert(entity);
         dao::commit();
     }
     catch (DaoException&) {
@@ -411,7 +411,7 @@ void InsertTest::testMysqlMyISAMTransaction() {
     dao::transaction();
     dao::_insert<MysqlTest1>().build().insert(data1);
     try {
-        dao::_insert<MysqlTest1>().disableFatalMsg().build().insert(data2); //null of name will case error
+        dao::_insert<MysqlTest1>().build().insert(data2); //null of name will case error
         dao::commit();
     } catch (DaoException&) {
         dao::rollback();

@@ -24,7 +24,7 @@ void transaction(qint64 sessionId, LoggingCategoryPtr logging) {
 }
 
 void commit(qint64 sessionId, LoggingCategoryPtr logging) {
-    BaseQuery::queryPrimitive("commit", {}, sessionId, logging, false);
+    BaseQuery::queryPrimitive("commit", {}, sessionId, logging);
 }
 
 void transaction_save(const QString& savePoint, qint64 sessionId, LoggingCategoryPtr logging) {

@@ -263,12 +263,6 @@ QSqlDatabase ConnectionPool::createConnection(qint64 sessionId, const QString &c
         }
         QSqlDatabase::removeDatabase(connectionName);
     }
-    auto lastErrText = lastErr.text();
-#ifdef QT_DEBUG
-    qFatal(reinterpret_cast<const char *>(("create connection fail: " + lastErrText).data()));
-#else
-    Q_UNUSED(lastErrText)
-#endif
     throw DaoException(lastErr);
 }
 

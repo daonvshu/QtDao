@@ -12,10 +12,10 @@ Q_LOGGING_CATEGORY(loggingDefault, "qtdao.query")
 
 bool BaseQuery::useDefaultLogging = false;
 
-QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, qint64 sessionId, LoggingCategoryPtr logging, bool debugFatalEnabled) {
+QSqlQuery BaseQuery::queryPrimitive(const QString& statement, const QVariantList& values, qint64 sessionId, LoggingCategoryPtr logging) {
     BaseQuery executor;
     executor.setSqlQueryStatement(statement, values);
-    executor.setDebug(debugFatalEnabled, logging);
+    executor.setDebug(logging);
 
     if (!values.isEmpty()) {
 #if QT_VERSION_MAJOR >= 6
@@ -56,7 +56,7 @@ void BaseQuery::executePrimitiveQuery(const QString &statement, qint64 sessionId
     QSqlDatabase::removeDatabase(connectionName);
 
     if (lastErr.type() != QSqlError::NoError) {
-        throw DaoException(lastErr);
+        throw DaoException(lastErr, statement);
     }
 }
 
@@ -69,8 +69,7 @@ void BaseQuery::setSqlQueryStatement(const QString& curStatement, const QVariant
     this->values = curValues;
 }
 
-void BaseQuery::setDebug(bool fatalEnabled, LoggingCategoryPtr logging) {
-    this->debugFatalEnabled = fatalEnabled;
+void BaseQuery::setDebug(LoggingCategoryPtr logging) {
     this->loggingCategoryPtr = logging;
 }
 
@@ -78,7 +77,7 @@ QSqlQuery BaseQuery::exec(qint64 sessionId) {
     bool prepareOk;
     auto query = getQuery(sessionId, prepareOk, false);
     if (!prepareOk || !execByCheckEmptyValue(query, this)) {
-        postError(query, debugFatalEnabled, !prepareOk);
+        throw DaoException(query.lastError(), statement, values);
     }
     return query;
 }
@@ -87,7 +86,7 @@ QSqlQuery BaseQuery::execBatch(qint64 sessionId) {
     bool prepareOk;
     auto query = getQuery(sessionId, prepareOk, true);
     if (!prepareOk || !query.execBatch()) {
-        postError(query, debugFatalEnabled, !prepareOk);
+        throw DaoException(query.lastError(), statement, values);
     }
     return query;
 }
@@ -125,28 +124,6 @@ void BaseQuery::bindQueryValues(QSqlQuery& query) {
         query.addBindValue(d, d.type() == QVariant::ByteArray ? QSql::Binary : QSql::In);
 #endif
     }
-}
-
-void BaseQuery::postError(const QSqlQuery& lastQuery, bool fatalEnabled, bool prepareStatementFail) {
-    auto lastErr = lastQuery.lastError();
-    auto errText = lastErr.text();
-    Q_UNUSED(errText)
-    if (fatalEnabled) {
-        fatalError(prepareStatementFail);
-    }
-    throw DaoException(lastErr);
-}
-
-void BaseQuery::fatalError(bool prepareError) {
-#ifdef QT_DEBUG
-    if (prepareError) {
-        qFatal("get connection prepare fail!");
-    } else {
-        qFatal("execute sql statement fail!");
-    }
-#else
-    Q_UNUSED(prepareError)
-#endif
 }
 
 bool BaseQuery::execByCheckEmptyValue(QSqlQuery& query, const BaseQuery* executor) {

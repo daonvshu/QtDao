@@ -21,14 +21,12 @@ public:
      * @param values bound the values to prepared statement
      * @param sessionId session for different database config
      * @param logging current logging category function ptr
-     * @param debugFatalEnabled use qFatal in debug mode
      * @return
      */
     static QSqlQuery queryPrimitive(const QString& statement,
                                     const QVariantList& values = QVariantList(),
                                     qint64 sessionId = -1,
-                                    LoggingCategoryPtr logging = nullptr,
-                                    bool debugFatalEnabled = true);
+                                    LoggingCategoryPtr logging = nullptr);
 
     /**
      * execute sql statement directly, and use temporary database connection without connection pool,
@@ -60,15 +58,14 @@ protected:
     void setSqlQueryStatement(const QString& curStatement, const QVariantList& curValues);
 
     /**
-     * set fatal enable or logging category
-     * @param fatalEnabled
+     * set logging category
      * @param logging
      */
-    void setDebug(bool fatalEnabled, LoggingCategoryPtr logging);
+    void setDebug(LoggingCategoryPtr logging);
 
     template<typename T>
     void setDebug(const DebugBuilder<T>& builder) {
-        setDebug(builder.setFatalEnabled, builder.loggingCategoryPtr);
+        setDebug(builder.loggingCategoryPtr);
     }
 
     /**
@@ -92,8 +89,6 @@ protected:
     QVariantList values;
 
 private:
-    //enable fatal error
-    bool debugFatalEnabled;
     //current query logging category
     LoggingCategoryPtr loggingCategoryPtr;
 
@@ -118,20 +113,6 @@ private:
      * @param query
      */
     void bindQueryValues(QSqlQuery& query);
-
-    /**
-     * get last query error and throw exception or fatal error
-     * @param lastQuery current execute query
-     * @param fatalEnabled post error use fatal error
-     * @param prepareStatementFail current is prepare statement error
-     */
-    static void postError(const QSqlQuery& lastQuery, bool fatalEnabled, bool prepareStatementFail);
-
-    /**
-     * post a fatal error if current is debug mode
-     * @param prepareError
-     */
-    static void fatalError(bool prepareError);
 
     /**
      * check the values to execute sql query, if values is not empty, only call 'exec()',

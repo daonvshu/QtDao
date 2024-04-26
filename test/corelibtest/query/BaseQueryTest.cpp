@@ -42,7 +42,7 @@ void BaseQueryTest::testPrimitiveQueryWithValue() {
 
 void BaseQueryTest::testPrimitiveQueryFail() {
     try {
-        BaseQuery::queryPrimitive("select?+?", QVariantList(), -1, nullptr, false);
+        BaseQuery::queryPrimitive("select?+?", QVariantList(), -1, nullptr);
         QFAIL("primitive query should fail!");
     }
     catch (DaoException&) {
