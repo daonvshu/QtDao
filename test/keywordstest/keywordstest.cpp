@@ -111,6 +111,39 @@ void KeywordsTest::testJoin() {
         .build().list();
 }
 
+void KeywordsTest::upgradeTest() {
+    try {
+        if (TEST_DB == QLatin1String("sqlite")) {
+            dao::_config<dao::ConfigSqliteBuilder>()
+                    .version(2)
+                    .databaseName("sqlite_keywords_test")
+                    .initializeDatabase();
+        } else if (TEST_DB == QLatin1String("mysql")) {
+            dao::_config<dao::ConfigMysqlBuilder>()
+                    .version(2)
+                    .databaseName("mysql_keywords_test")
+                    .host("localhost")
+                    .port(3306)
+                    .user("root")
+                    .password("root")
+                    .initializeDatabase();
+        } else if (TEST_DB == QLatin1String("sqlserver")) {
+            dao::_config<dao::ConfigSqlServerBuilder>()
+                    .version(2)
+                    .databaseName("sqlserver_keywords_test")
+                    .host("localhost")
+                    .user("sa")
+                    .password("root")
+                    .initializeDatabase();
+        }
+    } catch (dao::DaoException& e) {
+        Q_UNUSED(e)
+        auto validDrivers = QSqlDatabase::drivers();
+        Q_UNUSED(validDrivers)
+        qFatal("setup database fail!");
+    }
+}
+
 void KeywordsTest::cleanup() {
 
 }

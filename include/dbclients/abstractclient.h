@@ -245,6 +245,20 @@ public:
      */
     virtual QString translateSqlStatement(const QString& statement, const QVariantList& values);
 
+    /**
+     * wrap 'sourceName' with escape character, used by keyword check
+     * @param sourceName
+     * @return
+     */
+    virtual QString createEscapeCharsForName(const QString& sourceName) const = 0;
+
+    /**
+     * remove escape character in 'sourceName', used by keyword check
+     * @param sourceName
+     * @return
+     */
+    virtual QString removeEscapeCharsForName(const QString& sourceName) const = 0;
+
 public:
     template<int Type, typename E>
     void createTable();

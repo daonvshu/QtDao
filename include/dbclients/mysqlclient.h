@@ -53,6 +53,10 @@ public:
     void dropIndex(const QString& tbName, const QString& indexName) override;
 
     QString getIndexFromFields(const QStringList &fields) override;
+
+    QString createEscapeCharsForName(const QString &sourceName) const override;
+
+    QString removeEscapeCharsForName(const QString &sourceName) const override;
 };
 
 QTDAO_END_NAMESPACE

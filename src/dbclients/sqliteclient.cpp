@@ -9,6 +9,7 @@
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qstringbuilder.h>
+#include <qregularexpression.h>
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -108,7 +109,7 @@ QList<QPair<QString, QString>> SqliteClient::exportAllFields(const QString& tbNa
 
     while (query.next()) {
         fields << qMakePair(
-                query.value(0).toString(),
+                createEscapeCharsForName(query.value(0).toString()),
                 query.value(1).toString().toUpper()
                 );
     }
@@ -195,6 +196,16 @@ void SqliteClient::dropIndex(const QString& tbName, const QString& indexName) {
 
 QString SqliteClient::getIndexFromFields(const QStringList &fields) {
     return AbstractClient::getIndexFromFields(fields, SQLITE_KEYWORDS_ESCAPES);
+}
+
+QString SqliteClient::createEscapeCharsForName(const QString &sourceName) const {
+    return '"' % sourceName % '"';
+}
+
+QString SqliteClient::removeEscapeCharsForName(const QString &sourceName) const {
+    QString newName = sourceName;
+    newName.remove(QRegularExpression("['\"\\[\\]`]"));
+    return newName;
 }
 
 QTDAO_END_NAMESPACE

@@ -61,6 +61,10 @@ public:
     void transferDataBefore(const QString& tbName);
 
     void transferDataAfter(const QString& tbName);
+
+    QString createEscapeCharsForName(const QString &sourceName) const override;
+
+    QString removeEscapeCharsForName(const QString &sourceName) const override;
 };
 
 QTDAO_END_NAMESPACE

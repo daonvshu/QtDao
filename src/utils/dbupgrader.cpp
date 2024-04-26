@@ -32,7 +32,7 @@ void DatabaseUpgrader::onUpgrade(int oldVersion, int curVersion) {
 }
 
 void DatabaseUpgrader::upgradeWithDataRecovery() {
-    QString tmpTableName = "tmp_" + entityReader->getTableName();
+    QString tmpTableName = "tmp_" + client->removeEscapeCharsForName(entityReader->getTableName());
 
     dao::transaction();
     try {

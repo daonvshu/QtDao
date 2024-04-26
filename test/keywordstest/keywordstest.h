@@ -21,6 +21,8 @@ private slots:
 
     void testJoin();
 
+    void upgradeTest();
+
     void cleanup();
 
     void cleanupTestCase();

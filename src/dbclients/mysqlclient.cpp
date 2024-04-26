@@ -6,6 +6,7 @@
 #include "config/configbuilder.h"
 
 #include <qstringbuilder.h>
+#include <qregularexpression.h>
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -113,7 +114,7 @@ QList<QPair<QString, QString>> MysqlClient::exportAllFields(const QString& tbNam
                                            "table_name = '" % RL_TB(tbName) % "' and table_schema = '" % currentDatabaseName() % "'", {}, currentSessionId());
     while (query.next()) {
         fields << qMakePair(
-                query.value(0).toString(),
+                createEscapeCharsForName(query.value(0).toString()),
                 query.value(1).toString().toUpper()
                 );
     }
@@ -168,6 +169,16 @@ void MysqlClient::dropIndex(const QString& tbName, const QString& indexName) {
 
 QString MysqlClient::getIndexFromFields(const QStringList &fields) {
     return AbstractClient::getIndexFromFields(fields, MYSQL_KEYWORDS_ESCAPES);
+}
+
+QString MysqlClient::createEscapeCharsForName(const QString &sourceName) const {
+    return "`" % sourceName % "`";
+}
+
+QString MysqlClient::removeEscapeCharsForName(const QString &sourceName) const {
+    QString newName = sourceName;
+    newName.remove(QRegularExpression("[`]"));
+    return newName;
 }
 
 QTDAO_END_NAMESPACE

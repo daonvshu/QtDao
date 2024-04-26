@@ -8,6 +8,7 @@
 #include <qcoreapplication.h>
 #include <qstandardpaths.h>
 #include <qstringbuilder.h>
+#include <qregularexpression.h>
 
 QTDAO_BEGIN_NAMESPACE
 
@@ -164,7 +165,7 @@ QList<QPair<QString, QString>> SqlServerClient::exportAllFields(const QString& t
                                            "where table_name = '" % RL_TB(tbName) % "'", {}, currentSessionId());
     while (query.next()) {
         fields << qMakePair(
-                query.value(0).toString(),
+                createEscapeCharsForName(query.value(0).toString()),
                 query.value(1).toString().toUpper()
                 );
     }
@@ -315,6 +316,16 @@ void SqlServerClient::transferData(const QString &fromTb, const QString &toTb) {
         transferDataAfter(toTb);
         throw e;
     }
+}
+
+QString SqlServerClient::createEscapeCharsForName(const QString &sourceName) const {
+    return '[' % sourceName % ']';
+}
+
+QString SqlServerClient::removeEscapeCharsForName(const QString &sourceName) const {
+    QString newName = sourceName;
+    newName.remove(QRegularExpression("[\\[\\]]"));
+    return newName;
 }
 
 QTDAO_END_NAMESPACE
