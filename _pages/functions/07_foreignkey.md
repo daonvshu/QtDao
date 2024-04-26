@@ -59,7 +59,7 @@ try {
 
     step = 1;
     Track track2(2, "Stairway to Heaven", 2);
-    dao::_insert<Track>().disableFatalMsg().build().insert(track2);
+    dao::_insert<Track>().build().insert(track2);
 
     step = 2;
     Track track3(3, "Another Brick in the Wall", 3);
