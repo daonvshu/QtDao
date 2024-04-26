@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(qtdao VERSION 2.2.1)
+project(qtdao VERSION 2.2.2)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -8,9 +8,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Sql REQUIRED)
 
-include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dao.version.in ${CMAKE_BINARY_DIR}/include/dao.version.h @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/dao.version.in ${CMAKE_CURRENT_BINARY_DIR}/include/dao.version.h @ONLY)
 
 set(CMAKE_DEBUG_POSTFIX "d")
 
@@ -62,8 +63,8 @@ target_link_libraries(${PROJECT_NAME}
     )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
     $<INSTALL_INTERFACE:include>
 )
 
