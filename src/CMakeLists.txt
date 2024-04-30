@@ -83,12 +83,12 @@ install(TARGETS ${PROJECT_NAME}
     INCLUDES DESTINATION include
 )
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
     DESTINATION include
     FILES_MATCHING PATTERN "*.h"
 )
 
-install(FILES ${CMAKE_BINARY_DIR}/include/dao.version.h DESTINATION include)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/dao.version.h DESTINATION include)
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/QtDaoConfig.cmake.in
     "${CMAKE_CURRENT_BINARY_DIR}/QtDaoConfig.cmake"
