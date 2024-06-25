@@ -146,6 +146,10 @@ void runUniqueSelectTest(EngineModel model) {
     QCOMPARE(std::get<1>(uv3), "alice");
     QCOMPARE(std::get<2>(uv3), 11);
     QCOMPARE(std::get<3>(uv3), "alice1");
+
+    auto d5 = dao::_select<E>().with(_limit(1)).build().unique();
+    QVERIFY(d5.id != -1);
+    QCOMPARE(sft1.getValueWithoutAutoIncrement(data1.first()), sft1.getValueWithoutAutoIncrement(d5));
 }
 
 void SelectTest::uniqueSelectTest() {

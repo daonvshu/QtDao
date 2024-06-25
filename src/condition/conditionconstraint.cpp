@@ -3,22 +3,26 @@
 QTDAO_BEGIN_NAMESPACE
 
 LimitConstraintConnector::LimitConstraintConnector(int rows) {
-    values << rows;
+    d->values << rows;
 }
 
 LimitConstraintConnector::LimitConstraintConnector(int offset, int rows) {
-    values << offset << rows;
+    d->values << offset << rows;
 }
 
 void LimitConstraintConnector::combine() {
     d->connectedStr = "limit ?";
-    if (values.size() > 1) {
+    if (d->values.size() > 1) {
         d->connectedStr += ",?";
     }
 }
 
+bool LimitConstraintConnector::isEmpty() {
+    return d->values.isEmpty();
+}
+
 QVariantList LimitConstraintConnector::getValueList() {
-    return values;
+    return d->values;
 }
 
 void OrderByConstraintConnector::combine() {
