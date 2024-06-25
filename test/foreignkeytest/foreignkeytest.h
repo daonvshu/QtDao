@@ -21,6 +21,8 @@ private slots:
 
     void testVersionUpgrade();
 
+    void testRunInThread();
+
     void cleanup();
 
     void cleanupTestCase();

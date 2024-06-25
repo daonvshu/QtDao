@@ -29,7 +29,7 @@ void SqliteClient::testConnect() {
 
 void SqliteClient::createDatabase() {
     //auto create when connect database
-    enableForeignKey(QString(), true); //enable foreign key
+    //enableForeignKey(QString(), true); //enable foreign key
 }
 
 void SqliteClient::dropDatabase() {

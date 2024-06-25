@@ -252,7 +252,7 @@ QSqlDatabase ConnectionPool::createConnection(qint64 sessionId, const QString &c
                 // create new connection
                 db = prepareConnect(connectionName, sessionId);
             }
-            if (db.open()) {
+            if (db.isOpen() || db.open()) {
                 //test opened connection
                 QSqlQuery query("select 1", db);
                 if (query.lastError().type() == QSqlError::NoError) {
