@@ -5,11 +5,13 @@
 
 #if QT_VERSION_MAJOR >= 6
 #include "config/configbuilder.h"
+#include "config/configmanager.h"
 
 QTDAO_BEGIN_NAMESPACE
 
 void UnionBuilderImpl::unionWithSelect(SelectImpl &select, bool unionAll) {
-    if (globalConfig->isSqlServer()) {
+    auto config = ConfigManager::getConfig();
+    if (config->isSqlServer()) {
         qFatal("The current version of the union query in Qt6 fails the test case when using SQLServer.");
     }
     select.buildFilterSqlStatement();
@@ -19,7 +21,8 @@ void UnionBuilderImpl::unionWithSelect(SelectImpl &select, bool unionAll) {
 }
 
 void UnionBuilderImpl::unionWithJoin(JoinImpl &join, bool unionAll) {
-    if (globalConfig->isSqlServer()) {
+    auto config = ConfigManager::getConfig();
+    if (config->isSqlServer()) {
         qFatal("The current version of the union query in Qt6 fails the test case when using SQLServer.");
     }
     join.buildJoinSqlStatement();
