@@ -9,6 +9,8 @@
 
 #include "entitycondition.h"
 
+#include "utils/variantcast.h"
+
 QTDAO_BEGIN_NAMESPACE
 
 template<typename T>
@@ -45,54 +47,6 @@ private:
     friend class JoinImpl;
 
 private:
-    template<typename E>
-    QVariant getSupportedValue(const typename std::enable_if<std::is_constructible<QVariant, E>::value, E>::type& v) {
-        return v;
-    }
-
-    template<typename E>
-    QVariant getSupportedValue(const typename std::enable_if<!std::is_constructible<QVariant, E>::value, E>::type& v) {
-        qFatal("used error type!");
-        return {};
-    }
-
-    template<typename E>
-    QVariant getSupportedValue(const typename std::enable_if<std::is_constructible<QVariant, E>::value, QList<E>>::type& v) {
-        return v;
-    }
-
-    template<typename E>
-    QVariant getSupportedValue(const typename std::enable_if<!std::is_constructible<QVariant, E>::value, QList<E>>::type& v) {
-        qFatal("used error type!");
-        return {};
-    }
-
-    template<typename E>
-    const QList<E>& getSupportedValues(const typename std::enable_if<std::is_constructible<QVariant, E>::value, QList<E>>::type& v) {
-        return v;
-    }
-
-    template<typename E>
-    QList<E> getSupportedValues(const typename std::enable_if<!std::is_constructible<QVariant, E>::value, QList<E>>::type& v) {
-        qFatal("used error type!");
-        return {};
-    }
-
-    template<typename EC>
-    void setConnectorValue(EC* connector, const T& v) {
-        connector->addValue(getSupportedValue<T>(v));
-    }
-
-    template<typename EC>
-    void setConnectorValue(EC* connector, const QList<T>& v) {
-        connector->addValue(getSupportedValue<T>(v));
-    }
-
-    template<typename EC>
-    void setConnectorBatchValue(EC* connector, const QList<T>& v) {
-        connector->addValues(getSupportedValues<T>(v));
-    }
-
     EntityConnector* setValue(const char* op, const T& v) {
         auto connector = new OperatorEntityConnector;
         connector->setOperator(op);
@@ -100,7 +54,7 @@ private:
         if (customType) {
             connector->addCustomValue(v);
         } else {
-            setConnectorValue(connector, v);
+            connector->addValue(VariantCastUtil::getSupportedValue<T>(v));
         }
         return connector->ptr();
     }
@@ -112,7 +66,7 @@ private:
         if (customType) {
             connector->addCustomValue(v);
         } else {
-            setConnectorValue(connector, v);
+            connector->addValue(VariantCastUtil::getSupportedValue<T>(v));
         }
         return connector->ptr();
     }
@@ -124,7 +78,7 @@ private:
         if (customType) {
             connector->addCustomValues(v);
         } else {
-            setConnectorBatchValue(connector, v);
+            connector->addValues(VariantCastUtil::getSupportedValues<T>(v));
         }
         return connector->ptr();
     }
@@ -136,7 +90,7 @@ private:
         if (customType) {
             connector->addCustomValues(v);
         } else {
-            setConnectorBatchValue(connector, v);
+            connector->addValues(VariantCastUtil::getSupportedValues<T>(v));
         }
         return connector->ptr();
     }
@@ -316,7 +270,7 @@ public:
         if (customType) {
             connector->addCustomValues(value);
         } else {
-            setConnectorBatchValue(connector, value);
+            connector->addValues(VariantCastUtil::getSupportedValues<T>(value));
         }
         return connector->ptr();
     }

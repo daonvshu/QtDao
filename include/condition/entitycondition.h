@@ -6,6 +6,7 @@
 #include <qvariant.h>
 
 #include "utils/serializing.h"
+#include "utils/variantcast.h"
 
 #include "connector/entityconnector.h"
 
@@ -46,7 +47,7 @@ public:
     void addValues(const QList<T>& values) {
         QVariantList variantList;
         for (const auto& v : values) {
-            variantList << v;
+            variantList << VariantCastUtil::getSupportedValue<T>(v);
         }
         Connector::addValue(QVariant(variantList));
     }
@@ -101,7 +102,7 @@ public:
     template<typename T>
     void addValues(const QList<T>& values) {
         for (const auto& v : values) {
-            addValue(v);
+            addValue(VariantCastUtil::getSupportedValue<T>(v));
         }
     }
 

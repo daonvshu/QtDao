@@ -15,6 +15,8 @@ private slots:
 
     void testSelect();
 
+    void testConditionIn();
+
     void cleanup();
 
     void cleanupTestCase();
