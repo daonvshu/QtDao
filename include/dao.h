@@ -94,12 +94,12 @@ static JoinBuilder<T...> _join(qint64 sessionId = -1) {
 
 extern RecursiveQueryBuilder _recursive(bool unionAll = false, qint64 sessionId = -1);
 
+extern void _truncate(const QString& tbName, qint64 sessionId = -1);
+
 template<typename E>
 static void _truncate(qint64 sessionId = -1) {
     _truncate(E::Info::getTableName(), sessionId);
 }
-
-extern void _truncate(const QString& tbName, qint64 sessionId = -1);
 
 extern void transaction(qint64 sessionId = -1, LoggingCategoryPtr logging = nullptr);
 
