@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(qtdao VERSION 2.2.2)
+project(qtdao VERSION 2.2.3)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
