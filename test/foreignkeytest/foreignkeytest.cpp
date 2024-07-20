@@ -3,6 +3,8 @@
 #include "dao.h"
 
 #include <qtest.h>
+#include <qthread.h>
+#include <qeventloop.h>
 
 #include "artist.h"
 #include "track.h"
@@ -250,6 +252,15 @@ void ForeignKeyTest::testVersionUpgrade() {
         dao::_insert<Track>().build().insert(track);
         QFAIL("the track should not be inserted success here!");
     } catch (dao::DaoException&) {}
+}
+
+void ForeignKeyTest::testRunInThread() {
+    QEventLoop loop;
+    QThread::create([&] {
+        testInsert();
+        loop.quit();
+    })->start();
+    loop.exec();
 }
 
 void ForeignKeyTest::cleanup() {

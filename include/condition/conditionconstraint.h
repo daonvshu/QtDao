@@ -20,8 +20,7 @@ public:
 
     void combine() override;
 
-private:
-    QVariantList values;
+    bool isEmpty() override;
 };
 
 class OrderByConstraintConnector : public ConstraintConnector {

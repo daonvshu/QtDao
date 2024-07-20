@@ -2,7 +2,7 @@
 #include "config/configmanager.h"
 
 #include <qstandardpaths.h>
-
+#include <qsqlquery.h>
 
 QTDAO_BEGIN_NAMESPACE
     ConfigSqliteBuilder::ConfigSqliteBuilder()
@@ -61,6 +61,11 @@ QSqlDatabase ConfigSqliteBuilder::getConnection(const QString& connectionName, c
 
     if (!mOptions.isEmpty()) {
         db.setConnectOptions(mOptions);
+    }
+
+    if (db.open()) {
+        QSqlQuery query(db);
+        query.exec("PRAGMA foreign_keys = ON");
     }
 
     return db;
