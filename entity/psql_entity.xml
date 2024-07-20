@@ -8,7 +8,7 @@
         <item name="hex" type="bytea" note="二进制"/>
     </tb>
     <tb name="PSqlTest2" declaremetatype="true">
-        <item name="id" type="bigint" default="-1" constraints="primary key" autoincrement="true" note="自增长主键"/>
+        <item name="id" type="serial" default="-1" constraints="primary key" note="自增长主键"/>
         <item name="name" type="varchar" bitsize="100" constraints="not null"/>
         <item name="number" type="integer" default="0"/>
         <item name="number2" type="integer"/>
@@ -26,7 +26,7 @@
         </index>
     </tb>
     <tb name="PSqlTest3" declaremetatype="true">
-        <item name="id" type="bigint" default="-1" constraints="primary key" autoincrement="true" />
+        <item name="id" type="serial" default="-1" constraints="primary key" />
         <item name="tbi1" type="bigint" default="-1" note="绑定到PSqlTest1 id"/>
         <item name="tbi2" type="bigint" default="-1" note="绑定到PSqlTest2 id"/>
         <item name="name" type="text"/>
