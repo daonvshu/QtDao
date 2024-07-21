@@ -2,17 +2,20 @@
 
 #include "sqlserver/testtb5.h"
 #include "sqlserver/testtb6.h"
+#include "utils/testconfigloader.h"
 
 #include <dao.h>
 #include <qtest.h>
 
 void ClientSqlServerTest::initTestCase() {
+    const auto& configOption = TestConfigLoader::instance().config().optionSqlServer();
     dao::_config<dao::ConfigSqlServerBuilder>()
             .version(1)
             .databaseName("sqlservertest")
-            .host("localhost")
-            .user("sa")
-            .password("root")
+            .host(configOption.host())
+            .user(configOption.user())
+            .password(configOption.password())
+            .options(configOption.options())
             .disableCreateTables()
             .disableCreateDatabase()
             .initializeDatabase();

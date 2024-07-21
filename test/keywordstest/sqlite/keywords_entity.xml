@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dao xmlns="../../../entity/sqlite_entity.xsd" db="sqlite">
+<dao xmlns="../../../entity/sqlite_entity.xsd" db="sqlite" namespace="TsSqlite">
     <tb name="Database">
         <item name="column" type="int" note="keywords1" />
         <item name="group" type="text" note="keywords2" />

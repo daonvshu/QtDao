@@ -8,7 +8,7 @@
 void SelectTest::initTestCase() {
     configDb();
 
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         sqliteData1 << SqliteTest1(1, "abc", 10, "");
         sqliteData1 << SqliteTest1(2, "alice", 11, "alice1");
         sqliteData1 << SqliteTest1(3, "bob", 12, "bob boom");
@@ -21,7 +21,7 @@ void SelectTest::initTestCase() {
         sqliteData2 << SqliteTest2("func", 10, -2, 50);
         sqliteData2 << SqliteTest2("func", 50, 0, 50);
         dao::_insert<SqliteTest2>().build().insert2(sqliteData2);
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         mysqlData1 << MysqlTest1(1, "abc", 10, "");
         mysqlData1 << MysqlTest1(2, "alice", 11, "alice1");
         mysqlData1 << MysqlTest1(3, "bob", 12, "bob boom");
@@ -34,7 +34,7 @@ void SelectTest::initTestCase() {
         mysqlData2 << MysqlTest2("func", 10, -2);
         mysqlData2 << MysqlTest2("func", 50, 0);
         dao::_insert<MysqlTest2>().build().insert2(mysqlData2);
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         sqlserverData1 << SqlServerTest1(1, "abc", 10, "");
         sqlserverData1 << SqlServerTest1(2, "alice", 11, "alice1");
         sqlserverData1 << SqlServerTest1(3, "bob", 12, "bob boom");
@@ -51,20 +51,20 @@ void SelectTest::initTestCase() {
 }
 
 void SelectTest::uniqueSelectTest_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QTest::addColumn<SqliteTest1List>("data1");
         QTest::newRow("sqlite test data1") << sqliteData1;
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data1") << mysqlData1;
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data1") << sqlserverData1;
     }
 }
 
 template<typename E>
-void runUniqueSelectTest(EngineModel model) {
+void runUniqueSelectTest(TestTargetDb targetDb) {
     QFETCH(QList<E>, data1);
     typename E::Fields sf1;
     typename E::Tool sft1;
@@ -97,7 +97,7 @@ void runUniqueSelectTest(EngineModel model) {
     QCOMPARE(std::get<3>(v3), "alice1");
 
     E d2;
-    if (model == Engine_SqlServer) {
+    if (targetDb == TestTargetDb::Target_SqlServer) {
         d2 = dao::_select<E>()
             .filter(sf1.id <= 3)
             .with(_orderBy(sf1.name.desc()))
@@ -153,23 +153,23 @@ void runUniqueSelectTest(EngineModel model) {
 }
 
 void SelectTest::uniqueSelectTest() {
-    if (engineModel == Engine_Sqlite) {
-        runUniqueSelectTest<SqliteTest1>(engineModel);
-    } else if (engineModel == Engine_Mysql) {
-        runUniqueSelectTest<MysqlTest1>(engineModel);
-    } else if (engineModel == Engine_SqlServer) {
-        runUniqueSelectTest<SqlServerTest1>(engineModel);
+    if (targetDb == TestTargetDb::Target_Sqlite) {
+        runUniqueSelectTest<SqliteTest1>(targetDb);
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
+        runUniqueSelectTest<MysqlTest1>(targetDb);
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
+        runUniqueSelectTest<SqlServerTest1>(targetDb);
     }
 }
 
 void SelectTest::listSelectTest_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QTest::addColumn<SqliteTest1List>("data1");
         QTest::newRow("sqlite test data1") << sqliteData1;
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data1") << mysqlData1;
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data1") << sqlserverData1;
     }
@@ -237,23 +237,23 @@ void runListSelectTest() {
 }
 
 void SelectTest::listSelectTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runListSelectTest<SqliteTest1>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runListSelectTest<MysqlTest1>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runListSelectTest<SqlServerTest1>();
     }
 }
 
 void SelectTest::rawSelectTest_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QTest::addColumn<SqliteTest1List>("data1");
         QTest::newRow("sqlite test data1") << sqliteData1;
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data1") << mysqlData1;
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data1") << sqlserverData1;
     }
@@ -279,11 +279,11 @@ void runRawSelectTest() {
 }
 
 void SelectTest::rawSelectTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runRawSelectTest<SqliteTest1>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runRawSelectTest<MysqlTest1>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runRawSelectTest<SqlServerTest1>();
     }
 }
@@ -299,11 +299,11 @@ void runFuntionSelectTest() {
 }
 
 void SelectTest::funtionSelectTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runFuntionSelectTest<SqliteTest1>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runFuntionSelectTest<MysqlTest1>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runFuntionSelectTest<SqlServerTest1>();
     }
 }
@@ -327,23 +327,23 @@ void runCountSelectTest() {
 }
 
 void SelectTest::countSelectTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runCountSelectTest<SqliteTest1>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runCountSelectTest<MysqlTest1>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runCountSelectTest<SqlServerTest1>();
     }
 }
 
 void SelectTest::selectFromSelectTest_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QTest::addColumn<SqliteTest1List>("data1");
         QTest::newRow("sqlite test data1") << sqliteData1;
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data1") << mysqlData1;
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data1") << sqlserverData1;
     }
@@ -378,25 +378,25 @@ void runSelectFromSelectTest() {
 }
 
 void SelectTest::selectFromSelectTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runSelectFromSelectTest<SqliteTest1>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runSelectFromSelectTest<MysqlTest1>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runSelectFromSelectTest<SqlServerTest1>();
     }
 }
 
 void SelectTest::unionSelectTest_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QTest::addColumn<SqliteTest1List>("data1");
         QTest::addColumn<SqliteTest2List>("data2");
         QTest::newRow("sqlite test data1") << sqliteData1 << sqliteData2;
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::addColumn<MysqlTest2List>("data2");
         QTest::newRow("mysql test data1") << mysqlData1 << mysqlData2;
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::addColumn<SqlServerTest2List>("data2");
         QTest::newRow("sqlserver test data1") << sqlserverData1 << sqlserverData2;
@@ -447,11 +447,11 @@ void runUnionSelectTest() {
 }
 
 void SelectTest::unionSelectTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runUnionSelectTest<SqliteTest1, SqliteTest2>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runUnionSelectTest<MysqlTest1, MysqlTest2>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
 #if QT_VERSION_MAJOR < 6
         runUnionSelectTest<SqlServerTest1, SqlServerTest2>();
 #else
@@ -461,13 +461,13 @@ void SelectTest::unionSelectTest() {
 }
 
 void SelectTest::funtionSubSelectTest_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QTest::addColumn<SqliteTest1List>("data1");
         QTest::newRow("sqlite test data1") << sqliteData1;
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data1") << mysqlData1;
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data1") << sqlserverData1;
     }
@@ -497,17 +497,17 @@ void runFuntionSubSelectTest() {
 }
 
 void SelectTest::funtionSubSelectTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runFuntionSubSelectTest<SqliteTest1, SqliteTest2>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runFuntionSubSelectTest<MysqlTest1, MysqlTest2>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runFuntionSubSelectTest<SqlServerTest1, SqlServerTest2>();
     }
 }
 
 void SelectTest::explainTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         SqliteTest1::Fields sf1;
         auto d1 = dao::_select<SqliteTest1>()
             .filter(sf1.name == "client", _or(sf1.number == 12, sf1.name == "bob"))
@@ -518,7 +518,7 @@ void SelectTest::explainTest() {
             .filter(sf1.hex == "abcde")
             .build().explain<SqliteExplainQueryPlanInfo>();
         QVERIFY(!d2.isEmpty());
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         MysqlTest3::Fields mf;
         auto d = dao::_select<MysqlTest3>()
             .filter(
@@ -527,7 +527,7 @@ void SelectTest::explainTest() {
                 mf.size == 1
             ).build().explain<MysqlExplainInfo>();
         QVERIFY(!d.isEmpty());
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         SqlServerTest2::Fields sf;
         auto d = dao::_select<SqlServerTest2>()
             .filter(

@@ -4,14 +4,14 @@
 
 #include "BaseTest.h"
 
-#include "sqliteentity/sqlitetest1.h"
-#include "sqliteentity/sqlitetest2.h"
+#include "entity/sqliteentity/sqlitetest1.h"
+#include "entity/sqliteentity/sqlitetest2.h"
 
-#include "mysqlentity/mysqltest1.h"
-#include "mysqlentity/mysqltest2.h"
+#include "entity/mysqlentity/mysqltest1.h"
+#include "entity/mysqlentity/mysqltest2.h"
 
-#include "sqlserverentity/sqlservertest1.h"
-#include "sqlserverentity/sqlservertest2.h"
+#include "entity/sqlserverentity/sqlservertest1.h"
+#include "entity/sqlserverentity/sqlservertest2.h"
 
 class InsertIntoSelectTest : public BaseTest {
     Q_OBJECT

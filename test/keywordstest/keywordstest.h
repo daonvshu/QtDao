@@ -2,11 +2,13 @@
 
 #include <qobject.h>
 
-class KeywordsTest : public QObject {
+#include "databaseselector.h"
+
+class KeywordsTest : public QObject, public DatabaseSelector {
     Q_OBJECT
 
 public:
-    using QObject::QObject;
+    KeywordsTest();
 
 private slots:
     void initTestCase();

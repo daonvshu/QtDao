@@ -4,19 +4,19 @@
 
 #include "dao.h"
 
-#include "sqliteentity/sqlitetest1.h"
-#include "sqliteentity/sqlitetest2.h"
+#include "entity/sqliteentity/sqlitetest1.h"
+#include "entity/sqliteentity/sqlitetest2.h"
 
-#include "mysqlentity/mysqltest1.h"
-#include "mysqlentity/mysqltest2.h"
+#include "entity/mysqlentity/mysqltest1.h"
+#include "entity/mysqlentity/mysqltest2.h"
 
-#include "sqlserverentity/sqlservertest1.h"
-#include "sqlserverentity/sqlservertest2.h"
+#include "entity/sqlserverentity/sqlservertest1.h"
+#include "entity/sqlserverentity/sqlservertest2.h"
 
 void UpdateTest::initTestCase() {
     configDb();
 
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         SqliteTest1List data1;
         SqliteTest2List data2;
 
@@ -32,7 +32,7 @@ void UpdateTest::initTestCase() {
         data2 << SqliteTest2("func", 10, -2, 50);
         data2 << SqliteTest2("func", 50, 0, 50);
         dao::_insert<SqliteTest2>().build().insert2(data2);
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         MysqlTest1List data1;
         MysqlTest2List data2;
 
@@ -48,7 +48,7 @@ void UpdateTest::initTestCase() {
         data2 << MysqlTest2("func", 10, -2);
         data2 << MysqlTest2("func", 50, 0);
         dao::_insert<MysqlTest2>().build().insert2(data2);
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         SqlServerTest1List data1;
         SqlServerTest2List data2;
 
@@ -106,11 +106,11 @@ void runSetUpdateTest() {
 }
 
 void UpdateTest::setUpdateTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runSetUpdateTest<SqliteTest1>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runSetUpdateTest<MysqlTest1>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runSetUpdateTest<SqlServerTest1>();
     }
 }
@@ -147,11 +147,11 @@ void runObjectUpdateTest() {
 }
 
 void UpdateTest::objectUpdateTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runObjectUpdateTest<SqliteTest2>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runObjectUpdateTest<MysqlTest2>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runObjectUpdateTest<SqlServerTest2>();
     }
 }

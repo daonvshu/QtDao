@@ -16,6 +16,8 @@
 #include "mysql/artist.h"
 #include "sqlserver/artist.h"
 
+#include "utils/testconfigloader.h"
+
 void MultiDbTest::initTestCase() {
 }
 
@@ -37,23 +39,25 @@ void MultiDbTest::setupTest() {
                 .session(SESSION_SQLITE2)
                 .initializeDatabase();
 
+        const auto& mysqlConfigOption = TestConfigLoader::instance().config().optionMysql();
         dao::_config<dao::ConfigMysqlBuilder>()
                 .version(1)
                 .databaseName("multi_mysqltest")
-                .host("localhost")
-                .port(3306)
-                .user("root")
-                .password("root")
+                .host(mysqlConfigOption.host())
+                .port(mysqlConfigOption.port())
+                .user(mysqlConfigOption.user())
+                .password(mysqlConfigOption.password())
                 .configAlias("mys")
                 .session(SESSION_MYSQL)
                 .initializeDatabase();
 
+        const auto& sqlServerConfigOption = TestConfigLoader::instance().config().optionSqlServer();
         dao::_config<dao::ConfigSqlServerBuilder>()
                 .version(1)
                 .databaseName("multi_sqlservertest")
-                .host("localhost")
-                .user("sa")
-                .password("root")
+                .host(sqlServerConfigOption.host())
+                .user(sqlServerConfigOption.user())
+                .password(sqlServerConfigOption.password())
                 .configAlias("ms")
                 .session(SESSION_SQLSERVER)
                 .initializeDatabase();

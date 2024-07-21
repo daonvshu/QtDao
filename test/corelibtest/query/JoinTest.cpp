@@ -8,7 +8,7 @@
 void JoinTest::initTestCase() {
     configDb();
 
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         sqliteData1 << SqliteTest1(1, "abc", 10, "");
         sqliteData1 << SqliteTest1(2, "alice", 11, "alice1");
         sqliteData1 << SqliteTest1(3, "bob", 12, "bob boom");
@@ -28,7 +28,7 @@ void JoinTest::initTestCase() {
         sqliteData3 << SqliteTest3(1, 3, "func group1", 6);
         sqliteData3 << SqliteTest3(1, 4, "func group2", 7);
         dao::_insert<SqliteTest3>().build().insert2(sqliteData3);
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         mysqlData1 << MysqlTest1(1, "abc", 10, "");
         mysqlData1 << MysqlTest1(2, "alice", 11, "alice1");
         mysqlData1 << MysqlTest1(3, "bob", 12, "bob boom");
@@ -48,7 +48,7 @@ void JoinTest::initTestCase() {
         mysqlData3 << MysqlTest3(1, 3, "func group1", 6);
         mysqlData3 << MysqlTest3(1, 4, "func group2", 7);
         dao::_insert<MysqlTest3>().build().insert2(mysqlData3);
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         sqlserverData1 << SqlServerTest1(1, "abc", 10, "");
         sqlserverData1 << SqlServerTest1(2, "alice", 11, "alice1");
         sqlserverData1 << SqlServerTest1(3, "bob", 12, "bob boom");
@@ -143,11 +143,11 @@ void runTestJoinTable() {
 }
 
 void JoinTest::testJoinTable() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runTestJoinTable<SqliteTest1, SqliteTest2, SqliteTest3>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runTestJoinTable<MysqlTest1, MysqlTest2, MysqlTest3>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinTable<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
@@ -177,11 +177,11 @@ void runTestJoinTableUseWith() {
 }
 
 void JoinTest::testJoinTableUseWith() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runTestJoinTableUseWith<SqliteTest1, SqliteTest2, SqliteTest3>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runTestJoinTableUseWith<MysqlTest1, MysqlTest2, MysqlTest3>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinTableUseWith<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
@@ -212,11 +212,11 @@ void runTestJoinTableFilterOn() {
 }
 
 void JoinTest::testJoinTableFilterOn() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runTestJoinTableFilterOn<SqliteTest1, SqliteTest2, SqliteTest3>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runTestJoinTableFilterOn<MysqlTest1, MysqlTest2, MysqlTest3>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinTableFilterOn<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
@@ -264,11 +264,11 @@ void runTestJoinSelfTable() {
 }
 
 void JoinTest::testJoinSelfTable() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runTestJoinSelfTable<SqliteTest2>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runTestJoinSelfTable<MysqlTest2>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinSelfTable<SqlServerTest2>();
     }
 }
@@ -299,11 +299,11 @@ void runTestSelectFromJoin() {
 }
 
 void JoinTest::testSelectFromJoin() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runTestSelectFromJoin<SqliteTest1, SqliteTest2, SqliteTest3>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runTestSelectFromJoin<MysqlTest1, MysqlTest2, MysqlTest3>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestSelectFromJoin<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
@@ -339,11 +339,11 @@ void runTestJoinFromSelect() {
 }
 
 void JoinTest::testJoinFromSelect() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runTestJoinFromSelect<SqliteTest1, SqliteTest2, SqliteTest3>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runTestJoinFromSelect<MysqlTest1, MysqlTest2, MysqlTest3>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinFromSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
@@ -379,11 +379,11 @@ void runTestJoinOnSelect() {
 }
 
 void JoinTest::testJoinOnSelect() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runTestJoinOnSelect<SqliteTest1, SqliteTest2, SqliteTest3>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runTestJoinOnSelect<MysqlTest1, MysqlTest2, MysqlTest3>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinOnSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
@@ -424,11 +424,11 @@ void runTestSelectUnionJoin() {
 }
 
 void JoinTest::testSelectUnionJoin() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runTestSelectUnionJoin<SqliteTest1, SqliteTest2, SqliteTest3>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runTestSelectUnionJoin<MysqlTest1, MysqlTest2, MysqlTest3>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
 #if QT_VERSION_MAJOR < 6
         runTestSelectUnionJoin<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
 #else
@@ -477,11 +477,11 @@ void runTestJoinUnionSelect() {
 }
 
 void JoinTest::testJoinUnionSelect() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runTestJoinUnionSelect<SqliteTest1, SqliteTest2, SqliteTest3>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runTestJoinUnionSelect<MysqlTest1, MysqlTest2, MysqlTest3>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
 #if QT_VERSION_MAJOR < 6
         runTestJoinUnionSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
 #else
@@ -530,11 +530,11 @@ void runTestJoinUnionJoin() {
 }
 
 void JoinTest::testJoinUnionJoin() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runTestJoinUnionJoin<SqliteTest1, SqliteTest2, SqliteTest3>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runTestJoinUnionJoin<MysqlTest1, MysqlTest2, MysqlTest3>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
 #if QT_VERSION_MAJOR < 6
         runTestJoinUnionJoin<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
 #else
@@ -616,21 +616,21 @@ void runRecursiveQueryTest() {
 
 void JoinTest::recursiveQueryTest() {
     PASSMYSQL;
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runRecursiveQueryTest<SqliteTest1, SqliteTest2, SqliteTest3>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runRecursiveQueryTest<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
 
 void JoinTest::functionSubJoinTest_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QTest::addColumn<SqliteTest1List>("data1");
         QTest::newRow("sqlite test data") << sqliteData1;
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest1List>("data1");
         QTest::newRow("mysql test data") << mysqlData1;
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data") << sqlserverData1;
     }
@@ -670,11 +670,11 @@ void runFunctionSubJoinTest() {
 }
 
 void JoinTest::functionSubJoinTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runFunctionSubJoinTest<SqliteTest1, SqliteTest2, SqliteTest3>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runFunctionSubJoinTest<MysqlTest1, MysqlTest2, MysqlTest3>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runFunctionSubJoinTest<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
     }
 }
@@ -699,7 +699,7 @@ Join<E1, E3, E2> getExplainPrepareSelect() {
 }
 
 void JoinTest::explainTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         auto d1 = getExplainPrepareSelect<SqliteTest1, SqliteTest2, SqliteTest3>()
             .explain<SqliteExplainInfo>();
         QVERIFY(!d1.isEmpty());
@@ -707,11 +707,11 @@ void JoinTest::explainTest() {
         auto d2 = getExplainPrepareSelect<SqliteTest1, SqliteTest2, SqliteTest3>()
             .explain<SqliteExplainQueryPlanInfo>();
         QVERIFY(!d2.isEmpty());
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         auto d = getExplainPrepareSelect<MysqlTest1, MysqlTest2, MysqlTest3>()
             .explain<MysqlExplainInfo>();
         QVERIFY(!d.isEmpty());
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         auto d = getExplainPrepareSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>()
             .explain<SqlServerExplainInfo>();
         QVERIFY(!d.isEmpty());

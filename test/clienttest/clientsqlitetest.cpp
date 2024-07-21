@@ -191,12 +191,12 @@ void ClientSqliteTest::fieldProcessTest() {
 
     auto fields = client->exportAllFields(TestTb1::Info::getTableName());
     QList<QPair<QString, QString>> expectFields;
-    expectFields << qMakePair(QLatin1String("field1"), QLatin1String("INTEGER"));
-    expectFields << qMakePair(QLatin1String("field2"), QLatin1String("TEXT"));
-    expectFields << qMakePair(QLatin1String("field3"), QLatin1String("INTEGER"));
-    expectFields << qMakePair(QLatin1String("field4"), QLatin1String("INTEGER"));
-    expectFields << qMakePair(QLatin1String("field5"), QLatin1String("BLOB"));
-    expectFields << qMakePair(QLatin1String("field6"), QLatin1String("TEXT"));
+    expectFields << qMakePair(QLatin1String("\"field1\""), QLatin1String("INTEGER"));
+    expectFields << qMakePair(QLatin1String("\"field2\""), QLatin1String("TEXT"));
+    expectFields << qMakePair(QLatin1String("\"field3\""), QLatin1String("INTEGER"));
+    expectFields << qMakePair(QLatin1String("\"field4\""), QLatin1String("INTEGER"));
+    expectFields << qMakePair(QLatin1String("\"field5\""), QLatin1String("BLOB"));
+    expectFields << qMakePair(QLatin1String("\"field6\""), QLatin1String("TEXT"));
     QCOMPARE(fields, expectFields);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 4)

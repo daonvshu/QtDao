@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE dao SYSTEM "../../../entity/mysql_entity.xsd">
-<dao db="mysql">
+<dao db="mysql" namespace="TsMysql">
     <tb name="Artist" declaremetatype="true" engine="InnoDB">
         <item name="id" type="bigint" constraints="primary key" />
         <item name="name" type="text" />

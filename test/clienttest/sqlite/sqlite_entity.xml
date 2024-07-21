@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<dao prefix="ts_" db="sqlite" namespace="CT" alias="clienttest">
+<dao prefix="ts_" db="sqlite" namespace="CT">
   <tb name="TestTb1" declaremetatype="true">
     <item name="field1" type="long" constraints="primary key" autoincrement="true" default="1" />
     <item name="field2" type="text" constraints="not null"/>

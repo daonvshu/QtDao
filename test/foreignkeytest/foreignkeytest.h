@@ -2,11 +2,13 @@
 
 #include <qobject.h>
 
-class ForeignKeyTest : public QObject {
+#include "databaseselector.h"
+
+class ForeignKeyTest : public QObject, public DatabaseSelector {
     Q_OBJECT
 
 public:
-    using QObject::QObject;
+    ForeignKeyTest();
 
 private slots:
     void initTestCase();

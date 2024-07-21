@@ -2,13 +2,13 @@
 
 #include <qobject.h>
 
-#include "EngineModelSelector.h"
+#include "databaseselector.h"
 
 QTDAO_USING_NAMESPACE
 
-class BaseTest : public QObject , public EngineModelSelector {
+class BaseTest : public QObject , public DatabaseSelector {
 public:
-    BaseTest(EngineModel model);
+    explicit BaseTest(TestTargetDb targetDb);
 
 private:
     static QList<QPair<QString, QVariantList>> cachedSqlLog;
@@ -20,7 +20,7 @@ protected:
     void clearCache();
 
     void configDb() {
-        setupDatabase();
+        setupDatabase("corelib_test");
         clearCacheAndPrintIfTestFail();
     }
 };

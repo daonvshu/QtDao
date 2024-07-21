@@ -8,6 +8,8 @@ option(QTDAO_BUILD_TEST "enable qtdao test projects" OFF)
 if (QTDAO_BUILD_TEST)
   message("config qtdao unit tests!")
 
+  add_subdirectory(test/acommontestutil)
+
   add_subdirectory(test/corelibtest)
   add_subdirectory(test/keywordstest)
   add_subdirectory(test/customtypetest)

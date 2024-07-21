@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE dao SYSTEM "../../../entity/sqlserver_entity.xsd">
-<dao db="sqlserver">
+<dao db="sqlserver" namespace="TsSqlServer">
     <tb name="Artist" declaremetatype="true">
         <item name="id" type="bigint" constraints="primary key" />
         <item name="name" type="text" />

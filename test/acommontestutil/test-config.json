@@ -1,0 +1,31 @@
+{
+  "printTarget": "std",
+  "systemCodePage": true,
+  "targetDb": "sqlite",
+  "optionSqlite": {
+    "version": 1,
+    "options": "QSQLITE_BUSY_TIMEOUT=100",
+    "saveDir": "current"
+  },
+  "optionMysql": {
+    "version": 1,
+    "host": "localhost",
+    "port": 3306,
+    "user": "root",
+    "password": "root",
+    "options": "MYSQL_OPT_CONNECT_TIMEOUT=3;MYSQL_OPT_READ_TIMEOUT=3;MYSQL_OPT_WRITE_TIMEOUT=3"
+  },
+  "optionSqlServer": {
+    "version": 1,
+    "host": "localhost",
+    "user": "sa",
+    "password": "root"
+  },
+  "optionPSql": {
+    "version": 1,
+    "host": "localhost",
+    "port": 5432,
+    "user": "root",
+    "password": "root"
+  }
+}

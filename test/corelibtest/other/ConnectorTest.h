@@ -2,13 +2,13 @@
 
 #include <qobject.h>
 
-#include "EngineModelSelector.h"
+#include "databaseselector.h"
 
-class ConnectorTest : public QObject, public EngineModelSelector {
+class ConnectorTest : public QObject, public DatabaseSelector {
     Q_OBJECT
 
 public:
-    using EngineModelSelector::EngineModelSelector;
+    using DatabaseSelector::DatabaseSelector;
 
 private slots:
     void initTestCase();

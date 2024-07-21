@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE dao SYSTEM "../../../entity/sqlite_entity.xsd">
-<dao prefix="ts_" db="sqlite">
+<dao prefix="ts_" db="sqlite" namespace="TsSqlite">
     <tb name="Artist" declaremetatype="true">
         <item name="id" type="long" constraints="primary key" />
         <item name="name" type="text" />

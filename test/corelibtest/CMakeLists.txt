@@ -8,22 +8,19 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Sql Test REQUIRED)
 
-file(GLOB CONDITION_TEST condition/*.h condition/*.cpp)
-file(GLOB LOADER_TEST loader/*.h loader/*.cpp)
+file(GLOB OTHER_TEST other/*.h other/*.cpp)
 file(GLOB QUERY_TEST query/*.h query/*.cpp)
-file(GLOB ENTITY_SQLITE sqliteentity/*.h sqliteentity/*.cpp)
-file(GLOB ENTITY_MYSQL mysqlentity/*.h mysqlentity/*.cpp)
-file(GLOB ENTITY_SQLSERVER sqlserverentity/*.h sqlserverentity/*.cpp)
+file(GLOB ENTITY_SQLITE entity/sqliteentity/*.h entity/sqliteentity/*.cpp)
+file(GLOB ENTITY_MYSQL entity/mysqlentity/*.h entity/mysqlentity/*.cpp)
+file(GLOB ENTITY_SQLSERVER entity/sqlserverentity/*.h entity/sqlserverentity/*.cpp)
 
 add_executable(${PROJECT_NAME}
-  BaseTest.h
-  BaseTest.cpp
-  ConnectionPoolTest.h
-  ConnectionPoolTest.cpp
-  EngineModelSelector.h
+    BaseTest.h
+    BaseTest.cpp
+    ../acommontestutil/databaseselector.h
     main.cpp
-    ${CONDITION_TEST}
-    ${LOADER_TEST}
+
+    ${OTHER_TEST}
     ${QUERY_TEST}
     ${ENTITY_SQLITE}
     ${ENTITY_MYSQL}
@@ -34,4 +31,7 @@ target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Sql
     Qt${QT_VERSION_MAJOR}::Test
-    qtdao)
+
+    qtdao
+    common-test-util
+)

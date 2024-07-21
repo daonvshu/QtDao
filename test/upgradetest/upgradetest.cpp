@@ -8,6 +8,7 @@
 #endif
 
 #include "mydbupgrader.h"
+#include "utils/testconfigloader.h"
 
 #include <qtest.h>
 
@@ -31,20 +32,22 @@ void UpgradeTest::upgradeTest() {
                 .disableCreateTables()
                 .initializeDatabase();
     } else if (TEST_DB == QLatin1String("mysql")) {
+        const auto& configOption = TestConfigLoader::instance().config().optionMysql();
         dao::_config<dao::ConfigMysqlBuilder>()
                 .databaseName("mysql_upgrade_test")
-                .host("localhost")
-                .port(3306)
-                .user("root")
-                .password("root")
+                .host(configOption.host())
+                .port(configOption.port())
+                .user(configOption.user())
+                .password(configOption.password())
                 .disableCreateTables()
                 .initializeDatabase();
     } else if (TEST_DB == QLatin1String("sqlserver")) {
+        const auto& configOption = TestConfigLoader::instance().config().optionSqlServer();
         dao::_config<dao::ConfigSqlServerBuilder>()
                 .databaseName("sqlserver_upgrade_test")
-                .host("localhost")
-                .user("sa")
-                .password("root")
+                .host(configOption.host())
+                .user(configOption.user())
+                .password(configOption.password())
                 .disableCreateTables()
                 .initializeDatabase();
     }
@@ -58,22 +61,24 @@ void UpgradeTest::upgradeTest() {
                 .setDatabaseUpgrader(new MyDbUpgrader)
                 .initializeDatabase();
     } else if (TEST_DB == QLatin1String("mysql")) {
+        const auto& configOption = TestConfigLoader::instance().config().optionMysql();
         dao::_config<dao::ConfigMysqlBuilder>()
                 .version(TARGET_VER)
                 .databaseName("mysql_upgrade_test")
-                .host("localhost")
-                .port(3306)
-                .user("root")
-                .password("root")
+                .host(configOption.host())
+                .port(configOption.port())
+                .user(configOption.user())
+                .password(configOption.password())
                 .setDatabaseUpgrader(new MyDbUpgrader)
                 .initializeDatabase();
     } else if (TEST_DB == QLatin1String("sqlserver")) {
+        const auto& configOption = TestConfigLoader::instance().config().optionSqlServer();
         dao::_config<dao::ConfigSqlServerBuilder>()
                 .version(TARGET_VER)
                 .databaseName("sqlserver_upgrade_test")
-                .host("localhost")
-                .user("sa")
-                .password("root")
+                .host(configOption.host())
+                .user(configOption.user())
+                .password(configOption.password())
                 .setDatabaseUpgrader(new MyDbUpgrader)
                 .initializeDatabase();
     }

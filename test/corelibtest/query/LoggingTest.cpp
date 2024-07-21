@@ -1,7 +1,7 @@
 #include "LoggingTest.h"
 
-#include "sqliteentity/sqlitetest1.h"
-#include "sqliteentity/sqlitetest2.h"
+#include "entity/sqliteentity/sqlitetest1.h"
+#include "entity/sqliteentity/sqlitetest2.h"
 
 void LoggingTest::initTestCase() {
     configDb();

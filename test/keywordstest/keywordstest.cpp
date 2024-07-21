@@ -4,50 +4,28 @@
 
 #include <qtest.h>
 
-#include "database.h"
+#include "sqlite/database.h"
+#include "mysql/database.h"
+#include "sqlserver/database.h"
+
+#include "utils/testconfigloader.h"
 
 using namespace dao;
+
+KeywordsTest::KeywordsTest()
+    : DatabaseSelector(TestConfigLoader::instance().config().getTestTargetDb())
+{}
 
 void KeywordsTest::initTestCase() {
 }
 
 void KeywordsTest::testStep() {
-    try {
-        if (TEST_DB == QLatin1String("sqlite")) {
-            dao::_config<dao::ConfigSqliteBuilder>()
-                    .version(1)
-                    .databaseName("sqlite_keywords_test")
-                    .initializeDatabase();
-        } else if (TEST_DB == QLatin1String("mysql")) {
-            dao::_config<dao::ConfigMysqlBuilder>()
-                    .version(1)
-                    .databaseName("mysql_keywords_test")
-                    .host("localhost")
-                    .port(3306)
-                    .user("root")
-                    .password("root")
-                    .initializeDatabase();
-        } else if (TEST_DB == QLatin1String("sqlserver")) {
-            dao::_config<dao::ConfigSqlServerBuilder>()
-                    .version(1)
-                    .databaseName("sqlserver_keywords_test")
-                    .host("localhost")
-                    .user("sa")
-                    .password("root")
-                    .initializeDatabase();
-        }
-    } catch (dao::DaoException& e) {
-        Q_UNUSED(e)
-        auto validDrivers = QSqlDatabase::drivers();
-        Q_UNUSED(validDrivers)
-        qFatal("setup database fail!");
-    }
-
-    dao::_truncate<Database>();
+    setupDatabase("keywords_test", 1);
 }
 
+template<typename T>
 QPair<QList<int>, QStringList> readAll() {
-    auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(Database::Info::getTableName()));
+    auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(T::Info::getTableName()));
     QList<int> columns;
     QStringList groups;
     while (query.next()) {
@@ -57,20 +35,36 @@ QPair<QList<int>, QStringList> readAll() {
     return qMakePair(columns, groups);
 }
 
-void KeywordsTest::testInsert() {
-    DatabaseList databaseList {
+#define runTestImpl(func) \
+const auto& targetDb = TestConfigLoader::instance().config().getTestTargetDb(); \
+if (targetDb == TestTargetDb::Target_Sqlite) { \
+    func<TsSqlite::Database>(); \
+} else if (targetDb == TestTargetDb::Target_Mysql) { \
+    func<TsMysql::Database>(); \
+} else if (targetDb == TestTargetDb::Target_SqlServer) { \
+    func<TsSqlServer::Database>(); \
+}
+
+template<typename Database>
+void testInsertImpl() {
+    QList<Database> databaseList {
         Database(1, "group_num1"),
         Database(2, "group_ku2"),
     };
     dao::_insert<Database>().build().insert(databaseList);
 
-    auto allData = readAll();
+    auto allData = readAll<Database>();
     QCOMPARE(allData.first, QList<int>() << 1 << 2);
     QCOMPARE(allData.second, QStringList() << "group_num1" << "group_ku2");
 }
 
-void KeywordsTest::testSelect() {
-    Database::Fields df;
+void KeywordsTest::testInsert() {
+    runTestImpl(testInsertImpl)
+}
+
+template<typename Database>
+void testSelectImpl() {
+    typename Database::Fields df;
     auto result = dao::_select<Database>()
         .column(df.group, df.column)
         .filter(df.group.like("group_%"))
@@ -87,61 +81,46 @@ void KeywordsTest::testSelect() {
     QCOMPARE(groups, QStringList() << "group_ku2" << "group_num1");
 }
 
-void KeywordsTest::testUpdate() {
-    Database::Fields df;
+void KeywordsTest::testSelect() {
+    runTestImpl(testSelectImpl)
+}
+
+template<typename Database>
+void testUpdateImpl() {
+    typename Database::Fields df;
     dao::_update<Database>()
         .set(df.column = 10, df.group = "groups")
         .filter(df.column == 1)
         .build().update();
 
-    auto allData = readAll();
+    auto allData = readAll<Database>();
     QCOMPARE(allData.first, QList<int>() << 10 << 2);
     QCOMPARE(allData.second, QStringList() << "groups" << "group_ku2");
 }
 
-void KeywordsTest::testJoin() {
+void KeywordsTest::testUpdate() {
+    runTestImpl(testUpdateImpl)
+}
+
+template<typename Database>
+void testJoinImpl() {
     class DatabaseTmp : public dao::self<Database> {};
-    DatabaseTmp::Fields dtf;
-    Database::Fields df;
+    typename DatabaseTmp::Fields dtf;
+    typename Database::Fields df;
 
     dao::_join<Database, DatabaseTmp>()
-        .from<Database>()
-        .innerJoin<DatabaseTmp>().on(dtf.column == df.column)
+        .template from<Database>()
+        .template innerJoin<DatabaseTmp>().on(dtf.column == df.column)
         .filter(df.column > 0)
         .build().list();
 }
 
+void KeywordsTest::testJoin() {
+    runTestImpl(testJoinImpl)
+}
+
 void KeywordsTest::upgradeTest() {
-    try {
-        if (TEST_DB == QLatin1String("sqlite")) {
-            dao::_config<dao::ConfigSqliteBuilder>()
-                    .version(2)
-                    .databaseName("sqlite_keywords_test")
-                    .initializeDatabase();
-        } else if (TEST_DB == QLatin1String("mysql")) {
-            dao::_config<dao::ConfigMysqlBuilder>()
-                    .version(2)
-                    .databaseName("mysql_keywords_test")
-                    .host("localhost")
-                    .port(3306)
-                    .user("root")
-                    .password("root")
-                    .initializeDatabase();
-        } else if (TEST_DB == QLatin1String("sqlserver")) {
-            dao::_config<dao::ConfigSqlServerBuilder>()
-                    .version(2)
-                    .databaseName("sqlserver_keywords_test")
-                    .host("localhost")
-                    .user("sa")
-                    .password("root")
-                    .initializeDatabase();
-        }
-    } catch (dao::DaoException& e) {
-        Q_UNUSED(e)
-        auto validDrivers = QSqlDatabase::drivers();
-        Q_UNUSED(validDrivers)
-        qFatal("setup database fail!");
-    }
+    setupDatabase("keywords_test", 2);
 }
 
 void KeywordsTest::cleanup() {

@@ -15,7 +15,7 @@
 QTDAO_USING_NAMESPACE
 
 void ConnectionPoolTest::initTestCase() {
-    setupDatabase();
+    setupDatabase("corelib_test");
     QThreadPool::globalInstance()->setMaxThreadCount(10);
 }
 

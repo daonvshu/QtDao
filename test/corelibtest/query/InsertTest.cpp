@@ -2,14 +2,14 @@
 
 #include <QtTest>
 
-#include "sqliteentity/sqlitetest1.h"
-#include "sqliteentity/sqlitetest2.h"
+#include "entity/sqliteentity/sqlitetest1.h"
+#include "entity/sqliteentity/sqlitetest2.h"
 
-#include "mysqlentity/mysqltest1.h"
-#include "mysqlentity/mysqltest2.h"
+#include "entity/mysqlentity/mysqltest1.h"
+#include "entity/mysqlentity/mysqltest2.h"
 
-#include "sqlserverentity/sqlservertest1.h"
-#include "sqlserverentity/sqlservertest2.h"
+#include "entity/sqlserverentity/sqlservertest1.h"
+#include "entity/sqlserverentity/sqlservertest2.h"
 #include "dbexception.h"
 
 void InsertTest::initTestCase() {
@@ -34,11 +34,11 @@ void runSetInsertTest() {
 }
 
 void InsertTest::setInsertTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runSetInsertTest<SqliteTest1>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runSetInsertTest<MysqlTest1>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runSetInsertTest<SqlServerTest1>();
     }
 }
@@ -69,17 +69,17 @@ void runSetInsertBatchTest() {
 }
 
 void InsertTest::setInsertBatchTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runSetInsertBatchTest<SqliteTest2>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runSetInsertBatchTest<MysqlTest2>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runSetInsertBatchTest<SqlServerTest2>();
     }
 }
 
 void InsertTest::insertObjectTest_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QTest::addColumn<SqliteTest1>("test1");
         QTest::addColumn<SqliteTest1>("test2");
         QTest::addColumn<SqliteTest2>("test3");
@@ -87,7 +87,7 @@ void InsertTest::insertObjectTest_data() {
             << SqliteTest1(2, "test", 40, "object")
             << SqliteTest1(2, "test", 20, "abc")
             << SqliteTest2("testname", 23, 233, QDate(2020, 10, 20));
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest1>("test1");
         QTest::addColumn<MysqlTest1>("test2");
         QTest::addColumn<MysqlTest2>("test3");
@@ -95,7 +95,7 @@ void InsertTest::insertObjectTest_data() {
             << MysqlTest1(2, "test", 40, "object")
             << MysqlTest1(2, "test", 20, "abc")
             << MysqlTest2("testname", 23, 233);
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1>("test1");
         QTest::addColumn<SqlServerTest1>("test2");
         QTest::addColumn<SqlServerTest2>("test3");
@@ -152,17 +152,17 @@ void runInsertObjectTest() {
 }
 
 void InsertTest::insertObjectTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runInsertObjectTest<SqliteTest1, SqliteTest2>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runInsertObjectTest<MysqlTest1, MysqlTest2>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runInsertObjectTest<SqlServerTest1, SqlServerTest2>();
     }
 }
 
 void InsertTest::insertObjectsTest_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QList<SqliteTest2> test;
         test << SqliteTest2("name1", 1, 11, 111);
         test << SqliteTest2("name2", 2, 22, 22.2);
@@ -170,7 +170,7 @@ void InsertTest::insertObjectsTest_data() {
 
         QTest::addColumn<QList<SqliteTest2>>("test");
         QTest::newRow("sqlite test data") << test;
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QList<MysqlTest2> test;
         test << MysqlTest2("name1", 1, 11);
         test << MysqlTest2("name2", 2, 22);
@@ -178,7 +178,7 @@ void InsertTest::insertObjectsTest_data() {
 
         QTest::addColumn<QList<MysqlTest2>>("test");
         QTest::newRow("mysql test data") << test;
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QList<SqlServerTest2> test;
         test << SqlServerTest2("name1", 1, 11);
         test << SqlServerTest2("name2", 2, 22);
@@ -211,17 +211,17 @@ void runInsertObjectsTest() {
 }
 
 void InsertTest::insertObjectsTest() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runInsertObjectsTest<SqliteTest2>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runInsertObjectsTest<MysqlTest2>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runInsertObjectsTest<SqlServerTest2>();
     }
 }
 
 void InsertTest::insertObjects2Test_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QList<SqliteTest2> test;
         test << SqliteTest2("name4", 4, 44, 444);
         test << SqliteTest2("name5", 5, 55, 55.2);
@@ -229,7 +229,7 @@ void InsertTest::insertObjects2Test_data() {
 
         QTest::addColumn<QList<SqliteTest2>>("test");
         QTest::newRow("sqlite test data") << test;
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QList<MysqlTest2> test;
         test << MysqlTest2("name4", 4, 44);
         test << MysqlTest2("name5", 5, 55);
@@ -237,7 +237,7 @@ void InsertTest::insertObjects2Test_data() {
 
         QTest::addColumn<QList<MysqlTest2>>("test");
         QTest::newRow("mysql test data") << test;
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QList<SqlServerTest2> test;
         test << SqlServerTest2("name4", 4, 44);
         test << SqlServerTest2("name5", 5, 55);
@@ -270,20 +270,20 @@ void runInsertObjects2Test() {
 }
 
 void InsertTest::insertObjects2Test() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runInsertObjects2Test<SqliteTest2>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runInsertObjects2Test<MysqlTest2>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runInsertObjects2Test<SqlServerTest2>();
     }
 }
 
 void InsertTest::insertOrReplaceTest_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QTest::addColumn<SqliteTest2>("entity");
         QTest::addRow("sqlite test data") << SqliteTest2("testinsertorreplace", -1, -2, "666");
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest2>("entity");
         QTest::addRow("mysql test data") << MysqlTest2("testinsertorreplace", -1, -2);
     }
@@ -309,18 +309,18 @@ void runInsertOrReplaceTest() {
 
 void InsertTest::insertOrReplaceTest() {
     PASSSQLSERVER;
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runInsertOrReplaceTest<SqliteTest2>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runInsertOrReplaceTest<MysqlTest2>();
     }
 }
 
 void InsertTest::insertOrIgnoreTest_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QTest::addColumn<SqliteTest2>("entity");
         QTest::addRow("sqlite test data") << SqliteTest2("testinsertorreplace", -1, -2, "666");
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest2>("entity");
         QTest::addRow("mysql test data") << MysqlTest2("testinsertorreplace", -1, -2);
     }
@@ -346,21 +346,21 @@ void runInsertOrIgnoreTest() {
 
 void InsertTest::insertOrIgnoreTest() {
     PASSSQLSERVER;
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runInsertOrIgnoreTest<SqliteTest2>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runInsertOrIgnoreTest<MysqlTest2>();
     }
 }
 
 void InsertTest::testTransaction_data() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QTest::addColumn<SqliteTest2>("entity");
         QTest::addRow("sqlite test data") << SqliteTest2("test transaction", 10000, 10000, "666");
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest2>("entity");
         QTest::addRow("mysql test data") << MysqlTest2("test transaction", 10000, 10000);
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest2>("entity");
         QTest::addRow("sqlserver test data") << SqlServerTest2("test transaction", 10000, 10000);
     }
@@ -384,11 +384,11 @@ void runTestTransaction() {
 }
 
 void InsertTest::testTransaction() {
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         runTestTransaction<SqliteTest2>();
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         runTestTransaction<MysqlTest2>();
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestTransaction<SqlServerTest2>();
     }
 }

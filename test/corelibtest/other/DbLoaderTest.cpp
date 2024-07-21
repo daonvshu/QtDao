@@ -2,14 +2,14 @@
 
 #include "connectionpool.h"
 
-#include "sqliteentity/sqlitetest1.h"
-#include "sqliteentity/sqlitetest2.h"
+#include "entity/sqliteentity/sqlitetest1.h"
+#include "entity/sqliteentity/sqlitetest2.h"
 
-#include "mysqlentity/mysqltest1.h"
-#include "mysqlentity/mysqltest2.h"
+#include "entity/mysqlentity/mysqltest1.h"
+#include "entity/mysqlentity/mysqltest2.h"
 
-#include "sqlserverentity/sqlservertest1.h"
-#include "sqlserverentity/sqlservertest2.h"
+#include "entity/sqlserverentity/sqlservertest1.h"
+#include "entity/sqlserverentity/sqlservertest2.h"
 
 #include <QtTest>
 
@@ -20,15 +20,15 @@ void DbLoaderTest::initTestCase() {
 }
 
 void DbLoaderTest::loadConfigTest() {
-    setupDatabase();
+    setupDatabase("corelib_test");
     auto config = ConfigManager::getConfig();
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QVERIFY(config->getClient()->checkTableExist(SqliteTest1::Info::getTableName()));
         QVERIFY(config->getClient()->checkTableExist(SqliteTest2::Info::getTableName()));
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QVERIFY(config->getClient()->checkTableExist(MysqlTest1::Info::getTableName()));
         QVERIFY(config->getClient()->checkTableExist(MysqlTest2::Info::getTableName()));
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QVERIFY(config->getClient()->checkTableExist(SqlServerTest1::Info::getTableName()));
         QVERIFY(config->getClient()->checkTableExist(SqlServerTest2::Info::getTableName()));
     }
@@ -37,15 +37,15 @@ void DbLoaderTest::loadConfigTest() {
 
 void DbLoaderTest::upgradeTest() {
     //reinit
-    setupDatabase(3);
+    setupDatabase("corelib_test", 3);
     auto config = ConfigManager::getConfig();
-    if (engineModel == Engine_Sqlite) {
+    if (targetDb == TestTargetDb::Target_Sqlite) {
         QVERIFY(config->getClient()->checkTableExist(SqliteTest1::Info::getTableName()));
         QVERIFY(config->getClient()->checkTableExist(SqliteTest2::Info::getTableName()));
-    } else if (engineModel == Engine_Mysql) {
+    } else if (targetDb == TestTargetDb::Target_Mysql) {
         QVERIFY(config->getClient()->checkTableExist(MysqlTest1::Info::getTableName()));
         QVERIFY(config->getClient()->checkTableExist(MysqlTest2::Info::getTableName()));
-    } else if (engineModel == Engine_SqlServer) {
+    } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QVERIFY(config->getClient()->checkTableExist(SqlServerTest1::Info::getTableName()));
         QVERIFY(config->getClient()->checkTableExist(SqlServerTest2::Info::getTableName()));
     }

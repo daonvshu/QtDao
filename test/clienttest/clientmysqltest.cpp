@@ -2,19 +2,21 @@
 
 #include "mysql/testtb3.h"
 #include "mysql/testtb4.h"
+#include "utils/testconfigloader.h"
 
 #include <dao.h>
 #include <qtest.h>
 
 void ClientMysqlTest::initTestCase() {
+    const auto& configOption = TestConfigLoader::instance().config().optionMysql();
     dao::_config<dao::ConfigMysqlBuilder>()
             .version(1)
             .databaseName("mysql_client_test")
-            .host("localhost")
-            .port(3306)
-            .user("root")
-            .password("root")
-            .options("MYSQL_OPT_CONNECT_TIMEOUT=3;MYSQL_OPT_READ_TIMEOUT=3;MYSQL_OPT_WRITE_TIMEOUT=3")
+            .host(configOption.host())
+            .port(configOption.port())
+            .user(configOption.user())
+            .password(configOption.password())
+            .options(configOption.options())
             .disableCreateTables()
             .disableCreateDatabase()
             .initializeDatabase();

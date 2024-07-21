@@ -6,49 +6,44 @@
 #include <qthread.h>
 #include <qeventloop.h>
 
-#include "artist.h"
-#include "track.h"
-#include "customer.h"
+#include "sqlite/artist.h"
+#include "sqlite/track.h"
+#include "sqlite/customer.h"
+
+#include "mysql/artist.h"
+#include "mysql/track.h"
+#include "mysql/customer.h"
+
+#include "sqlserver/artist.h"
+#include "sqlserver/track.h"
+#include "sqlserver/customer.h"
+
+#include "utils/testconfigloader.h"
 
 using namespace dao;
 
-void ForeignKeyTest::initTestCase() {
-    try {
-        if (TEST_DB == QLatin1String("sqlite")) {
-            dao::_config<dao::ConfigSqliteBuilder>()
-                    .version(1)
-                    .databaseName("sqlite_foreign_key_test")
-                    .initializeDatabase();
-        } else if (TEST_DB == QLatin1String("mysql")) {
-            dao::_config<dao::ConfigMysqlBuilder>()
-                    .version(1)
-                    .databaseName("mysql_foreign_key_test")
-                    .host("localhost")
-                    .port(3306)
-                    .user("root")
-                    .password("root")
-                    .initializeDatabase();
-        } else if (TEST_DB == QLatin1String("sqlserver")) {
-            dao::_config<dao::ConfigSqlServerBuilder>()
-                    .version(1)
-                    .databaseName("sqlserver_foreign_key_test")
-                    .host("localhost")
-                    .user("sa")
-                    .password("root")
-                    .initializeDatabase();
-        }
-    } catch (dao::DaoException& e) {
-        Q_UNUSED(e)
-        auto validDrivers = QSqlDatabase::drivers();
-        Q_UNUSED(validDrivers)
-        qFatal("setup database fail!");
-    }
+ForeignKeyTest::ForeignKeyTest()
+    : DatabaseSelector(TestConfigLoader::instance().config().getTestTargetDb())
+{}
 
+void ForeignKeyTest::initTestCase() {
+    setupDatabase("foreign_key_test", 1);
     cleanup();
 }
 
-void ForeignKeyTest::testInsert() {
-    ArtistList artistList {
+#define runTestImpl(func) \
+const auto& targetDb = TestConfigLoader::instance().config().getTestTargetDb(); \
+if (targetDb == TestTargetDb::Target_Sqlite) { \
+    func<TsSqlite::Artist, TsSqlite::Track, TsSqlite::Customer>(); \
+} else if (targetDb == TestTargetDb::Target_Mysql) { \
+    func<TsMysql::Artist, TsMysql::Track, TsMysql::Customer>(); \
+} else if (targetDb == TestTargetDb::Target_SqlServer) { \
+    func<TsSqlServer::Artist, TsSqlServer::Track, TsSqlServer::Customer>(); \
+}
+
+template<typename Artist, typename Track, typename Customer>
+void testInsertImpl() {
+    QList<Artist> artistList {
         Artist(1, "The Beatles", 4),
         Artist(2, "Led Zeppelin", 4),
         Artist(3, "Pink Floyd", 5),
@@ -61,14 +56,14 @@ void ForeignKeyTest::testInsert() {
         QFAIL("the track should not be inserted success here!");
     } catch (dao::DaoException&) {}
 
-    TrackList trackList {
+    QList<Track> trackList {
         Track(1, "Yesterday", 1),
         Track(2, "Stairway to Heaven", 2),
         Track(3, "Another Brick in the Wall", 3),
     };
     dao::_insert<Track>().build().insert2(trackList);
 
-    CustomerList customerList {
+    QList<Customer> customerList {
         Customer(1, "Alice", 1, 4),
         Customer(2, "Bob", 2, 4),
         Customer(3, "Charlie", 3, 5),
@@ -81,7 +76,12 @@ void ForeignKeyTest::testInsert() {
     QCOMPARE(customerSize, 3);
 }
 
-void ForeignKeyTest::testUpdate() {
+void ForeignKeyTest::testInsert() {
+    runTestImpl(testInsertImpl)
+}
+
+template<typename Artist, typename Track, typename Customer>
+void testUpdateImpl() {
     Artist artist(3, "Pink Floyd", 5);
     dao::_insert<Artist>().build().insert(artist);
 
@@ -91,19 +91,24 @@ void ForeignKeyTest::testUpdate() {
     Customer customer(3, "Charlie", 3, 5);
     dao::_insert<Customer>().build().insert(customer);
 
-    Artist::Fields af;
+    typename Artist::Fields af;
     dao::_update<Artist>().set(af.id = 5).filter(af.id == 3).build().update();
 
-    Track::Fields tf;
+    typename Track::Fields tf;
     auto track3 = dao::_select<Track>().filter(tf.id == 3).build().unique();
     QCOMPARE(track3.pkArtist, 5);
 
-    Customer::Fields cf;
+    typename Customer::Fields cf;
     auto customer3 = dao::_select<Customer>().filter(cf.id == 3).build().unique();
     QCOMPARE(customer3.pkArtistId, 5);
 }
 
-void ForeignKeyTest::testDelete() {
+void ForeignKeyTest::testUpdate() {
+    runTestImpl(testUpdateImpl)
+}
+
+template<typename Artist, typename Track, typename Customer>
+void testDeleteImpl() {
     Artist artist(3, "Pink Floyd", 5);
     dao::_insert<Artist>().build().insert(artist);
 
@@ -113,19 +118,24 @@ void ForeignKeyTest::testDelete() {
     Customer customer(3, "Charlie", 3, 5);
     dao::_insert<Customer>().build().insert(customer);
 
-    Artist::Fields af;
+    typename Artist::Fields af;
     dao::_delete<Artist>().filter(af.id == 3).build().deleteBy();
 
-    Track::Fields tf;
+    typename Track::Fields tf;
     auto track3 = dao::_select<Track>().filter(tf.id == 3).build().unique();
     QCOMPARE(track3.id, -1);
 
-    Customer::Fields cf;
+    typename Customer::Fields cf;
     auto customer3 = dao::_select<Customer>().filter(cf.id == 3).build().unique();
     QCOMPARE(customer3.id, -1);
 }
 
-void ForeignKeyTest::testTransaction() {
+void ForeignKeyTest::testDelete() {
+    runTestImpl(testDeleteImpl)
+}
+
+template<typename Artist, typename Track, typename Customer>
+void testTransactionImpl() {
 
     Artist artist(3, "Pink Floyd", 5);
     dao::_insert<Artist>().build().insert(artist);
@@ -156,7 +166,7 @@ void ForeignKeyTest::testTransaction() {
     QCOMPARE(step, 1);
 
     //deferrable test
-    if (TEST_DB == QLatin1String("sqlite")) {
+    if (TestConfigLoader::instance().config().getTestTargetDb() == TestTargetDb::Target_Sqlite) {
         step = 0;
         try {
             dao::transaction();
@@ -184,8 +194,13 @@ void ForeignKeyTest::testTransaction() {
     }
 }
 
-void ForeignKeyTest::testVersionUpgrade() {
-    ArtistList artistList {
+void ForeignKeyTest::testTransaction() {
+    runTestImpl(testTransactionImpl)
+}
+
+template<typename Artist, typename Track, typename Customer>
+void testVersionUpgradeImpl() {
+    QList<Artist> artistList {
             Artist(1, "The Beatles", 4),
             Artist(2, "Led Zeppelin", 4),
             Artist(3, "Pink Floyd", 5),
@@ -198,48 +213,21 @@ void ForeignKeyTest::testVersionUpgrade() {
         QFAIL("the track should not be inserted success here!");
     } catch (dao::DaoException&) {}
 
-    TrackList trackList {
+    QList<Track> trackList {
             Track(1, "Yesterday", 1),
             Track(2, "Stairway to Heaven", 2),
             Track(3, "Another Brick in the Wall", 3),
     };
     dao::_insert<Track>().build().insert2(trackList);
 
-    CustomerList customerList {
+    QList<Customer> customerList {
             Customer(1, "Alice", 1, 4),
             Customer(2, "Bob", 2, 4),
             Customer(3, "Charlie", 3, 5),
     };
     dao::_insert<Customer>().build().insert2(customerList);
 
-    try {
-        if (TEST_DB == QLatin1String("sqlite")) {
-            dao::_config<dao::ConfigSqliteBuilder>()
-                    .version(2)
-                    .databaseName("sqlite_foreign_key_test")
-                    .initializeDatabase();
-        } else if (TEST_DB == QLatin1String("mysql")) {
-            dao::_config<dao::ConfigMysqlBuilder>()
-                    .version(2)
-                    .databaseName("mysql_foreign_key_test")
-                    .host("localhost")
-                    .port(3306)
-                    .user("root")
-                    .password("root")
-                    .initializeDatabase();
-        } else if (TEST_DB == QLatin1String("sqlserver")) {
-            dao::_config<dao::ConfigSqlServerBuilder>()
-                    .version(2)
-                    .databaseName("sqlserver_foreign_key_test")
-                    .host("localhost")
-                    .user("sa")
-                    .password("root")
-                    .initializeDatabase();
-        }
-    } catch (dao::DaoException& e) {
-        Q_UNUSED(e);
-        QFAIL("upgrade with foreign key test fail!");
-    }
+    ForeignKeyTest().setupDatabase("foreign_key_test", 2);
 
     int trackSize = dao::_count<Track>().count();
     QCOMPARE(trackSize, 3);
@@ -254,6 +242,10 @@ void ForeignKeyTest::testVersionUpgrade() {
     } catch (dao::DaoException&) {}
 }
 
+void ForeignKeyTest::testVersionUpgrade() {
+    runTestImpl(testVersionUpgradeImpl)
+}
+
 void ForeignKeyTest::testRunInThread() {
     QEventLoop loop;
     QThread::create([&] {
@@ -263,10 +255,15 @@ void ForeignKeyTest::testRunInThread() {
     loop.exec();
 }
 
-void ForeignKeyTest::cleanup() {
+template<typename Artist, typename Track, typename Customer>
+void cleanupImpl() {
     dao::_delete<Track>().build().deleteBy();
     dao::_delete<Customer>().build().deleteBy();
     dao::_delete<Artist>().build().deleteBy();
+}
+
+void ForeignKeyTest::cleanup() {
+    runTestImpl(cleanupImpl)
 }
 
 void ForeignKeyTest::cleanupTestCase() {

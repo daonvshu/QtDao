@@ -14,7 +14,7 @@ void SqlLogPrinter(const QString& sql, const QVariantList& values) {
     BaseTest::cachedSqlLog << qMakePair(sql, values);
 }
 
-BaseTest::BaseTest(EngineModel model) : EngineModelSelector(model) {
+BaseTest::BaseTest(TestTargetDb targetDb) : DatabaseSelector(targetDb) {
     cachedSqlLog.clear();
 }
 
