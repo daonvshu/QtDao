@@ -8,6 +8,7 @@ enum class ConfigType {
     Sqlite,
     Mysql,
     SqlServer,
+    PSql,
 };
 
 QTDAO_END_NAMESPACE

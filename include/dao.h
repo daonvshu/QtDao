@@ -19,6 +19,7 @@
 #include "config/configsqlite.h"
 #include "config/configmysql.h"
 #include "config/configsqlserver.h"
+#include "config/configpsql.h"
 #include "config/configmanager.h"
 
 #include <QtSql/QSqlDriver>

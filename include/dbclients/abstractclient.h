@@ -35,6 +35,8 @@ inline uint qHash(IndexType type, uint seed) {
 class EntityReaderInterface;
 class AbstractClient {
 public:
+    virtual ~AbstractClient() = default;
+
     /**
      * test connection use current config
      */

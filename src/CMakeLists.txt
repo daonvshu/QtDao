@@ -31,12 +31,14 @@ add_library(${PROJECT_NAME}
     config/configsqlite.cpp
     config/configmysql.cpp
     config/configsqlserver.cpp
+    config/configpsql.cpp
     config/configmanager.cpp
 
     dbclients/abstractclient.cpp
     dbclients/mysqlclient.cpp
     dbclients/sqliteclient.cpp
     dbclients/sqlserverclient.cpp
+    dbclients/psqlclient.cpp
 
     query/basequery.cpp
     query/insertimpl.cpp
