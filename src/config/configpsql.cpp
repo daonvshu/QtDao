@@ -9,6 +9,7 @@ ConfigPSqlBuilder::ConfigPSqlBuilder()
     , mHost("localhost")
     , mUser("postgres")
     , mPort(5432)
+    , mEncoding("UTF8")
 {}
 
 ConfigPSqlBuilder & ConfigPSqlBuilder::version(int ver) {
@@ -58,6 +59,31 @@ ConfigPSqlBuilder & ConfigPSqlBuilder::user(const QString &user) {
 
 ConfigPSqlBuilder & ConfigPSqlBuilder::port(int port) {
     mPort = port;
+    return *this;
+}
+
+ConfigPSqlBuilder & ConfigPSqlBuilder::owner(const QString &owner) {
+    mOwner = owner;
+    return *this;
+}
+
+ConfigPSqlBuilder & ConfigPSqlBuilder::encoding(const QString &encoding) {
+    mEncoding = encoding;
+    return *this;
+}
+
+ConfigPSqlBuilder & ConfigPSqlBuilder::collate(const QString &collate) {
+    mCollate = collate;
+    return *this;
+}
+
+ConfigPSqlBuilder & ConfigPSqlBuilder::ctype(const QString &ctype) {
+    mCType = ctype;
+    return *this;
+}
+
+ConfigPSqlBuilder & ConfigPSqlBuilder::tableSpace(const QString &tableSpace) {
+    mTableSpace = tableSpace;
     return *this;
 }
 

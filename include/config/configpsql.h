@@ -28,6 +28,16 @@ public:
 
     ConfigPSqlBuilder& port(int port);
 
+    ConfigPSqlBuilder& owner(const QString& owner);
+
+    ConfigPSqlBuilder& encoding(const QString& encoding);
+
+    ConfigPSqlBuilder& collate(const QString& collate);
+
+    ConfigPSqlBuilder& ctype(const QString& ctype);
+
+    ConfigPSqlBuilder& tableSpace(const QString& tableSpace);
+
     QSqlDatabase getConnection(const QString &connectionName, const QString &databaseName) override;
 
     void initializeDatabase() override;
@@ -36,6 +46,13 @@ private:
     QString mHost;
     QString mUser;
     int mPort;
+    QString mOwner;
+    QString mEncoding;
+    QString mCollate;
+    QString mCType;
+    QString mTableSpace;
+
+    friend class PSqlClient;
 };
 
 QTDAO_END_NAMESPACE

@@ -324,7 +324,8 @@ QString SqlServerClient::createEscapeCharsForName(const QString &sourceName) con
 
 QString SqlServerClient::removeEscapeCharsForName(const QString &sourceName) const {
     QString newName = sourceName;
-    newName.remove(QRegularExpression("[\\[\\]]"));
+    static QRegularExpression regex(R"([\[\]])");
+    newName.remove(regex);
     return newName;
 }
 

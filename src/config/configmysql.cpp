@@ -9,6 +9,8 @@ ConfigMysqlBuilder::ConfigMysqlBuilder()
     , mHost("localhost")
     , mUser("root")
     , mPort(3306)
+    , mCharacter("utf8mb4")
+    , mCollate("utf8mb4_general_ci")
 {
     
 }
@@ -60,6 +62,16 @@ ConfigMysqlBuilder& ConfigMysqlBuilder::user(const QString& user) {
 
 ConfigMysqlBuilder& ConfigMysqlBuilder::port(int port) {
     mPort = port;
+    return *this;
+}
+
+ConfigMysqlBuilder & ConfigMysqlBuilder::character(const QString &character) {
+    mCharacter = character;
+    return *this;
+}
+
+ConfigMysqlBuilder & ConfigMysqlBuilder::collate(const QString &collate) {
+    mCollate = collate;
     return *this;
 }
 

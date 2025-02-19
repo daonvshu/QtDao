@@ -28,6 +28,10 @@ public:
 
     ConfigMysqlBuilder& port(int port);
 
+    ConfigMysqlBuilder& character(const QString& character);
+
+    ConfigMysqlBuilder& collate(const QString& collate);
+
     QSqlDatabase getConnection(const QString& connectionName, const QString& databaseName) override;
 
     void initializeDatabase() override;
@@ -36,6 +40,10 @@ private:
     QString mHost;
     QString mUser;
     int mPort;
+    QString mCharacter;
+    QString mCollate;
+
+    friend class MysqlClient;
 };
 
 QTDAO_END_NAMESPACE

@@ -204,7 +204,8 @@ QString SqliteClient::createEscapeCharsForName(const QString &sourceName) const 
 
 QString SqliteClient::removeEscapeCharsForName(const QString &sourceName) const {
     QString newName = sourceName;
-    newName.remove(QRegularExpression("['\"\\[\\]`]"));
+    static QRegularExpression regex(R"(['"\[\]`])");
+    newName.remove(regex);
     return newName;
 }
 

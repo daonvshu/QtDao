@@ -4,6 +4,7 @@
 #include "dbexception.h"
 #include "query/basequery.h"
 #include "config/configbuilder.h"
+#include "config/configmysql.h"
 
 #include <qstringbuilder.h>
 #include <qregularexpression.h>
@@ -19,8 +20,9 @@ void MysqlClient::testConnect() {
 }
 
 void MysqlClient::createDatabase() {
+    auto mysqlConfig = privateConfig<ConfigMysqlBuilder>();
     BaseQuery::executePrimitiveQuery("create database if not exists " % currentDatabaseName() %
-        " default character set utf8mb4 COLLATE utf8mb4_general_ci", currentSessionId(), "mysql");
+        " default character set " % mysqlConfig->mCharacter % " COLLATE " % mysqlConfig->mCollate, currentSessionId(), "mysql");
 }
 
 void MysqlClient::dropDatabase() {
@@ -62,7 +64,8 @@ void MysqlClient::createTableIfNotExist(const QString &tbName,
     if (!engine.isEmpty()) {
         str = str % " engine=" % engine;
     }
-    str.append(" default charset = utf8mb4");
+    auto mysqlConfig = privateConfig<ConfigMysqlBuilder>();
+    str.append(" default charset = " % mysqlConfig->mCharacter);
 
     BaseQuery::queryPrimitive(str, {}, currentSessionId());
 }
@@ -177,7 +180,8 @@ QString MysqlClient::createEscapeCharsForName(const QString &sourceName) const {
 
 QString MysqlClient::removeEscapeCharsForName(const QString &sourceName) const {
     QString newName = sourceName;
-    newName.remove(QRegularExpression("[`]"));
+    static QRegularExpression regex("[`]");
+    newName.remove(regex);
     return newName;
 }
 

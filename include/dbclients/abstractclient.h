@@ -317,6 +317,11 @@ protected:
 
 protected:
     class ConfigBuilder* config = nullptr;
+
+    template<typename T>
+    T* privateConfig() {
+        return dynamic_cast<T*>(config);
+    }
 };
 
 template<int Type, typename E>
