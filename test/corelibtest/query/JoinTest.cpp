@@ -68,6 +68,26 @@ void JoinTest::initTestCase() {
         sqlserverData3 << SqlServerTest3(1, 3, "func group1", 6);
         sqlserverData3 << SqlServerTest3(1, 4, "func group2", 7);
         dao::_insert<SqlServerTest3>().build().insert2(sqlserverData3);
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        psqlData1 << PSqlTest1(1, "abc", 10, "");
+        psqlData1 << PSqlTest1(2, "alice", 11, "alice1");
+        psqlData1 << PSqlTest1(3, "bob", 12, "bob boom");
+        psqlData1 << PSqlTest1(4, "client", 14, "1");
+        psqlData1 << PSqlTest1(5, "client", 12, "xxx");
+        dao::_insert<PSqlTest1>().build().insert2(psqlData1);
+
+        psqlData2 << PSqlTest2("joker", 9999, -1);
+        psqlData2 << PSqlTest2("bob", 9, 9999);
+        psqlData2 << PSqlTest2("func", 10, 9);
+        psqlData2 << PSqlTest2("func", 50, 10);
+        dao::_insert<PSqlTest2>().build().insert2(psqlData2);
+
+        psqlData3 << PSqlTest3(3, 2, "bob group", 2);
+        psqlData3 << PSqlTest3(4, 1, "client group1", 3);
+        psqlData3 << PSqlTest3(5, 1, "client group2", 3);
+        psqlData3 << PSqlTest3(1, 3, "func group1", 6);
+        psqlData3 << PSqlTest3(1, 4, "func group2", 7);
+        dao::_insert<PSqlTest3>().build().insert2(psqlData3);
     }
     clearCacheAndPrintIfTestFail();
 }
@@ -149,6 +169,8 @@ void JoinTest::testJoinTable() {
         runTestJoinTable<MysqlTest1, MysqlTest2, MysqlTest3>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinTable<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestJoinTable<PSqlTest1, PSqlTest2, PSqlTest3>();
     }
 }
 
@@ -183,6 +205,8 @@ void JoinTest::testJoinTableUseWith() {
         runTestJoinTableUseWith<MysqlTest1, MysqlTest2, MysqlTest3>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinTableUseWith<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestJoinTableUseWith<PSqlTest1, PSqlTest2, PSqlTest3>();
     }
 }
 
@@ -218,6 +242,8 @@ void JoinTest::testJoinTableFilterOn() {
         runTestJoinTableFilterOn<MysqlTest1, MysqlTest2, MysqlTest3>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinTableFilterOn<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestJoinTableFilterOn<PSqlTest1, PSqlTest2, PSqlTest3>();
     }
 }
 
@@ -270,6 +296,8 @@ void JoinTest::testJoinSelfTable() {
         runTestJoinSelfTable<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinSelfTable<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestJoinSelfTable<PSqlTest2>();
     }
 }
 
@@ -305,6 +333,8 @@ void JoinTest::testSelectFromJoin() {
         runTestSelectFromJoin<MysqlTest1, MysqlTest2, MysqlTest3>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestSelectFromJoin<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestSelectFromJoin<PSqlTest1, PSqlTest2, PSqlTest3>();
     }
 }
 
@@ -345,6 +375,8 @@ void JoinTest::testJoinFromSelect() {
         runTestJoinFromSelect<MysqlTest1, MysqlTest2, MysqlTest3>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinFromSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestJoinFromSelect<PSqlTest1, PSqlTest2, PSqlTest3>();
     }
 }
 
@@ -385,6 +417,8 @@ void JoinTest::testJoinOnSelect() {
         runTestJoinOnSelect<MysqlTest1, MysqlTest2, MysqlTest3>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestJoinOnSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestJoinOnSelect<PSqlTest1, PSqlTest2, PSqlTest3>();
     }
 }
 
@@ -434,6 +468,8 @@ void JoinTest::testSelectUnionJoin() {
 #else
         qDebug() << "ignore union test in qt6";
 #endif
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestSelectUnionJoin<PSqlTest1, PSqlTest2, PSqlTest3>();
     }
 }
 
@@ -487,6 +523,8 @@ void JoinTest::testJoinUnionSelect() {
 #else
         qDebug() << "ignore union test in qt6";
 #endif
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestJoinUnionSelect<PSqlTest1, PSqlTest2, PSqlTest3>();
     }
 }
 
@@ -540,6 +578,8 @@ void JoinTest::testJoinUnionJoin() {
 #else
         qDebug() << "ignore union test in qt6";
 #endif
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestJoinUnionJoin<PSqlTest1, PSqlTest2, PSqlTest3>();
     }
 }
 
@@ -620,6 +660,8 @@ void JoinTest::recursiveQueryTest() {
         runRecursiveQueryTest<SqliteTest1, SqliteTest2, SqliteTest3>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runRecursiveQueryTest<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runRecursiveQueryTest<PSqlTest1, PSqlTest2, PSqlTest3>();
     }
 }
 
@@ -633,6 +675,9 @@ void JoinTest::functionSubJoinTest_data() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data") << sqlserverData1;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest1List>("data1");
+        QTest::newRow("psql test data") << psqlData1;
     }
 }
 
@@ -676,6 +721,8 @@ void JoinTest::functionSubJoinTest() {
         runFunctionSubJoinTest<MysqlTest1, MysqlTest2, MysqlTest3>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runFunctionSubJoinTest<SqlServerTest1, SqlServerTest2, SqlServerTest3>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runFunctionSubJoinTest<PSqlTest1, PSqlTest2, PSqlTest3>();
     }
 }
 
@@ -714,6 +761,10 @@ void JoinTest::explainTest() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         auto d = getExplainPrepareSelect<SqlServerTest1, SqlServerTest2, SqlServerTest3>()
             .explain<SqlServerExplainInfo>();
+        QVERIFY(!d.isEmpty());
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        auto d = getExplainPrepareSelect<PSqlTest1, PSqlTest2, PSqlTest3>()
+            .explain<PSqlExplainInfo>();
         QVERIFY(!d.isEmpty());
     }
 }

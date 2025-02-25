@@ -52,7 +52,15 @@ struct TestOptionSqlServer : TestOptionMySql {
 };
 
 struct TestOptionPSql : TestOptionMySql {
+    DATA_KEY(QString, host);
+    DATA_KEY(QString, user);
+    DATA_KEY(int, port);
 
+    QList<DataReadInterface *> prop() override {
+        return {&version, &driver, &password, &options,
+                &host, &user, &port
+        };
+    }
 };
 
 struct TestConfigData : DataDumpInterface {

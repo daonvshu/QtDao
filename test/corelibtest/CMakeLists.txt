@@ -13,6 +13,7 @@ file(GLOB QUERY_TEST query/*.h query/*.cpp)
 file(GLOB ENTITY_SQLITE entity/sqliteentity/*.h entity/sqliteentity/*.cpp)
 file(GLOB ENTITY_MYSQL entity/mysqlentity/*.h entity/mysqlentity/*.cpp)
 file(GLOB ENTITY_SQLSERVER entity/sqlserverentity/*.h entity/sqlserverentity/*.cpp)
+file(GLOB ENTITY_PSQL entity/psqlentity/*.h entity/psqlentity/*.cpp)
 
 add_executable(${PROJECT_NAME}
     BaseTest.h
@@ -25,6 +26,7 @@ add_executable(${PROJECT_NAME}
     ${ENTITY_SQLITE}
     ${ENTITY_MYSQL}
     ${ENTITY_SQLSERVER}
+    ${ENTITY_PSQL}
 )
 
 target_link_libraries(${PROJECT_NAME}

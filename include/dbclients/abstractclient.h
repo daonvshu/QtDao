@@ -289,6 +289,12 @@ private:
         return new SqlServerEntityReaderProvider<E>();
     }
 
+    template<int Type, typename E>
+    typename std::enable_if<Type == 3, EntityReaderInterface*>::type
+    getEntityInfoProvider() {
+        return new PSqlEntityReaderProvider<E>();
+    }
+
 public:
     /**
      * use name in strings must remove keyword escapes

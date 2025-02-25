@@ -6,6 +6,10 @@
 #include "config/configbuilder.h"
 #include "config/configmanager.h"
 
+#include <qjsondocument.h>
+#include <qjsonarray.h>
+#include <qjsonobject.h>
+
 QTDAO_BEGIN_NAMESPACE
 
 Q_LOGGING_CATEGORY(loggingDefault, "qtdao.query")
@@ -230,5 +234,39 @@ QList<SqlServerExplainInfo> BaseQuery::ExplainTool<SqlServerExplainInfo>::toExpl
     }
     return result;
 }
+
+QList<PSqlExplainInfo> BaseQuery::ExplainTool<PSqlExplainInfo>::toExplain(const QString &statement, qint64 sessionId) {
+    auto config = ConfigManager::getConfig(sessionId);
+    Q_ASSERT_X(config->isPSql(), "ExplainTool<PSqlExplainInfo>", "need config psql");
+    QList<PSqlExplainInfo> result;
+    try {
+        QSqlQuery query = BaseQuery::queryPrimitive("explain (format json) " + statement);
+        while (query.next()) {
+            QJsonDocument document = QJsonDocument::fromJson(query.value("QUERY PLAN").toByteArray());
+            if (document.isArray()) {
+                for (const auto& item : document.array()) {
+                    auto d = item.toObject();
+                    if (d.contains("Plan")) {
+                        d = d.value("Plan").toObject();
+                        PSqlExplainInfo info;
+                        info.nodeType = d.value("Node Type").toString();
+                        info.parallelAware = d.value("Parallel Aware").toBool();
+                        info.asyncCapable = d.value("Async Capable").toBool();
+                        info.relationName = d.value("Relation Name").toString();
+                        info.alias = d.value("Alias").toString();
+                        info.startupCost = d.value("Startup Cost").toDouble();
+                        info.totalCost = d.value("Total Cost").toDouble();
+                        info.planRows = d.value("Plan Rows").toDouble();
+                        info.planWidth = d.value("Plan Width").toDouble();
+                        result << info;
+                    }
+                }
+            }
+        }
+    } catch (DaoException&) {
+    }
+    return result;
+}
+
 
 QTDAO_END_NAMESPACE

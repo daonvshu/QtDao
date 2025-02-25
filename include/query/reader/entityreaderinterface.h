@@ -223,6 +223,18 @@ public:
 };
 
 template<typename E>
+class PSqlEntityReaderProvider : public EntityReaderProvider<E> {
+public:
+    QList<QStringList> getIndexFields() override {
+        return E::Info::getIndexFields();
+    }
+
+    QList<QStringList> getUniqueIndexFields() override {
+        return E::Info::getUniqueIndexFields();
+    }
+};
+
+template<typename E>
 class SqlServerEntityReaderProvider : public EntityReaderProvider<E> {
 public:
     QList<QStringList> getClusteredIndexFields() override {

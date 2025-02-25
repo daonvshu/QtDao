@@ -10,6 +10,10 @@
 
 #include "entity/sqlserverentity/sqlservertest1.h"
 #include "entity/sqlserverentity/sqlservertest2.h"
+
+#include "entity/psqlentity/psqltest1.h"
+#include "entity/psqlentity/psqltest2.h"
+
 #include "dbexception.h"
 
 void InsertTest::initTestCase() {
@@ -40,6 +44,8 @@ void InsertTest::setInsertTest() {
         runSetInsertTest<MysqlTest1>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runSetInsertTest<SqlServerTest1>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runSetInsertTest<PSqlTest1>();
     }
 }
 
@@ -75,6 +81,8 @@ void InsertTest::setInsertBatchTest() {
         runSetInsertBatchTest<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runSetInsertBatchTest<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runSetInsertBatchTest<PSqlTest2>();
     }
 }
 
@@ -158,6 +166,8 @@ void InsertTest::insertObjectTest() {
         runInsertObjectTest<MysqlTest1, MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runInsertObjectTest<SqlServerTest1, SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runInsertObjectTest<PSqlTest1, PSqlTest2>();
     }
 }
 
@@ -217,6 +227,8 @@ void InsertTest::insertObjectsTest() {
         runInsertObjectsTest<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runInsertObjectsTest<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runInsertObjectsTest<PSqlTest2>();
     }
 }
 
@@ -276,6 +288,8 @@ void InsertTest::insertObjects2Test() {
         runInsertObjects2Test<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runInsertObjects2Test<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runInsertObjects2Test<PSqlTest2>();
     }
 }
 
@@ -313,6 +327,8 @@ void InsertTest::insertOrReplaceTest() {
         runInsertOrReplaceTest<SqliteTest2>();
     } else if (targetDb == TestTargetDb::Target_Mysql) {
         runInsertOrReplaceTest<MysqlTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runInsertOrReplaceTest<PSqlTest2>();
     }
 }
 
@@ -323,6 +339,9 @@ void InsertTest::insertOrIgnoreTest_data() {
     } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest2>("entity");
         QTest::addRow("mysql test data") << MysqlTest2("testinsertorreplace", -1, -2);
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest2>("entity");
+        QTest::addRow("psql test data") << PSqlTest2("testinsertorreplace", -1, -2);
     }
 }
 
@@ -350,6 +369,8 @@ void InsertTest::insertOrIgnoreTest() {
         runInsertOrIgnoreTest<SqliteTest2>();
     } else if (targetDb == TestTargetDb::Target_Mysql) {
         runInsertOrIgnoreTest<MysqlTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runInsertOrIgnoreTest<PSqlTest2>();
     }
 }
 
@@ -363,6 +384,9 @@ void InsertTest::testTransaction_data() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest2>("entity");
         QTest::addRow("sqlserver test data") << SqlServerTest2("test transaction", 10000, 10000);
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest2>("entity");
+        QTest::addRow("psql test data") << PSqlTest2("test transaction", 10000, 10000);
     }
 }
 
@@ -390,12 +414,15 @@ void InsertTest::testTransaction() {
         runTestTransaction<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestTransaction<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestTransaction<PSqlTest2>();
     }
 }
 
 void InsertTest::testMysqlMyISAMTransaction_data() {
     PASSSQLITE;
     PASSSQLSERVER;
+    PASSPSQL;
     QTest::addColumn<MysqlTest1>("data1");
     QTest::addColumn<MysqlTest1>("data2");
     QTest::newRow("mysql test data")
@@ -406,6 +433,7 @@ void InsertTest::testMysqlMyISAMTransaction_data() {
 void InsertTest::testMysqlMyISAMTransaction() {
     PASSSQLITE;
     PASSSQLSERVER;
+    PASSPSQL;
     QFETCH(MysqlTest1, data1);
     QFETCH(MysqlTest1, data2);
     dao::transaction();

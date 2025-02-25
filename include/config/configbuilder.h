@@ -65,6 +65,10 @@ public:
         return configType == ConfigType::SqlServer;
     }
 
+    bool isPSql() const {
+        return configType == ConfigType::PSql;
+    }
+
     QSharedPointer<AbstractClient> getClient() const {
         return dbClient;
     }

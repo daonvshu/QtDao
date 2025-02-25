@@ -168,4 +168,13 @@ struct BaseQuery::ExplainTool<SqlServerExplainInfo> {
     static QList<SqlServerExplainInfo> toExplain(const QString& statement, qint64 sessionId = -1);
 };
 
+template<>
+struct BaseQuery::ExplainTool<PSqlExplainInfo> {
+    enum {
+        Valid = 1
+    };
+
+    static QList<PSqlExplainInfo> toExplain(const QString& statement, qint64 sessionId = -1);
+};
+
 QTDAO_END_NAMESPACE

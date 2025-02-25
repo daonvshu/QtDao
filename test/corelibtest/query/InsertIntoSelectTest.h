@@ -13,6 +13,9 @@
 #include "entity/sqlserverentity/sqlservertest1.h"
 #include "entity/sqlserverentity/sqlservertest2.h"
 
+#include "entity/psqlentity/psqltest1.h"
+#include "entity/psqlentity/psqltest2.h"
+
 class InsertIntoSelectTest : public BaseTest {
     Q_OBJECT
 
@@ -36,4 +39,5 @@ private:
     SqliteTest1List sqliteData1;
     MysqlTest1List mysqlData1;
     SqlServerTest1List sqlserverData1;
+    PSqlTest1List psqlData1;
 };

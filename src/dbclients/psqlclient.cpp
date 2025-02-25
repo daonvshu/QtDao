@@ -89,7 +89,7 @@ void PSqlClient::enableForeignKey(const QString &tbName, bool enabled) {
     if (!tbName.isEmpty()) {
         return;
     }
-    BaseQuery::queryPrimitive("alter table \"" % tbName % %"\"" % (enabled ? "enable" : "disable") % " trigger all", {}, currentSessionId());
+    BaseQuery::queryPrimitive("alter table \"" % tbName % "\"" % (enabled ? "enable" : "disable") % " trigger all", {}, currentSessionId());
 }
 
 void PSqlClient::dropReferencedForeignKey(const QString &tbName) {

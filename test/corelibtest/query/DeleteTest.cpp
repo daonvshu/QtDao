@@ -13,6 +13,9 @@
 #include "entity/sqlserverentity/sqlservertest1.h"
 #include "entity/sqlserverentity/sqlservertest2.h"
 
+#include "entity/psqlentity/psqltest1.h"
+#include "entity/psqlentity/psqltest2.h"
+
 void DeleteTest::initTestCase() {
     configDb();
 
@@ -64,6 +67,22 @@ void DeleteTest::initTestCase() {
         data2 << SqlServerTest2("func", 10, -2);
         data2 << SqlServerTest2("func", 50, 0);
         dao::_insert<SqlServerTest2>().build().insert2(data2);
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        PSqlTest1List data1;
+        PSqlTest2List data2;
+
+        data1 << PSqlTest1(1, "abc", 10, "");
+        data1 << PSqlTest1(2, "alice", 11, "alice1");
+        data1 << PSqlTest1(3, "bob", 12, "bob boom");
+        data1 << PSqlTest1(4, "client", 14, "1");
+        data1 << PSqlTest1(5, "client", 12, "xxx");
+        dao::_insert<PSqlTest1>().build().insert2(data1);
+
+        data2 << PSqlTest2("joker", 9999, -1);
+        data2 << PSqlTest2("bob", 10, 0);
+        data2 << PSqlTest2("func", 10, -2);
+        data2 << PSqlTest2("func", 50, 0);
+        dao::_insert<PSqlTest2>().build().insert2(data2);
     }
 }
 
@@ -88,6 +107,8 @@ void DeleteTest::filterDeleteTest() {
         runFilterDeleteTest<MysqlTest1>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runFilterDeleteTest<SqlServerTest1>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runFilterDeleteTest<PSqlTest1>();
     }
 }
 
@@ -112,6 +133,8 @@ void DeleteTest::objectDeleteTest() {
         runObjectDeleteTest<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runObjectDeleteTest<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runObjectDeleteTest<PSqlTest2>();
     }
 }
 
@@ -149,6 +172,16 @@ void DeleteTest::truncateTest_data() {
         QTest::addColumn<SqlServerTest2>("entity");
         QTest::newRow("mysql test data") << data2 << entity;
 
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        PSqlTest2List data2;
+        data2 << PSqlTest2("func2", 10, -2);
+        data2 << PSqlTest2("func2", 50, 0);
+
+        auto entity = PSqlTest2("func2", 50, 0);
+
+        QTest::addColumn<PSqlTest2List>("data2");
+        QTest::addColumn<PSqlTest2>("entity");
+        QTest::newRow("mysql test data") << data2 << entity;
     }
 }
 
@@ -173,6 +206,8 @@ void DeleteTest::truncateTest() {
         runTruncateTest<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTruncateTest<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTruncateTest<PSqlTest2>();
     }
 }
 

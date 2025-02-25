@@ -59,3 +59,4 @@ protected:
 #define PASSSQLITE if (targetDb == TestTargetDb::Target_Sqlite) return
 #define PASSMYSQL if (targetDb == TestTargetDb::Target_Mysql) return
 #define PASSSQLSERVER if (targetDb == TestTargetDb::Target_SqlServer) return
+#define PASSPSQL if (targetDb == TestTargetDb::Target_PSql) return

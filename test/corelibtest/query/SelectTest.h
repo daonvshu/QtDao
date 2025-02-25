@@ -15,6 +15,10 @@
 #include "entity/sqlserverentity/sqlservertest2.h"
 #include "entity/sqlserverentity/sqlservertest3.h"
 
+#include "entity/psqlentity/psqltest1.h"
+#include "entity/psqlentity/psqltest2.h"
+#include "entity/psqlentity/psqltest3.h"
+
 class SelectTest : public BaseTest {
     Q_OBJECT
 
@@ -59,4 +63,6 @@ private:
     MysqlTest2List mysqlData2;
     SqlServerTest1List sqlserverData1;
     SqlServerTest2List sqlserverData2;
+    PSqlTest1List psqlData1;
+    PSqlTest2List psqlData2;
 };

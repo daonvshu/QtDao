@@ -8,6 +8,7 @@ void LoggingTest::initTestCase() {
 
     PASSMYSQL;
     PASSSQLSERVER;
+    PASSPSQL;
 
     SqliteTest1List sqliteData1;
 
@@ -25,6 +26,7 @@ Q_LOGGING_CATEGORY(statementTest, "query.statement.test")
 void LoggingTest::singleStatementTest() {
     PASSMYSQL;
     PASSSQLSERVER;
+    PASSPSQL;
 
     SqliteTest1::Fields sf;
     dao::_select<SqliteTest1>()
@@ -37,6 +39,7 @@ Q_LOGGING_CATEGORY(valueTest, "query.value.test")
 void LoggingTest::statementValueTest() {
     PASSMYSQL;
     PASSSQLSERVER;
+    PASSPSQL;
 
     SqliteTest1::Fields sf;
     dao::_select<SqliteTest1>()
@@ -58,6 +61,7 @@ Q_LOGGING_CATEGORY(batchTest, "query.batch.test")
 void LoggingTest::batchQueryTest() {
     PASSMYSQL;
     PASSSQLSERVER;
+    PASSPSQL;
 
     SqliteTest2List sqliteData2;
     sqliteData2 << SqliteTest2("joker", 9999, -1, 30);
@@ -76,6 +80,7 @@ void LoggingTest::batchQueryTest() {
 void LoggingTest::rulerTest() {
     PASSMYSQL;
     PASSSQLSERVER;
+    PASSPSQL;
 
     QLoggingCategory::setFilterRules("*.debug=true\nquery.value.test.debug=false");
 
@@ -87,6 +92,7 @@ void LoggingTest::rulerTest() {
 void LoggingTest::defaultLoggingTest() {
     PASSMYSQL;
     PASSSQLSERVER;
+    PASSPSQL;
 
     QLoggingCategory::setFilterRules("*.debug=true");
     dao::loggingUseDefault();

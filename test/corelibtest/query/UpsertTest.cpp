@@ -11,6 +11,9 @@
 #include "entity/sqlserverentity/sqlservertest1.h"
 #include "entity/sqlserverentity/sqlservertest2.h"
 
+#include "entity/psqlentity/psqltest1.h"
+#include "entity/psqlentity/psqltest2.h"
+
 void UpsertTest::initTestCase() {
     configDb();
 }
@@ -81,6 +84,8 @@ void UpsertTest::setUpsertTest() {
         runSetUpsertTest<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runSetUpsertTest<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runSetUpsertTest<PSqlTest2>();
     }
 }
 
@@ -156,6 +161,8 @@ void UpsertTest::setUpsertBatchTest() {
         runSetUpsertBatchTest<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runSetUpsertBatchTest<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runSetUpsertBatchTest<PSqlTest2>();
     }
 }
 
@@ -184,6 +191,14 @@ void UpsertTest::upsertObjectTest_data() {
                 << SqlServerTest2("name1", 23, 233)
                 << SqlServerTest2("name2", 23, 2333)
                 << SqlServerTest2("name2", 23, 433);
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest2>("test1");
+        QTest::addColumn<PSqlTest2>("test2");
+        QTest::addColumn<PSqlTest2>("test3");
+        QTest::newRow("psql test data")
+                << PSqlTest2("name1", 23, 233)
+                << PSqlTest2("name2", 23, 2333)
+                << PSqlTest2("name2", 23, 433);
     }
 }
 
@@ -254,6 +269,8 @@ void UpsertTest::upsertObjectTest() {
         runUpsertObjectTest<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runUpsertObjectTest<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runUpsertObjectTest<PSqlTest2>();
     }
 }
 
@@ -282,6 +299,14 @@ void UpsertTest::upsertObjectsTest_data() {
 
         QTest::addColumn<QList<SqlServerTest2>>("test");
         QTest::newRow("sqlserver test data") << test;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QList<PSqlTest2> test;
+        test << PSqlTest2("name1", 23, 233);
+        test << PSqlTest2("name2", 23, 2333);
+        test << PSqlTest2("name2", 23, 433);
+
+        QTest::addColumn<QList<PSqlTest2>>("test");
+        QTest::newRow("psql test data") << test;
     }
 }
 
@@ -330,6 +355,8 @@ void UpsertTest::upsertObjectsTest() {
         runUpsertObjectsTest<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runUpsertObjectsTest<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runUpsertObjectsTest<PSqlTest2>();
     }
 }
 

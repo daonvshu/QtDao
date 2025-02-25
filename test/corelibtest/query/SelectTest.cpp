@@ -47,6 +47,19 @@ void SelectTest::initTestCase() {
         sqlserverData2 << SqlServerTest2("func", 10, -2);
         sqlserverData2 << SqlServerTest2("func", 50, 0);
         dao::_insert<SqlServerTest2>().build().insert2(sqlserverData2);
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        psqlData1 << PSqlTest1(1, "abc", 10, "");
+        psqlData1 << PSqlTest1(2, "alice", 11, "alice1");
+        psqlData1 << PSqlTest1(3, "bob", 12, "bob boom");
+        psqlData1 << PSqlTest1(4, "client", 14, "1");
+        psqlData1 << PSqlTest1(5, "client", 12, "xxx");
+        dao::_insert<PSqlTest1>().build().insert2(psqlData1);
+
+        psqlData2 << PSqlTest2("joker", 9999, -1);
+        psqlData2 << PSqlTest2("bob", 12, 0);
+        psqlData2 << PSqlTest2("func", 10, -2);
+        psqlData2 << PSqlTest2("func", 50, 0);
+        dao::_insert<PSqlTest2>().build().insert2(psqlData2);
     }
 }
 
@@ -60,6 +73,9 @@ void SelectTest::uniqueSelectTest_data() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data1") << sqlserverData1;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest1List>("data1");
+        QTest::newRow("psql test data1") << psqlData1;
     }
 }
 
@@ -159,6 +175,8 @@ void SelectTest::uniqueSelectTest() {
         runUniqueSelectTest<MysqlTest1>(targetDb);
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runUniqueSelectTest<SqlServerTest1>(targetDb);
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runUniqueSelectTest<PSqlTest1>(targetDb);
     }
 }
 
@@ -172,6 +190,9 @@ void SelectTest::listSelectTest_data() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data1") << sqlserverData1;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest1List>("data1");
+        QTest::newRow("psql test data1") << psqlData1;
     }
 }
 
@@ -243,6 +264,8 @@ void SelectTest::listSelectTest() {
         runListSelectTest<MysqlTest1>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runListSelectTest<SqlServerTest1>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runListSelectTest<PSqlTest1>();
     }
 }
 
@@ -256,6 +279,9 @@ void SelectTest::rawSelectTest_data() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data1") << sqlserverData1;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest1List>("data1");
+        QTest::newRow("psql test data1") << psqlData1;
     }
 }
 
@@ -285,6 +311,8 @@ void SelectTest::rawSelectTest() {
         runRawSelectTest<MysqlTest1>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runRawSelectTest<SqlServerTest1>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runRawSelectTest<PSqlTest1>();
     }
 }
 
@@ -305,6 +333,8 @@ void SelectTest::funtionSelectTest() {
         runFuntionSelectTest<MysqlTest1>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runFuntionSelectTest<SqlServerTest1>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runFuntionSelectTest<PSqlTest1>();
     }
 }
 
@@ -333,6 +363,8 @@ void SelectTest::countSelectTest() {
         runCountSelectTest<MysqlTest1>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runCountSelectTest<SqlServerTest1>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runCountSelectTest<PSqlTest1>();
     }
 }
 
@@ -346,6 +378,9 @@ void SelectTest::selectFromSelectTest_data() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data1") << sqlserverData1;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest1List>("data1");
+        QTest::newRow("psql test data1") << psqlData1;
     }
 }
 
@@ -384,6 +419,8 @@ void SelectTest::selectFromSelectTest() {
         runSelectFromSelectTest<MysqlTest1>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runSelectFromSelectTest<SqlServerTest1>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runSelectFromSelectTest<PSqlTest1>();
     }
 }
 
@@ -400,6 +437,10 @@ void SelectTest::unionSelectTest_data() {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::addColumn<SqlServerTest2List>("data2");
         QTest::newRow("sqlserver test data1") << sqlserverData1 << sqlserverData2;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest1List>("data1");
+        QTest::addColumn<PSqlTest2List>("data2");
+        QTest::newRow("psql test data1") << psqlData1 << psqlData2;
     }
 }
 
@@ -457,6 +498,8 @@ void SelectTest::unionSelectTest() {
 #else
         qDebug() << "ignore union test in qt6";
 #endif
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runUnionSelectTest<PSqlTest1, PSqlTest2>();
     }
 }
 
@@ -470,6 +513,9 @@ void SelectTest::funtionSubSelectTest_data() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data1") << sqlserverData1;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest1List>("data1");
+        QTest::newRow("psql test data1") << psqlData1;
     }
 }
 
@@ -503,6 +549,8 @@ void SelectTest::funtionSubSelectTest() {
         runFuntionSubSelectTest<MysqlTest1, MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runFuntionSubSelectTest<SqlServerTest1, SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runFuntionSubSelectTest<PSqlTest1, PSqlTest2>();
     }
 }
 

@@ -59,4 +59,16 @@ struct SqlServerExplainInfo {
     qreal EstimateExecutions;
 };
 
+struct PSqlExplainInfo {
+    QString nodeType;
+    bool parallelAware;
+    bool asyncCapable;
+    QString relationName;
+    QString alias;
+    double startupCost;
+    double totalCost;
+    double planRows;
+    double planWidth;
+};
+
 QTDAO_END_NAMESPACE

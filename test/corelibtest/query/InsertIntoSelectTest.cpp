@@ -28,6 +28,13 @@ void InsertIntoSelectTest::initTestCase() {
         sqlserverData1 << SqlServerTest1(4, "client", 14, "1");
         sqlserverData1 << SqlServerTest1(5, "client", 12, "xxx");
         dao::_insert<SqlServerTest1>().build().insert2(sqlserverData1);
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        psqlData1 << PSqlTest1(1, "abc", 10, "");
+        psqlData1 << PSqlTest1(2, "alice", 11, "alice1");
+        psqlData1 << PSqlTest1(3, "bob", 12, "bob boom");
+        psqlData1 << PSqlTest1(4, "client", 14, "1");
+        psqlData1 << PSqlTest1(5, "client", 12, "xxx");
+        dao::_insert<PSqlTest1>().build().insert2(psqlData1);
     }
 
     clearCacheAndPrintIfTestFail();
@@ -43,6 +50,9 @@ void InsertIntoSelectTest::testInsertIntoSelect_data() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data") << sqlserverData1;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest1List>("data1");
+        QTest::newRow("psql test data") << psqlData1;
     }
 }
 
@@ -79,6 +89,8 @@ void InsertIntoSelectTest::testInsertIntoSelect() {
         runTestInsertIntoSelect<MysqlTest1, MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestInsertIntoSelect<SqlServerTest1, SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestInsertIntoSelect<PSqlTest1, PSqlTest2>();
     }
 }
 
@@ -92,6 +104,9 @@ void InsertIntoSelectTest::testInsertIntoJoin_data() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QTest::addColumn<SqlServerTest1List>("data1");
         QTest::newRow("sqlserver test data") << sqlserverData1;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest1List>("data1");
+        QTest::newRow("psql test data") << psqlData1;
     }
 }
 
@@ -134,6 +149,8 @@ void InsertIntoSelectTest::testInsertIntoJoin() {
         runTestInsertIntoJoin<MysqlTest1, MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runTestInsertIntoJoin<SqlServerTest1, SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runTestInsertIntoJoin<PSqlTest1, PSqlTest2>();
     }
 }
 

@@ -13,6 +13,9 @@
 #include "entity/sqlserverentity/sqlservertest1.h"
 #include "entity/sqlserverentity/sqlservertest2.h"
 
+#include "entity/psqlentity/psqltest1.h"
+#include "entity/psqlentity/psqltest2.h"
+
 void UpdateTest::initTestCase() {
     configDb();
 
@@ -64,6 +67,22 @@ void UpdateTest::initTestCase() {
         data2 << SqlServerTest2("func", 10, -2);
         data2 << SqlServerTest2("func", 50, 0);
         dao::_insert<SqlServerTest2>().build().insert2(data2);
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        PSqlTest1List data1;
+        PSqlTest2List data2;
+
+        data1 << PSqlTest1(1, "abc", 10, "");
+        data1 << PSqlTest1(2, "alice", 11, "alice1");
+        data1 << PSqlTest1(3, "bob", 12, "bob boom");
+        data1 << PSqlTest1(4, "client", 14, "1");
+        data1 << PSqlTest1(5, "client", 12, "xxx");
+        dao::_insert<PSqlTest1>().build().insert2(data1);
+
+        data2 << PSqlTest2("joker", 9999, -1);
+        data2 << PSqlTest2("bob", 10, 0);
+        data2 << PSqlTest2("func", 10, -2);
+        data2 << PSqlTest2("func", 50, 0);
+        dao::_insert<PSqlTest2>().build().insert2(data2);
     }
 }
 
@@ -112,6 +131,8 @@ void UpdateTest::setUpdateTest() {
         runSetUpdateTest<MysqlTest1>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runSetUpdateTest<SqlServerTest1>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runSetUpdateTest<PSqlTest1>();
     }
 }
 
@@ -153,6 +174,8 @@ void UpdateTest::objectUpdateTest() {
         runObjectUpdateTest<MysqlTest2>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         runObjectUpdateTest<SqlServerTest2>();
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        runObjectUpdateTest<PSqlTest2>();
     }
 }
 
