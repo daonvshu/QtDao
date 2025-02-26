@@ -170,8 +170,8 @@ void MysqlClient::dropIndex(const QString& tbName, const QString& indexName) {
     BaseQuery::queryPrimitive("drop index " % indexName % " on " % tbName, {}, currentSessionId());
 }
 
-QString MysqlClient::getIndexFromFields(const QStringList &fields) {
-    return AbstractClient::getIndexFromFields(fields, MYSQL_KEYWORDS_ESCAPES);
+QString MysqlClient::getIndexFromFields(const QString &tbName, const QStringList &fields) {
+    return AbstractClient::getIndexFromFields(tbName, fields, MYSQL_KEYWORDS_ESCAPES);
 }
 
 QString MysqlClient::createEscapeCharsForName(const QString &sourceName) const {

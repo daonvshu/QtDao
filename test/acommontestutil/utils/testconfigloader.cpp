@@ -8,7 +8,7 @@ TestConfigLoader &TestConfigLoader::instance() {
 }
 
 TestConfigLoader::TestConfigLoader() {
-    QFile file("../acommontestutil/test-config.json");
+    QFile file(TEST_CONFIG_PATH);
     if (!file.open(QIODevice::ReadOnly)) {
         return;
     }

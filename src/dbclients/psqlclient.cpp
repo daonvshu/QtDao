@@ -16,10 +16,21 @@ QTDAO_BEGIN_NAMESPACE
 #define RL_TB(tb) checkAndRemoveKeywordEscapes(tb, PSQL_KEYWORDS_ESCAPES)
 
 void PSqlClient::testConnect() {
-    BaseQuery::executePrimitiveQuery("select 1", currentSessionId(), "psql");
+    BaseQuery::executePrimitiveQuery("select 1", currentSessionId(), "postgres");
 }
 
 void PSqlClient::createDatabase() {
+    //check database exist
+    {
+        bool dbExist = false;
+        BaseQuery::executePrimitiveQuery("select datname from pg_database where datname = '" % currentDatabaseName() % "'", currentSessionId(), "postgres", {}, [&] (QSqlQuery& query) {
+            dbExist = query.next();
+        });
+        if (dbExist) {
+            return;
+        }
+    }
+
     auto psqlConfig = privateConfig<ConfigPSqlBuilder>();
     QString statement = "CREATE DATABASE " % currentDatabaseName() % " WITH";
     if (!psqlConfig->mOwner.isEmpty()) {
@@ -37,12 +48,12 @@ void PSqlClient::createDatabase() {
     if (!psqlConfig->mTableSpace.isEmpty()) {
         statement = statement % " TABLESPACE=" % psqlConfig->mTableSpace;
     }
-    BaseQuery::executePrimitiveQuery(statement, currentSessionId(), "psql");
+    BaseQuery::executePrimitiveQuery(statement, currentSessionId(), "postgres");
 }
 
 void PSqlClient::dropDatabase() {
     ConnectionPool::closeAllConnection();
-    BaseQuery::executePrimitiveQuery("drop database if exists " % currentDatabaseName(), currentSessionId(), "psql");
+    BaseQuery::executePrimitiveQuery("drop database if exists " % currentDatabaseName(), currentSessionId(), "postgres");
 }
 
 QStringList PSqlClient::exportAllTables() {
@@ -82,11 +93,11 @@ void PSqlClient::dropTable(const QString &tbName) {
 }
 
 void PSqlClient::truncateTable(const QString &tbName) {
-    BaseQuery::queryPrimitive("truncate table \"" % tbName % "\"", {}, currentSessionId());
+    BaseQuery::queryPrimitive("truncate table \"" % tbName % "\" restart identity", {}, currentSessionId());
 }
 
 void PSqlClient::enableForeignKey(const QString &tbName, bool enabled) {
-    if (!tbName.isEmpty()) {
+    if (tbName.isEmpty()) {
         return;
     }
     BaseQuery::queryPrimitive("alter table \"" % tbName % "\"" % (enabled ? "enable" : "disable") % " trigger all", {}, currentSessionId());
@@ -167,8 +178,8 @@ void PSqlClient::dropIndex(const QString &tbName, const QString &indexName) {
     BaseQuery::queryPrimitive("drop index if exists " % indexName, {}, currentSessionId());
 }
 
-QString PSqlClient::getIndexFromFields(const QStringList &fields) {
-    return AbstractClient::getIndexFromFields(fields, PSQL_KEYWORDS_ESCAPES);
+QString PSqlClient::getIndexFromFields(const QString &tbName, const QStringList &fields) {
+    return tbName.toLower() % "_" % AbstractClient::getIndexFromFields(tbName, fields, PSQL_KEYWORDS_ESCAPES);
 }
 
 QString PSqlClient::createEscapeCharsForName(const QString &sourceName) const {

@@ -3,6 +3,7 @@
 #include "dao.h"
 
 #include <qdir.h>
+#include <qdebug.h>
 
 #include "utils/testconfigloader.h"
 
@@ -39,6 +40,17 @@ public:
                     .version(version == -1 ? configOption.version() : version)
                     .databaseName(databaseName)
                     .host(configOption.host())
+                    .user(configOption.user())
+                    .password(configOption.password())
+                    .options(configOption.options())
+                    .initializeDatabase();
+            } else if (targetDb == TestTargetDb::Target_PSql) {
+                const auto& configOption = TestConfigLoader::instance().config().optionPSql();
+                dao::_config<dao::ConfigPSqlBuilder>()
+                    .version(version == -1 ? configOption.version() : version)
+                    .databaseName(databaseName)
+                    .host(configOption.host())
+                    .port(configOption.port())
                     .user(configOption.user())
                     .password(configOption.password())
                     .options(configOption.options())

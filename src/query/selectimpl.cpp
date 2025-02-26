@@ -12,6 +12,15 @@ void SelectImpl::buildFilterSqlStatement() {
     QVariantList values;
 
     auto config = ConfigManager::getConfig(getSessionId());
+    auto getRecursivePrefix = [&] (const QString& statement) {
+        if (config->isPSql()) {
+            auto tmp = statement;
+            tmp.replace("with ", "with RECURSIVE ");
+            return tmp;
+        }
+        return statement;
+    };
+
     if (topSize != 0 && config->isSqlServer()) {
         sql = sql.arg("top " + QString::number(topSize) + (topPercent ? " percent " : " "));
     } else {
@@ -25,7 +34,7 @@ void SelectImpl::buildFilterSqlStatement() {
     } else {
         if (fs.recursiveQuery) {
             sql = sql.arg(fs.asName);
-            sql = fs.statement + sql;
+            sql = getRecursivePrefix(fs.statement) + sql;
             fs.values.append(values);
             fs.values.swap(values);
         } else {

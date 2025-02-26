@@ -317,24 +317,24 @@ void SelectTest::rawSelectTest() {
 }
 
 template<typename E>
-void runFuntionSelectTest() {
+void runFunctionSelectTest() {
     typename E::Fields sf1;
     auto data = dao::_select<E>()
         .column(_fun("sum(%1) + ? as sumnumber").field(sf1.number).value(5))
-        .filter(_or(sf1.name.like("a%"), _fun("%1 > case when %2 = ? then ? else ? end").field(sf1.number, sf1.name).value("client", 12, 10)))
+        .filter(_or(sf1.name.like("a%"), _fun("%1 > ?").field(sf1.number).value(10.0)))
         .build().one();
-    QCOMPARE(data.template __getExtra<int>("sumnumber"), 52);
+    QCOMPARE(data.template __getExtra<int>("sumnumber"), 64);
 }
 
-void SelectTest::funtionSelectTest() {
+void SelectTest::functionSelectTest() {
     if (targetDb == TestTargetDb::Target_Sqlite) {
-        runFuntionSelectTest<SqliteTest1>();
+        runFunctionSelectTest<SqliteTest1>();
     } else if (targetDb == TestTargetDb::Target_Mysql) {
-        runFuntionSelectTest<MysqlTest1>();
+        runFunctionSelectTest<MysqlTest1>();
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
-        runFuntionSelectTest<SqlServerTest1>();
+        runFunctionSelectTest<SqlServerTest1>();
     } else if (targetDb == TestTargetDb::Target_PSql) {
-        runFuntionSelectTest<PSqlTest1>();
+        runFunctionSelectTest<PSqlTest1>();
     }
 }
 

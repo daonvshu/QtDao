@@ -19,7 +19,7 @@
                         <xs:enumeration value="decimal" />
                         <xs:enumeration value="numeric" />
                         <xs:enumeration value="real" />
-                        <xs:enumeration value="double" />
+                        <xs:enumeration value="double precision" />
                         <xs:enumeration value="smallserial" />
                         <xs:enumeration value="serial" />
                         <xs:enumeration value="bigserial" />

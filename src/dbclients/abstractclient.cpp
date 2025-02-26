@@ -65,18 +65,18 @@ void AbstractClient::createIndex(dao::EntityReaderInterface *reader) {
 void AbstractClient::createIndex(const QString &tbName, const QStringList &fields, IndexType type,
                                  const std::function<QString(const QString &)> &indexOption)
  {
-    auto indexName = getIndexFromFields(fields);
+    auto indexName = getIndexFromFields(tbName, fields);
     createIndex(tbName, indexName, fields, type, indexOption == nullptr ? "" : indexOption(indexName));
 }
 
 void AbstractClient::dropIndex(const QString &tbName, const QStringList &fields) {
-    dropIndex(tbName, getIndexFromFields(fields));
+    dropIndex(tbName, getIndexFromFields(tbName, fields));
 }
 
-QStringList AbstractClient::getIndexArrayFromFields(const QList<QStringList> &fieldArray) {
+QStringList AbstractClient::getIndexArrayFromFields(const QString &tbName, const QList<QStringList> &fieldArray) {
     QStringList names;
     for (const auto& fields : fieldArray) {
-        names << getIndexFromFields(fields);
+        names << getIndexFromFields(tbName, fields);
     }
     return names;
 }
@@ -161,7 +161,7 @@ QString AbstractClient::checkAndRemoveKeywordEscapes(const QString& tbOrFieldNam
     return name;
 }
 
-QString AbstractClient::getIndexFromFields(const QStringList &fields, const QStringList &escapeSymbols) {
+QString AbstractClient::getIndexFromFields(const QString &tbName, const QStringList &fields, const QStringList &escapeSymbols) {
     QString indexName = "index";
     for (const auto& field : fields) {
         indexName.append("_").append(checkAndRemoveKeywordEscapes(field.split(" ").at(0), escapeSymbols));

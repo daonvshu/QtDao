@@ -54,6 +54,8 @@ QString getAliasKeyPrefix(ConfigType configType) {
             return "mysql_";
         case ConfigType::SqlServer:
             return "sqlserver_";
+        case ConfigType::PSql:
+            return "psql_";
     }
     return {};
 }

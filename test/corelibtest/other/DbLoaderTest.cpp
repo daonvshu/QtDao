@@ -11,6 +11,9 @@
 #include "entity/sqlserverentity/sqlservertest1.h"
 #include "entity/sqlserverentity/sqlservertest2.h"
 
+#include "entity/psqlentity/psqltest1.h"
+#include "entity/psqlentity/psqltest2.h"
+
 #include <QtTest>
 
 QTDAO_USING_NAMESPACE
@@ -31,6 +34,9 @@ void DbLoaderTest::loadConfigTest() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QVERIFY(config->getClient()->checkTableExist(SqlServerTest1::Info::getTableName()));
         QVERIFY(config->getClient()->checkTableExist(SqlServerTest2::Info::getTableName()));
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QVERIFY(config->getClient()->checkTableExist(PSqlTest1::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(PSqlTest2::Info::getTableName()));
     }
     QCOMPARE(config->getLocalVersion(), 1);
 }
@@ -48,6 +54,9 @@ void DbLoaderTest::upgradeTest() {
     } else if (targetDb == TestTargetDb::Target_SqlServer) {
         QVERIFY(config->getClient()->checkTableExist(SqlServerTest1::Info::getTableName()));
         QVERIFY(config->getClient()->checkTableExist(SqlServerTest2::Info::getTableName()));
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QVERIFY(config->getClient()->checkTableExist(PSqlTest1::Info::getTableName()));
+        QVERIFY(config->getClient()->checkTableExist(PSqlTest2::Info::getTableName()));
     }
     //test version
     QCOMPARE(config->getLocalVersion(), 3);

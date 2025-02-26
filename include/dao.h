@@ -43,6 +43,10 @@ static ConfigSqlServerBuilder _config(TypeIdentify<ConfigSqlServerBuilder>) {
     return ConfigSqlServerBuilder();
 }
 
+static ConfigPSqlBuilder _config(TypeIdentify<ConfigPSqlBuilder>) {
+    return ConfigPSqlBuilder();
+}
+
 template<typename T>
 static T _config() {
     return _config(TypeIdentify<T>());

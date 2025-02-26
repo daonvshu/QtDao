@@ -105,6 +105,8 @@ QString InsertImpl::buildInsertPrefix() {
                 sql = "insert or replace into %1 (";
             } else if (config->isMysql()) {
                 sql = "replace into %1 (";
+            } else if (config->isPSql()) {
+                throw DaoException("postgresql insert or replace unsupported!");
             } else {
                 throw DaoException("sqlserver insert or replace unsupported!");
             }
@@ -117,6 +119,8 @@ QString InsertImpl::buildInsertPrefix() {
                 sql = "insert or ignore into %1 (";
             } else if (config->isMysql()) {
                 sql = "insert ignore into %1 (";
+            } else if (config->isPSql()) {
+                throw DaoException("postgresql insert or ignore unsupported!");
             } else {
                 throw DaoException("sqlserver insert or ignore unsupported!");
             }

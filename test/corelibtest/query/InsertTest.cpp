@@ -111,6 +111,14 @@ void InsertTest::insertObjectTest_data() {
             << SqlServerTest1(2, "test", 40, "object")
             << SqlServerTest1(2, "test", 20, "abc")
             << SqlServerTest2("testname", 23, 233);
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QTest::addColumn<PSqlTest1>("test1");
+        QTest::addColumn<PSqlTest1>("test2");
+        QTest::addColumn<PSqlTest2>("test3");
+        QTest::newRow("psql test data")
+            << PSqlTest1(2, "test", 40, "object")
+            << PSqlTest1(2, "test", 20, "abc")
+            << PSqlTest2("testname", 23, 233);
     }
 }
 
@@ -196,6 +204,14 @@ void InsertTest::insertObjectsTest_data() {
 
         QTest::addColumn<QList<SqlServerTest2>>("test");
         QTest::newRow("sqlserver test data") << test;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QList<PSqlTest2> test;
+        test << PSqlTest2("name1", 1, 11);
+        test << PSqlTest2("name2", 2, 22);
+        test << PSqlTest2("name3", 3, 33);
+
+        QTest::addColumn<QList<PSqlTest2>>("test");
+        QTest::newRow("psql test data") << test;
     }
 }
 
@@ -257,6 +273,14 @@ void InsertTest::insertObjects2Test_data() {
 
         QTest::addColumn<QList<SqlServerTest2>>("test");
         QTest::newRow("sqlserver test data") << test;
+    } else if (targetDb == TestTargetDb::Target_PSql) {
+        QList<PSqlTest2> test;
+        test << PSqlTest2("name4", 4, 44);
+        test << PSqlTest2("name5", 5, 55);
+        test << PSqlTest2("name6", 6, 66);
+
+        QTest::addColumn<QList<PSqlTest2>>("test");
+        QTest::newRow("psql test data") << test;
     }
 }
 
@@ -323,12 +347,11 @@ void runInsertOrReplaceTest() {
 
 void InsertTest::insertOrReplaceTest() {
     PASSSQLSERVER;
+    PASSPSQL;
     if (targetDb == TestTargetDb::Target_Sqlite) {
         runInsertOrReplaceTest<SqliteTest2>();
     } else if (targetDb == TestTargetDb::Target_Mysql) {
         runInsertOrReplaceTest<MysqlTest2>();
-    } else if (targetDb == TestTargetDb::Target_PSql) {
-        runInsertOrReplaceTest<PSqlTest2>();
     }
 }
 
@@ -339,9 +362,6 @@ void InsertTest::insertOrIgnoreTest_data() {
     } else if (targetDb == TestTargetDb::Target_Mysql) {
         QTest::addColumn<MysqlTest2>("entity");
         QTest::addRow("mysql test data") << MysqlTest2("testinsertorreplace", -1, -2);
-    } else if (targetDb == TestTargetDb::Target_PSql) {
-        QTest::addColumn<PSqlTest2>("entity");
-        QTest::addRow("psql test data") << PSqlTest2("testinsertorreplace", -1, -2);
     }
 }
 
@@ -365,12 +385,11 @@ void runInsertOrIgnoreTest() {
 
 void InsertTest::insertOrIgnoreTest() {
     PASSSQLSERVER;
+    PASSPSQL;
     if (targetDb == TestTargetDb::Target_Sqlite) {
         runInsertOrIgnoreTest<SqliteTest2>();
     } else if (targetDb == TestTargetDb::Target_Mysql) {
         runInsertOrIgnoreTest<MysqlTest2>();
-    } else if (targetDb == TestTargetDb::Target_PSql) {
-        runInsertOrIgnoreTest<PSqlTest2>();
     }
 }
 

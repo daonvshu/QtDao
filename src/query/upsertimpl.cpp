@@ -68,7 +68,7 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
     };
 
     auto config = ConfigManager::getConfig(getSessionId());
-    if (config->isSqlite()) {
+    if (config->isSqlite() || config->isPSql()) {
         QString statementTemplate = "insert into %1 (%2) values(%3) on conflict(%4) do update set %5";
 
         //conflict field
@@ -103,7 +103,9 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         return statementTemplate.arg(getTableName(), usedFieldListStr(), valuePlaceholder(),
                                      conflictFields, updateStr);
 
-    } else if (config->isMysql()) {
+    }
+
+    if (config->isMysql()) {
         QString statementTemplate = "insert into %1 (%2) values(%3) on duplicate key update %4";
 
         auto& conflictCols = conflictColumnConnector();
@@ -125,7 +127,13 @@ QString UpsertImpl::buildInsertStatement(const QStringList &fields, const std::f
         return statementTemplate.arg(getTableName(), usedFieldListStr(), valuePlaceholder(),
                                      updateStr);
 
-    } else if (config->isSqlServer()) {
+    }
+
+    if (config->isPSql()) {
+
+    }
+
+    if (config->isSqlServer()) {
         QString statementTemplate = "merge into %1 a\n"
                                     "using (select %2) b\n"
                                     "on %3\n"

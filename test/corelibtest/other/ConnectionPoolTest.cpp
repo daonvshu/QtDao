@@ -143,6 +143,7 @@ void ConnectionPoolTest::testParallelThreadPool() {
 void ConnectionPoolTest::testGoneAway() {
     PASSSQLITE;
     PASSSQLSERVER;
+    PASSPSQL;
 
     QEventLoop loop;
     BaseQuery::queryPrimitive("set global wait_timeout=1");

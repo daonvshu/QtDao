@@ -37,7 +37,7 @@ private slots:
     void rawSelectTest_data();
     void rawSelectTest();
 
-    void funtionSelectTest();
+    void functionSelectTest();
 
     void countSelectTest();
 

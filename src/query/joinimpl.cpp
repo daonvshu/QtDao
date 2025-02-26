@@ -10,6 +10,16 @@ void JoinImpl::buildJoinSqlStatement() {
     QString sql = "select ";
     QVariantList values;
 
+    auto config = ConfigManager::getConfig(getSessionId());
+    auto getRecursivePrefix = [&](const QString &statement) {
+        if (config->isPSql()) {
+            auto tmp = statement;
+            tmp.replace("with ", "with RECURSIVE ");
+            return tmp;
+        }
+        return statement;
+    };
+
     setTableOrder();
     auto prefixGetter = [&](const QString& tb) {
         return tableOrder.value(tb);
@@ -31,7 +41,7 @@ void JoinImpl::buildJoinSqlStatement() {
         sql.append(mainTable);
     } else {
         if (mainFromData.recursiveQuery) {
-            sql.prepend(mainFromData.statement).append(mainFromData.asName);
+            sql.prepend(getRecursivePrefix(mainFromData.statement)).append(mainFromData.asName);
         } else {
             sql.append("(").append(mainFromData.statement).append(")");
         }
@@ -53,7 +63,7 @@ void JoinImpl::buildJoinSqlStatement() {
             sql.append(insideRecursiveQuery ? tb.first : tb.second);
         } else {
             if (joinData.fromBuildData.recursiveQuery) {
-                sql.prepend(joinData.fromBuildData.statement).append(joinData.fromBuildData.asName);
+                sql.prepend(getRecursivePrefix(joinData.fromBuildData.statement)).append(joinData.fromBuildData.asName);
                 joinData.fromBuildData.values.append(values);
                 joinData.fromBuildData.values.swap(values);
             } else {

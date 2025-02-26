@@ -27,7 +27,12 @@ void BaseQueryTest::testPrimitiveQuery() {
 
 void BaseQueryTest::testPrimitiveQueryWithValue() {
     try {
-        auto query = BaseQuery::queryPrimitive("select ? + ?", QVariantList() << 10 << 20);
+        auto query = BaseQuery::queryPrimitive([&] () -> QString {
+            if (targetDb == TestTargetDb::Target_PSql) {
+                return "select ?::integer + ?::integer";
+            }
+            return "select ? + ?";
+        } (), QVariantList() << 10 << 20);
         if (query.next()) {
             int result = query.value(0).toInt();
             QCOMPARE(result, 30);

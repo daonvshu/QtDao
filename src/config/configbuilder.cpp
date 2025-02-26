@@ -4,6 +4,7 @@
 #include "dbclients/mysqlclient.h"
 #include "dbclients/sqliteclient.h"
 #include "dbclients/sqlserverclient.h"
+#include "dbclients/psqlclient.h"
 
 #include "dbexception.h"
 #include "query/basequery.h"
@@ -28,6 +29,10 @@ ConfigBuilder::ConfigBuilder(ConfigType type)
         case ConfigType::SqlServer:
             mDriver = "QODBC";
             dbClient = QSharedPointer<AbstractClient>(new SqlServerClient);
+            break;
+        case ConfigType::PSql:
+            mDriver = "QPSQL";
+            dbClient = QSharedPointer<AbstractClient>(new PSqlClient);
             break;
     }
 }

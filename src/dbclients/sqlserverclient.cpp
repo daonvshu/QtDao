@@ -303,8 +303,8 @@ void SqlServerClient::dropIndex(const QString &tbName, const QString& indexName)
     BaseQuery::queryPrimitive("drop index " % indexName % " on " % tbName, {}, currentSessionId());
 }
 
-QString SqlServerClient::getIndexFromFields(const QStringList &fields) {
-    return AbstractClient::getIndexFromFields(fields, SQLSERVER_KEYWORDS_ESCAPES);
+QString SqlServerClient::getIndexFromFields(const QString &tbName, const QStringList &fields) {
+    return AbstractClient::getIndexFromFields(tbName, fields, SQLSERVER_KEYWORDS_ESCAPES);
 }
 
 void SqlServerClient::transferData(const QString &fromTb, const QString &toTb) {

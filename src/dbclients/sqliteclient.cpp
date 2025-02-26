@@ -194,8 +194,8 @@ void SqliteClient::dropIndex(const QString& tbName, const QString& indexName) {
     BaseQuery::queryPrimitive("drop index " % indexName, {}, currentSessionId());
 }
 
-QString SqliteClient::getIndexFromFields(const QStringList &fields) {
-    return AbstractClient::getIndexFromFields(fields, SQLITE_KEYWORDS_ESCAPES);
+QString SqliteClient::getIndexFromFields(const QString &tbName, const QStringList &fields) {
+    return AbstractClient::getIndexFromFields(tbName, fields, SQLITE_KEYWORDS_ESCAPES);
 }
 
 QString SqliteClient::createEscapeCharsForName(const QString &sourceName) const {

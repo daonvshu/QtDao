@@ -218,17 +218,19 @@ public:
 
     /**
      * create index name by used fields
+     * @param tbName table name
      * @param fields used fields
      * @return index name
      */
-    virtual QString getIndexFromFields(const QStringList& fields) = 0;
+    virtual QString getIndexFromFields(const QString& tbName, const QStringList& fields) = 0;
 
     /**
      * create index name by used fields
+     * @param tbName table name
      * @param fieldArray array of used fields
      * @return index name array
      */
-    QStringList getIndexArrayFromFields(const QList<QStringList>& fieldArray);
+    QStringList getIndexArrayFromFields(const QString& tbName, const QList<QStringList>& fieldArray);
 
     /////////////// table data process ///////////////
 
@@ -306,11 +308,12 @@ public:
 
     /**
      * get index name from used fields, removed keyword escapes use 'escapeSymbols'
+     * @param tbName table name
      * @param fields used fields of index
      * @param escapeSymbols keyword escape symbols
      * @return index name
      */
-    static QString getIndexFromFields(const QStringList& fields, const QStringList& escapeSymbols);
+    static QString getIndexFromFields(const QString& tbName, const QStringList& fields, const QStringList& escapeSymbols);
 
 protected:
     QString currentDatabaseName() const;

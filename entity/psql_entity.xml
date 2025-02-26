@@ -4,7 +4,7 @@
     <tb name="PSqlTest1" declaremetatype="true">
         <item name="id" type="bigint" default="-1" constraints="primary key" note="主键"/>
         <item name="name" type="varchar" bitsize="100" constraints="primary key" default="text" note="复合主键"/>
-        <item name="number" type="double" note="浮点数字" default="10.0"/>
+        <item name="number" type="double precision" note="浮点数字" default="10.0"/>
         <item name="hex" type="bytea" note="二进制"/>
     </tb>
     <tb name="PSqlTest2" declaremetatype="true">
@@ -49,10 +49,10 @@
         <item name="typeintnull" type="integer" default="null"/>
         <item name="typebigint" type="bigint" default="5"/>
         <item name="typebigintnull" type="bigint" default="null"/>
-        <item name="typereal" type="double" default="0.2"/>
-        <item name="typerealnull" type="double" default="null"/>
-        <item name="typedouble" type="double" default="0.2"/>
-        <item name="typedoublenull" type="double" default="null"/>
+        <item name="typereal" type="double precision" default="0.2"/>
+        <item name="typerealnull" type="double precision" default="null"/>
+        <item name="typedouble" type="double precision" default="0.2"/>
+        <item name="typedoublenull" type="double precision" default="null"/>
         <item name="typedecimal" type="decimal" bitsize="8" decimal-d="4" default="0.3" />
         <item name="typedecimalnull" type="decimal" bitsize="9" decimal-d="5" default="null"/>
         <item name="typenumeric" type="numeric" bitsize="8" decimal-d="4" default="0.3" />
@@ -64,7 +64,7 @@
     </tb>
     <tb name="PSqlDefaultTestTime" declaremetatype="true">
         <!--time type-->
-        <item name="typetime" type="time" default="120:59:59"/>
+        <item name="typetime" type="time" default="20:59:59"/>
         <item name="typetime2" type="time" default='QTime::currentTime().toString("HH:mm:ss")'/>
         <item name="typetime3" type="time" default="now"/>
         <item name="typetime4" type="time" default="null"/>

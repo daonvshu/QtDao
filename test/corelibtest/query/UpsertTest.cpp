@@ -27,7 +27,7 @@ void runSetUpsertTest() {
 
     const auto& compareResult = [] (const QVariantList& expectNames, const QVariantList& expectNumbers
             , const QVariantList& expectNumber2s) {
-        auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName()));
+        auto query = BaseQuery::queryPrimitive(QString("select *from %1 order by name").arg(E::Info::getTableName()));
         QVariantList names, numbers, number2s;
         while (query.next()) {
             names << query.value("name");
@@ -103,7 +103,7 @@ void runSetUpsertBatchTest() {
 
     const auto& compareResult = [] (int idSize, const QStringList& expectNames, const QList<int>& expectNumbers,
             const QList<int>& expectNumber2s) {
-        auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(E::Info::getTableName()));
+        auto query = BaseQuery::queryPrimitive(QString("select *from %1 order by id").arg(E::Info::getTableName()));
         QList<qint64> idsRes;
         QStringList namesRes;
         QList<int> numbersRes;
@@ -363,6 +363,7 @@ void UpsertTest::upsertObjectsTest() {
 void UpsertTest::upsertFilterTest() {
     PASSMYSQL;
     PASSSQLSERVER;
+    PASSPSQL;
 
     auto ids = QList<qint64>() << 10 << 11;  //auto increment id set value will not work
     auto names = QStringList() << "name1" << "name2";

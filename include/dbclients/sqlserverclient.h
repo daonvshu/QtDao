@@ -54,7 +54,7 @@ public:
 
     void dropIndex(const QString& tbName, const QString& indexName) override;
 
-    QString getIndexFromFields(const QStringList &fields) override;
+    QString getIndexFromFields(const QString& tbName, const QStringList &fields) override;
 
     void transferData(const QString &fromTb, const QString &toTb) override;
 
