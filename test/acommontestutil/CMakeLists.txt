@@ -24,6 +24,9 @@ add_library(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Test
+
+    libpq
 )
 
+target_link_directories(${PROJECT_NAME} PUBLIC ${PSQL_DRIVER_DIR})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

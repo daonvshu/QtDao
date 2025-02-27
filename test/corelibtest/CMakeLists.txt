@@ -15,8 +15,6 @@ file(GLOB ENTITY_MYSQL entity/mysqlentity/*.h entity/mysqlentity/*.cpp)
 file(GLOB ENTITY_SQLSERVER entity/sqlserverentity/*.h entity/sqlserverentity/*.cpp)
 file(GLOB ENTITY_PSQL entity/psqlentity/*.h entity/psqlentity/*.cpp)
 
-link_directories(E:/dev_library/pgsql/lib)
-
 add_executable(${PROJECT_NAME}
     BaseTest.h
     BaseTest.cpp
@@ -38,5 +36,4 @@ target_link_libraries(${PROJECT_NAME}
 
     qtdao
     common-test-util
-    libpq
 )

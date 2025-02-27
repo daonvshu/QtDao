@@ -118,13 +118,13 @@ void ClientSqliteTest::indexProcessTest() {
 
     //get field name test
     QStringList usedField1 = { "f1", "\"after\"", "\"by\"" };
-    auto indexName = client->getIndexFromFields(usedField1);
+    auto indexName = client->getIndexFromFields("", usedField1);
     QCOMPARE(indexName, "index_f1_after_by");
 
     QList<QStringList> usedField2;
     usedField2 << (QStringList() << "\"case\"" << "field3");
     usedField2 << (QStringList() << "field4" << "field10");
-    auto indexNames = client->getIndexArrayFromFields(usedField2);
+    auto indexNames = client->getIndexArrayFromFields("", usedField2);
     QStringList expectNames = { "index_case_field3", "index_field4_field10" };
     QCOMPARE(indexNames, expectNames);
 

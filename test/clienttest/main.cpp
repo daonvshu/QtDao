@@ -3,6 +3,7 @@
 #include "clientsqlitetest.h"
 #include "clientmysqltest.h"
 #include "clientsqlservertest.h"
+#include "clientpsqltest.h"
 
 #include "utils/testconfigloader.h"
 #include "multitestrunner.h"
@@ -27,6 +28,7 @@ int main(int argc, char** argv) {
             break;
         case TestTargetDb::Target_PSql:
             TestUtils::printWithColor("------------------------------ Test PSql ------------------------------", TestOutputColorAttr::Yellow);
+            result = MultiTestRunner<ClientPSqlTest>::run("qtdaoclienttest.exe");
             break;
     }
 

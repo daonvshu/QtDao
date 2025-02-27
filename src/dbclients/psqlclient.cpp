@@ -152,13 +152,15 @@ void PSqlClient::renameField(const QString &tbName, const QString &oldFieldName,
 QHash<IndexType, QStringList> PSqlClient::exportAllIndexes(const QString &tbName) {
     QHash<IndexType, QStringList> indexes;
 
-    auto query = BaseQuery::queryPrimitive("select conname, contype from pg_constraint join pg_class c on c.oid = pg_constraint.conindid"
-                                            " and conrelid = '" % tbName % "'::regclass;");
+    auto query = BaseQuery::queryPrimitive(QString("select idxcls.relname, idx.indisunique from pg_index idx"
+            " join pg_class cls on idx.indrelid = cls.oid"
+            " join pg_class idxcls on idx.indexrelid = idxcls.oid"
+            " left join pg_am am on idxcls.relam = am.oid"
+            " where cls.relname = '%1' and starts_with(idxcls.relname, '%1_index_')").arg(tbName));
     while (query.next()) {
         auto indexName = query.value(0).toString();
-        if (indexName.startsWith("index_")) {
-            indexes[IndexType(query.value(1).toString() != "i")] << indexName;
-        }
+        auto isUnique = query.value(1).toBool();
+        indexes[IndexType(isUnique)] << indexName;
     }
 
     return indexes;

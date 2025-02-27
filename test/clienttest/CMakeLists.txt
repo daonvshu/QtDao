@@ -11,6 +11,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Sql Test REQUIRED)
 include(${CMAKE_CURRENT_SOURCE_DIR}/sqlite/entity.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/mysql/entity.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/sqlserver/entity.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/psql/entity.cmake)
 
 add_executable(${PROJECT_NAME}
     main.cpp
@@ -22,6 +23,8 @@ add_executable(${PROJECT_NAME}
     clientmysqltest.cpp
     clientsqlservertest.h
     clientsqlservertest.cpp
+    clientpsqltest.h
+    clientpsqltest.cpp
     )
 
 target_link_libraries(${PROJECT_NAME}
