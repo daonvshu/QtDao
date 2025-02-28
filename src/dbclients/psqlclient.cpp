@@ -110,8 +110,10 @@ void PSqlClient::dropReferencedForeignKey(const QString &tbName) {
     QStringList referenceChildTbName, foreignKeyName;
     {
         auto query = BaseQuery::queryPrimitive(
-            QStringLiteral("select conrelid::regclass, conname AS constraint_name from pg_constraint "
-                "where contype = 'f' and conrelid = '%1'::regclass").arg(tbName), {}, currentSessionId());
+        QStringLiteral("select refcls.relname, con.conname from pg_constraint as con "
+                "join pg_class cls on con.confrelid = cls.oid "
+                "left join pg_class refcls on con.conrelid = refcls.oid "
+                "where cls.relname = '%1' and contype = 'f'").arg(tbName), {}, currentSessionId());
         while (query.next()) {
             referenceChildTbName.append(query.value(0).toString());
             foreignKeyName.append(query.value(1).toString());
@@ -152,7 +154,7 @@ void PSqlClient::renameField(const QString &tbName, const QString &oldFieldName,
 QHash<IndexType, QStringList> PSqlClient::exportAllIndexes(const QString &tbName) {
     QHash<IndexType, QStringList> indexes;
 
-    auto query = BaseQuery::queryPrimitive(QString("select idxcls.relname, idx.indisunique from pg_index idx"
+    auto query = BaseQuery::queryPrimitive(QStringLiteral("select idxcls.relname, idx.indisunique from pg_index idx"
             " join pg_class cls on idx.indrelid = cls.oid"
             " join pg_class idxcls on idx.indexrelid = idxcls.oid"
             " left join pg_am am on idxcls.relam = am.oid"
@@ -190,7 +192,7 @@ QString PSqlClient::createEscapeCharsForName(const QString &sourceName) const {
 
 QString PSqlClient::removeEscapeCharsForName(const QString &sourceName) const {
     QString newName = sourceName;
-    static QRegularExpression regex(R"(['"\])");
+    static QRegularExpression regex(R"(['\"\\])");
     newName.remove(regex);
     return newName;
 }

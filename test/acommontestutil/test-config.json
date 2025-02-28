@@ -19,7 +19,7 @@
     "version": 1,
     "host": "localhost",
     "user": "sa",
-    "password": "root"
+    "password": "12345678Root+"
   },
   "optionPSql": {
     "version": 1,

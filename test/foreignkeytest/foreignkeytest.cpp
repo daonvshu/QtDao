@@ -18,6 +18,10 @@
 #include "sqlserver/track.h"
 #include "sqlserver/customer.h"
 
+#include "psql/artist.h"
+#include "psql/track.h"
+#include "psql/customer.h"
+
 #include "utils/testconfigloader.h"
 
 using namespace dao;
@@ -38,6 +42,8 @@ if (targetDb == TestTargetDb::Target_Sqlite) { \
 } else if (targetDb == TestTargetDb::Target_Mysql) { \
     func<TsMysql::Artist, TsMysql::Track, TsMysql::Customer>(); \
 } else if (targetDb == TestTargetDb::Target_SqlServer) { \
+    func<TsSqlServer::Artist, TsSqlServer::Track, TsSqlServer::Customer>(); \
+} else if (targetDb == TestTargetDb::Target_PSql) { \
     func<TsSqlServer::Artist, TsSqlServer::Track, TsSqlServer::Customer>(); \
 }
 
