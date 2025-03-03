@@ -7,6 +7,7 @@
 #include "sqlite/database.h"
 #include "mysql/database.h"
 #include "sqlserver/database.h"
+#include "psql/database.h"
 
 #include "utils/testconfigloader.h"
 
@@ -25,7 +26,7 @@ void KeywordsTest::testStep() {
 
 template<typename T>
 QPair<QList<int>, QStringList> readAll() {
-    auto query = BaseQuery::queryPrimitive(QString("select *from %1").arg(T::Info::getTableName()));
+    auto query = BaseQuery::queryPrimitive(QString("select *from %1 order by \"group\"").arg(T::Info::getTableName()));
     QList<int> columns;
     QStringList groups;
     while (query.next()) {
@@ -43,6 +44,8 @@ if (targetDb == TestTargetDb::Target_Sqlite) { \
     func<TsMysql::Database>(); \
 } else if (targetDb == TestTargetDb::Target_SqlServer) { \
     func<TsSqlServer::Database>(); \
+} else if (targetDb == TestTargetDb::Target_PSql) { \
+    func<TsPSql::Database>(); \
 }
 
 template<typename Database>
@@ -54,8 +57,8 @@ void testInsertImpl() {
     dao::_insert<Database>().build().insert(databaseList);
 
     auto allData = readAll<Database>();
-    QCOMPARE(allData.first, QList<int>() << 1 << 2);
-    QCOMPARE(allData.second, QStringList() << "group_num1" << "group_ku2");
+    QCOMPARE(allData.first, QList<int>() << 2 << 1);
+    QCOMPARE(allData.second, QStringList() << "group_ku2" << "group_num1");
 }
 
 void KeywordsTest::testInsert() {
@@ -94,8 +97,8 @@ void testUpdateImpl() {
         .build().update();
 
     auto allData = readAll<Database>();
-    QCOMPARE(allData.first, QList<int>() << 10 << 2);
-    QCOMPARE(allData.second, QStringList() << "groups" << "group_ku2");
+    QCOMPARE(allData.first, QList<int>() << 2 << 10);
+    QCOMPARE(allData.second, QStringList()<< "group_ku2" << "groups" );
 }
 
 void KeywordsTest::testUpdate() {

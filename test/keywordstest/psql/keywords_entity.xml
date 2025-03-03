@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE dao SYSTEM "../../../entity/sqlite_entity.xsd">
-<dao db="sqlite" namespace="TsSqlite">
+<!DOCTYPE dao SYSTEM "../../../entity/psql_entity.xsd">
+<dao db="psql" namespace="TsPSql">
     <tb name="Database">
-        <item name="column" type="int" note="keywords1" />
-        <item name="group" type="text" note="keywords2" />
+        <item name="column" type="integer" note="keywords1" />
+        <item name="group" type="varchar" bitsize="256" note="keywords2" />
         <index type="unique index">
             <field>column</field>
         </index>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dao xmlns="../../../entity/mysql_entity.xsd" db="mysql" namespace="TsMysql">
+<!DOCTYPE dao SYSTEM "../../../entity/mysql_entity.xsd">
+<dao db="mysql" namespace="TsMysql">
     <tb name="Database">
         <item name="column" type="int" note="keywords1" />
         <item name="group" type="varchar" bitsize="256" note="keywords2" />
