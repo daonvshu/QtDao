@@ -12,6 +12,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/sqlite/v1/entity.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/sqlite/v2/entity.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/mysql/entity.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/sqlserver/entity.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/psql/entity.cmake)
 
 add_executable(${PROJECT_NAME}
     main.cpp
