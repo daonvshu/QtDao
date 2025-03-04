@@ -24,10 +24,10 @@ void MyDbUpgrader::upgrade1To2() {
     dao::transaction();
     try {
         //drop index
-        client->dropIndex(entityReader->getTableName(), "index_number2");
-        client->dropIndex(entityReader->getTableName(), "index_number_number2");
+        client->dropIndex(entityReader->getTableName(), client->getIndexFromFields(entityReader->getTableName(), { "number2" }));
+        client->dropIndex(entityReader->getTableName(), client->getIndexFromFields(entityReader->getTableName(), { "number", "number2"}));
         //remove unique index
-        client->dropIndex(entityReader->getTableName(), "index_name_number");
+        client->dropIndex(entityReader->getTableName(), client->getIndexFromFields(entityReader->getTableName(), {"name", "number"}));
         if (TEST_DB == QLatin1String("sqlserver")) {
             client->createIndex(entityReader->getTableName(), entityReader->getNonClusteredIndexFields()[0], dao::IndexType::INDEX_NORMAL);
         } else {
@@ -53,7 +53,7 @@ void MyDbUpgrader::upgrade2To3() {
     dao::transaction();
     try {
         //drop index
-        client->dropIndex(entityReader->getTableName(), "index_name_number");
+        client->dropIndex(entityReader->getTableName(), client->getIndexFromFields(entityReader->getTableName(), {"name", "number"}));
         //drop column
         client->dropField(entityReader->getTableName(), "name");
         //add new column 'name'

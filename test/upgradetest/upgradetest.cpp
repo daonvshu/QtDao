@@ -50,6 +50,16 @@ void UpgradeTest::upgradeTest() {
                 .password(configOption.password())
                 .disableCreateTables()
                 .initializeDatabase();
+    } else if (TEST_DB == QLatin1String("psql")) {
+        const auto& configOption = TestConfigLoader::instance().config().optionPSql();
+        dao::_config<dao::ConfigPSqlBuilder>()
+                .databaseName("psql_upgrade_test")
+                .host(configOption.host())
+                .port(configOption.port())
+                .user(configOption.user())
+                .password(configOption.password())
+                .disableCreateTables()
+                .initializeDatabase();
     }
 
     dao::ConfigManager::getConfig()->getClient()->dropDatabase();
@@ -81,6 +91,17 @@ void UpgradeTest::upgradeTest() {
                 .password(configOption.password())
                 .setDatabaseUpgrader(new MyDbUpgrader)
                 .initializeDatabase();
+    } else if (TEST_DB == QLatin1String("psql")) {
+        const auto& configOption = TestConfigLoader::instance().config().optionPSql();
+        dao::_config<dao::ConfigPSqlBuilder>()
+                .version(TARGET_VER)
+                .databaseName("psql_upgrade_test")
+                .host(configOption.host())
+                .port(configOption.port())
+                .user(configOption.user())
+                .password(configOption.password())
+                .setDatabaseUpgrader(new MyDbUpgrader)
+                .initializeDatabase();
     }
 #endif
 }
@@ -89,21 +110,22 @@ void UpgradeTest::fieldTest() {
 #ifndef TEST_DB_CLEAR
     auto expected = Table1::Info::getFields();
     std::sort(expected.begin(), expected.end());
-    auto fields = dao::ConfigManager::getConfig()->getClient()->exportAllFields(Table1::Info::getTableName());
+    auto client = dao::ConfigManager::getConfig()->getClient();
+    auto fields = client->exportAllFields(Table1::Info::getTableName());
     std::sort(fields.begin(), fields.end());
     QStringList actualFields;
     for (const auto& f : fields) {
-        actualFields << f.first;
+        actualFields << client->removeEscapeCharsForName(f.first);
     }
     QCOMPARE(actualFields, expected);
 
     expected = Table2::Info::getFields();
     std::sort(expected.begin(), expected.end());
-    fields = dao::ConfigManager::getConfig()->getClient()->exportAllFields(Table2::Info::getTableName());
+    fields = client->exportAllFields(Table2::Info::getTableName());
     std::sort(fields.begin(), fields.end());
     actualFields.clear();
     for (const auto& f : fields) {
-        actualFields << f.first;
+        actualFields << client->removeEscapeCharsForName(f.first);
     }
     QCOMPARE(actualFields, expected);
 #endif
