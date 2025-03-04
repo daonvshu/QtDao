@@ -163,7 +163,12 @@ void runUniqueSelectTest(TestTargetDb targetDb) {
     QCOMPARE(std::get<2>(uv3), 11);
     QCOMPARE(std::get<3>(uv3), "alice1");
 
-    auto d5 = dao::_select<E>().with(_limit(1)).build().unique();
+    E d5;
+    if (targetDb == TestTargetDb::Target_SqlServer) {
+        d5 = dao::_select<E>().build().top(1).unique();
+    } else {
+        d5 = dao::_select<E>().with(_limit(1)).build().unique();
+    }
     QVERIFY(d5.id != -1);
     QCOMPARE(sft1.getValueWithoutAutoIncrement(data1.first()), sft1.getValueWithoutAutoIncrement(d5));
 }
