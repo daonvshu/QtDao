@@ -16,6 +16,7 @@ select *from test1 where name='client' and (number=12 or name='bob')
 - [x] sqlite
 - [x] mysql
 - [x] sqlserver
+- [x] postgresql
 
 ## 如何使用
 [https://daonvshu.github.io/QtDao/](https://daonvshu.github.io/QtDao/)
