@@ -26,7 +26,7 @@ void KeywordsTest::testStep() {
 
 template<typename T>
 QPair<QList<int>, QStringList> readAll() {
-    auto query = BaseQuery::queryPrimitive(QString("select *from %1 order by \"group\"").arg(T::Info::getTableName()));
+    auto query = BaseQuery::queryPrimitive(QString("select *from %1 order by %2").arg(T::Info::getTableName(), T::Info::getFields()[1]));
     QList<int> columns;
     QStringList groups;
     while (query.next()) {
