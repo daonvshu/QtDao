@@ -192,11 +192,11 @@ void ClientSqlServerTest::fieldProcessTest() {
 
     auto fields = client->exportAllFields(TestTb5::Info::getTableName());
     QList<QPair<QString, QString>> expectFields;
-    expectFields << qMakePair(QLatin1String("field1"), QLatin1String("BIGINT"));
-    expectFields << qMakePair(QLatin1String("field2"), QLatin1String("VARCHAR"));
-    expectFields << qMakePair(QLatin1String("field3"), QLatin1String("INT"));
-    expectFields << qMakePair(QLatin1String("field4"), QLatin1String("INT"));
-    expectFields << qMakePair(QLatin1String("field5"), QLatin1String("TEXT"));
+    expectFields << qMakePair(QLatin1String("[field1]"), QLatin1String("BIGINT"));
+    expectFields << qMakePair(QLatin1String("[field2]"), QLatin1String("VARCHAR"));
+    expectFields << qMakePair(QLatin1String("[field3]"), QLatin1String("INT"));
+    expectFields << qMakePair(QLatin1String("[field4]"), QLatin1String("INT"));
+    expectFields << qMakePair(QLatin1String("[field5]"), QLatin1String("TEXT"));
     QCOMPARE(fields, expectFields);
 
     //drop all user index before drop columns
@@ -215,9 +215,12 @@ void ClientSqlServerTest::fieldProcessTest() {
     client->renameField(TestTb5::Info::getTableName(), "field10", "field20");
 
     fields = client->exportAllFields(TestTb5::Info::getTableName());
+    std::sort(fields.begin(), fields.end(), [](const QPair<QString, QString>& a, const QPair<QString, QString>& b) {
+        return a.first < b.first;
+    });
     expectFields.clear();
-    expectFields << qMakePair(QLatin1String("field5"), QLatin1String("TEXT"));
-    expectFields << qMakePair(QLatin1String("field20"), QLatin1String("INT"));
+    expectFields << qMakePair(QLatin1String("[field20]"), QLatin1String("INT"));
+    expectFields << qMakePair(QLatin1String("[field5]"), QLatin1String("TEXT"));
     QCOMPARE(fields, expectFields);
 }
 
