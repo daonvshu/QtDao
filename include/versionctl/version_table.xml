@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<dao prefix="dao_" db="sqlite">
-  <tb name="Version">
-    <item name="ver" type="int" default="-1" />
-  </tb>
-</dao>
