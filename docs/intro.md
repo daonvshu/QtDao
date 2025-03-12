@@ -2,46 +2,49 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# 简介
 
-Let's discover **Docusaurus in less than 5 minutes**.
-
-## Getting Started
-
-Get started by **creating a new site**.
-
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
-
-### What you'll need
-
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
-
-## Generate a new site
-
-Generate a new Docusaurus site using the **classic template**.
-
-The classic template will automatically be added to your project after you run the command:
-
-```bash
-npm init docusaurus@latest my-website classic
+`QtDao`的目标是简化数据库操作，该库隐藏了SQL语句的编写，因此不适合初学者使用。QtDao一个核心的功能是通过一句代码将数据库查询的结果转化为对象列表，一个简单的数据库查询如下：
+```cpp
+TestTb::Fields sf;
+TestTb data = dao::_select<TestTb>()
+        .filter(sf.name == "Alice", _or(sf.age == 18, sf.name == "Bob"))
+        .build().one();
+```
+等同于执行以下sql语句：
+```sql
+select *from testtb where name='Alice' and (number=18 or name='Bob')
 ```
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+## 特性
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+> 多线程与连接池
 
-## Start your site
+支持多线程下查询，使用时不用关心线程问题，连接池会处理不同线程数据库连接的复用。
 
-Run the development server:
+> 数据库与数据表的创建
 
-```bash
-cd my-website
-npm run start
-```
+初始化时，如果不存在会自动创建目标数据库和数据表，当然也可以禁用自动创建。
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+> 多数据库连接
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+支持多个数据库、多个不同类型的数据库同时使用，各自的连接互不影响。
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+> 版本管理
+  
+内置数据库升级操作，版本不一致时会重新创建表并复制旧数据到新的表中。
+
+## 工作原理
+
+QtDao整个框架依赖于c++模板，对类型的限制和转换的目标对象都通过模板支持，同时依赖于代码生成器将数据库表配置转换成c++模型类（并附带一些转换工具函数），通过模板和代码生成器的配合将数据库查询语句与c++类之间完成相互转换。
+
+## 如何使用
+
+在使用QtDao库之前，需要完成以下步骤的准备工作：  
+1. 编写数据表xml配置文件，使用生成器（vscode插件市场中搜索`QtDao`）生成c++模型类
+2. 将生成器生成的文件加入到编译列表中
+3. 编写初始化代码
+
+## 支持的数据库
+
+经过大量的测试和版本迭代，目前受支持的数据库操作有4种：sqlite、mysql、sqlserver、postgresql，在未来将计划加入更多的数据库支持，不同的数据库操作使用统一的api，仅仅通过修改少量的连接配置，就能够实现不同数据库之间的快速切换使用。
