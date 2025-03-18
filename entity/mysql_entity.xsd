@@ -177,6 +177,7 @@
                 </xs:restriction>
               </xs:simpleType>
             </xs:attribute>
+            <xs:attribute name="createmanual" use="optional" />
           </xs:complexType>
         </xs:element>
       </xs:sequence>
