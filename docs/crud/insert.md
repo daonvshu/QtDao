@@ -171,14 +171,14 @@ QtDao内部对于不同数据库使用语法有所不同：
 ```cpp
 User::Fields uf;
 //假设 name,classes 作为一个unique index
-dao::_insert<User>()
+dao::_insertOrUpdate<User>()
     .set(uf.name = "Alice", uf.classes = "classA", uf.age = 18, uf.score = 90)
     .conflictColumns(uf.name, uf.classes)
     .updateColumns(uf.score)
     .build().insert();
 
 //省略 updateColumns 则同时更新 age,score
-dao::_insert<User>()
+dao::_insertOrUpdate<User>()
     .set(uf.name = "Alice", uf.classes = "classA", uf.age = 18, uf.score = 90)
     .conflictColumns(uf.name, uf.classes)
     .build().insert();
@@ -189,7 +189,7 @@ auto classes = QStringList() << "classA" << "classA";
 auto ages = QList<int>() << 18 << 19;
 auto scores = QList<int>() << 90 << 91;
 
-dao::_insert<User>()
+dao::_insertOrUpdate<User>()
     .set(uf.name = names, uf.classes = classes, uf.age = ages, uf.score = scores)
     .conflictColumns(uf.name, uf.classes)
     .build().insert();
@@ -203,13 +203,13 @@ dao::_insert<User>()
 User::Fields uf;
 //假设 name,classes 作为一个unique index
 User alice("Alice", "classA", 18, 90);
-dao::_insert<User>()
+dao::_insertOrUpdate<User>()
     .conflictColumns(uf.name, uf.classes)
     .updateColumns(uf.score)
     .build().insert(alice);
 
 //省略 updateColumns 则同时更新 age,score
-dao::_insert<User>()
+dao::_insertOrUpdate<User>()
     .conflictColumns(uf.name, uf.classes)
     .build().insert(alice);
 
@@ -217,7 +217,7 @@ dao::_insert<User>()
 User bob("Bob", "classA", 19, 91);
 auto users = UserList() << alice << bob;
 
-dao::_insert<User>()
+dao::_insertOrUpdate<User>()
     .conflictColumns(uf.name, uf.classes)
     .build().insert(users);
 ```
@@ -235,7 +235,7 @@ auto scores = QList<int>() << 90 << 91;
 User::Fields uf;
 dao::UpsertExcluded<User>::Fields excluded;
 
-dao::_insert<User>()
+dao::_insertOrUpdate<User>()
     .set(uf.name = names, uf.classes = classes, uf.age = ages, uf.score = scores)
     .conflictColumns(uf.name, uf.classes)
     .filter(excluded.age > uf.age)
