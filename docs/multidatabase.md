@@ -82,6 +82,17 @@ dao::_config<dao::ConfigMysqlBuilder>()
         .configAlias("mys")
         .session(SESSION_MYSQL)
         .initializeDatabase();
+
+dao::_config<dao::ConfigPSqlBuilder>()
+        .version(1)
+        .databaseName("multi_psqltest")
+        .host("localhost")
+        .port(5432)
+        .user("postgres")
+        .password("root")
+        .configAlias("ps")
+        .session(SESSION_PSQL)
+        .initializeDatabase();
 ```
 
 在进行数据库操作时，传入`sessionid`来选择操作的数据库：

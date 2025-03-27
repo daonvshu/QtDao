@@ -22,7 +22,7 @@ try {
 
 ## 2. 事务
 
-`QtDao`中启用事务功能使用`dao::transcation()`函数，通常情况下与`throwable()`函数一起使用，当查询出现异常时回滚当前操作。
+`QtDao`中启用事务功能使用`dao::transcation()`函数，通常情况下与`commit()`函数一起使用，当查询出现异常时使用`rollback()`函数回滚当前操作。
 
 ```cpp
 
@@ -49,6 +49,7 @@ try {
 |`sqlite`|`SqliteExplainInfo`|
 |`mysql`|`MysqlExplainInfo`|
 |`sqlserver`|`SqlServerExplainInfo`|
+|`psql`|`PSqlExplainInfo`|
 
 如下，当前数据库使用`sqlite`时的解释信息输出：
 
@@ -65,12 +66,13 @@ auto queryExplain = dao::_select<User>()
 默认情况下，数据库版本变更时会执行以下升级策略：  
 
 1. 开启事务
-2. 创建以原表名一样的 `tem_<原表名>` 临时表
-3. 复制旧表的数据到临时表
-4. 删除旧表
-5. 重名名临时表为原表名
-6. 为原表创建索引
-7. 提交事务
+2. 禁用外键约束
+3. 创建与原表名一样的 `tem_<原表名>` 临时表
+4. 删除原表索引，并为临时表创建索引
+5. 复制旧表的数据到临时表
+6. 删除旧表
+7. 重名名临时表为原表名
+8. 提交事务
 
 继承 `dao::DatabaseUpgrader` 类可以自定义升级过程，如下所示：
 ```cpp
