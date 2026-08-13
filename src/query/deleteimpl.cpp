@@ -17,7 +17,7 @@ void DeleteImpl::buildDeleteByFilterSqlStatement() {
     setSqlQueryStatement(sql, value);
 }
 
-void DeleteImpl::buildDeleteEntitiesCondition(const std::function<QVariantList(const QString&)>& fieldColValuesReader) {
+void DeleteImpl::buildDeleteEntitiesCondition(const std::function<QVariantList(const QString&)>& fieldColValuesReader, bool batchMode) {
     QStringList primaryKeys = getPrimaryKeys();
     Q_ASSERT(!primaryKeys.isEmpty());
 
@@ -27,7 +27,7 @@ void DeleteImpl::buildDeleteEntitiesCondition(const std::function<QVariantList(c
         auto condition = new OperatorEntityConnector;
         condition->setOperator("=");
         condition->addField(FieldInfo{ field, getTableName() });
-        condition->addValue(fieldValue.size() == 1 ? fieldValue.at(0) : fieldValue);
+        condition->addValue(batchMode ? QVariant(fieldValue) : fieldValue.at(0));
         fc.append(condition->ptr());
     }
 }

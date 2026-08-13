@@ -19,19 +19,19 @@ public:
 protected:
     void buildDeleteByFilterSqlStatement();
 
-    void buildDeleteEntitiesCondition(const std::function<QVariantList(const QString&)>& fieldColValuesReader);
+    void buildDeleteEntitiesCondition(const std::function<QVariantList(const QString&)>& fieldColValuesReader, bool batchMode);
 
     template<typename E>
-    void buildDeleteEntitiesCondition(const QList<E>& entities);
+    void buildDeleteEntitiesCondition(const QList<E>& entities, bool batchMode);
 };
 
 template<typename E>
-inline void DeleteImpl::buildDeleteEntitiesCondition(const QList<E> &entities) {
+inline void DeleteImpl::buildDeleteEntitiesCondition(const QList<E> &entities, bool batchMode) {
     buildDeleteEntitiesCondition([&](const QString& fieldName) {
         return listMap<QVariant, E>(entities, [&](const E& entity) {
             return E::Tool::getValueByName(entity, fieldName);
         });
-    });
+    }, batchMode);
 }
 
 QTDAO_END_NAMESPACE

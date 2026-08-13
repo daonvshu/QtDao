@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "deleteimpl.h"
 
@@ -58,7 +58,7 @@ inline void Delete<E>::deleteBatch() {
 
 template<typename E>
 inline void Delete<E>::deleteBy(const E& entity) {
-    buildDeleteEntitiesCondition(QList<E>() << entity);
+    buildDeleteEntitiesCondition(QList<E>() << entity, false);
     return deleteBy();
 }
 
@@ -67,7 +67,7 @@ inline void Delete<E>::deleteBatch(const QList<E>& entities) {
     if (entities.isEmpty()) {
         return;
     }
-    buildDeleteEntitiesCondition(entities);
+    buildDeleteEntitiesCondition(entities, true);
     return deleteBatch();
 }
 QTDAO_END_NAMESPACE
