@@ -22,7 +22,7 @@ public:
     using SessionBuilder<CountBuilder<E>>::SessionBuilder;
 
     int count() {
-        SelectBuilder<E> builder;
+        SelectBuilder<E> builder(this->querySessionId);
         builder.column(FunctionConnector("count(*) as __selectcount"));
         builder.loggingCategoryPtr = this->loggingCategoryPtr;
         builder.filterCondition = this->filterCondition;

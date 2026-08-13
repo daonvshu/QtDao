@@ -29,9 +29,9 @@ class JoinImpl;
 
 class UnionBuilderImpl {
 protected:
-    void unionWithSelect(SelectImpl& select, bool unionAll);
+    void unionWithSelect(SelectImpl& select, bool unionAll, qint64 sessionId);
 
-    void unionWithJoin(JoinImpl& join, bool unionAll);
+    void unionWithJoin(JoinImpl& join, bool unionAll, qint64 sessionId);
 
 private:
     UnionBuildData unionData;
@@ -48,7 +48,7 @@ class UnionBuilder : UnionBuilderImpl {
 public:
     template<typename E2>
     T& unionSelect(Select<E2>& select, bool unionAll = false) {
-        unionWithSelect(select, unionAll);
+        unionWithSelect(select, unionAll, static_cast<T&>(*this).querySessionId);
         return static_cast<T&>(*this);
     }
 
@@ -59,7 +59,7 @@ public:
 
     template<typename...E2>
     T& unionSelect(Join<E2...>& join, bool unionAll = false) {
-        unionWithJoin(join, unionAll);
+        unionWithJoin(join, unionAll, static_cast<T&>(*this).querySessionId);
         return static_cast<T&>(*this);
     }
 

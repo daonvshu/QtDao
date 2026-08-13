@@ -121,6 +121,15 @@ void MultiDbTest::sqliteNormalQueryTest() {
     }
 }
 
+void MultiDbTest::countWithExplicitSessionTest() {
+    SqlV1::Artist artistData1(1, "The Beatles", 4);
+    SqlV1::Artist artistData2(2, "Led Zeppelin", 5);
+    dao::_insert<SqlV1::Artist>(SESSION_SQLITE1).build().insert({ artistData1, artistData2 });
+
+    SqlV1::Artist::Fields af;
+    QCOMPARE(dao::_count<SqlV1::Artist>(SESSION_SQLITE1).filter(af.size >= 4).count(), 2);
+}
+
 void MultiDbTest::differentDbQueryTest() {
     SqlV1::Artist artistData1(1, "The Beatles", 4);
     SqlV1::Artist artistData2(2, "Led Zeppelin", 5);

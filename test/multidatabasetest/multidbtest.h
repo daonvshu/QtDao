@@ -19,6 +19,8 @@ private slots:
 
     void sqliteNormalQueryTest();
 
+    void countWithExplicitSessionTest();
+
     void differentDbQueryTest();
 
     void multiThreadTest();

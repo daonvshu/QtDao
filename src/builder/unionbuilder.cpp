@@ -9,8 +9,8 @@
 
 QTDAO_BEGIN_NAMESPACE
 
-void UnionBuilderImpl::unionWithSelect(SelectImpl &select, bool unionAll) {
-    auto config = ConfigManager::getConfig();
+void UnionBuilderImpl::unionWithSelect(SelectImpl &select, bool unionAll, qint64 sessionId) {
+    auto config = ConfigManager::getConfig(sessionId);
     if (config->isSqlServer()) {
         qFatal("The current version of the union query in Qt6 fails the test case when using SQLServer.");
     }
@@ -20,8 +20,8 @@ void UnionBuilderImpl::unionWithSelect(SelectImpl &select, bool unionAll) {
     unionData.unionAll = unionAll;
 }
 
-void UnionBuilderImpl::unionWithJoin(JoinImpl &join, bool unionAll) {
-    auto config = ConfigManager::getConfig();
+void UnionBuilderImpl::unionWithJoin(JoinImpl &join, bool unionAll, qint64 sessionId) {
+    auto config = ConfigManager::getConfig(sessionId);
     if (config->isSqlServer()) {
         qFatal("The current version of the union query in Qt6 fails the test case when using SQLServer.");
     }
@@ -34,14 +34,14 @@ void UnionBuilderImpl::unionWithJoin(JoinImpl &join, bool unionAll) {
 
 QTDAO_BEGIN_NAMESPACE
 
-void UnionBuilderImpl::unionWithSelect(SelectImpl &select, bool unionAll) {
+void UnionBuilderImpl::unionWithSelect(SelectImpl &select, bool unionAll, qint64) {
     select.buildFilterSqlStatement();
     unionData.statement = select.statement;
     unionData.values = select.values;
     unionData.unionAll = unionAll;
 }
 
-void UnionBuilderImpl::unionWithJoin(JoinImpl &join, bool unionAll) {
+void UnionBuilderImpl::unionWithJoin(JoinImpl &join, bool unionAll, qint64) {
     join.buildJoinSqlStatement();
     unionData.statement = join.statement;
     unionData.values = join.values;

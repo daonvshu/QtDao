@@ -207,7 +207,7 @@ inline QList<I> Join<E...>::explain() {
     Q_STATIC_ASSERT_X(ExplainTool<I>::Valid == 1,
                       "template parameter must one of SqliteExplainInfo/SqliteExplainQueryPlanInfo/MysqlExplainInfo/SqlServerExplainInfo");
 
-    return ExplainTool<I>::toExplain(readExplainStatement());
+    return ExplainTool<I>::toExplain(readExplainStatement(), getSessionId());
 }
 
 QTDAO_END_NAMESPACE
